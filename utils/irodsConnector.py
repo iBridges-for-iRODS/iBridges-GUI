@@ -257,8 +257,6 @@ class irodsConnector():
 
         if 'bundleResc' in resources:
             resources.remove('bundleResc')
-        if 'demoResc' in resources:
-            resources.remove('demoResc')
 
         return resources
 
