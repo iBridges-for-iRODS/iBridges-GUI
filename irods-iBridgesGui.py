@@ -29,9 +29,8 @@ class irodsLogin(QDialog):
         loadUi("gui/ui-files/irodsLogin.ui", self)
         
         self.irodsEnvPath = os.path.expanduser('~') + os.sep + ".irods"
+        os.makedirs(self.irodsEnvPath, exist_ok=True)
         setup_logger(self.irodsEnvPath, "iBridgesGui")
-        if not os.path.isdir(self.irodsEnvPath):
-            os.makedirs(self.irodsEnvPath)
         self.configFilePath = self.irodsEnvPath + os.sep + "config.json"
         self.init_envbox()
 
