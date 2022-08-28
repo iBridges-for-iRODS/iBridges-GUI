@@ -57,7 +57,7 @@ acPostProcForDelete { }
 - pip-21.1.3
 - Python packages
 	- Cryptography
-	- PyQt5
+	- PyQt6
 	- python-irodsclient
 	- elabjournal
 	- watchdog
