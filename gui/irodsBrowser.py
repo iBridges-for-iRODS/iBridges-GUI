@@ -287,7 +287,10 @@ class irodsBrowser:
         col = index.column()
         row = index.row()
         self.currentBrowserRow = row
-        value = self.widget.collTable.item(row, col).text()
+        if self.widget.collTable.item(row, col):
+            value = self.widget.collTable.item(row, col).text()
+        else:
+            value = ''
         if self.widget.collTable.item(row, 0).text() != '':
             path = self.widget.collTable.item(row, 0).text()
         else:
