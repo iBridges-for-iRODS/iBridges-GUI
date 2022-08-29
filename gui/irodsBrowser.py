@@ -110,11 +110,17 @@ class irodsBrowser:
             obj = self.ic.session.data_objects.get(
                     "/"+path.strip("/")+"/"+value.strip("/")
                     )
-            replicas = [resc.resource_name for resc in obj.replicas]
+#            print(obj.replicas)
+            resc_hiers = [resc.resc_hier for resc in obj.replicas]
+#            print(resc_hiers)
+            resc_hier_roots = set([r.split(';')[0] for r in resc_hiers])
+#            print(resc_hier_roots)
+#            replicas = [resc.resource_name for resc in obj.replicas]
+#            print(replicas)
             for i in range(len(resources)):
                 self.widget.resourceTable.setItem(i, 0, 
                         QtWidgets.QTableWidgetItem(resources[i]))
-                if resources[i] in replicas:
+                if resources[i] in resc_hier_roots:
                     item = QtWidgets.QTableWidgetItem()
                     item.setCheckState(QtCore.Qt.CheckState.Checked)
                     item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
