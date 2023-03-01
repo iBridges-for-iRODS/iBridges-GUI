@@ -42,7 +42,13 @@ QRadioButton
 QLabel#passError, QLabel#envError, QLabel#icommandsError
 {
 	color: rgb(217, 174, 23);
-}</string>
+}
+
+QRadioButton
+{ 
+	selection-color: rgb(217, 174, 23);
+}
+</string>
   </property>
   <widget class="QWidget" name="gridLayoutWidget">
    <property name="geometry">

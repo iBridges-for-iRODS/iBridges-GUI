@@ -20,6 +20,8 @@ import utils
 app = PyQt6.QtWidgets.QApplication(sys.argv)
 widget = PyQt6.QtWidgets.QStackedWidget()
 
+# Work around a PRC XML issue handling special characters
+os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
 
 class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLogin.Ui_irodsLogin):
     """Definition and initialization of the iRODS login window.
@@ -218,6 +220,12 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLogin.Ui_irods
         # self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
         widget.setCurrentIndex(widget.currentIndex()+1)
 
+def closeClean():
+    activeWidget = widget.currentWidget()
+    try:
+        activeWidget.ic.session.cleanup()
+    except:
+        pass
 
 def main():
     """Main function
@@ -227,6 +235,8 @@ def main():
     login_window = IrodsLoginWindow()
     widget.addWidget(login_window)
     widget.show()
+    #app.setQuitOnLastWindowClosed(False)
+    app.lastWindowClosed.connect(closeClean)
     app.exec()
 
 
