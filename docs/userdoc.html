@@ -120,8 +120,12 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#ibridges-user-documentation" id="toc-ibridges-user-documentation" class="nav-link active" data-scroll-target="#ibridges-user-documentation">iBridges User Documentation</a>
   <ul class="collapse">
   <li><a href="#synopsis" id="toc-synopsis" class="nav-link" data-scroll-target="#synopsis">Synopsis</a></li>
-  <li><a href="#how-to-browse" id="toc-how-to-browse" class="nav-link" data-scroll-target="#how-to-browse">How to Browse</a></li>
-  <li><a href="#how-to-upload-large-amounts-of-data" id="toc-how-to-upload-large-amounts-of-data" class="nav-link" data-scroll-target="#how-to-upload-large-amounts-of-data">How to upload large amounts of data</a></li>
+  <li><a href="#how-to-do-simple-data-operations" id="toc-how-to-do-simple-data-operations" class="nav-link" data-scroll-target="#how-to-do-simple-data-operations">How to do simple data operations</a>
+  <ul class="collapse">
+  <li><a href="#how-to-download-data" id="toc-how-to-download-data" class="nav-link" data-scroll-target="#how-to-download-data">How to download data</a></li>
+  </ul></li>
+  <li><a href="#how-to-upload-data" id="toc-how-to-upload-data" class="nav-link" data-scroll-target="#how-to-upload-data">How to upload data</a></li>
+  <li><a href="#how-to-search-for-data" id="toc-how-to-search-for-data" class="nav-link" data-scroll-target="#how-to-search-for-data">How to search for data</a></li>
   <li><a href="#elabjournal" id="toc-elabjournal" class="nav-link" data-scroll-target="#elabjournal">Elabjournal</a></li>
   <li><a href="#overview-tab" id="toc-overview-tab" class="nav-link" data-scroll-target="#overview-tab">Overview tab</a>
   <ul class="collapse">
@@ -140,12 +144,86 @@ ul.task-list li input[type="checkbox"] {
 <h1>iBridges User Documentation</h1>
 <section id="synopsis" class="level2">
 <h2 class="anchored" data-anchor-id="synopsis">Synopsis</h2>
+<p>iBridges is a GUI to an Data management platform based on iRODS. It exposes iRODS functionality through a GUI to the users. We divided the different function into groups where each function group is represented in an own tab in the GUI. The tabs are configured for the user depending on the user’s rights and role in the Data management platform. - The <strong>Browser</strong> is a tool to browse through iRODS collections and gather information on iRODS data objects - The <strong>Up and Download</strong> tab gives tools to up and download large data safely. - The <strong>ELN Data upload</strong> tab is made for specific data uploads that belong to an Experiment described in an ElabJournal instance. - In the <strong>Compress/bundle data</strong> tab the user is given tools to bundle (tar) or compress (zip) iRODS data collections and to extract them again.</p>
 </section>
-<section id="how-to-browse" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-browse">How to Browse</h2>
+<section id="how-to-do-simple-data-operations" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-do-simple-data-operations">How to do simple data operations</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../screenshots/browser.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Browse</figcaption><p></p>
+</figure>
+</div>
+<p>To browse through your data collections in iRODS click on the <strong>Browser</strong> tab.</p>
+<ol type="1">
+<li>Navigation bar: Type a valid collection or object path in and hit <code>enter</code>.</li>
+<li>Collection and data object table:
+<ul>
+<li>Click on the <code>Name</code> of a collection or option. This will load the tabs below the table (see below)</li>
+<li>Double click on a collection to navigate into the collection</li>
+</ul></li>
+<li>Lower tabs
+<ul>
+<li>Preview: Lists the content of a collection or the first 50 lines of textual data (.txt, .json, .csv)</li>
+<li>Metadata: You can annotate collections and data objects with own annotation <code>key, value, unit</code>. The keys and values can be used in the search-drop down menu to look for data</li>
+<li>Permissions: Will show the permissions own(er), read, write. If you have the role of data steward, you will also be able to change and add permissions</li>
+<li>Resources: The tab shows on which storage resource data objects are stored. Note, collections do not have a resource.</li>
+<li>Delete: In the browser table click on the collection or object you want to delete, then click <code>Load</code> and then <code>Delete</code>. This will delete a whole collection with all its members or the data object.</li>
+</ul></li>
+</ol>
+<p>Note: The <code>File Upload</code> and <code>File download</code> buttons are only meant for uploading and downloading small single files. For large data transfers click on the <strong>Up and Download</strong> tab.</p>
+<section id="how-to-download-data" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-download-data">How to download data</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../screenshots/howto_download.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Download</figcaption><p></p>
+</figure>
+</div>
+<ol type="1">
+<li><p>Select the iRODS collection or data object to download and the folder to download to.</p></li>
+<li><p>Press the download button. A pop up window opens and the difference between the source and destination is calculated: - Based on checksums, a unique hash for each file the GUI determines whether the source file and the destination file are identical. If so, the file will <strong>not</strong> be downloaded again. The GUI will only download data which does not exist or differs.</p>
+<ul>
+<li>The GUI also computes the total size of the data objects and will only start the download if the total amount will fit on your destination file system.</li>
+</ul></li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../screenshots/howto_download2.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Download dialog</figcaption><p></p>
+</figure>
+</div>
+<p>When the check is done the loading screen disappears and the number of files which exist with a different checksum (1) and files which only exist on iRODS (2) will be indicated. Press the <code>Download</code> button to start the file transfer. iRODS automatically checks the checksum to ensure all downloaded files are complete.</p>
 </section>
-<section id="how-to-upload-large-amounts-of-data" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-upload-large-amounts-of-data">How to upload large amounts of data</h2>
+</section>
+<section id="how-to-upload-data" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-upload-data">How to upload data</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../screenshots/howto_upload.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Upload</figcaption><p></p>
+</figure>
+</div>
+<ol type="1">
+<li>Check the resource. There may be several storage resources configured for you in the system. Your iRODS admin will give you advice which one to use for which data and workflow. Note, that <code>archive</code> resources are made to archive large files. Please adhere for those resources to the following policy:
+<ul>
+<li>Files need to be 1GB or larger.</li>
+<li>Do not start calculations on data which is stored on <code>archive</code> resources. They have a low latency and will inhibit your program. Your iRODS administrator can help you to migrate the data to a suited resources in that case.</li>
+</ul></li>
+<li>Select the local file or folder and iRODS collection to upload to.</li>
+<li>Press the upload button. As in the download, a pop up window will appear which will execute the same checks as for the data downloads.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../screenshots/howto_upload2.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Upload Dialog</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="how-to-search-for-data" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-search-for-data">How to search for data</h2>
+<p>Click on <code>Options</code> in the menu bar of the window and select <code>Search</code>. This will open a mask to search for data objects and collections using metadata key-value pairs, collection paths and data object paths.</p>
+<p>The <code>Select and Close</code> button will load the selected collections and objects into the <strong>Browser</strong> tab where you can further inspect and annotate the data.</p>
 </section>
 <section id="elabjournal" class="level2">
 <h2 class="anchored" data-anchor-id="elabjournal">Elabjournal</h2>
