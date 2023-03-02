@@ -260,7 +260,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"force_unknown_free_space"</span><span class="fu">:</span> <span class="kw">false</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Options: - <code>davrods_server</code>: for annotation of eLabJournal data - <code>ui_tabs</code>: configure which tabs are shown (Browser and Info tabs always are) - <code>tabUpDownload</code>: a two-pane upload/download tab - <code>tabELNData</code>: for the Electronic Lab Notebook, eLabJournal - <code>tabDataBundle</code>: (un)bundle datasets from/to four supported formats - <code>tabCreateTicket</code>: create iRODS tickets for anonymous access - <code>force_unknown_free_space</code>: ignore if resources’ free space is unannotated</p>
+<p>Options:</p>
+<ul>
+<li><code>davrods_server</code>: for annotation of eLabJournal data</li>
+<li><code>ui_tabs</code>: configure which tabs are shown (Browser and Info tabs always are)
+<ul>
+<li><code>tabUpDownload</code>: a two-pane upload/download tab</li>
+<li><code>tabELNData</code>: for the Electronic Lab Notebook, eLabJournal</li>
+<li><code>tabDataBundle</code>: (un)bundle datasets from/to four supported formats</li>
+<li><code>tabCreateTicket</code>: create iRODS tickets for anonymous access</li>
+</ul></li>
+<li><code>force_unknown_free_space</code>: ignore if resources’ free space is unannotated</li>
+</ul>
 <p>The <code>force_unknown_free_space</code> option is <em>REQUIRED</em> to be set to <code>true</code> if your default resource does not yet have its free space annotated. It makes unannotated top-level resources visible in the drop-downs allowing selection of them. In addition, it sets the <code>force</code> flag for uploads overriding resource overflow protection.</p>
 <p>The logs for both GUI and CLI clients can be found in the <code>~/.ibridges/</code> directory/folder.</p>
 </section>
