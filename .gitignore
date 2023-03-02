@@ -1,8 +1,0 @@
-__pycache__
-irods-basicGUI/logs/*
-
-# Build pipeline
-venv
-build
-dist
-irods-iBridgesGui.spec
