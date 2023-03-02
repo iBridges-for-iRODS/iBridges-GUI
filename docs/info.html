@@ -117,7 +117,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#dependencies" id="toc-dependencies" class="nav-link active" data-scroll-target="#dependencies">Dependencies</a></li>
+  <li><a href="#current-viewsfeatures" id="toc-current-viewsfeatures" class="nav-link active" data-scroll-target="#current-viewsfeatures">Current views/features</a></li>
+  <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
   <li><a href="#authors" id="toc-authors" class="nav-link" data-scroll-target="#authors">Authors</a></li>
   <li><a href="#license" id="toc-license" class="nav-link" data-scroll-target="#license">License</a></li>
   </ul>
@@ -146,6 +147,18 @@ ul.task-list li input[type="checkbox"] {
 <p>iBridges is a standalone client software <em>desktop application</em>, written in <strong>Python</strong>, to provide users of <em>Windows, Linux and Mac</em> with a <em>graphical user interface</em> to interact with <strong>iRODS</strong> servers. The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing and manipulating data objects, upload/download data, and search through data collections.</p>
 <p>We also provide a commandline interface with which data can be uploaded and downloaded.</p>
 <p>The GUI can be extended by users to implement their own data workflows.</p>
+<section id="current-viewsfeatures" class="level3">
+<h3 class="anchored" data-anchor-id="current-viewsfeatures">Current views/features</h3>
+<ul>
+<li><code>tabBrowser</code>: (Default) a main table to browse through collections, metadata and ACL manipulation, data deletion and single file up and downloads,</li>
+<li><code>tabUpDownload</code>: a two-pane upload/download tab</li>
+<li><code>tabELNData</code>: Uploading data and linking it to an Electronical Labnotebook experiment</li>
+<li><code>tabDataBundle</code>: (un)bundle datasets from/to four supported formats (depending on extra iRODS microservices)</li>
+<li><code>tabCreateTicket</code>: create iRODS tickets for anonymous access</li>
+<li>‘tabInfo’: (Default) an overview over the iRODS server and client, groups and resources</li>
+<li>The search functionality is available from the drop-down menu <code>Options</code></li>
+</ul>
+</section>
 <section id="dependencies" class="level2">
 <h2 class="anchored" data-anchor-id="dependencies">Dependencies</h2>
 <ul>
