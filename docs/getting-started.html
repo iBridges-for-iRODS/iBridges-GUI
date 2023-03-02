@@ -286,6 +286,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="storage-capacity" class="level3">
 <h3 class="anchored" data-anchor-id="storage-capacity">Storage capacity</h3>
 <p>To protect the <em>iRODS</em> resources from overflowing you should install an event hook on the <em>iRODS</em> servers that fill the resources’ <code>RESC_FREE_SPACE</code> attribute in the iCAT. These can be either <em>catalog</em> or <em>resource</em> servers. Please add the following to the <code>/etc/irods/core.re</code> or another rule engine file:</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Example storage capacity rule
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <div class="sourceCode" id="cb5"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">######################################################</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Storage capacity policies.</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Update the metadata field free_space of the resource</span></span>
@@ -314,6 +324,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space($KVPairs.rescName)<span class="op">;</span></span>
 <span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>For very busy systems, updating this value for every upload or delete can be prevented by commenting out or removing the last two stanzas if performance is being hampered.</p>
+</div>
+</div>
 <p>For more complex resource hierarchies, the top of the resource tree (the <em>root</em> node) will usually not be updated with the free space values, but if it is (the sum of all <em>leaf</em> nodes is asssumed), the value in any <em>leaf</em> nodes will be ignored. If the <em>root</em> node has no free space value, the sum of the <em>leaf</em> nodes will be used instead. If none of the resource nodes are annotated, an error will occur. This feature can be overridden by annotating the <em>root</em> node’s free space value with an arbitrarily large value. <em><em>Please note, that this action disables the built-in protection offered by this client.</em></em></p>
 </section>
 <section id="data-unbundling" class="level3">
