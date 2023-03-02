@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ibridgesgui-howto</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="_styles/styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#ibridgesgui---how-to" id="toc-ibridgesgui---how-to" class="nav-link active" data-scroll-target="#ibridgesgui---how-to">iBridgesGui - How To?</a>
+  <ul class="collapse">
+  <li><a href="#how-to-do-simple-data-operations" id="toc-how-to-do-simple-data-operations" class="nav-link" data-scroll-target="#how-to-do-simple-data-operations">How to do simple data operations</a>
+  <ul class="collapse">
+  <li><a href="#how-to-download-data" id="toc-how-to-download-data" class="nav-link" data-scroll-target="#how-to-download-data">How to download data</a></li>
+  </ul></li>
+  <li><a href="#how-to-upload-data" id="toc-how-to-upload-data" class="nav-link" data-scroll-target="#how-to-upload-data">How to upload data</a></li>
+  <li><a href="#how-to-bundle-data-or-compress-data" id="toc-how-to-bundle-data-or-compress-data" class="nav-link" data-scroll-target="#how-to-bundle-data-or-compress-data">How to bundle data or compress data</a></li>
+  <li><a href="#how-to-decompress-data" id="toc-how-to-decompress-data" class="nav-link" data-scroll-target="#how-to-decompress-data">How to decompress data</a>
+  <ul class="collapse">
+  <li><a href="#how-to-search-for-data" id="toc-how-to-search-for-data" class="nav-link" data-scroll-target="#how-to-search-for-data">How to search for data</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+
+<section id="ibridgesgui---how-to" class="level1">
+<h1>iBridgesGui - How To?</h1>
+<p>The iBridgesGui is a GUI to an Data management platform based on iRODS. It exposes iRODS functionality through a GUI to the users. We divided the different function into groups where each function group is represented in an own tab in the GUI. The tabs are configured for the user depending on the user’s rights and role in the Data management platform. - The <strong>Browser</strong> is a tool to browse through iRODS collections and gather information on iRODS data objects - The <strong>Up and Download</strong> tab gives tools to up and download large data safely. - The <strong>ELN Data upload</strong> tab is made for specific data uploads that belong to an Experiment described in an ElabJournal instance. - In the <strong>Compress/bundle data</strong> tab the user is given tools to bundle (tar) or compress (zip) iRODS data collections and to extract them again.</p>
+<section id="how-to-do-simple-data-operations" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-do-simple-data-operations">How to do simple data operations</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="screenshots/browser.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">How to Download</figcaption><p></p>
+</figure>
+</div>
+<p>To browse through your data collections in iRODS click on the <strong>Browser</strong> tab.</p>
+<ol type="1">
+<li>Navigation bar: Type a valid collection or object path in and hit <code>enter</code>.</li>
+<li>Collection and data object table:
+<ul>
+<li>Click on the <code>Name</code> of a collection or option. This will load the tabs below the table (see below)</li>
+<li>Double click on a collection to navigate into the collection</li>
+</ul></li>
+<li>Lower tabs
+<ul>
+<li>Preview: Lists the content of a collection or the first 50 lines of textual data (.txt, .json, .csv)</li>
+<li>Metadata: You can annotate collections and data objects with own annotation <code>key, value, unit</code>. The keys and values can be used in the search-drop down menu to look for data</li>
+<li>Permissions: Will show the permissions own(er), read, write. If you have the role of data steward, you will also be able to change and add permissions</li>
+<li>Resources: The tab shows on which storage resource data objects are stored. Note, collections do not have a resource.</li>
+<li>Delete: In the browser table click on the collection or object you want to delete, then click <code>Load</code> and then <code>Delete</code>. This will delete a whole collection with all its members or the data object.</li>
+</ul></li>
+</ol>
+<p>Note: The <code>File Upload</code> and <code>File download</code> buttons are only meant for uploading and downloading small single files. For large data transfers click on the <strong>Up and Download</strong> tab.</p>
+<section id="how-to-download-data" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-download-data">How to download data</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="screenshots/howto_download.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">How to Download</figcaption><p></p>
+</figure>
+</div>
+<ol type="1">
+<li><p>Select the iRODS collection or data object to download and the folder to download to.</p></li>
+<li><p>Press the download button. A pop up window opens and the difference between the source and destination is calculated: - Based on checksums, a unique hash for each file the GUI determines whether the source file and the destination file are identical. If so, the file will <strong>not</strong> be downloaded again. The GUI will only download data which does not exist or differs.</p>
+<ul>
+<li>The GUI also computes the total size of the data objects and will only start the download if the total amount will fit on your destination file system.</li>
+</ul></li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="screenshots/howto_download2.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Download dialog</figcaption><p></p>
+</figure>
+</div>
+<p>When the check is done the loading screen disappears and the number of files which exist with a different checksum (1) and files which only exist on iRODS (2) will be indicated. Press the <code>Download</code> button to start the file transfer. iRODS automatically checks the checksum to ensure all downloaded files are complete.</p>
+</section>
+</section>
+<section id="how-to-upload-data" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-upload-data">How to upload data</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="screenshots/howto_upload.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">How to Download</figcaption><p></p>
+</figure>
+</div>
+<ol type="1">
+<li>Check the resource. There may be several storage resources configured for you in the system. Your iRODS admin will give you advice which one to use for which data and workflow. Note, that <code>archive</code> resources are made to archive large files. Please adhere for those resources to the following policy:
+<ul>
+<li>Files need to be 1GB or larger.</li>
+<li>Do not start calculations on data which is stored on <code>archive</code> resources. They have a low latency and will inhibit your program. Your iRODS administrator can help you to migrate the data to a suited resources in that case.</li>
+</ul></li>
+<li>Select the local file or folder and iRODS collection to upload to.</li>
+<li>Press the upload button. As in the download, a pop up window will appear which will execute the same checks as for the data downloads.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="screenshots/howto_upload2.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Download dialog</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="how-to-bundle-data-or-compress-data" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-bundle-data-or-compress-data">How to bundle data or compress data</h2>
+<p>You can bundle a collection that contains small files into one large tar file or even compress a collection into a zip file. Those files can then be safely put on the <code>archive</code> resources or, in case of zip, be used to reduce storage space.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="screenshots/how_to_compress.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">How to Compress</figcaption><p></p>
+</figure>
+</div>
+<ol type="1">
+<li>Select the collection you want to compress</li>
+<li>Select the storage resource on which the compressed or bundled data should be stored</li>
+<li>Check <code>Compress data</code> to create a zip-file. If unchecked, a tar-file will be created</li>
+<li>Check <code>Remove collection</code> if you just want to keep the tar or zip file.</li>
+<li>The <code>Create tar/zip</code> compress the data into the file <code>&lt;collection_name&gt;.irods.tar</code> or <code>&lt;collection_name&gt;.irods.zip</code></li>
+</ol>
+<p>Note, all you metadata will be preserved too and restored upon extraction.</p>
+</section>
+<section id="how-to-decompress-data" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-decompress-data">How to decompress data</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="screenshots/tarExtract.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">How to Compress</figcaption><p></p>
+</figure>
+</div>
+<p>Partial extract of data:</p>
+<ol type="1">
+<li>Select the <code>*.irods.tar</code> or <code>*.irods.zip</code> file.</li>
+<li>Select the resource where the data should be extracted to.</li>
+<li>Use the <code>Index</code> button to get an overview of the files inside the tarred file. The <code>JSON</code> tab will show the whole data package in JSON format including accession rights and metadata. Select the files you want to extract and click on <code>Extract Selected</code>. This schedules a job on the iRODS server which will extract the data. Note, that this might take a while. <code>Close</code> the window and navigate to the browser to see whether the data is restored.</li>
+</ol>
+<section id="how-to-search-for-data" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-search-for-data">How to search for data</h3>
+<p>Click on <code>Options</code> in the menu bar of the window and select <code>Search</code>. This will open a mask to search for data objects and collections using metadata key-value pairs, collection paths and data object paths.</p>
+<p>The <code>Select and Close</code> button will load the selected collections and objects into the <strong>Browser</strong> tab where you can further inspect and annotate the data.</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
