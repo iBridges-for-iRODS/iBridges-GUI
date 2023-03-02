@@ -1,9 +1,9 @@
 on:
   workflow_dispatch:
   push:
-    branches: [ develop, main]
+    branches: develop
   pull_request:
-    branches: [ develop, main]
+    branches: develop
 
 name: Quarto Publish
 
