@@ -53,7 +53,7 @@
     "href": "docs/getting-started.html#installation",
     "title": "iBridges configuration",
     "section": "Installation",
-    "text": "Installation\n\n\n\n\n\n\nInstall from git\n\n\n\n\n\ngit clone git@github.com:chStaiger/iBridges-Gui.git\ncd iBridges-Gui\npython3.10 -m pip install -r requirements.txt\nYou can already start the application with\n./iBridgesGui.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nInstall from zip/release\n\n\n\n\n\nunzip iBridges-Gui.zip\ncd iBridges-Gui\npython3.10 -m pip install -r requirements.txt\nYou can already start the application with\n./iBridgesGui.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nDownload and install binaries"
+    "text": "Installation\n\n\n\n\n\n\nInstall from git\n\n\n\n\n\ngit clone git@github.com:chStaiger/iBridges-Gui.git\ncd iBridges-Gui\npython3.10 -m pip install -r requirements.txt\nYou can already start the application with\n./iBridges.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nInstall from zip/release\n\n\n\n\n\nunzip iBridges-Gui.zip\ncd iBridges-Gui\npython3.10 -m pip install -r requirements.txt\nYou can already start the application with\n./iBridges.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nDownload and install binaries"
   },
   {
     "objectID": "docs/getting-started.html#configuration",
@@ -67,7 +67,7 @@
     "href": "docs/getting-started.html#usage",
     "title": "iBridges configuration",
     "section": "Usage",
-    "text": "Usage\nexport PYTHON_IRODSCLIENT_DEFAULT_XML=QUASI_XML\n./iBridgesGui.py"
+    "text": "Usage\nexport PYTHON_IRODSCLIENT_DEFAULT_XML=QUASI_XML\n./iBridges.py"
   },
   {
     "objectID": "docs/getting-started.html#irods-server-dependencies",
