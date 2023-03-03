@@ -53,7 +53,7 @@
     "href": "docs/getting-started.html#installation",
     "title": "iBridges configuration",
     "section": "Installation",
-    "text": "Installation\n\n\n\n\n\n\nInstall from git\n\n\n\n\n\ngit clone git@github.com:chStaiger/iBridges-Gui.git\ncd iBridges-Gui\npython3.10 -m pip install -r requirements.txt\nYou can already start the application with\n./irods-iBridgesGui.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nInstall from zip/release\n\n\n\n\n\nunzip iBridges-Gui.zip\ncd iBridges-Gui\npython3.10 -m pip install -r requirements.txt\nYou can already start the application with\n./irods-iBridgesGui.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nDownload and install binaries"
+    "text": "Installation\n\n\n\n\n\n\nInstall from git\n\n\n\n\n\ngit clone git@github.com:chStaiger/iBridges-Gui.git\ncd iBridges-Gui\npython3.10 -m pip install -r requirements.txt\nYou can already start the application with\n./iBridgesGui.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nInstall from zip/release\n\n\n\n\n\nunzip iBridges-Gui.zip\ncd iBridges-Gui\npython3.10 -m pip install -r requirements.txt\nYou can already start the application with\n./iBridgesGui.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nDownload and install binaries"
   },
   {
     "objectID": "docs/getting-started.html#configuration",
@@ -67,7 +67,7 @@
     "href": "docs/getting-started.html#usage",
     "title": "iBridges configuration",
     "section": "Usage",
-    "text": "Usage\nexport PYTHON_IRODSCLIENT_DEFAULT_XML=QUASI_XML\n./irods-iBridgesGui.py"
+    "text": "Usage\nexport PYTHON_IRODSCLIENT_DEFAULT_XML=QUASI_XML\n./iBridgesGui.py"
   },
   {
     "objectID": "docs/getting-started.html#irods-server-dependencies",
@@ -81,7 +81,7 @@
     "href": "docs/commandlineclient.html",
     "title": "",
     "section": "",
-    "text": "The iBridges CLI is a commandline interface to up and download large amounts of data. It only updates data when necessary, i.e. if checksums of files differ.\n\n\n\nMinimal configuration file for uploading data to iRODs:\n\n[iRODS]\nirodsenv = /<path to>/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\nConfiguration file for downloading data from iRODS:\n\n[iRODS]\nirodsenv = /<path to>/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\n[DOWNLOAD]\npath = /path/to/download/directory\n\nConfiguration files for uploading data to iRODS and linking them to ElabJournal experiment:\n\n  [iRODS]\n  irodsenv = /<path to>/irods_environment.json\n  irodscoll =\n  irodsresc = bigstore\n  webdav = http://scomp1486.wurnet.nl\n\n  [ELN]\n  token = wur.elabjournal.com;<some hash>\n  group =\n  experiment =\n  title =\n\n\n\n./irods-iBridgesCli.py -h\n./irods-iBridgesCli -c </path/to/config> -d </path/to/folder/or/file/to/upload>\n./irods-iBridgesCli.py -c </path/to/config> -i </zone/home/path/to/coll/or/obj>"
+    "text": "The iBridges CLI is a commandline interface to up and download large amounts of data. It only updates data when necessary, i.e. if checksums of files differ.\n\n\n\nMinimal configuration file for uploading data to iRODs:\n\n[iRODS]\nirodsenv = /<path to>/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\nConfiguration file for downloading data from iRODS:\n\n[iRODS]\nirodsenv = /<path to>/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\n[DOWNLOAD]\npath = /path/to/download/directory\n\nConfiguration files for uploading data to iRODS and linking them to ElabJournal experiment:\n\n  [iRODS]\n  irodsenv = /<path to>/irods_environment.json\n  irodscoll =\n  irodsresc = bigstore\n  webdav = http://scomp1486.wurnet.nl\n\n  [ELN]\n  token = wur.elabjournal.com;<some hash>\n  group =\n  experiment =\n  title =\n\n\n\n./iBridgesCli.py -h\n./iBridgesCli -c </path/to/config> -d </path/to/folder/or/file/to/upload>\n./iBridgesCli.py -c </path/to/config> -i </zone/home/path/to/coll/or/obj>"
   },
   {
     "objectID": "iBridgesGui-HowTo.html",
@@ -96,12 +96,5 @@
     "title": "iBridges",
     "section": "",
     "text": "Welcome\nThis page provides user and developer documentation of the iBridges iRODS client. Get started using the links below!\n\nWhat is iBridges\nGetting started\nUser guide\nCommand line tool\nDeveloper guide\nRoadmap and known issues"
-  },
-  {
-    "objectID": "README_CLI.html",
-    "href": "README_CLI.html",
-    "title": "",
-    "section": "",
-    "text": "Python3\nDependencies for elabJournal:\n\n# sudo apt-get install build-essential libssl-dev libffi-dev python3-dev cargo\npip install elabjournal\n\nDependencies for iRODS:\n\npip install python-irodsclient\n\n\n\n\nMinimal configuration file for uploading data to iRODs:\n\n[iRODS]\nirodsenv = /<path to>/irods_environment.json\nirodscoll = \nirodsresc = \nwebdav = \n\nConfiguration file for downloading data from iRODS:\n\n[iRODS]\nirodsenv = /<path to>/irods_environment.json\nirodscoll = \nirodsresc = \nwebdav = \n\n[DOWNLOAD]\npath = /path/to/download/directory\n\nConfiguration files for uploading data to iRODS and linking them to ElabJournal experiment:\n\n  [iRODS]\n  irodsenv = /<path to>/irods_environment.json\n  irodscoll = \n  irodsresc = bigstore\n  webdav = http://scomp1486.wurnet.nl\n  \n  [ELN]\n  token = wur.elabjournal.com;<some hash>\n  group =\n  experiment =\n  title =\n\n\n\n./irods-iBridgesCli.py -h\n./irods-iBridgesCli -c </path/to/config> -d </path/to/folder/or/file/to/upload>\n./irods-iBridgesCli.py -c </path/to/config> -i </zone/home/path/to/coll/or/obj>"
   }
 ]
