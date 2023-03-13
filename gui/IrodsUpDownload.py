@@ -51,7 +51,7 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
         self._initialize_irods_model()
         self._create_buttons()
         self._create_resource_selector()
-        self.upload_window = None
+        self.transfer_window = None
 
     def _initialize_local_model(self):
         """Initialize local QTreeView.
@@ -95,7 +95,6 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
         #     PyQt6.QtGui.QStandardItem(self.irodsmodel.base_path))
         # self.irodsFsTreeView.setCurrentIndex(index)
         # self.irodsFsTreeView.scrollTo(index)
-
 
     def _create_buttons(self):
         """Create panel buttons.
@@ -210,7 +209,7 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
         local_path, irods_index, irods_path = self.get_paths_from_trees()
         if local_path is None or irods_path is None:
             self.errorLabel.setText(
-                    "ERROR Up/Download: Please select source and destination.")
+                    "ERROR UPLOAD: Please select source and destination.")
             self.enable_buttons(True)
             return
         if not self.ic.collection_exists(irods_path):
@@ -219,10 +218,10 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
             self.enable_buttons(True)
             return
         dest_coll = self.ic.get_collection(irods_path)
-        self.upload_window = gui.dataTransfer.dataTransfer(
+        self.transfer_window = gui.dataTransfer.dataTransfer(
             self.ic, True, local_path, dest_coll, irods_index,
             self.get_resource())
-        self.upload_window.finished.connect(self.transfer_complete)
+        self.transfer_window.finished.connect(self.transfer_complete)
 
     def transfer_complete(self, success, irods_index):
         """Refresh iRODS subtree and `irods_index` upon transfer
@@ -237,10 +236,10 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
 
         """
         if success:
+            self.errorLabel.setText("INFO UPLOAD/DOWNLOAD: completed.")
             if irods_index is not None:
                 self.irodsmodel.refresh_subtree(irods_index)
-            self.errorLabel.setText("INFO UPLOAD/DOWLOAD: completed.")
-        self.upload_window = None
+        self.transfer_window = None
         self.enable_buttons(True)
 
     def download(self):
@@ -253,7 +252,7 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
         (local_path, _, irods_path) = self.get_paths_from_trees()
         if local_path is None or irods_path is None:
             self.errorLabel.setText(
-                "ERROR Up/Download: Please select source and destination.")
+                "ERROR DOWNLOAD: Please select source and destination.")
             self.enable_buttons(True)
             return
         if os.path.isfile(local_path):
@@ -266,9 +265,9 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
             irods_obj = self.ic.session.data_objects.get(irods_path)
         else:
             irods_obj = self.ic.get_collection(irods_path)
-        self.upload_window = gui.dataTransfer.dataTransfer(
+        self.transfer_window = gui.dataTransfer.dataTransfer(
             self.ic, False, local_path, irods_obj)
-        self.upload_window.finished.connect(self.transfer_complete)
+        self.transfer_window.finished.connect(self.transfer_complete)
 
     def get_paths_from_trees(self):
         """Get both local and iRODS path from the tree views.

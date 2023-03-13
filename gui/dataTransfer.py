@@ -80,13 +80,13 @@ class dataTransfer(QDialog, Ui_dataTransferState):
         self.show()
 
     def cancel(self):
-        print("Thread stopped")
         self.finished.emit(False, None)
         # if thread is still running
         try:
             self.thread.exit(1)
         except:
             pass
+        print("Thread stopped")
         self.close()
 
     def closeAfterUpDownl(self):
@@ -181,12 +181,13 @@ class dataTransfer(QDialog, Ui_dataTransferState):
         self.loading_movie.stop()
         self.loadingLbl.setHidden(True)
         if status:
+            self.statusLbl.setText('Update complete')
+            self.confirmBtn.setHidden(True)
             # remove callback
-            self.confirmBtn.disconnect()
-            self.confirmBtn.setText("Close")
-            self.confirmBtn.setEnabled(True)
-            self.confirmBtn.clicked.connect(self.closeAfterUpDownl)
-            self.statusLbl.setText("Update complete.")
+            self.cancelBtn.disconnect()
+            self.cancelBtn.setText('Close')
+            self.cancelBtn.setEnabled(True)
+            self.cancelBtn.clicked.connect(self.closeAfterUpDownl)
         else:
             self.statusLbl.setText(statusmessage)
             print(statusmessage)
