@@ -1,40 +1,5 @@
 [
   {
-    "objectID": "docs/info.html",
-    "href": "docs/info.html",
-    "title": "What is iBridges",
-    "section": "",
-    "text": "iBridges is a standalone client software desktop application, written in Python, to provide users of Windows, Linux and Mac with a graphical user interface to interact with iRODS servers. The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing and manipulating data objects, upload/download data, and search through data collections.\nWe also provide a commandline interface with which data can be uploaded and downloaded.\nThe GUI can be extended by users to implement their own data workflows."
-  },
-  {
-    "objectID": "docs/info.html#dependencies",
-    "href": "docs/info.html#dependencies",
-    "title": "What is iBridges",
-    "section": "Dependencies",
-    "text": "Dependencies\n\nPython3.10.2+\nQT v6+"
-  },
-  {
-    "objectID": "docs/info.html#authors",
-    "href": "docs/info.html#authors",
-    "title": "What is iBridges",
-    "section": "Authors",
-    "text": "Authors\nMaintainer: Christine Staiger, Tim van Daalen Contributors: John McFarland"
-  },
-  {
-    "objectID": "docs/info.html#license",
-    "href": "docs/info.html#license",
-    "title": "What is iBridges",
-    "section": "License",
-    "text": "License\nGPL v3"
-  },
-  {
-    "objectID": "docs/userdoc.html",
-    "href": "docs/userdoc.html",
-    "title": "",
-    "section": "",
-    "text": "iBridges is a GUI to an Data management platform based on iRODS. It exposes iRODS functionality through a GUI to the users. We divided the different function into groups where each function group is represented in an own tab in the GUI. The tabs are configured for the user depending on the user’s rights and role in the Data management platform. - The Browser is a tool to browse through iRODS collections and gather information on iRODS data objects - The Up and Download tab gives tools to up and download large data safely. - The ELN Data upload tab is made for specific data uploads that belong to an Experiment described in an ElabJournal instance. - In the Compress/bundle data tab the user is given tools to bundle (tar) or compress (zip) iRODS data collections and to extract them again.\n\n\n\n\n\n\nBrowse\n\n\nTo browse through your data collections in iRODS click on the Browser tab.\n\nNavigation bar: Type a valid collection or object path in and hit enter.\nCollection and data object table:\n\nClick on the Name of a collection or option. This will load the tabs below the table (see below)\nDouble click on a collection to navigate into the collection\n\nLower tabs\n\nPreview: Lists the content of a collection or the first 50 lines of textual data (.txt, .json, .csv)\nMetadata: You can annotate collections and data objects with own annotation key, value, unit. The keys and values can be used in the search-drop down menu to look for data\nPermissions: Will show the permissions own(er), read, write. If you have the role of data steward, you will also be able to change and add permissions\nResources: The tab shows on which storage resource data objects are stored. Note, collections do not have a resource.\nDelete: In the browser table click on the collection or object you want to delete, then click Load and then Delete. This will delete a whole collection with all its members or the data object.\n\n\nNote: The File Upload and File download buttons are only meant for uploading and downloading small single files. For large data transfers go to the Data transfer tab.\n\n\n\n\n\nDownload\n\n\n\nSelect the iRODS collection or data object to download and the folder to download to.\nPress the download button. A pop up window opens and the difference between the source and destination is calculated: - Based on checksums, a unique hash for each file the GUI determines whether the source file and the destination file are identical. If so, the file will not be downloaded again. The GUI will only download data which does not exist or differs.\n\nThe GUI also computes the total size of the data objects and will only start the download if the total amount will fit on your destination file system.\n\n\n\n\n\nDownload dialog\n\n\nWhen the check is done the loading screen disappears and the number of files which exist with a different checksum (1) and files which only exist on iRODS (2) will be indicated. Press the Download button to start the file transfer. iRODS automatically checks the checksum to ensure all downloaded files are complete.\n\n\n\n\n\n\n\nUpload\n\n\n\nCheck the resource. There may be several storage resources configured for you in the system. Your iRODS admin will give you advice which one to use for which data and workflow. Note, that archive resources are made to archive large files. Please adhere for those resources to the following policy:\n\nFiles need to be 1GB or larger.\nDo not start calculations on data which is stored on archive resources. They have a low latency and will inhibit your program. Your iRODS administrator can help you to migrate the data to a suited resources in that case.\n\nSelect the local file or folder and iRODS collection to upload to.\nPress the upload button. As in the download, a pop up window will appear which will execute the same checks as for the data downloads.\n\n\n\n\nUpload Dialog\n\n\n\n\n\nClick on Options in the menu bar of the window and select Search. This will open a mask to search for data objects and collections using metadata key-value pairs, collection paths and data object paths.\nThe Select and Close button will load the selected collections and objects into the Browser tab where you can further inspect and annotate the data.\n\n\n\n\n\n\n\n\n\nElabjournal\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOverview tab\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nExperimental tabs and fetaures"
-  },
-  {
     "objectID": "docs/getting-started.html",
     "href": "docs/getting-started.html",
     "title": "iBridges configuration",
@@ -82,6 +47,41 @@
     "title": "",
     "section": "",
     "text": "The iBridges CLI is a commandline interface to up and download large amounts of data. It only updates data when necessary, i.e. if checksums of files differ.\n\n\n\nMinimal configuration file for uploading data to iRODs:\n\n[iRODS]\nirodsenv = /<path to>/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\nConfiguration file for downloading data from iRODS:\n\n[iRODS]\nirodsenv = /<path to>/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\n[DOWNLOAD]\npath = /path/to/download/directory\n\nConfiguration files for uploading data to iRODS and linking them to ElabJournal experiment:\n\n  [iRODS]\n  irodsenv = /<path to>/irods_environment.json\n  irodscoll =\n  irodsresc = bigstore\n  webdav = http://scomp1486.wurnet.nl\n\n  [ELN]\n  token = wur.elabjournal.com;<some hash>\n  group =\n  experiment =\n  title =\n\n\n\n./iBridgesCli.py -h\n./iBridgesCli -c </path/to/config> -d </path/to/folder/or/file/to/upload>\n./iBridgesCli.py -c </path/to/config> -i </zone/home/path/to/coll/or/obj>"
+  },
+  {
+    "objectID": "docs/info.html",
+    "href": "docs/info.html",
+    "title": "What is iBridges",
+    "section": "",
+    "text": "iBridges is a standalone client software desktop application, written in Python, to provide users of Windows, Linux and Mac with a graphical user interface to interact with iRODS servers. The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing and manipulating data objects, upload/download data, and search through data collections.\nWe also provide a commandline interface with which data can be uploaded and downloaded.\nThe GUI can be extended by users to implement their own data workflows."
+  },
+  {
+    "objectID": "docs/info.html#dependencies",
+    "href": "docs/info.html#dependencies",
+    "title": "What is iBridges",
+    "section": "Dependencies",
+    "text": "Dependencies\n\nPython3.10.2+\nQT v6+"
+  },
+  {
+    "objectID": "docs/info.html#authors",
+    "href": "docs/info.html#authors",
+    "title": "What is iBridges",
+    "section": "Authors",
+    "text": "Authors\nMaintainer: Christine Staiger, Tim van Daalen Contributors: John McFarland"
+  },
+  {
+    "objectID": "docs/info.html#license",
+    "href": "docs/info.html#license",
+    "title": "What is iBridges",
+    "section": "License",
+    "text": "License\nGPL v3"
+  },
+  {
+    "objectID": "docs/userdoc.html",
+    "href": "docs/userdoc.html",
+    "title": "",
+    "section": "",
+    "text": "iBridges is a GUI to an Data management platform based on iRODS. It exposes iRODS functionality through a GUI to the users. We divided the different function into groups where each function group is represented in an own tab in the GUI. The tabs are configured for the user depending on the user’s rights and role in the Data management platform. - The Browser is a tool to browse through iRODS collections and gather information on iRODS data objects - The Up and Download tab gives tools to up and download large data safely. - The ELN Data upload tab is made for specific data uploads that belong to an Experiment described in an ElabJournal instance. - In the Compress/bundle data tab the user is given tools to bundle (tar) or compress (zip) iRODS data collections and to extract them again.\n\n\n\n\n\n\nBrowse\n\n\nTo browse through your data collections in iRODS click on the Browser tab.\n\nNavigation bar: Type a valid collection or object path in and hit enter.\nCollection and data object table:\n\nClick on the Name of a collection or option. This will load the tabs below the table (see below)\nDouble click on a collection to navigate into the collection\n\nLower tabs\n\nPreview: Lists the content of a collection or the first 50 lines of textual data (.txt, .json, .csv)\nMetadata: You can annotate collections and data objects with own annotation key, value, unit. The keys and values can be used in the search-drop down menu to look for data\nPermissions: Will show the permissions own(er), read, write. If you have the role of data steward, you will also be able to change and add permissions\nResources: The tab shows on which storage resource data objects are stored. Note, collections do not have a resource.\nDelete: In the browser table click on the collection or object you want to delete, then click Load and then Delete. This will delete a whole collection with all its members or the data object.\n\n\nNote: The File Upload and File download buttons are only meant for uploading and downloading small single files. For large data transfers go to the Data transfer tab.\n\n\n\n\n\nDownload\n\n\n\nSelect the iRODS collection or data object to download and the folder to download to.\nPress the download button. A pop up window opens and the difference between the source and destination is calculated: - Based on checksums, a unique hash for each file the GUI determines whether the source file and the destination file are identical. If so, the file will not be downloaded again. The GUI will only download data which does not exist or differs.\n\nThe GUI also computes the total size of the data objects and will only start the download if the total amount will fit on your destination file system.\n\n\n\n\n\nDownload dialog\n\n\nWhen the check is done the loading screen disappears and the number of files which exist with a different checksum (1) and files which only exist on iRODS (2) will be indicated. Press the Download button to start the file transfer. iRODS automatically checks the checksum to ensure all downloaded files are complete.\n\n\n\n\n\n\n\nUpload\n\n\n\nCheck the resource. There may be several storage resources configured for you in the system. Your iRODS admin will give you advice which one to use for which data and workflow. Note, that archive resources are made to archive large files. Please adhere for those resources to the following policy:\n\nFiles need to be 1GB or larger.\nDo not start calculations on data which is stored on archive resources. They have a low latency and will inhibit your program. Your iRODS administrator can help you to migrate the data to a suited resources in that case.\n\nSelect the local file or folder and iRODS collection to upload to.\nPress the upload button. As in the download, a pop up window will appear which will execute the same checks as for the data downloads.\n\n\n\n\nUpload Dialog\n\n\n\n\n\nClick on Options in the menu bar of the window and select Search. This will open a mask to search for data objects and collections using metadata key-value pairs, collection paths and data object paths.\nThe Select and Close button will load the selected collections and objects into the Browser tab where you can further inspect and annotate the data.\n\n\n\n\n\n\n\n\n\nElabjournal\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOverview tab\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nExperimental tabs and fetaures"
   },
   {
     "objectID": "iBridgesGui-HowTo.html",
