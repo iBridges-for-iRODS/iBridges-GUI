@@ -65,20 +65,24 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLoginConfigEdi
         self.configErrorLabel.setText("saveConfigs: TODO")
 
     def ienvAddLine(self):
-        self.configErrorLabel.clear()
-        self.configErrorLabel.setText("ienvAddLine: TODO")
+        currentRowCount = self.irodsDisplay.rowCount()
+        self.irodsDisplay.insertRow(currentRowCount)
 
     def ibridgesAddLine(self):
-        self.configErrorLabel.clear()
-        self.configErrorLabel.setText("ibridgesAddLine: TODO")
+        currentRowCount = self.ibridgesDisplay.rowCount()
+        self.ibridgesDisplay.insertRow(currentRowCount)
 
     def ienvDelLine(self):
-        self.configErrorLabel.clear()
-        self.configErrorLabel.setText("ienvDelLine: TODO")
+        selected = self.irodsDisplay.selectedIndexes()
+        if selected:
+            idx = selected[0]
+            self.irodsDisplay.removeRow(idx.row())
 
     def ibridgesDelLine(self):
-        self.configErrorLabel.clear()
-        self.configErrorLabel.setText("ibridgesDelLine: TODO")
+        selected = self.ibridgesDisplay.selectedIndexes()
+        if selected:
+            idx = selected[0]
+            self.ibridgesDisplay.removeRow(idx.row())
 
     def _init_configs_and_logging(self):
         """
