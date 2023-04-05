@@ -54,6 +54,31 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLoginConfigEdi
         self.ticketButton.clicked.connect(self.ticket_login)
         self.passwordField.setEchoMode(PyQt6.QtWidgets.QLineEdit.EchoMode.Password)
         self.envbox.currentTextChanged.connect(self._irodsconf_display)
+        self.saveConfig.clicked.connect(self.saveConfigs)
+        self.ienvAdd.clicked.connect(self.ienvAddLine)
+        self.ibridgesAdd.clicked.connect(self.ibridgesAddLine)
+        self.ienvDel.clicked.connect(self.ienvDelLine)
+        self.ibridgesDel.clicked.connect(self.ibridgesDelLine)
+
+    def saveConfigs(self):
+        self.configErrorLabel.clear()
+        self.configErrorLabel.setText("saveConfigs: TODO")
+
+    def ienvAddLine(self):
+        self.configErrorLabel.clear()
+        self.configErrorLabel.setText("ienvAddLine: TODO")
+
+    def ibridgesAddLine(self):
+        self.configErrorLabel.clear()
+        self.configErrorLabel.setText("ibridgesAddLine: TODO")
+
+    def ienvDelLine(self):
+        self.configErrorLabel.clear()
+        self.configErrorLabel.setText("ienvDelLine: TODO")
+
+    def ibridgesDelLine(self):
+        self.configErrorLabel.clear()
+        self.configErrorLabel.setText("ibridgesDelLine: TODO")
 
     def _init_configs_and_logging(self):
         """

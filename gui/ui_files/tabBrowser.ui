@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1278</width>
-    <height>813</height>
+    <height>818</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,7 +75,6 @@ QPushButton#dataDeleteButton
        <property name="font">
         <font>
          <pointsize>16</pointsize>
-         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -278,7 +277,6 @@ QPushButton#dataDeleteButton
      <widget class="QWidget" name="preview">
       <property name="font">
        <font>
-        <weight>50</weight>
         <bold>false</bold>
        </font>
       </property>
@@ -353,7 +351,6 @@ QPushButton#dataDeleteButton
            <property name="font">
             <font>
              <pointsize>20</pointsize>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -396,7 +393,6 @@ QPushButton#dataDeleteButton
           <widget class="QPushButton" name="metaAddButton">
            <property name="font">
             <font>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -409,7 +405,6 @@ QPushButton#dataDeleteButton
           <widget class="QPushButton" name="metaUpdateButton">
            <property name="font">
             <font>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -422,7 +417,6 @@ QPushButton#dataDeleteButton
           <widget class="QPushButton" name="metaDeleteButton">
            <property name="font">
             <font>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -505,7 +499,6 @@ QPushButton#dataDeleteButton
            <property name="font">
             <font>
              <pointsize>20</pointsize>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -621,7 +614,6 @@ QPushButton#dataDeleteButton
           <widget class="QPushButton" name="aclAddButton">
            <property name="font">
             <font>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -748,7 +740,6 @@ QPushButton#dataDeleteButton
            <property name="font">
             <font>
              <pointsize>13</pointsize>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
