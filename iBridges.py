@@ -17,6 +17,7 @@ import PyQt6.uic
 import gui
 from irodsConnector.manager import IrodsConnector
 import utils
+from utils.irods_config_keys import irods_config_keys
 
 app = PyQt6.QtWidgets.QApplication(sys.argv)
 widget = PyQt6.QtWidgets.QStackedWidget()
@@ -24,7 +25,7 @@ widget = PyQt6.QtWidgets.QStackedWidget()
 # Work around a PRC XML issue handling special characters
 os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
 
-class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLogin.Ui_irodsLogin):
+class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLoginConfigEditor.Ui_irodsLoginConfigEditor):
     """Definition and initialization of the iRODS login window.
 
     """
@@ -37,6 +38,8 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLogin.Ui_irods
         self._load_gui()
         self._init_configs_and_logging()
         self._init_envbox()
+        self._ibridgesconf_display()
+        self._irodsconf_display()
         self._init_password()
 
     def _load_gui(self):
@@ -46,12 +49,11 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLogin.Ui_irods
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi("gui/ui_files/irodsLogin.ui", self)
-        self.selectIcommandsButton.toggled.connect(self.setup_icommands)
-        self.standardButton.toggled.connect(self.setup_standard)
+            PyQt6.uic.loadUi("gui/ui_files/irodsLoginConfigEditor.ui", self)
         self.connectButton.clicked.connect(self.login_function)
         self.ticketButton.clicked.connect(self.ticket_login)
         self.passwordField.setEchoMode(PyQt6.QtWidgets.QLineEdit.EchoMode.Password)
+        self.envbox.currentTextChanged.connect(self._irodsconf_display)
 
     def _init_configs_and_logging(self):
         """
@@ -60,16 +62,39 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLogin.Ui_irods
         # iBridges configuration
         ibridges_path = utils.utils.LocalPath(
             os.path.join('~', '.ibridges')).expanduser()
+        
         if not ibridges_path.is_dir():
             ibridges_path.mkdir(parents=True)
         # Loads ibridges config if present, otherwise instantiaties ibridges context with {}
         self.context = utils.utils.Context()
         self.irods_path = utils.utils.LocalPath(
             os.path.join('~', '.irods')).expanduser()
+
         if not self.irods_path.is_dir():
             self.irods_path.mkdir(parents=True)
         # iBridges logging
         utils.utils.setup_logger(ibridges_path, 'iBridges')
+
+    def _ibridgesconf_display(self):
+        self.ibridgesDisplay.setRowCount(len(self.context.ibridges_env.keys()))
+        self.ibridgesDisplay.setColumnWidth(0, 200)
+        self.ibridgesDisplay.setColumnWidth(1, 200)
+        for row, key in enumerate(self.context.ibridges_env):
+            self.ibridgesDisplay.setItem(row, 0, PyQt6.QtWidgets.QTableWidgetItem(key))
+            self.ibridgesDisplay.setItem(row, 1, PyQt6.QtWidgets.QTableWidgetItem(str(self.context.ibridges_env[key])))
+
+    def _irodsconf_display(self):
+        temp_ienv_file = self.irods_path.joinpath(self.envbox.currentText())
+        temp_ienv = utils.utils.JsonConfig(temp_ienv_file).config
+
+        self.irodsDisplay.setRowCount(len(temp_ienv))
+        self.irodsDisplay.setColumnWidth(0, 200)
+        self.irodsDisplay.setColumnWidth(1, 200)
+        
+        for row, key in enumerate(temp_ienv):
+            self.irodsDisplay.setItem(row, 0, PyQt6.QtWidgets.QTableWidgetItem(key))
+            self.irodsDisplay.setItem(row, 1, PyQt6.QtWidgets.QTableWidgetItem(
+                str(temp_ienv[key])))
 
     def _init_envbox(self):
         """Populate environment drop-down.
@@ -107,30 +132,6 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLogin.Ui_irods
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
         self.passError.setText('')
         self.envError.setText('')
-
-    def setup_standard(self):
-        """Check the state of the radio button for using the pure Python
-        client.
-
-        """
-        if self.standardButton.isChecked():
-            self._init_envbox()
-            self.icommands = False
-
-    def setup_icommands(self):
-        """Check the state of the radio button for using iCommands.
-        This includes a check for the existance of the iCommands on the
-        current system.
-
-        """
-        if self.selectIcommandsButton.isChecked():
-            self.icommandsError.setText('')
-            if IrodsConnector().icommands():
-                self.icommands = True
-                # TODO support arbitrary iRODS environment file for iCommands
-            else:
-                self.icommandsError.setText('ERROR: no iCommands found')
-                self.standardButton.setChecked(True)
 
     def login_function(self):
         """Check connectivity and log in to iRODS handling common errors.
