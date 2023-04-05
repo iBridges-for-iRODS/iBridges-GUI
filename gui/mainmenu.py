@@ -42,13 +42,10 @@ class mainmenu(PyQt6.QtWidgets.QMainWindow, gui.ui_files.MainMenu.Ui_MainWindow)
         self.actionCloseSession.triggered.connect(self.newSession)
         if not ienv or not ic:
             self.actionSearch.setEnabled(False)
-            self.actionSaveConfig.setEnabled(False)
             self.ticketAccessTab = gui.irodsTicketLogin.irodsTicketLogin()
             self.tabWidget.addTab(self.ticketAccessTab, 'Ticket Access')
         else:
             self.actionSearch.triggered.connect(self.search)
-            self.actionSaveConfig.triggered.connect(self.saveConfig)
-            # self.actionExportMetadata.triggered.connect(self.exportMeta)
             ui_tabs_lookup = {
                 'tabBrowser': self.setupTabBrowser,
                 'tabUpDownload': self.setupTabUpDownload,
@@ -151,11 +148,3 @@ class mainmenu(PyQt6.QtWidgets.QMainWindow, gui.ui_files.MainMenu.Ui_MainWindow)
         search = gui.irodsSearch.irodsSearch(
             self.ic, self.irodsBrowser.collTable)
         search.exec()
-
-    def saveConfig(self):
-        print("TODO")
-        #path = utils.utils.save_irods_env(self.ienv)
-        #self.globalErrorLabel.setText("Environment saved to: "+path)
-
-    def exportMeta(self):
-        print("TODO: Metadata export")

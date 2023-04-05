@@ -20,5 +20,6 @@ irods_config_keys = {
     "irods_server_control_plane_port": 1248,
     "irods_transfer_buffer_size_for_parallel_transfer_in_megabytes": 4,
     "irods_user_name": "<user>",
-    "irods_zone_name": "<zone>"
+    "irods_zone_name": "<zone>",
+    "irods_authentication_scheme": ["pam", "PAM", "native"]
 }

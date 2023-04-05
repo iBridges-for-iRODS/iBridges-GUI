@@ -7,6 +7,7 @@ import os
 import setproctitle
 import subprocess
 import sys
+import json
 
 import irods.exception
 import PyQt6.QtCore
@@ -60,17 +61,61 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog, gui.ui_files.irodsLoginConfigEdi
         self.ienvDel.clicked.connect(self.ienvDelLine)
         self.ibridgesDel.clicked.connect(self.ibridgesDelLine)
 
+
+    def _table_to_json(self, table):
+        dictionary = {}
+        for row in range(table.rowCount()):
+            key = table.item(row, 0).text()
+            val = table.item(row, 1).text()
+            if key == '' or val == '':
+                continue
+            if val.startswith('[') and not val.endswith(']'):
+                val = val + ']'
+            if val.endswith(']') and not val.startswith('['):
+                val = '[' + val
+            dictionary[key] = val
+        try:
+            test = json.dumps(dictionary)
+            test_load = json.loads(test)
+            return dictionary
+        except Exception as e:
+            self.configErrorLabel.setText("Error: "+str(e))
+            return None
+
+    def _check_irods_keys(self, irodsDict):
+        mandatory_keys = ['irods_host', 'irods_port', 'irods_user_name', 'irods_zone_name']
+        for key, val in irodsDict.items():
+            if key not in utils.irods_config_keys.irods_config_keys:
+                self.configErrorLabel.setText(f"iRODS config ERROR: {key} is not an iRODS key")
+                return False
+            
+        if set(mandatory_keys).issubset(irodsDict.keys()):
+            return True
+        else:
+            self.configErrorLabel.setText(f"iRODS config ERROR: Ay least one is missing or not set {mandatory_keys}")
+            return False
+
     def saveConfigs(self):
-        self.configErrorLabel.clear()
-        self.configErrorLabel.setText("saveConfigs: TODO")
+        keys = utils.irods_config_keys.irods_config_keys
+        ibridgesDict = self._table_to_json(self.ibridgesDisplay)
+        irodsDict = self._table_to_json(self.irodsDisplay)
+        if irodsDict and ibridgesDict:
+            success = self. _check_irods_keys(irodsDict)
+            if success:
+                print("Wooohoo")
+                
 
     def ienvAddLine(self):
         currentRowCount = self.irodsDisplay.rowCount()
         self.irodsDisplay.insertRow(currentRowCount)
+        self.irodsDisplay.setItem(currentRowCount, 0, PyQt6.QtWidgets.QTableWidgetItem(""))
+        self.irodsDisplay.setItem(currentRowCount, 1, PyQt6.QtWidgets.QTableWidgetItem(""))
 
     def ibridgesAddLine(self):
         currentRowCount = self.ibridgesDisplay.rowCount()
         self.ibridgesDisplay.insertRow(currentRowCount)
+        self.ibridgesDisplay.setItem(currentRowCount, 0, PyQt6.QtWidgets.QTableWidgetItem(""))
+        self.ibrdgesDisplay.setItem(currentRowCount, 1, PyQt6.QtWidgets.QTableWidgetItem(""))
 
     def ienvDelLine(self):
         selected = self.irodsDisplay.selectedIndexes()
