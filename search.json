@@ -1,33 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "iBridges",
-    "section": "",
-    "text": "Welcome\nThis page provides user and developer documentation of the iBridges iRODS client. Get started using the links below!\n\nWhat is iBridges\nGetting started\nUser guide\nCommand line tool\nDeveloper guide\nRoadmap and known issues"
-  },
-  {
-    "objectID": "docs/commandlineclient.html",
-    "href": "docs/commandlineclient.html",
-    "title": "iBridges CLI",
-    "section": "",
-    "text": "The iBridges CLI is a commandline interface to up and download large amounts of data. It only updates data when necessary, i.e. if checksums of files differ.\n\n\n\nMinimal configuration file for uploading data to iRODs:\n\n[iRODS]\nirodsenv = /&lt;path to&gt;/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\nConfiguration file for downloading data from iRODS:\n\n[iRODS]\nirodsenv = /&lt;path to&gt;/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\n[DOWNLOAD]\npath = /path/to/download/directory\n\nConfiguration files for uploading data to iRODS and linking them to ElabJournal experiment:\n\n  [iRODS]\n  irodsenv = /&lt;path to&gt;/irods_environment.json\n  irodscoll =\n  irodsresc = bigstore\n  webdav = http://scomp1486.wurnet.nl\n\n  [ELN]\n  token = wur.elabjournal.com;&lt;some hash&gt;\n  group =\n  experiment =\n  title =\n\n\n\n./iBridgesCli.py -h\n./iBridgesCli -c &lt;/path/to/config&gt; -d &lt;/path/to/folder/or/file/to/upload&gt;\n./iBridgesCli.py -c &lt;/path/to/config&gt; -i &lt;/zone/home/path/to/coll/or/obj&gt;"
-  },
-  {
-    "objectID": "docs/commandlineclient.html#configuration",
-    "href": "docs/commandlineclient.html#configuration",
-    "title": "iBridges CLI",
-    "section": "",
-    "text": "Minimal configuration file for uploading data to iRODs:\n\n[iRODS]\nirodsenv = /&lt;path to&gt;/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\nConfiguration file for downloading data from iRODS:\n\n[iRODS]\nirodsenv = /&lt;path to&gt;/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\n[DOWNLOAD]\npath = /path/to/download/directory\n\nConfiguration files for uploading data to iRODS and linking them to ElabJournal experiment:\n\n  [iRODS]\n  irodsenv = /&lt;path to&gt;/irods_environment.json\n  irodscoll =\n  irodsresc = bigstore\n  webdav = http://scomp1486.wurnet.nl\n\n  [ELN]\n  token = wur.elabjournal.com;&lt;some hash&gt;\n  group =\n  experiment =\n  title ="
-  },
-  {
-    "objectID": "docs/commandlineclient.html#usage",
-    "href": "docs/commandlineclient.html#usage",
-    "title": "iBridges CLI",
-    "section": "",
-    "text": "./iBridgesCli.py -h\n./iBridgesCli -c &lt;/path/to/config&gt; -d &lt;/path/to/folder/or/file/to/upload&gt;\n./iBridgesCli.py -c &lt;/path/to/config&gt; -i &lt;/zone/home/path/to/coll/or/obj&gt;"
-  },
-  {
     "objectID": "docs/getting-started.html",
     "href": "docs/getting-started.html",
     "title": "iBridges configuration",
@@ -112,6 +84,27 @@
     "text": "Elabjournal\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOverview tab\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nExperimental tabs and fetaures"
   },
   {
+    "objectID": "docs/commandlineclient.html",
+    "href": "docs/commandlineclient.html",
+    "title": "iBridges CLI",
+    "section": "",
+    "text": "The iBridges CLI is a commandline interface to up and download large amounts of data. It only updates data when necessary, i.e. if checksums of files differ.\n\n\n\nMinimal configuration file for uploading data to iRODs:\n\n[iRODS]\nirodsenv = /&lt;path to&gt;/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\nConfiguration file for downloading data from iRODS:\n\n[iRODS]\nirodsenv = /&lt;path to&gt;/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\n[DOWNLOAD]\npath = /path/to/download/directory\n\nConfiguration files for uploading data to iRODS and linking them to ElabJournal experiment:\n\n  [iRODS]\n  irodsenv = /&lt;path to&gt;/irods_environment.json\n  irodscoll =\n  irodsresc = bigstore\n  webdav = http://scomp1486.wurnet.nl\n\n  [ELN]\n  token = wur.elabjournal.com;&lt;some hash&gt;\n  group =\n  experiment =\n  title =\n\n\n\n./iBridgesCli.py -h\n./iBridgesCli -c &lt;/path/to/config&gt; -d &lt;/path/to/folder/or/file/to/upload&gt;\n./iBridgesCli.py -c &lt;/path/to/config&gt; -i &lt;/zone/home/path/to/coll/or/obj&gt;"
+  },
+  {
+    "objectID": "docs/commandlineclient.html#configuration",
+    "href": "docs/commandlineclient.html#configuration",
+    "title": "iBridges CLI",
+    "section": "",
+    "text": "Minimal configuration file for uploading data to iRODs:\n\n[iRODS]\nirodsenv = /&lt;path to&gt;/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\nConfiguration file for downloading data from iRODS:\n\n[iRODS]\nirodsenv = /&lt;path to&gt;/irods_environment.json\nirodscoll =\nirodsresc =\nwebdav =\n\n[DOWNLOAD]\npath = /path/to/download/directory\n\nConfiguration files for uploading data to iRODS and linking them to ElabJournal experiment:\n\n  [iRODS]\n  irodsenv = /&lt;path to&gt;/irods_environment.json\n  irodscoll =\n  irodsresc = bigstore\n  webdav = http://scomp1486.wurnet.nl\n\n  [ELN]\n  token = wur.elabjournal.com;&lt;some hash&gt;\n  group =\n  experiment =\n  title ="
+  },
+  {
+    "objectID": "docs/commandlineclient.html#usage",
+    "href": "docs/commandlineclient.html#usage",
+    "title": "iBridges CLI",
+    "section": "",
+    "text": "./iBridgesCli.py -h\n./iBridgesCli -c &lt;/path/to/config&gt; -d &lt;/path/to/folder/or/file/to/upload&gt;\n./iBridgesCli.py -c &lt;/path/to/config&gt; -i &lt;/zone/home/path/to/coll/or/obj&gt;"
+  },
+  {
     "objectID": "docs/info.html",
     "href": "docs/info.html",
     "title": "What is iBridges",
@@ -138,6 +131,13 @@
     "title": "What is iBridges",
     "section": "License",
     "text": "License\nGPL v3"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "iBridges",
+    "section": "",
+    "text": "Welcome\nThis page provides user and developer documentation of the iBridges iRODS client. Get started using the links below!\n\nWhat is iBridges\nGetting started\nUser guide\nCommand line tool\nDeveloper guide\nRoadmap and known issues"
   },
   {
     "objectID": "iBridgesGui-HowTo.html",
