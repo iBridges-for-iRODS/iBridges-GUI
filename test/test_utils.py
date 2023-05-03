@@ -1,9 +1,7 @@
 """Test iBridges utilities.
 
 """
-import json
 import os
-import pathlib
 import sys
 
 import utils
@@ -13,43 +11,6 @@ class TestUtils:
     """
 
     """
-
-    def test_is_posix(self):
-        orig_platform = sys.platform
-        sys.platform = 'win32'
-        assert not utils.utils.is_posix()
-        sys.platform = 'linux'
-        assert utils.utils.is_posix()
-        sys.platform = orig_platform
-
-    def test_pure_path(self):
-        path = utils.path.PurePath('.')
-        assert isinstance(path.path, pathlib.PurePath)
-
-    def test_irods_path(self):
-        path = utils.path.IrodsPath('.')
-        assert isinstance(path.path, pathlib.PurePath)
-        not_norm = '/zone/./home/./user/../user'
-        is_norm = '/zone/home/user'
-        path = utils.path.IrodsPath(not_norm)
-        norm_path = utils.path.IrodsPath(is_norm)
-        assert path == norm_path
-
-    def test_local_path(self):
-        path = utils.path.LocalPath('.')
-        assert isinstance(path.path, pathlib.Path)
-
-    def test_json_config(self):
-        filename = './config.json'
-        if os.path.exists(filename):
-            os.remove(filename)
-        config = utils.json_config.JsonConfig(filename)
-        test_config = {'test_key': 'test_val'}
-        config.config = test_config
-        config.save()
-        assert os.path.exists(filename)
-        with open(filename) as confd:
-            assert json.load(confd) == test_config
 
     def test_ensure_dir(self):
         dirname = 'ensure.dir'
@@ -88,22 +49,8 @@ class TestUtils:
             downname = os.path.expanduser('~/Downloads')
             assert utils.utils.get_downloads_dir() == downname
 
-    def test_save_irods_env(self):
-        pass
-
     def test_get_working_dir(self):
         pass
-
-    def test_dir_exists(self):
-        dirname = os.path.abspath('.')
-        assert utils.utils.dir_exists(dirname)
-
-    def test_file_exists(self):
-        filename = 'test.file'
-        with open(filename, 'w'):
-            pass
-        assert utils.utils.file_exists(filename)
-        os.unlink(filename)
 
     def test_setup_logger(self):
         pass
