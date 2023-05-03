@@ -18,7 +18,7 @@ import irodsConnector
 import utils
 
 app = PyQt6.QtWidgets.QApplication(sys.argv)
-widget = PyQt6.QtWidgets.QStackedWidget()
+stacked_widget = PyQt6.QtWidgets.QStackedWidget()
 
 # Work around a PRC XML issue handling special characters
 os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
@@ -27,13 +27,18 @@ os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
 class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
                        gui.ui_files.irodsLogin.Ui_irodsLogin,
                        utils.context.ContextContainer):
-    """Definition and initialization of the iRODS login window.
+    """The login widget.
 
     """
+    cached_password = ''
+    given_password = ''
     icommands = False
     this_application = ''
 
     def __init__(self):
+        """Initialize the login window.
+
+        """
         super().__init__()
         self.ibridges_path = utils.path.LocalPath(utils.context.IBRIDGES_DIR).expanduser()
         self.irods_path = utils.path.LocalPath(utils.context.IRODS_DIR).expanduser()
@@ -43,7 +48,7 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self._init_password()
 
     def _load_gui(self):
-        """
+        """Initialize and connect the GUI elements.
 
         """
         if getattr(sys, 'frozen', False):
@@ -57,7 +62,7 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self.passwordField.setEchoMode(PyQt6.QtWidgets.QLineEdit.EchoMode.Password)
 
     def _init_logging(self):
-        """
+        """Initial setup of the logger.
 
         """
         utils.utils.setup_logger(self.ibridges_path, self.context.application_name)
@@ -84,14 +89,16 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self.envbox.setCurrentIndex(index)
 
     def _init_password(self):
-        """
+        """Store this initial cached password scraped from auth file and
+        set it to the password field so the user sees that previous
+        login credentials have been found.
 
         """
-        if self.conn.password:
-            self.passwordField.setText(self.conn.password)
+        self.cached_password = self.conn.password
+        self.passwordField.setText(self.cached_password)
 
-    def _reset_mouse_and_error_labels(self):
-        """Reset cursor and clear error text
+    def reset_mouse_and_error_labels(self):
+        """Reset cursor and clear any error text.
 
         """
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
@@ -109,7 +116,7 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
 
     def setup_icommands(self):
         """Check the state of the radio button for using iCommands.
-        This includes a check for the existance of the iCommands on the
+        This includes a check for the existence of the iCommands on the
         current system.
 
         """
@@ -125,10 +132,16 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
     def login_function(self):
         """Check connectivity and log in to iRODS handling common errors.
 
+        The initial and subsequent sessions need to be handled
+        differently.  Store the initial given password to see when the
+        user has entered a new one.
+
         """
-        # Replacement connector (required for new sessions)
+        # Replacement connector and currently cached password (required
+        # for subsequent sessions)
         if not self.context.irods_connector:
             self.context.irods_connector = irodsConnector.manager.IrodsConnector()
+            self.cached_password = self.conn.password
         irods_env_file = self.irods_path.joinpath(self.envbox.currentText())
         self.context.irods_env_file = irods_env_file
         self.envError.setText('')
@@ -138,24 +151,25 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             self.envError.setText('ERROR: iRODS environment missing or incomplete.')
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
-        if not utils.utils.can_connect(self.ienv['irods_host']):
-            logging.info('iRODS login: No network connection to server')
-            self.envError.setText('No network connection to server')
+        irods_host = self.ienv['irods_host']
+        if not utils.utils.can_connect(irods_host):
+            logging.info(f'iRODS login: No network connection to server: {irods_host}')
+            self.envError.setText(f'No network connection to server: {irods_host}')
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
         self.conf['last_ienv'] = irods_env_file.name
         self.context.save_ibridges_configuration()
-        password = self.passwordField.text()
+        current_password = self.passwordField.text()
+        known_passwords = (self.cached_password, self.given_password)
+        # This a subsequent session if `given_password` is already set.
+        if self.given_password and current_password in known_passwords:
+            self.given_password = self.cached_password
+        else:
+            self.given_password = current_password
+        self.conn.password = self.given_password
         try:
-            self.conn.password = password
-            # widget is a global variable
-            browser = gui.mainmenu.mainmenu(widget)
-            if len(widget) == 1:
-                widget.addWidget(browser)
-            self._reset_mouse_and_error_labels()
-            # self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
-            widget.setCurrentIndex(widget.currentIndex()+1)
+            self.conn.connect()
         except (irods.exception.CAT_INVALID_AUTHENTICATION,
                 irods.exception.PAM_AUTH_PASSWORD_FAILED,
                 irods.exception.CAT_INVALID_USER,
@@ -177,31 +191,42 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             # logging.info(repr(error))
             self.envError.setText(message)
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
+        # stacked_widget is a global variable
+        browser = gui.mainmenu.MainMenu(stacked_widget)
+        if len(stacked_widget) == 1:
+            stacked_widget.addWidget(browser)
+        self.reset_mouse_and_error_labels()
+        stacked_widget.setCurrentIndex(stacked_widget.currentIndex()+1)
 
     def ticket_login(self):
         """Log in to iRODS using a ticket.
 
         """
-        # widget is a global variable
-        browser = gui.mainmenu.mainmenu(widget)
+        # stacked_widget is a global variable
+        browser = gui.mainmenu.MainMenu(stacked_widget)
         browser.menuOptions.clear()
         browser.menuOptions.deleteLater()
-        if len(widget) == 1:
-            widget.addWidget(browser)
-        self._reset_mouse_and_error_labels()
+        if len(stacked_widget) == 1:
+            stacked_widget.addWidget(browser)
+        self.reset_mouse_and_error_labels()
         # self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
-        widget.setCurrentIndex(widget.currentIndex()+1)
+        stacked_widget.setCurrentIndex(stacked_widget.currentIndex()+1)
 
 
-def closeClean():
+def close_clean():
+    """Clean up connections in preparation to close application.
 
+    """
     context = utils.context.Context()
     if context.irods_connector:
         context.irods_connector.cleanup()
 
 
 def main():
-    """Main function
+    """Main function.
+
+    Initialize the context singleton, create the login widget, and
+    execute the main application thread.
 
     """
     context = utils.context.Context()
@@ -210,10 +235,10 @@ def main():
     setproctitle.setproctitle(context.application_name)
     login_window = IrodsLoginWindow()
     login_window.this_application = context.application_name
-    widget.addWidget(login_window)
-    widget.show()
+    stacked_widget.addWidget(login_window)
+    stacked_widget.show()
     # app.setQuitOnLastWindowClosed(False)
-    app.lastWindowClosed.connect(closeClean)
+    app.lastWindowClosed.connect(close_clean)
     app.exec()
 
 

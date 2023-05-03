@@ -17,10 +17,9 @@ from . import rules
 from . import session
 from . import tickets
 from . import users
-import utils
 
 
-class IrodsConnector(object):
+class IrodsConnector:
     """Top-level connection to the Python iRODS client
 
     """
@@ -248,12 +247,35 @@ class IrodsConnector(object):
 
     # Session functionality
     #
+    def connect(self):
+        """Manually establish an iRODS session.
+
+        """
+        if not self.session.has_irods_session():
+            self.session.connect()
+
     def reset(self):
         del self.session
 
     def cleanup(self):
-        if self._session and self.session._session:
-            self.session.session.cleanup()
+        if self.has_session() and self.session.has_irods_session():
+            # In case the session is not fully there.
+            try:
+                self.session.irods_session.cleanup()
+            except NameError:
+                pass
+
+    def has_session(self) -> bool:
+        """Check if an iBridges session has been assigned to its shadow
+        variable.
+
+        Returns
+        -------
+        bool
+            Has a session been set?
+
+        """
+        return self._session is not None
 
     @property
     def davrods(self) -> str:
