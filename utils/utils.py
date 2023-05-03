@@ -16,17 +16,6 @@ import irods.path
 from . import path
 
 
-def is_posix() -> bool:
-    """Determine POSIXicity.
-
-    Returns
-    -------
-    bool
-        Whether or not this is a POSIX operating system.
-    """
-    return sys.platform not in ['win32', 'cygwin']
-
-
 def ensure_dir(pathname: str) -> bool:
     """Ensure `pathname` exists as a directory.
 
@@ -135,7 +124,7 @@ def can_connect(hostname: str) -> bool:
     """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
-            sock.settimeout(10.0)
+            sock.settimeout(2.0)
             sock.connect((hostname, 1247))
             return True
         except socket.error:
@@ -153,7 +142,7 @@ def get_coll_dict(root_coll: irods.collection.iRODSCollection) -> dict:
     Returns
     -------
     dict
-        Keys of logical paths, values
+        keys: logical paths, values: lists of data object names
 
     """
     return {this_coll.path: [data_obj.name for data_obj in data_objs]
@@ -169,7 +158,7 @@ def get_downloads_dir() -> path.LocalPath:
         Absolute path to 'Downloads' directory.
 
     """
-    if is_posix():
+    if path.is_posix():
         return path.LocalPath('~', 'Downloads').expanduser()
     else:
         import winreg

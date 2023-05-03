@@ -48,6 +48,11 @@ class JsonConfig:
         Set the configuration to `conf_dict`.
         file.
 
+        Parameters
+        ----------
+        conf_dict : dict
+            New configuration.
+
         """
         self._config.clear()
         self._config.update(conf_dict)
@@ -63,7 +68,11 @@ class JsonConfig:
 
     @property
     def filepath(self) -> path.LocalPath:
-        """
+        """Path to configuration file.
+
+        Returns
+        -------
+        path.LocalPath
 
         """
         if not isinstance(self._filepath, path.LocalPath):
@@ -72,10 +81,15 @@ class JsonConfig:
 
     @filepath.setter
     def filepath(self, filepath: str):
-        """
+        """Filepath setter.
+
+        Parameters
+        ----------
+        filepath : str
+            New filepath.
 
         """
-        self._filepath = path.LocalPath(filepath)
+        self._filepath = path.LocalPath(filepath).expanduser()
 
     def reset(self):
         """Reset current instance

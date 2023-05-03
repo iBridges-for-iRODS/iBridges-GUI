@@ -311,16 +311,19 @@ class LocalPath(PurePath):
     def exists(self) -> bool:
         """Whether this path exists.
 
+        Path.exists() sometimes raises an error prior to Python 3.8
+
         Returns
         -------
         bool
             Path exists or not.
 
         """
-        # try:
-        return self.path.exists()
-        # except AttributeError:
-        #     return os.path.exists(self.path)
+        try:
+            return self.path.exists()
+        except Exception as error:
+            print(f'WARNING -- problem ({error}) determining if {self.path} exists')
+            return False
 
     def expanduser(self):
         """Return a new path with expanded ~ and ~user constructs (as
@@ -357,20 +360,25 @@ class LocalPath(PurePath):
     def is_dir(self) -> bool:
         """Whether this path is a directory.
 
+        Path.is_dir() sometimes raises an error prior to Python 3.8
+
         Returns
         -------
         bool
             Is a directory (folder) or not.
 
         """
-        # try:
-        return self.path.is_dir()
-        # except AttributeError:
-        #     return os.path.isdir(self.path)
+        try:
+            return self.path.is_dir()
+        except Exception as error:
+            print(f'WARNING -- problem ({error}) determining if {self.path} is a directory')
+            return False
 
     def is_file(self) -> bool:
         """Whether this path is a regular file (also True for symlinks
         pointing to regular files)
+
+        Path.is_file() sometimes raises an error prior to Python 3.8
 
         Returns
         -------
@@ -378,10 +386,11 @@ class LocalPath(PurePath):
             Is a regular file (symlink) or not.
 
         """
-        # try:
-        return self.path.is_file()
-        # except AttributeError:
-        #     return os.path.isfile(os.path)
+        try:
+            return self.path.is_file()
+        except Exception as error:
+            print(f'WARNING -- problem ({error}) determining if {self.path} is a file')
+            return False
 
     def mkdir(self, mode: int = 511, parents: bool = False, exist_ok: bool = False):
         """Create a new directory at this path.
@@ -399,8 +408,11 @@ class LocalPath(PurePath):
         try:
             self.path.mkdir(mode=mode, parents=parents, exist_ok=exist_ok)
         except AttributeError:
-            # TODO use os.mkdir() to implement this.
-            pass
+            if not parents:
+                if not self.path.exists():
+                    os.mkdir(self.path, mode=mode)
+            else:
+                os.makedirs(self.path, mode=mode, exist_ok=exist_ok)
 
     def read_bytes(self) -> bytes:
         """Open the file in bytes mode, read it, and close the file.
