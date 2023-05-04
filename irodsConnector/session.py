@@ -304,30 +304,6 @@ class Session(object):
                 session = irods.session.iRODSSession(password=password, **options)
                 _ = session.server_version
                 return session
-            except irods.connection.PlainTextPAMPasswordError as ptppe:
-                print(f'{kw.RED}SOMETHING WRONG WITH THE ENVIRONMENT JSON? {ptppe!r}{kw.DEFAULT}')
-                try:
-                    ssl_context = ssl.create_default_context(
-                        purpose=ssl.Purpose.SERVER_AUTH,
-                        cafile=None, capath=None, cadata=None)
-                    ssl_settings = {
-                        'client_server_negotiation':
-                            'request_server_negotiation',
-                        'client_server_policy': 'CS_NEG_REQUIRE',
-                        'encryption_algorithm': 'AES-256-CBC',
-                        'encryption_key_size': 32,
-                        'encryption_num_hash_rounds': 16,
-                        'encryption_salt_size': 8,
-                        'ssl_context': ssl_context,
-                    }
-                    options.update(ssl_settings)
-                    print('RETRY WITH DEFAULT SSL SETTINGS')
-                    session = irods.session.iRODSSession(password=password, **options)
-                    _ = session.server_version
-                    return session
-                except Exception as error:
-                    print(f'{kw.RED}RETRY FAILED: {error!r}{kw.DEFAULT}')
-                    raise error
             except Exception as autherror:
                 logging.info('AUTHENTICATION ERROR')
                 print(f'{kw.RED}AUTHENTICATION ERROR: {autherror!r}{kw.DEFAULT}')
