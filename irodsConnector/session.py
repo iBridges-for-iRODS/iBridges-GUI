@@ -75,7 +75,9 @@ class Session(object):
             Resource name.
 
         """
-        return self.ienv.get('irods_default_resource', '')
+        if self.has_irods_session():
+            return self.irods_session.default_resource
+        return ''
 
     @property
     def host(self) -> str:
