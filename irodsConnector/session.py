@@ -206,52 +206,6 @@ class Session(object):
 
     @property
     def irods_session(self) -> irods.session.iRODSSession:
-        """iRODS session creation.
-
-        Returns
-        -------
-        iRODSSession
-            iRODS connection based on given environment and password.
-
-        """
-        if self._irods_session is None:
-            if not self.context.irods_env_file:
-                if 'last_ienv' in self.conf:
-                    print(f'{kw.YEL}"irods_env_file" not set.  Using "last_ienv" value.{kw.DEFAULT}')
-                    irods_path = utils.path.LocalPath(utils.context.IRODS_DIR).expanduser()
-                    self.context.irods_env_file = irods_path.joinpath(self.conf['last_ienv'])
-                else:
-                    print(f'{kw.RED}No iRODS session: "irods_env_file" not set!{kw.DEFAULT}')
-                    return
-            options = {
-                'irods_env_file': str(self.context.irods_env_file),
-            }
-            if self.ienv is not None:
-                options.update(self.ienv)
-            given_pass = self.password
-            del self.password
-            # Accessing reset password property scrapes cached password.
-            cached_pass = self.password
-            del self.password
-            if given_pass != cached_pass:
-                options['password'] = given_pass
-            self._irods_session = self._get_irods_session(options)
-            # If session exists, it is validated.
-            if self._irods_session:
-                if given_pass != cached_pass:
-                    self._write_pam_password()
-                print('Welcome to iRODS:')
-                print(f'iRODS Zone: {self._irods_session.zone}')
-                print(f'You are: {self._irods_session.username}')
-                print(f'Default resource: {self.default_resc}')
-                print('You have access to: \n')
-                home_path = f'/{self._irods_session.zone}/home'
-                if self._irods_session.collections.exists(home_path):
-                    colls = self._irods_session.collections.get(home_path).subcollections
-                    print('\n'.join([coll.path for coll in colls]))
-                logging.info(
-                    'IRODS LOGIN SUCCESS: %s, %s, %s', self._irods_session.username,
-                    self._irods_session.zone, self._irods_session.host)
         return self._irods_session
 
     @irods_session.deleter
@@ -325,12 +279,41 @@ class Session(object):
             logging.info('WARNING -- unable to cache obfuscated password locally')
         connection.release()
 
-    def connect(self):
+    def greetings_from_irods(self):
+        print('Welcome to iRODS:')
+        print(f'iRODS Zone: {self._irods_session.zone}')
+        print(f'You are: {self._irods_session.username}')
+        print(f'Default resource: {self.default_resc}')
+        print('You have access to: \n')
+        home_path = f'/{self._irods_session.zone}/home'
+        if self._irods_session.collections.exists(home_path):
+            colls = self._irods_session.collections.get(home_path).subcollections
+            print('\n'.join([coll.path for coll in colls]))
+
+    def connect(self, greet=False):
         """Manually establish an iRODS session.
 
         """
         if not self.has_irods_session():
-            _ = self.irods_session.server_version
+            options = {
+                    'irods_env_file': str(self.context.irods_env_file)
+                    }
+            if self.ienv is not None:
+                options.update(self.ienv)
+            given_pass = self.password
+            del self.password
+            # Accessing reset password property scrapes cached password.
+            cached_pass = self.password
+            del self.password
+            if given_pass != cached_pass:
+                options['password'] = given_pass
+            self._irods_session = self._get_irods_session(options)
+            if self._irods_session:
+                if given_pass != cached_pass:
+                    self._write_pam_password()
+        if greet:
+            self.greetings_from_irods()
+
 
     def has_irods_session(self) -> bool:
         """Check if an iRODS session has been assigned to its shadow
