@@ -238,13 +238,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         """Save iBridges configuration.
 
         """
-        raise NotImplemented('iBridges configuration cannot yet be saved.')
-        # self.context.save_ibridges_configuration()
-        # self.context.save_irods_environment()
-        # self.globalErrorLabel.setText(f'Environment saved to: {self.context.irods_env_file}')
+        logging.warning('iBridges configuration cannot yet be saved.')
+        # raise NotImplemented('iBridges configuration cannot yet be saved.')
 
     def export_meta(self):
         """Export metadata.
 
         """
-        raise NotImplemented('Metadata cannot yet be exported')
+        logging.warning('Metadata cannot yet be exported')
+        # raise NotImplemented('Metadata cannot yet be exported')
