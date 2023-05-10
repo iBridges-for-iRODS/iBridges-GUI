@@ -28,7 +28,7 @@ def reset_ibridges_configuration():
 
     """
     yield
-    if os.path.exists(CONTEXT.ibridges_conf_file):
+    if CONTEXT.ibridges_conf_file.is_file():
         os.remove(CONTEXT.ibridges_conf_file)
     CONTEXT._ibridges_configuration = None
     CONTEXT.ibridges_conf_file = ''
@@ -41,7 +41,7 @@ def reset_irods_environment():
 
     """
     yield
-    if os.path.exists(CONTEXT.irods_env_file):
+    if CONTEXT.irods_env_file.is_file():
         os.remove(CONTEXT.irods_env_file)
     CONTEXT._irods_environment = None
     CONTEXT.irods_env_file = ''
@@ -68,7 +68,7 @@ def test_ibridges_configuration(reset_ibridges_configuration):
 
     """
     assert CONTEXT._ibridges_configuration is None
-    for key in utils.context.MANDATORY_IBRIDGES_KEYS:
+    for key in utils.context.IBRIDGES_CONF_TEMPLATE:
         assert key in CONTEXT.ibridges_configuration.config
     assert CONTEXT.ibridges_conf_file == utils.context.DEFAULT_IBRIDGES_CONF_FILE
 
@@ -98,10 +98,10 @@ def test_irods_environment(reset_irods_environment):
     """
     assert CONTEXT._irods_environment is None
     CONTEXT.irods_env_file = os.path.join(utils.context.IRODS_DIR, IRODS_ENV_FILE)
-    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_KEYS}
+    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_ENV_KEYS}
     with open(CONTEXT.irods_env_file, 'w') as envfd:
         json.dump(ienv_dict, envfd)
-    for key in utils.context.MANDATORY_IRODS_KEYS:
+    for key in utils.context.MANDATORY_IRODS_ENV_KEYS:
         assert key in CONTEXT.irods_environment.config
 
 
@@ -120,7 +120,7 @@ def test_ienv_is_complete(reset_irods_environment):
         json.dump({}, envfd)
     assert CONTEXT.irods_environment.config == {}
     assert not CONTEXT.ienv_is_complete()
-    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_KEYS}
+    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_ENV_KEYS}
     CONTEXT.irods_environment.config.update(ienv_dict)
     assert CONTEXT.ienv_is_complete()
 
@@ -136,7 +136,7 @@ def test_save_ibridges_configuration(reset_ibridges_configuration):
 
     """
     CONTEXT.ibridges_conf_file = utils.context.DEFAULT_IBRIDGES_CONF_FILE
-    conf_dict = {key: None for key in utils.context.MANDATORY_IBRIDGES_KEYS}
+    conf_dict = utils.context.IBRIDGES_CONF_TEMPLATE.copy()
     with open(CONTEXT.ibridges_conf_file, 'w') as conffd:
         json.dump(conf_dict, conffd)
     with open(CONTEXT.ibridges_conf_file) as conffd:
@@ -162,7 +162,7 @@ def test_save_irods_environment(reset_irods_environment):
     """
     # setup
     CONTEXT.irods_env_file = os.path.join(utils.context.IRODS_DIR, IRODS_ENV_FILE)
-    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_KEYS}
+    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_ENV_KEYS}
     with open(CONTEXT.irods_env_file, 'w') as envfd:
         json.dump(ienv_dict, envfd)
     with open(CONTEXT.irods_env_file) as envfd:
@@ -192,21 +192,22 @@ def test_reset(reset_ibridges_configuration, reset_irods_environment):
     CONTEXT.irods_connector = 'IrodsConnector'
     assert CONTEXT.irods_connector == 'IrodsConnector'
     CONTEXT.ibridges_conf_file = utils.context.DEFAULT_IBRIDGES_CONF_FILE
-    conf_dict = {key: None for key in utils.context.MANDATORY_IBRIDGES_KEYS}
+    conf_dict = utils.context.IBRIDGES_CONF_TEMPLATE.copy()
+    conf_dict['extra_key'] = 'extra_val'
     with open(CONTEXT.ibridges_conf_file, 'w') as conffd:
         json.dump(conf_dict, conffd)
-    assert CONTEXT.ibridges_configuration != {}
+    assert CONTEXT.ibridges_configuration.config == conf_dict
     CONTEXT.ibridges_conf_file = ''
     CONTEXT.irods_env_file = os.path.join(utils.context.IRODS_DIR, IRODS_ENV_FILE)
-    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_KEYS}
+    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_ENV_KEYS}
     with open(CONTEXT.irods_env_file, 'w') as envfd:
         json.dump(ienv_dict, envfd)
-    assert CONTEXT.irods_environment != {}
+    assert CONTEXT.irods_environment.config == ienv_dict
     CONTEXT.irods_env_file = ''
     CONTEXT.reset()
     assert CONTEXT.irods_connector is None
-    assert CONTEXT.ibridges_configuration.config == {}
-    assert CONTEXT.ibridges_configuration.filepath == '.'
+    assert CONTEXT.ibridges_configuration.config == utils.context.IBRIDGES_CONF_TEMPLATE
+    assert CONTEXT.ibridges_configuration.filepath == CONTEXT.ibridges_conf_file
     assert CONTEXT.irods_environment.config == {}
     assert CONTEXT.irods_environment.filepath == '.'
 
@@ -239,11 +240,11 @@ def test_context_container(reset_ibridges_configuration, reset_irods_environment
     test_obj = TestClass()
     CONTEXT.irods_connector = 'IrodsConnector'
     CONTEXT.ibridges_conf_file = utils.context.DEFAULT_IBRIDGES_CONF_FILE
-    conf_dict = {key: None for key in utils.context.MANDATORY_IBRIDGES_KEYS}
+    conf_dict = utils.context.IBRIDGES_CONF_TEMPLATE.copy()
     with open(CONTEXT.ibridges_conf_file, 'w') as conffd:
         json.dump(conf_dict, conffd)
     CONTEXT.irods_env_file = os.path.join(utils.context.IRODS_DIR, IRODS_ENV_FILE)
-    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_KEYS}
+    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_ENV_KEYS}
     with open(CONTEXT.irods_env_file, 'w') as envfd:
         json.dump(ienv_dict, envfd)
     with pytest.raises(TypeError):

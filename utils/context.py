@@ -10,12 +10,12 @@ from . import path
 IBRIDGES_DIR = '~/.ibridges'
 IRODS_DIR = '~/.irods'
 DEFAULT_IBRIDGES_CONF_FILE = path.LocalPath(IBRIDGES_DIR, 'ibridges_config.json')
-IBRIDGES_TEMPLATE = {
+IBRIDGES_CONF_TEMPLATE = {
     'check_free_space': True,
     'force_transfers': False,
     'verbose': 'info',
 }
-MANDATORY_IRODS_KEYS = [
+MANDATORY_IRODS_ENV_KEYS = [
     'irods_default_resource',
     'irods_host',
     'irods_port',
@@ -54,15 +54,16 @@ class Context:
         del self.irods_connector
 
     @property
-    def ibridges_conf_file(self) -> str:
+    def ibridges_conf_file(self) -> path.LocalPath:
         """iBridges configuration filename.
 
         Returns
         -------
-        str
+        utils.path.LocalPath
             Name of configuration file
 
         """
+        logging.debug(f'getting: {self._ibridges_conf_file=}')
         return self._ibridges_conf_file
 
     @ibridges_conf_file.setter
@@ -76,6 +77,7 @@ class Context:
 
         """
         self._ibridges_conf_file = path.LocalPath(filename).expanduser()
+        logging.debug(f'setting: {self._ibridges_conf_file=}')
         # TODO keep conditional and use shadow variable?
         if self._ibridges_configuration:
             self._ibridges_configuration.filepath = self._ibridges_conf_file
@@ -98,11 +100,14 @@ class Context:
             if not filepath.parent.is_dir():
                 filepath.parent.mkdir()
             if not filepath.is_file():
-                filepath.write_text(json.dumps(IBRIDGES_TEMPLATE))
+                filepath.write_text(json.dumps(IBRIDGES_CONF_TEMPLATE))
             self._ibridges_configuration = json_config.JsonConfig(filepath)
+        elif self.ibridges_conf_file != self._ibridges_configuration.filepath:
+            self._ibridges_configuration.reset()
+            self._ibridges_configuration.filepath = self.ibridges_conf_file
         # iBridges configuration check/default entry update.  Do not overwrite!
         conf_dict = self._ibridges_configuration.config
-        for key, val in IBRIDGES_TEMPLATE.items():
+        for key, val in IBRIDGES_CONF_TEMPLATE.items():
             if key not in conf_dict:
                 logging.info(
                     f'Adding missing entry to iBridges configuration: ({key}, {val})')
@@ -148,12 +153,12 @@ class Context:
         self._irods_connector = None
 
     @property
-    def irods_env_file(self) -> str:
+    def irods_env_file(self) -> path.LocalPath:
         """iRODS environment filename.
 
         Returns
         -------
-        str
+        utils.path.LocalPath
             Name of environment file
 
         """
@@ -212,7 +217,7 @@ class Context:
             env_dict = self._irods_environment.config
             if env_dict:
                 return is_complete(
-                    env_dict, MANDATORY_IRODS_KEYS, 'iRODS environment')
+                    env_dict, MANDATORY_IRODS_ENV_KEYS, 'iRODS environment')
             return False
         return False
 
@@ -232,6 +237,7 @@ class Context:
         """Reset existing instances of dynamic class members.
 
         """
+        logging.debug('Resetting Context.')
         del self.irods_connector
         if self.ibridges_configuration:
             self.ibridges_configuration.reset()
@@ -293,7 +299,7 @@ class ContextContainer:
             Configuration from JSON serialized string.
 
         """
-        if self.context.ibridges_configuration:
+        if self.context.ibridges_configuration is not None:
             return self.context.ibridges_configuration.config
         return {}
 
@@ -320,6 +326,6 @@ class ContextContainer:
         dict
             Environment from JSON serialized string.
         """
-        if self.context.irods_environment:
+        if self.context.irods_environment is not None:
             return self.context.irods_environment.config
         return {}

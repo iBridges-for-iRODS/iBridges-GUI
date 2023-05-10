@@ -68,7 +68,7 @@ If it does not exist, *iBridges* will create its own configuration file in `~/.i
         "tabELNData",
         "tabDataBundle",
         "tabCreateTicket"
-    ]
+    ],
     "verbose": "info"
 }
 ```
