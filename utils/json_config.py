@@ -6,12 +6,12 @@ import json
 from . import path
 
 
-class JsonConfig:
+class JSONConfig:
     """A configuration stored in a JSON file.
 
     """
 
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str = ''):
         """Create the configuration.
 
         Parameters
@@ -31,7 +31,7 @@ class JsonConfig:
             If self.config is truthy.
 
         """
-        return self._config != {}
+        return self.config != {}
 
     def __repr__(self) -> str:
         """Representation of this configuration.
@@ -98,7 +98,7 @@ class JsonConfig:
 
         """
         if not isinstance(self._filepath, path.LocalPath):
-            return path.LocalPath()
+            self._filepath = path.LocalPath(self._filepath)
         return self._filepath
 
     @filepath.setter

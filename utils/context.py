@@ -83,13 +83,13 @@ class Context:
             self._ibridges_configuration.filepath = self._ibridges_conf_file
 
     @property
-    def ibridges_configuration(self) -> json_config.JsonConfig:
+    def ibridges_configuration(self) -> json_config.JSONConfig:
         """iBridges configuration dictionary loaded from the
         configuration file or from template.
 
         Returns
         -------
-        utils.json_config.JsonConfig
+        utils.json_config.JSONConfig
             Configuration instance.
 
         """
@@ -101,7 +101,7 @@ class Context:
                 filepath.parent.mkdir()
             if not filepath.is_file():
                 filepath.write_text(json.dumps(IBRIDGES_CONF_TEMPLATE))
-            self._ibridges_configuration = json_config.JsonConfig(filepath)
+            self._ibridges_configuration = json_config.JSONConfig(filepath)
         elif self.ibridges_conf_file != self._ibridges_configuration.filepath:
             self._ibridges_configuration.reset()
             self._ibridges_configuration.filepath = self.ibridges_conf_file
@@ -185,20 +185,20 @@ class Context:
             self._irods_connector.irods_env_file = self._irods_env_file
 
     @property
-    def irods_environment(self) -> json_config.JsonConfig:
+    def irods_environment(self) -> json_config.JSONConfig:
         """iRODS environment dictionary loaded from the configuration
         file.  Returns a blank, initialized instance if the
         configuration is not set.
 
         Returns
         -------
-        utils.json_config.JsonConfig
+        utils.json_config.JSONConfig
             Configuration instance.
 
         """
         if self._irods_environment is None:
             # TODO add existence check, running "iinit" when missing?
-            self._irods_environment = json_config.JsonConfig(self.irods_env_file)
+            self._irods_environment = json_config.JSONConfig(self.irods_env_file)
         elif self.irods_env_file != self._irods_environment.filepath:
             self._irods_environment.reset()
             self._irods_environment.filepath = self.irods_env_file

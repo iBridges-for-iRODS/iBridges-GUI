@@ -160,7 +160,6 @@ def test_save_irods_environment(reset_irods_environment):
         setup of the iRODS environment.
 
     """
-    # setup
     CONTEXT.irods_env_file = os.path.join(utils.context.IRODS_DIR, IRODS_ENV_FILE)
     ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_ENV_KEYS}
     with open(CONTEXT.irods_env_file, 'w') as envfd:

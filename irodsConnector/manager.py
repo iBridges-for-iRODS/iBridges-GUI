@@ -60,7 +60,7 @@ class IrodsConnector:
     # Configuration properties
     #
     @property
-    def ibridges_configuration(self) -> json_config.JsonConfig:
+    def ibridges_configuration(self) -> json_config.JSONConfig:
         """iBridges configuration.
 
         Returns
@@ -73,12 +73,12 @@ class IrodsConnector:
         return self._ibridges_configuration
 
     @ibridges_configuration.setter
-    def ibridges_configuration(self, config: json_config.JsonConfig):
+    def ibridges_configuration(self, config: json_config.JSONConfig):
         """iBridges configuration setter.
 
         Parameters
         ----------
-        config : utils.json_config.JsonConfig
+        config : utils.json_config.JSONConfig
             iBridges configuration.
 
         """
@@ -118,7 +118,7 @@ class IrodsConnector:
             self.session.irods_env_file = filepath
 
     @property
-    def irods_environment(self) -> json_config.JsonConfig:
+    def irods_environment(self) -> json_config.JSONConfig:
         """iRODS environment.
 
         Returns
@@ -131,12 +131,12 @@ class IrodsConnector:
         return self._irods_environment
 
     @irods_environment.setter
-    def irods_environment(self, config: json_config.JsonConfig):
+    def irods_environment(self, config: json_config.JSONConfig):
         """iRODS environment setter.
 
         Parameters
         ----------
-        config : utils.json_config.JsonConfig
+        config : utils.json_config.JSONConfig
             iRODS environment.
 
         """
