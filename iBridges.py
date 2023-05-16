@@ -46,7 +46,7 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
     this_application = ''
     context = utils.context.Context()
 
-    def __init__(self, context):
+    def __init__(self):
         super().__init__()
         self.irods_path = utils.path.LocalPath(utils.context.IRODS_DIR).expanduser()
         self._load_gui()
@@ -237,7 +237,7 @@ def main():
     utils.utils.set_log_level(log_level)
     context.irods_connector = irodsConnector.manager.IrodsConnector()
     setproctitle.setproctitle(context.application_name)
-    login_window = IrodsLoginWindow(context)
+    login_window = IrodsLoginWindow()
     login_window.this_application = context.application_name
     widget.addWidget(login_window)
     widget.show()
