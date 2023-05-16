@@ -7,3 +7,4 @@ from . import json_config
 from . import elabConnector
 from . import path
 from . import utils
+from . import irods_config_keys 

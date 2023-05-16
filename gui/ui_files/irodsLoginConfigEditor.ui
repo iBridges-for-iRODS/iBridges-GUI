@@ -159,6 +159,13 @@ QPushButton#connectButton
          </spacer>
         </item>
         <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Edit configs</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="connectButton">
           <property name="font">
            <font>

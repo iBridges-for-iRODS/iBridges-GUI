@@ -8,6 +8,7 @@ import logging.handlers
 import os
 import setproctitle
 import sys
+import json
 
 import irods.exception
 import PyQt6.QtCore
@@ -53,6 +54,10 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self._init_envbox()
         self._init_password()
 
+        # inits for config editing
+        self._ibridgesconf_display()
+        self._irodsconf_display()
+
     def _load_gui(self):
         """
 
@@ -64,6 +69,12 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self.connectButton.clicked.connect(self.login_function)
         self.ticketButton.clicked.connect(self.ticket_login)
         self.passwordField.setEchoMode(PyQt6.QtWidgets.QLineEdit.EchoMode.Password)
+        # config editing
+        self.saveConfig.clicked.connect(self.saveConfigs)
+        self.ienvAdd.clicked.connect(self.ienvAddLine)
+        self.ibridgesAdd.clicked.connect(self.ibridgesAddLine)
+        self.ienvDel.clicked.connect(self.ienvDelLine)
+        self.ibridgesDel.clicked.connect(self.ibridgesDelLine)
 
     def _init_envbox(self):
         """Populate environment drop-down.
@@ -214,6 +225,118 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         # self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
         widget.setCurrentIndex(widget.currentIndex()+1)
 
+    # Config edit functionality
+    def _table_to_json(self, table):
+        dictionary = {}
+        for row in range(table.rowCount()):
+            key = table.item(row, 0).text()
+            val = table.item(row, 1).text()
+            if key == '' or val == '':
+                continue
+            
+            if val.isnumeric():
+                dictionary[key] = int(val)
+            elif ',' in val:
+                val = val.replace('[', "").replace(']', "")
+                val = val.replace("'", "").replace('"', "")
+                val = val.replace(" ", "")
+                dictionary[key] = val.split(',')
+            else:
+                dictionary[key] = val
+        return dictionary
+
+    def _check_irods_keys(self, irodsDict):
+        mandatory_keys = ['irods_host', 'irods_port', 'irods_user_name', 'irods_zone_name']
+        for key, val in irodsDict.items():
+            if key not in utils.irods_config_keys.irods_config_keys:
+                self.configErrorLabel.setText(f"iRODS config ERROR: {key} is not an iRODS key")
+                return False
+            
+        if set(mandatory_keys).issubset(irodsDict.keys()):
+            return True
+        else:
+            self.configErrorLabel.setText(f"iRODS config ERROR: Ay least one is missing or not set {mandatory_keys}")
+            return False
+
+    def saveConfigs(self):
+        self.configErrorLabel.clear()
+        keys = utils.irods_config_keys.irods_config_keys
+        ibridgesDict = self._table_to_json(self.ibridgesDisplay)
+        irodsDict = self._table_to_json(self.irodsDisplay)
+        message = ''
+        if irodsDict:
+            success = self._check_irods_keys(irodsDict)
+            if success:
+                with open(self.irods_path.joinpath(self.envbox.currentText()), 'w') as f:
+                    f.write(json.dumps(irodsDict, indent = 0))
+                    message = f'iRODS conf written to {self.irods_path.joinpath(self.envbox.currentText())}'
+            else: 
+                return
+        else: 
+            return
+
+        if ibridgesDict:
+            for key, val in ibridgesDict.items():
+                self.context.ibridges_configuration.config[key] = val
+            self.context.save_ibridges_configuration()
+            message = message + f'\nibridges conf written to {self.context.ibridges_conf_file}'
+        
+        self.configErrorLabel.setText(message)
+
+    def ienvAddLine(self):
+        currentRowCount = self.irodsDisplay.rowCount()
+        self.irodsDisplay.insertRow(currentRowCount)
+        self.irodsDisplay.setItem(currentRowCount, 0, PyQt6.QtWidgets.QTableWidgetItem(""))
+        self.irodsDisplay.setItem(currentRowCount, 1, PyQt6.QtWidgets.QTableWidgetItem(""))
+
+    def ibridgesAddLine(self):
+        currentRowCount = self.ibridgesDisplay.rowCount()
+        self.ibridgesDisplay.insertRow(currentRowCount)
+        self.ibridgesDisplay.setItem(currentRowCount, 0, PyQt6.QtWidgets.QTableWidgetItem(""))
+        self.ibridgesDisplay.setItem(currentRowCount, 1, PyQt6.QtWidgets.QTableWidgetItem(""))
+
+    def ienvDelLine(self):
+        selected = self.irodsDisplay.selectedIndexes()
+        if selected:
+            idx = selected[0]
+            self.irodsDisplay.removeRow(idx.row())
+
+    def ibridgesDelLine(self):
+        selected = self.ibridgesDisplay.selectedIndexes()
+        if selected:
+            idx = selected[0]
+            self.ibridgesDisplay.removeRow(idx.row())
+
+    def _ibridgesconf_display(self):
+        self.ibridgesDisplay.setRowCount(len(self.context.ibridges_configuration.config.keys()))
+        self.ibridgesDisplay.setColumnWidth(0, 200)
+        self.ibridgesDisplay.setColumnWidth(1, 200)
+        for row, key in enumerate(self.context.ibridges_configuration.config):
+            self.ibridgesDisplay.setItem(row, 0, PyQt6.QtWidgets.QTableWidgetItem(key))
+            self.ibridgesDisplay.setItem(
+                    row, 1, 
+                    PyQt6.QtWidgets.QTableWidgetItem(str(
+                        self.context.ibridges_configuration.config[key])))
+
+    def _irodsconf_display(self):
+        temp_ienv_file = self.irods_path.joinpath(self.envbox.currentText())
+        print(temp_ienv_file)
+        if not os.path.isfile(temp_ienv_file):
+            temp_ienv_file = os.path.join(temp_ienv_file, 'irods_environment.json')
+            print("generate empty irods_environment.json")
+            with open(temp_ienv_file, 'w') as ienv:
+                ienv.write("{}")
+            self._init_envbox()
+        temp_ienv = utils.json_config.JsonConfig(temp_ienv_file)
+        print(temp_ienv)
+        self.irodsDisplay.setRowCount(len(temp_ienv.config))
+        self.irodsDisplay.setColumnWidth(0, 200)
+        self.irodsDisplay.setColumnWidth(1, 200)
+        
+        for row, key in enumerate(temp_ienv.config):
+            self.irodsDisplay.setItem(row, 0, PyQt6.QtWidgets.QTableWidgetItem(key))
+            self.irodsDisplay.setItem(row, 1, 
+                                      PyQt6.QtWidgets.QTableWidgetItem(str(temp_ienv.config[key])))
 
 def closeClean():
 
