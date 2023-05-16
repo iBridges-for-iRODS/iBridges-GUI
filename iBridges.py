@@ -236,6 +236,10 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             
             if val.isnumeric():
                 dictionary[key] = int(val)
+            elif val.lower() == "true":
+                dictionary[key] = True
+            elif val.lower() == "false":
+                dictionary[key] = False
             elif ',' in val:
                 val = val.replace('[', "").replace(']', "")
                 val = val.replace("'", "").replace('"', "")
