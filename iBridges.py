@@ -38,7 +38,7 @@ os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
 
 
 class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
-                       gui.ui_files.irodsLogin.Ui_irodsLogin):
+                       gui.ui_files.irodsLoginConfigEditor.Ui_irodsLoginConfigEditor):
     """Definition and initialization of the iRODS login window.
 
     """
@@ -60,9 +60,7 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi("gui/ui_files/irodsLogin.ui", self)
-        self.selectIcommandsButton.toggled.connect(self.setup_icommands)
-        self.standardButton.toggled.connect(self.setup_standard)
+            PyQt6.uic.loadUi("gui/ui_files/irodsLoginConfigEditor.ui", self)
         self.connectButton.clicked.connect(self.login_function)
         self.ticketButton.clicked.connect(self.ticket_login)
         self.passwordField.setEchoMode(PyQt6.QtWidgets.QLineEdit.EchoMode.Password)
