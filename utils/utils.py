@@ -269,14 +269,6 @@ def init_logger(app_dir: str, app_name: str):
     """Initialize the application logging service.
 
     """
-    LOG_LEVEL = {
-        'debug': logging.DEBUG,
-        'info': logging.INFO,
-        'warn': logging.WARNING,
-        'error': logging.ERROR,
-        'critical': logging.CRITICAL,
-    }
-
     logger = logging.getLogger()
     logdir = path.LocalPath(app_dir).expanduser()
     logfile = logdir.joinpath(f'{app_name}.log')
@@ -295,9 +287,5 @@ def init_logger(app_dir: str, app_name: str):
         logfd.write(underscores * 2)
         logfd.write(f'\t\t{datetime.datetime.now().isoformat()}\n')
         logfd.write(underscores * 2)
-    try:
-        verbose = context.ibridges_configuration.config.get('verbose', 'info')
-    except:
-        verbose = 'info'
-    set_log_level(LOG_LEVEL[verbose])
+    set_log_level(logging.INFO)
 
