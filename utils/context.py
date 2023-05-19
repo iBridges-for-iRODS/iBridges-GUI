@@ -9,7 +9,10 @@ from . import path
 
 IBRIDGES_DIR = '~/.ibridges'
 IRODS_DIR = '~/.irods'
-DEFAULT_IBRIDGES_CONF_FILE = path.LocalPath(IBRIDGES_DIR, 'ibridges_config.json')
+DEFAULT_IBRIDGES_CONF_FILE = path.LocalPath(
+    IBRIDGES_DIR, 'ibridges_config.json').expanduser()
+DEFAULT_IRODS_ENV_FILE = path.LocalPath(
+    IRODS_DIR, 'irods_environment.json').expanduser()
 IBRIDGES_CONF_TEMPLATE = {
     'check_free_space': True,
     'force_transfers': False,

@@ -128,9 +128,9 @@ class irodsSearch(QDialog, Ui_searchDialog, utils.context.ContextContainer):
         # TODO check that this is correct
         irodsPaths = []
         for row in rows:
-            path0 = utils.path.IrodsPath(
+            path0 = utils.path.iRODSPath(
                 self.searchResultTable.item(row, 0).text())
-            path1 = utils.path.IrodsPath(
+            path1 = utils.path.iRODSPath(
                 self.searchResultTable.item(row, 1).text())
             if path1 == '':
                 irodsPaths.append(path0)

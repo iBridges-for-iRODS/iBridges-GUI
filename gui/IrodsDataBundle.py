@@ -229,7 +229,7 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
                 PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             self.enable_buttons()
             return
-        obj_path = utils.path.IrodsPath(obj_path)
+        obj_path = utils.path.iRODSPath(obj_path)
         file_type = ''.join(obj_path.suffixes)[1:]
         if file_type not in EXTENSIONS:
             self.statusLabel.setText(
