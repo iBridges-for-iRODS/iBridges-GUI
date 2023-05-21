@@ -183,40 +183,6 @@ def get_working_dir() -> path.LocalPath:
         return path.LocalPath('.')
 
 
-def dir_exists(pathname: str) -> bool:
-    """Does `pathname` exist as a directory?
-
-    Parameters
-    ----------
-    pathname : str
-        Name of path to check.
-
-    Returns
-    -------
-    bool
-        Whether the directory exists.
-
-    """
-    return path.LocalPath(pathname).is_dir()
-
-
-def file_exists(pathname: str) -> bool:
-    """Does `pathname` exist as a file?
-
-    Parameters
-    ----------
-    pathname : str
-        Name of path to check.
-
-    Returns
-    -------
-    bool
-        Whether the file exists.
-
-    """
-    return path.LocalPath(pathname).is_file()
-
-
 def bytes_to_str(value: int) -> str:
     """Render incoming number of bytes to a string with units.
 
