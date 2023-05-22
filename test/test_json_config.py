@@ -2,7 +2,6 @@
 
 """
 import json
-import os
 import pathlib
 import pytest
 import tempfile
@@ -17,6 +16,8 @@ TEMPLATE = {
 }
 
 
+# pytest fixtures
+#################
 @pytest.fixture(scope='function')
 def config_filepath() -> str:
     """Create then remove a test configuration file, yielding the
@@ -34,6 +35,8 @@ def config_filepath() -> str:
     filepath.unlink(missing_ok=True)
 
 
+# Tests
+#######
 def test_bool(config_filepath):
     """Check that the truthiness of the class reflects the truthiness
     of its config dictionary.

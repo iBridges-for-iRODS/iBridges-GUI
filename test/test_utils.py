@@ -13,32 +13,32 @@ TEMP_DIR = tempfile.mkdtemp()
 
 # iRODS mock classes
 ####################
-class iRODSReplica:
+class MockiRODSReplica:
     size = 1024
     status = '1'
 
 
-class iRODSDataObject:
+class MockiRODSDataObject:
     name = 'data_object'
     path = '/zone/home/coll'
     replicas = [
-        iRODSReplica(),
-        iRODSReplica(),
+        MockiRODSReplica(),
+        MockiRODSReplica(),
     ]
 
 
-class iRODSCollection:
+class MockiRODSCollection:
     data_objects = [
-        iRODSDataObject(),
-        iRODSDataObject(),
-        iRODSDataObject(),
-        iRODSDataObject(),
+        MockiRODSDataObject(),
+        MockiRODSDataObject(),
+        MockiRODSDataObject(),
+        MockiRODSDataObject(),
     ]
     path = '/zone/home/coll'
     subcollections = []
 
-    def walk(self, topdown=True):
-        """Method originally taken from PRC version 1.1.6"""
+    def walk(self, topdown: bool = True) -> tuple:
+        """Method from PRC version 1.1.6.  Update as needed."""
         if topdown:
             yield self, self.subcollections, self.data_objects
         for subcollection in self.subcollections:
@@ -52,17 +52,35 @@ class iRODSCollection:
 # pytest fixtures
 #################
 @pytest.fixture
-def irods_collection():
-    coll = iRODSCollection()
-    subcoll = iRODSCollection()
+def irods_collection() -> MockiRODSCollection:
+    """Create a disconnected version of an iRODSCollection complete
+    with pseudo iRODSDataObjects and a similar subcollection.
+
+    Yields
+    ------
+    MockiRODSCollection
+        A realistic collection instance
+
+    """
+    coll = MockiRODSCollection()
+    subcoll = MockiRODSCollection()
     subcoll.path = f'{coll.path}/subcoll'
     coll.subcollections = [subcoll]
     yield coll
 
 
 @pytest.fixture
-def irods_data_object():
-    yield iRODSDataObject()
+def irods_data_object() -> MockiRODSDataObject:
+    """Create a disconnected version of an iRODSDataObject complete
+    with iRODSReplicas.
+
+    Yields
+    ------
+    MockiRODSDataObject
+        A realistic data object instance
+
+    """
+    yield MockiRODSDataObject()
 
 
 # Tests

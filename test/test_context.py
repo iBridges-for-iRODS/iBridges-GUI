@@ -21,6 +21,8 @@ utils.context.IBRIDGES_DIR = HOME
 utils.context.IRODS_DIR = HOME
 
 
+# pytest fixtures
+#################
 @pytest.fixture(scope='function')
 def reset_ibridges_configuration():
     """A pytest fixture to reset the ibridges_configuration property
@@ -47,6 +49,8 @@ def reset_irods_environment():
     CONTEXT.irods_env_file = ''
 
 
+# Tests
+#######
 def test_context_is_singleton():
     """Check that the Context class only ever instantiates a single
     instance.
