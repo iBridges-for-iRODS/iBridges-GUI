@@ -101,7 +101,7 @@ class amberWorkflow(QWidget, Ui_tabAmberData, utils.context.ContextContainer):
     def submitData(self):
         self.jobSubmitLabel.clear()
         (index, path) = self.getPathsFromTrees(self.irodsUploadTree, True)
-        if utils.utils.file_exists(path) and path.endswith("wav"):
+        if utils.path.LocalPath(path).exists() and path.endswith("wav"):
             try:
                 if self.glossaryBox.currentText() == "None":
                     info = self.ac.submit_job(path)
