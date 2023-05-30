@@ -18,8 +18,7 @@ from pathlib import Path
 from irods.exception import CollectionDoesNotExist, SYS_INVALID_INPUT_PARAM
 import irodsConnector.keywords as kw
 from irodsConnector.manager import IrodsConnector
-from utils.utils import init_logger, get_local_size
-from utils.context import Context
+import utils
 from utils.elab_plugin import ElabPlugin
 
 
@@ -72,7 +71,9 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
         self.download_finished = None
         self.upload_finished = None
         self.irods_conn = None
+        default_irods_env = utils.path.LocalPath('~/.irods', 'irods_environment.json').expanduser()
 
+        logdir_path = utils.path.LocalPath(logdir)
         # reading optional config file
         if config_file:
             if not os.path.exists(config_file):
@@ -83,7 +84,8 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
                 self._clean_exit(f"{config_file} misses iRODS section")
 
         # CLI parameters override config-file
-        self.irods_env = self.get_config('iRODS', 'irodsenv') or irods_env \
+        self.irods_env = irods_env or self.get_config('iRODS', 'irodsenv') \
+            or default_irods_env \
             or self._clean_exit("need iRODS environment file", True)
         self.irods_path = irods_path or self.get_config('iRODS', 'irodscoll') \
             or self._clean_exit("need iRODS path", True)
@@ -93,7 +95,6 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
         self.irods_env = Path(os.path.expanduser(self.irods_env))
         self.local_path = Path(os.path.expanduser(self.local_path))
         self.irods_path = self.irods_path.rstrip("/")
-        logdir_path = Path(logdir)
 
         # checking if paths actually exist
         for path in [self.irods_env, self.local_path, logdir_path]:
@@ -113,7 +114,7 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
 
         self.operation = operation
         self.plugins = self._cleanup_plugins(plugins)
-        init_logger(logdir_path, "iBridgesCli")
+        utils.utils.init_logger(logdir, "iBridgesCli")
         self._run()
 
     @classmethod
@@ -171,9 +172,7 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
             description="",
             epilog=""
             )
-
-        default_logdir = os.path.join(str(os.getenv('HOME')), '.irods')
-        default_irods_env = os.path.join(str(os.getenv('HOME')), '.irods', 'irods_environment.json')
+        default_logdir = utils.path.LocalPath('~/.ibridges').expanduser()
 
         cls.parser.add_argument('--config', '-c',
                                 type=str,
@@ -189,8 +188,7 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
                                 choices=['upload', 'download'],
                                 required=True)
         cls.parser.add_argument('--env', '-e', type=str,
-                                help=f'iRods environment file. (default: {default_irods_env})',
-                                default=default_irods_env)
+                                help=f'Path to iRods environment file (irods_environment.json).')
         cls.parser.add_argument('--irods_resc', '-r', type=str,
                                 help='iRods resource. If omitted default will be read from iRods env file.')
         cls.parser.add_argument('--logdir', type=str,
@@ -231,10 +229,10 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
             secret = getpass.getpass(f'Password for {irods_env} (leave empty to use cached): ')
             try:
                 # invoke Context singleton
-                context = Context()
-                _ = context.irods_environment
+                context = utils.context.Context()
+                if not (context.irods_environment.config and context.ienv_is_complete()):
+                    context.irods_environment.reset()
                 context.irods_env_file = irods_env
-                print(secret)
                 irods_conn = IrodsConnector(secret)
                 irods_conn.ibridges_configuration = context.ibridges_configuration
                 irods_conn.irods_env_file = context.irods_env_file
@@ -245,12 +243,11 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
                 assert irods_conn.session.has_valid_irods_session(), "No session"
 
                 break
-            except AssertionError as exception:
-                logging.error("Failed to connect (%s)", str(exception))
+            except AssertionError as error:
+                logging.error('Failed to connect: %r', error)
                 attempts += 1
                 if attempts >= 3 or input('Try again (Y/n): ').lower() == 'n':
                     return False
-
         return irods_conn
 
     @plugin_hook
@@ -267,7 +264,7 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
         elif self.irods_conn.dataobject_exists(self.irods_path):
             item = self.irods_conn.get_dataobject(self.irods_path)
         else:
-            logging.error("iRODS path %s does not exist", self.irods_path)
+            logging.error('iRODS path %s does not exist', self.irods_path)
             return False
 
         # get its size to check if there's enough space
@@ -293,13 +290,13 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
         # check if intended upload target exists
         try:
             self.irods_conn.ensure_coll(self.target_path)
-            logging.info("Uploading to %s", self.target_path)
+            logging.info('Uploading to %s', self.target_path)
         except (CollectionDoesNotExist, SYS_INVALID_INPUT_PARAM):
-            logging.error("Collection path invalid: %s", self.target_path)
+            logging.error('Collection path invalid: %s', self.target_path)
             return False
 
         # check if there's enough space left on the resource
-        upload_size = get_local_size([self.local_path])
+        upload_size = utils.utils.get_local_size([self.local_path])
 
         # TODO: does irods_conn.get_free_space() work yet?
         # free_space = int(self.irods_conn.get_free_space(resc_name=self.irods_resc))
@@ -346,7 +343,7 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
                 self._clean_exit()
 
         else:
-            logging.error("Unknown operation: %s", {self.operation})
+            logging.error('Unknown operation: %s', self.operation)
 
         self._clean_exit(message="Done", exit_code=0)
 

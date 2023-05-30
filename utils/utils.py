@@ -44,7 +44,7 @@ def ensure_dir(pathname: str) -> bool:
     try:
         dirpath.mkdir(parents=True, exist_ok=True)
     except (PermissionError, OSError) as error:
-        logging.info(f'Error ensuring directory: {error}')
+        logging.info('Error ensuring directory: %r', error)
     return dirpath.is_dir()
 
 
@@ -277,6 +277,8 @@ def init_logger(app_dir: str, app_name: str):
     file_handler = logging.handlers.RotatingFileHandler(logfile, 'a', 100000, 1)
     file_handler.setFormatter(log_formatter)
     logger.addHandler(file_handler)
+    log_formatter = logging.Formatter(
+        '[%(asctime)s] %(levelname)s - %(message)s')
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setFormatter(log_formatter)
     logger.addHandler(stream_handler)
@@ -287,5 +289,5 @@ def init_logger(app_dir: str, app_name: str):
         logfd.write(underscores * 2)
         logfd.write(f'\t\t{datetime.datetime.now().isoformat()}\n')
         logfd.write(underscores * 2)
-    set_log_level(logging.INFO)
 
+    set_log_level(logging.INFO)
