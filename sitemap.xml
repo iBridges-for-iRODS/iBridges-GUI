@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/iBridgesGui-HowTo.html</loc>
-    <lastmod>2023-05-31T15:15:10.277Z</lastmod>
-  </url>
-  <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/index.html</loc>
-    <lastmod>2023-05-31T15:15:11.965Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/info.html</loc>
-    <lastmod>2023-05-31T15:15:12.369Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/commandlineclient.html</loc>
-    <lastmod>2023-05-31T15:15:12.925Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/developer.html</loc>
-    <lastmod>2023-05-31T15:15:13.201Z</lastmod>
+    <lastmod>2023-05-31T15:20:44.205Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/docs/getting-started.html</loc>
-    <lastmod>2023-05-31T15:15:13.917Z</lastmod>
+    <lastmod>2023-05-31T15:20:45.381Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/userdoc.html</loc>
-    <lastmod>2023-05-31T15:15:14.389Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/developer.html</loc>
+    <lastmod>2023-05-31T15:20:45.729Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/docs/roadmap.html</loc>
-    <lastmod>2023-05-31T15:15:14.649Z</lastmod>
+    <lastmod>2023-05-31T15:20:46.049Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/userdoc.html</loc>
+    <lastmod>2023-05-31T15:20:46.549Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/info.html</loc>
+    <lastmod>2023-05-31T15:20:46.869Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/commandlineclient.html</loc>
+    <lastmod>2023-05-31T15:20:47.397Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/iBridgesGui-HowTo.html</loc>
+    <lastmod>2023-05-31T15:20:47.909Z</lastmod>
   </url>
 </urlset>
