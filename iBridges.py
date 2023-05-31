@@ -2,9 +2,7 @@
 """iBridges GUI startup script.
 
 """
-import datetime
 import logging
-import logging.handlers
 import os
 import setproctitle
 import sys
@@ -21,16 +19,6 @@ import irodsConnector
 import utils
 
 # Global constants
-DEFAULT = '\x1b[0m'
-RED = '\x1b[1;31m'
-YELLOW = '\x1b[1;33m'
-LOG_LEVEL = {
-    'debug': logging.DEBUG,
-    'info': logging.INFO,
-    'warn': logging.WARNING,
-    'error': logging.ERROR,
-    'critical': logging.CRITICAL,
-}
 THIS_APPLICATION = 'iBridges'
 
 # Application globals
@@ -133,7 +121,9 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         """
         if self.selectIcommandsButton.isChecked():
             self.icommandsError.setText('')
-            print(self.context.irods_connector.icommands)
+            logging.debug(
+                'self.context.irods_connector.icommands=%s',
+                self.context.irods_connector.icommands)
             if self.context.irods_connector.has_icommands():
                 self.icommands = True
                 # TODO support arbitrary iRODS environment file for iCommands
@@ -206,7 +196,6 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             return
         except Exception as error:
             message = 'Something unexpected occurred: %r'
-            # logging.error(utils.utils.err_msg(message), error)
             logging.error(message, error)
             self.envError.setText(message % error)
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
@@ -360,15 +349,15 @@ def main():
 
     """
     # Initialize logger first because Context may want to log as well.
-    logdir = utils.path.LocalPath(utils.context.IBRIDGES_DIR).expanduser()
-    utils.utils.init_logger(logdir, THIS_APPLICATION)
+
+    utils.utils.init_logger(THIS_APPLICATION)
+
     # Singleton Context
     context = utils.context.Context()
     context.application_name = THIS_APPLICATION
     # Context is required to get the log_level from the configuration.
-    verbose = context.ibridges_configuration.config.get('verbose', 'info')
-    log_level = LOG_LEVEL.get(verbose, logging.INFO)
-    utils.utils.set_log_level(log_level)
+    # Here, it is taken from the configuration if not specified.
+    utils.utils.set_log_level()
     context.irods_connector = irodsConnector.manager.IrodsConnector()
     setproctitle.setproctitle(context.application_name)
     login_window = IrodsLoginWindow()
