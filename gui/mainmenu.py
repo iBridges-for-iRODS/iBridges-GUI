@@ -122,12 +122,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             for uitab in found:
                 if uitab in expected:
                     ui_tabs_lookup[uitab]()
-                    logging.debug(f'Setup the {uitab} tab')
+                    logging.debug('Setup the %s tab', uitab)
                 else:
                     logging.error(
-                        f'Unknown tab "{uitab}" defined in iBridges config file')
+                        'Unknown tab "%s" defined in iBridges config file', uitab)
                     logging.info(
-                        f'Only {", ".join(expected)} tabs supported')
+                        'Only %s tabs supported', ", ".join(expected))
         self.tabWidget.setCurrentIndex(0)
 
     def setup_tab_amber_workflow(self):
@@ -180,7 +180,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         """
         self.tab_up_download = gui.IrodsUpDownload.IrodsUpDownload()
         self.tabWidget.addTab(self.tab_up_download, "Data Transfers")
-        # TODO why a log handler from only this widget?
+        # TODO why a log handler for only this widget?
         log_handler = QPlainTextEditLogger(self.tab_up_download.logs)
         logging.getLogger().addHandler(log_handler)
 
