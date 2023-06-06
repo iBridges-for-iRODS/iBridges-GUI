@@ -84,8 +84,9 @@ class IrodsConnector:
 
         """
         self._ibridges_configuration = config
-
-        logging.debug(f'setting: {self._ibridges_configuration=}')
+        logging.debug(
+            'setting: self._ibridges_configuration=%s',
+            self._ibridges_configuration)
 
     @property
     def irods_env_file(self) -> str:
@@ -111,8 +112,8 @@ class IrodsConnector:
 
         """
         self._irods_env_file = filepath
-
-        logging.debug(f'setting: {self._irods_env_file=}')
+        logging.debug(
+            'setting: self._irods_env_file=%s', self._irods_env_file)
 
     @property
     def irods_environment(self) -> json_config.JSONConfig:
@@ -139,8 +140,8 @@ class IrodsConnector:
         """
         self._irods_environment = config
 
-        logging.debug(f'setting: {self._irods_environment=}')
-
+        logging.debug(
+            'setting: self._irods_environment=%s', self._irods_environment)
 
     # Properties for all the classes themselves
     #

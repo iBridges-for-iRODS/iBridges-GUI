@@ -172,8 +172,7 @@ class Session:
 
         """
 
-        logging.debug(f'{self.irods_env_file=}')
-
+        logging.debug('self.irods_env_file=%s', self.irods_env_file)
         options = {
             'irods_env_file': str(self.irods_env_file),
         }

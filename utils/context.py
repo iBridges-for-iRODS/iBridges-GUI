@@ -66,7 +66,7 @@ class Context:
             Name of configuration file
 
         """
-        logging.debug(f'getting: {self._ibridges_conf_file=}')
+        logging.debug('getting: self._ibridges_conf_file')
         return self._ibridges_conf_file
 
     @ibridges_conf_file.setter
@@ -80,7 +80,8 @@ class Context:
 
         """
         self._ibridges_conf_file = path.LocalPath(filename).expanduser()
-        logging.debug(f'setting: {self._ibridges_conf_file=}')
+        logging.debug(
+            'setting: self._ibridges_conf_file=%s', self._ibridges_conf_file)
         # TODO keep conditional and use shadow variable?
         if self._ibridges_configuration:
             self._ibridges_configuration.filepath = self._ibridges_conf_file
@@ -180,7 +181,8 @@ class Context:
 
         """
         self._irods_env_file = path.LocalPath(filepath).expanduser()
-        logging.debug('setting: self._irods_env_file')
+        logging.debug(
+            'setting: self._irods_env_file=%s', self._irods_env_file)
         # TODO keep conditional and use shadow variable?
         if self._irods_environment is not None:
             self._irods_environment.filepath = filepath
