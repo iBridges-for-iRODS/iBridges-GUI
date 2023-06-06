@@ -497,7 +497,7 @@ class LocalPath(PurePath):
         """
         try:
             return type(self)(str(self.path.replace(target)))
-        except OSError:
+        except OSError as error:
             if squash:
                 type(self)(target).rmdir(squash=True)
                 return type(self)(str(self.path.replace(target)))
