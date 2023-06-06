@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -238,7 +272,19 @@ Elabjournal
 </div>
 <div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-
+<ul>
+<li><p>Add <code>"tabELNData"</code> to the <code>"ui_tabs"</code> in <em>.ibridges/ibridges_config</em></p></li>
+<li><p>Store your ElabJournal API token in <em>.ibridges/ibridges_config</em> :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"davrods_server"</span>: <span class="st">"&lt;Fully qualified domain name&gt;"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"eln_token"</span>: <span class="st">"xx.elabjournal.com;*********"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"force_transfers"</span>: false,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"check_free_space"</span>: true,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ui_tabs"</span>:[</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabELNData"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
 </div>
 </div>
 </div>
@@ -248,14 +294,25 @@ Elabjournal
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Overview tab
+Amberscript
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<section id="resources" class="level3 callout-body-container callout-body">
-<h3 class="anchored" data-anchor-id="resources">Resources</h3>
-</section>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Add <code>tabAmberWorkflow</code> to the <code>"ui_tabs"</code> in <em>.ibridges/ibridges_config.json</em></p></li>
+<li><p>Store your Amberscript API token in <em>.ibridges/ibridges_config.json</em></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"amber_token"</span>: <span class="st">"**************"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"force_transfers"</span>: false,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"check_free_space"</span>: true,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ui_tabs"</span>:[</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabAmberWorkflow"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+</div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -272,12 +329,16 @@ Experimental tabs and fetaures
 <div class="callout-body-container callout-body">
 <section id="data-bundeling" class="level3">
 <h3 class="anchored" data-anchor-id="data-bundeling">Data bundeling</h3>
+<p>Please contact us through a ticket to get more information on this feature.</p>
 </section>
 <section id="ticket-creation" class="level3">
 <h3 class="anchored" data-anchor-id="ticket-creation">Ticket creation</h3>
+<p>Tickets can be created in the tab <em>“Create access tokens”</em> (<code>tabTicketLogin</code> in <em>.ibridges/ibridges_config.json</em>).</p>
+<p>Currently, tickets can only be set to iRODS collections and in mode <em>read</em>. Tickets can be given an expiration date.</p>
 </section>
 <section id="ticket-login" class="level3">
 <h3 class="anchored" data-anchor-id="ticket-login">Ticket Login</h3>
+<p>Users can login with a ticket, the irods server and the collection name if the <em>anonymous user</em> is allowed on iRODS instance. <strong>Currently, this feature does not work if the iRODS instance is SSL enabled.</strong></p>
 </section>
 </div>
 </div>
