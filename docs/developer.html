@@ -172,7 +172,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Developer guide</h1>
 <section id="submitting-issues" class="level2">
 <h2 class="anchored" data-anchor-id="submitting-issues">Submitting issues</h2>
-<p>If you want to report a bug please make sure to mention: - Software version or branch you are working on - Python version and iRODS server version - <code>python-irodsclient</code> version - Steps to reproduce the behaviour - Expected behaviour</p>
+<p>If you want to report a bug, please make sure to mention: - Software version or branch you are working on - Python version and iRODS server version - <code>python-irodsclient</code> version - Steps to reproduce the behaviour - Expected behaviour</p>
 <p>If you have an idea for a new feature, please let us also know through an issue</p>
 <p align="center">
 </p><p align="center">
@@ -195,14 +195,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>To ease the layouting of the new tab we recommend to use the QT-designer. Please choose <strong>Qt Designer Form</strong> and the template <strong>Widget</strong>.</p>
+<p>To help you to create a nice layout of the new tab we recommend to use the QT-designer. Please choose <strong>Qt Designer Form</strong> and the template <strong>Widget</strong>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../screenshots/create-ui-file.png" height="300" class="figure-img"></p>
 </figure>
 </div>
 <p>Set the <strong>Path</strong> to <em>&lt;iBridges-Gui/gui/ui-files&gt;</em></p>
-<p>To ensure the same color theme, right-click on <strong>Form</strong> and choose change stylesheet.</p>
+<p>To ensure the same color theme, right-click on <strong>Form</strong> and choose change the stylesheet.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../screenshots/colortheme-ui-file.png" class="img-fluid figure-img" width="300"></p>
@@ -231,8 +231,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>{</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    color: rgb(<span class="dv">217</span>, <span class="dv">174</span>, <span class="dv">23</span>)<span class="op">;</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The <em>errorLabel</em> is specific object, while the settings for <em>Qwidget</em>, <em>QLineEdit</em> and <em>QTreeView</em> are valid for all objects of that type.</p>
-<p>Now you can design your new form. In our example our form contains a placeholder for the iRODS tree, a text field (green text) and an error label (yellow text).</p>
+<p>The <em>errorLabel</em> is a specific object, while the settings for <em>Qwidget</em>, <em>QLineEdit</em> and <em>QTreeView</em> are valid for all objects of that type.</p>
+<p>Now you can design your new form. In our example the form contains a placeholder for the iRODS tree, a text field (green text) and an error label (yellow text).</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../screenshots/layout-ui-file.png" height="300" class="figure-img"></p>
@@ -278,9 +278,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> setupUi(<span class="va">self</span>, Form):</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        Form.setObjectName(<span class="st">"Form"</span>)</span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>You can change the class name <em>Ui_Form</em> to something more meaningful. In this example we rename the class to <strong>Ui_ExampleTab</strong>.</p>
+<p>You can change the class name <em>Ui_Form</em> to something more meaningful. In this example, we rename the class to <strong>Ui_ExampleTab</strong>.</p>
+<p>We provide a full example file in <a href="https://github.com/chStaiger/iBridges-Gui/blob/master/gui/IrodsExampleTab.py"><em>iBridges/gui/IrodsExampleTab.py</em></a>.</p>
+<p>This is the minimum code you need to initialise the new tab in the GUI:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtCore</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtGui</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtWidgets</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.uic</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gui</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> meta</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> utils</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gui.irodsTreeView <span class="im">import</span> IrodsModel</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> IrodsExampleTab(PyQt6.QtWidgets.QWidget,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                   gui.ui_files.ExampleTab.Ui_ExampleTab):</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    context <span class="op">=</span> utils.context.Context()</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">getattr</span>(sys, <span class="st">'frozen'</span>, <span class="va">False</span>):</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>            <span class="bu">super</span>().setupUi(<span class="va">self</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            PyQt6.uic.loadUi(<span class="st">"gui/ui_files/ExampleTab.ui"</span>, <span class="va">self</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.error_label.setText(<span class="st">"Whooohoo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>For the software package to find the layout for the new tab, we need to add it to the <em>iBridges/gui/ui_files/<strong>init</strong>.py</em>. Add the line:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> . <span class="im">import</span> ExampleTab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> . <span class="im">import</span> ExampleTab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -297,30 +322,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
-<li><p>Create a new python class <em>iBridges/gui/IrodsExampleTab.py</em> with the following content:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> irods.exception</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtCore</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtGui</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtWidgets</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.uic</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gui</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> meta</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> utils</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> IrodsExampleTab(PyQt6.QtWidgets.QWidget, gui.ui_files.ExampleTab.Ui_ExampleTab):</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> utils.context.Context()</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">getattr</span>(sys, <span class="st">'frozen'</span>, <span class="va">False</span>):</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().setupUi(<span class="va">self</span>)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        PyQt6.uic.loadUi(<span class="st">"gui/ui_files/ExampleTab.ui"</span>, <span class="va">self</span>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Whooohoo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
-<li><p>Add <code>from . import IrodsExampleTab</code> to <em>iBridges/gui/<strong>init</strong>.py</em></p></li>
+<li>Create a new python class <em>iBridges/gui/IrodsExampleTab.py</em></li>
+<li>Add <code>from . import IrodsExampleTab</code> to <em>iBridges/gui/<strong>init</strong>.py</em></li>
 </ul>
 </div>
 </div>
@@ -344,12 +347,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'tabInfo'</span>: <span class="va">self</span>.setupTabInfo,</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'tabExample'</span>: <span class="va">self</span>.setupTabExample</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Now we need to write the function <code>setupTabExample</code> Add the new function below <code>setupTabBrowser</code>:</p>
+<p>Now we need to write the function <code>setupTabExample</code> Add the new function <code>setupTabBrowser</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> setupTabExample(<span class="va">self</span>):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.exampleTab <span class="op">=</span> gui.ExampleTab.ExampleTab()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.tabWidget.addTab(<span class="va">self</span>.exampleTab, <span class="st">'Example'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Don’t forget to add the new keyword to the tabs in your <em>ibridges_config.json</em></p>
-<p>Now the new tab should appear as last tab in the application and we can continue definning its behaviour.</p>
+<p>Now the new tab should appear as last tab in the application and we can continue defining its behaviour.</p>
 </div>
 </div>
 </div>
@@ -365,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>You migt have observed that we already defined a variable <code>context</code> as a global variable. The class <code>utils.context.Context</code> contains all parameters from the <em>irods_environment.json</em>, <em>ibridges_config.json</em> and it contains an object <code>context.irods_connector</code>.</p>
+<p>You might have observed that we already defined a variable <code>context</code> as a global variable. The class <code>utils.context.Context</code> contains all parameters from the <em>irods_environment.json</em>, <em>ibridges_config.json</em> and it contains an object <code>context.irods_connector</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> utils</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> utils.context.Context()</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span>(context)</span>
@@ -381,7 +384,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a> <span class="st">'reset'</span>,</span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a> <span class="st">'save_ibridges_configuration'</span>,</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a> <span class="st">'save_irods_environment'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The class <code>Context</code> is a singleton, i.e.&nbsp;no matter how often you instantiate a <code>Context</code> object there will just be one object in memory.</p>
+<p>The class <code>Context</code> is a singleton, i.e.&nbsp;no matter how often you instantiate a <code>Context</code> object there will always and only be one object in memory.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> utils.context.Context()</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>context1 <span class="op">=</span> utils.context.Context()</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -389,67 +392,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>That also means that if you change the values in the object, all other classes using <code>Context</code> will have the same information.</p>
 <p><code>irods_connector</code> contains all functionality to interact with the iRODS server.</p>
-<p>With all that you can define the functionality of the tab, e.g.:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtCore</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtGui</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.QtWidgets</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyQt6.uic</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gui</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> meta</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> utils</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gui.irodsTreeView <span class="im">import</span> IrodsModel</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> IrodsExampleTab(PyQt6.QtWidgets.QWidget,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                   gui.ui_files.ExampleTab.Ui_ExampleTab):</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    context <span class="op">=</span> utils.context.Context()</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">getattr</span>(sys, <span class="st">'frozen'</span>, <span class="va">False</span>):</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>            <span class="bu">super</span>().setupUi(<span class="va">self</span>)</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>            PyQt6.uic.loadUi(<span class="st">"gui/ui_files/ExampleTab.ui"</span>, <span class="va">self</span>)</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.error_label.setText(<span class="st">"Whooohoo"</span>)</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.ienv_dict <span class="op">=</span> <span class="va">self</span>.context.irods_environment.config</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._initialize_irods_model(<span class="va">self</span>.irodsTreeView)</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.irodsTreeView.clicked.<span class="ex">connect</span>(<span class="va">self</span>.treeFunction)</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _initialize_irods_model(<span class="va">self</span>, treeView):</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.irodsmodel <span class="op">=</span> IrodsModel(treeView)</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        treeView.setModel(<span class="va">self</span>.irodsmodel)</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>        home_coll_str <span class="op">=</span> utils.path.IrodsPath(</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>            <span class="st">'/'</span>, <span class="va">self</span>.context.irods_connector.zone, <span class="st">'home'</span>)</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        irods_root_coll <span class="op">=</span> <span class="va">self</span>.ienv_dict.get(<span class="st">'irods_home'</span>, home_coll_str)</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.irodsmodel.setHorizontalHeaderLabels([irodsRootColl,</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>                                              <span class="st">'Level'</span>, <span class="st">'iRODS ID'</span>,</span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>                                              <span class="st">'parent ID'</span>, <span class="st">'type'</span>])</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>        treeView.expanded.<span class="ex">connect</span>(<span class="va">self</span>.irodsmodel.refresh_subtree)</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>        treeView.clicked.<span class="ex">connect</span>(<span class="va">self</span>.irodsmodel.refresh_subtree)</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.irodsmodel.init_tree()</span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>        treeView.setHeaderHidden(<span class="va">True</span>)</span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>        treeView.header().setDefaultSectionSize(<span class="dv">180</span>)</span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>        treeView.setColumnHidden(<span class="dv">1</span>, <span class="va">True</span>)</span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>        treeView.setColumnHidden(<span class="dv">2</span>, <span class="va">True</span>)</span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>        treeView.setColumnHidden(<span class="dv">3</span>, <span class="va">True</span>)</span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>        treeView.setColumnHidden(<span class="dv">4</span>, <span class="va">True</span>)</span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _get_paths_from_trees(<span class="va">self</span>, treeView, local<span class="op">=</span><span class="va">False</span>):</span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>        index <span class="op">=</span> treeView.selectedIndexes()[<span class="dv">0</span>]</span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> local:</span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>            path <span class="op">=</span> <span class="va">self</span>.localmodel.filePath(index)</span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>            path <span class="op">=</span> <span class="va">self</span>.irodsmodel.irods_path_from_tree_index(index)</span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span>(index, path)</span>
-<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> treeFunction(<span class="va">self</span>):</span>
-<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>        index, path <span class="op">=</span> <span class="va">self</span>._get_paths_from_trees(<span class="va">self</span>.irodsTreeView)</span>
-<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.textField.setText(path)</span>
-<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span>(index, path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>With all that you can define the functionality of the tab like in the <a href="https://github.com/chStaiger/iBridges-Gui/blob/master/gui/IrodsExampleTab.py">example we provide</a>.</p>
 </div>
 </div>
 </div>
@@ -466,28 +409,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>iRODS paths of data objects and collections are given as strings:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> utils</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> irodsConnector</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> utils.context.Context()</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>context.irods_env_file <span class="op">=</span> utils.path.LocalPath(<span class="st">"~/.irods/irods_environment.json"</span>).expanduser()</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>context.irods_connector <span class="op">=</span> irodsConnector.manager.IrodsConnector()</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>context.irods_connector.irods_env_file <span class="op">=</span> context.irods_env_file</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>context.irods_connector.irods_environment <span class="op">=</span> context.irods_environment</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>context.irods_connector.password <span class="op">=</span> <span class="st">"************"</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>context.irods_connector.<span class="ex">connect</span>()</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>coll <span class="op">=</span> context.irods_connector.data_op.get_collection(<span class="st">"/&lt;zone&gt;/home/&lt;coll_name&gt;"</span>)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(coll.path)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="bu">str</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> utils</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> irodsConnector</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> utils.context.Context()</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>context.irods_env_file <span class="op">=</span> utils.path.LocalPath(<span class="st">"~/.irods/irods_environment.json"</span>).expanduser()</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>context.irods_connector <span class="op">=</span> irodsConnector.manager.IrodsConnector()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>context.irods_connector.irods_env_file <span class="op">=</span> context.irods_env_file</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>context.irods_connector.irods_environment <span class="op">=</span> context.irods_environment</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>context.irods_connector.password <span class="op">=</span> <span class="st">"************"</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>context.irods_connector.<span class="ex">connect</span>()</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>coll <span class="op">=</span> context.irods_connector.data_op.get_collection(<span class="st">"/&lt;zone&gt;/home/&lt;coll_name&gt;"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(coll.path)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="bu">str</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The class <code>utils.path.IrodsPath</code> turns such a string into a pure POSIX path without file system functionality. We also offer the complementary functionality for local paths in <code>utils.path.LocalPath</code>.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span>(utils.path.IrodsPath)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>[<span class="st">'capitalize'</span>, <span class="st">'casefold'</span>, <span class="st">'center'</span>, <span class="st">'count'</span>, <span class="st">'encode'</span>, <span class="st">'endswith'</span>, </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="st">'expandtabs'</span>, <span class="st">'find'</span>, <span class="st">'format'</span>, <span class="st">'format_map'</span>, <span class="st">'index'</span>, <span class="st">'isalnum'</span>, </span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="st">'isalpha'</span>, <span class="st">'isascii'</span>, <span class="st">'isdecimal'</span>, <span class="st">'isdigit'</span>, <span class="st">'isidentifier'</span>, <span class="st">'islower'</span>, </span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="st">'isnumeric'</span>, <span class="st">'isprintable'</span>, <span class="st">'isspace'</span>, <span class="st">'istitle'</span>, <span class="st">'isupper'</span>, <span class="st">'join'</span>, </span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="st">'joinpath'</span>, ...]</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span>(utils.path.IrodsPath)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>[<span class="st">'capitalize'</span>, <span class="st">'casefold'</span>, <span class="st">'center'</span>, <span class="st">'count'</span>, <span class="st">'encode'</span>, <span class="st">'endswith'</span>, </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="st">'expandtabs'</span>, <span class="st">'find'</span>, <span class="st">'format'</span>, <span class="st">'format_map'</span>, <span class="st">'index'</span>, <span class="st">'isalnum'</span>, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="st">'isalpha'</span>, <span class="st">'isascii'</span>, <span class="st">'isdecimal'</span>, <span class="st">'isdigit'</span>, <span class="st">'isidentifier'</span>, <span class="st">'islower'</span>, </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="st">'isnumeric'</span>, <span class="st">'isprintable'</span>, <span class="st">'isspace'</span>, <span class="st">'istitle'</span>, <span class="st">'isupper'</span>, <span class="st">'join'</span>, </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="st">'joinpath'</span>, ...]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
