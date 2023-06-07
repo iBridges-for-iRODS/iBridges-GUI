@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -129,7 +163,7 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#uploading-data" id="toc-uploading-data" class="nav-link" data-scroll-target="#uploading-data">Uploading data</a></li>
   <li><a href="#searching-for-data" id="toc-searching-for-data" class="nav-link" data-scroll-target="#searching-for-data">Searching for data</a></li>
-  <li><a href="#additional-features" id="toc-additional-features" class="nav-link" data-scroll-target="#additional-features">Additional features</a></li>
+  <li><a href="#sec-features" id="toc-sec-features" class="nav-link" data-scroll-target="#sec-features">Additional features</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -143,16 +177,21 @@ ul.task-list li input[type="checkbox"] {
 <h1>iBridges User Documentation</h1>
 <section id="synopsis" class="level2">
 <h2 class="anchored" data-anchor-id="synopsis">Synopsis</h2>
-<p>iBridges is a GUI to an Data management platform based on iRODS. It exposes iRODS functionality through a GUI to the users. We divided the different function into groups where each function group is represented in an own tab in the GUI. The tabs are configured for the user depending on the user’s rights and role in the Data management platform. - The <strong>Browser</strong> is a tool to browse through iRODS collections and gather information on iRODS data objects - The <strong>Up and Download</strong> tab gives tools to up and download large data safely. - The <strong>ELN Data upload</strong> tab is made for specific data uploads that belong to an Experiment described in an ElabJournal instance. - In the <strong>Compress/bundle data</strong> tab the user is given tools to bundle (tar) or compress (zip) iRODS data collections and to extract them again.</p>
+<p>iBridges is a GUI to a Data management platform based on iRODS. It exposes iRODS functionality through the graphical interface to the users. We divided the different functions into groups where each function group is represented in an own tab in the GUI. The tabs are configured for the user depending on the user’s rights and role in the Data management platform.</p>
+<p>The tabs which currently are in use:</p>
+<ul>
+<li>The <strong>Browser</strong> is a tool to browse through iRODS collections and gather information on iRODS data objects</li>
+<li>The <strong>Up and Download</strong> tab gives tools to up and download large data safely.</li>
+<li>The <strong>ELN Data upload</strong> tab is made for specific data uploads that belong to an Experiment described in an ElabJournal instance.</li>
+<li>The <strong>Create access token</strong> tab allows users to create iRODS tickets to collections in read mode.</li>
+<li>The <strong>AmberScript Connection</strong> tab allows to up and download data from and to Amberscript.</li>
+<li>The <strong>Info</strong> tab summarises information from the iRODS server e.g.&nbsp;the user’s group, resources, their status and their available storage etc.</li>
+</ul>
+<p>For experimental feature tabs please refer to section <a href="#sec-features">Section&nbsp;1.5</a>.</p>
 </section>
 <section id="browsing-through-your-irods-collections" class="level2">
 <h2 class="anchored" data-anchor-id="browsing-through-your-irods-collections">Browsing through your iRODS collections</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../screenshots/browser.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Browse</figcaption>
-</figure>
-</div>
+<p><img src="../screenshots/browser.png" class="img-fluid"></p>
 <p>To browse through your data collections in iRODS click on the <strong>Browser</strong> tab.</p>
 <ol type="1">
 <li>Navigation bar: Type a valid collection or object path in and hit <code>enter</code>.</li>
@@ -163,9 +202,9 @@ ul.task-list li input[type="checkbox"] {
 </ul></li>
 <li>Lower tabs
 <ul>
-<li>Preview: Lists the content of a collection or the first 50 lines of textual data (.txt, .json, .csv)</li>
+<li>Preview: Lists the content of a collection or the first 50 lines of text data (.txt, .json, .csv)</li>
 <li>Metadata: You can annotate collections and data objects with own annotation <code>key, value, unit</code>. The keys and values can be used in the search-drop down menu to look for data</li>
-<li>Permissions: Will show the permissions own(er), read, write. If you have the role of data steward, you will also be able to change and add permissions</li>
+<li>Permissions: Will show the permissions own(er), read, write.</li>
 <li>Resources: The tab shows on which storage resource data objects are stored. Note, collections do not have a resource.</li>
 <li>Delete: In the browser table click on the collection or object you want to delete, then click <code>Load</code> and then <code>Delete</code>. This will delete a whole collection with all its members or the data object.</li>
 </ul></li>
@@ -173,59 +212,37 @@ ul.task-list li input[type="checkbox"] {
 <p>Note: The <code>File Upload</code> and <code>File download</code> buttons are only meant for uploading and downloading small single files. For large data transfers go to the <strong>Data transfer</strong> tab.</p>
 <section id="downloading-data" class="level3">
 <h3 class="anchored" data-anchor-id="downloading-data">Downloading data</h3>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../screenshots/howto_download.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Download</figcaption>
-</figure>
-</div>
+<p><img src="../screenshots/howto_download.png" class="img-fluid"></p>
 <ol type="1">
 <li><p>Select the iRODS collection or data object to download and the folder to download to.</p></li>
-<li><p>Press the download button. A pop up window opens and the difference between the source and destination is calculated: - Based on checksums, a unique hash for each file the GUI determines whether the source file and the destination file are identical. If so, the file will <strong>not</strong> be downloaded again. The GUI will only download data which does not exist or differs.</p>
+<li><p>Press the download button. A pop up window opens and the difference between the source and destination is calculated:</p>
 <ul>
+<li>Based on checksums, a unique hash for each file the GUI determines whether the source file and the destination file are identical. If so, the file will <strong>not</strong> be downloaded again. The GUI will only download data which does not exist or where its content differs.</li>
 <li>The GUI also computes the total size of the data objects and will only start the download if the total amount will fit on your destination file system.</li>
 </ul></li>
 </ol>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../screenshots/howto_download2.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Download dialog</figcaption>
-</figure>
-</div>
-<p>When the check is done the loading screen disappears and the number of files which exist with a different checksum (1) and files which only exist on iRODS (2) will be indicated. Press the <code>Download</code> button to start the file transfer. iRODS automatically checks the checksum to ensure all downloaded files are complete.</p>
+<p><img src="../screenshots/howto_download2.png" class="img-fluid"></p>
+<p>When the check is done, the loading screen disappears and the number of files which exist with a different checksum (1) and files which only exist on iRODS (2) will be indicated. Press the <code>Download</code> button to start the file transfer. iRODS automatically checks the checksum to ensure all downloaded files are complete.</p>
 </section>
 </section>
 <section id="uploading-data" class="level2">
 <h2 class="anchored" data-anchor-id="uploading-data">Uploading data</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../screenshots/howto_upload.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Upload</figcaption>
-</figure>
-</div>
+<p><img src="../screenshots/howto_upload.png" class="img-fluid"></p>
 <ol type="1">
-<li>Check the resource. There may be several storage resources configured for you in the system. Your iRODS admin will give you advice which one to use for which data and workflow. Note, that <code>archive</code> resources are made to archive large files. Please adhere for those resources to the following policy:
-<ul>
-<li>Files need to be 1GB or larger.</li>
-<li>Do not start calculations on data which is stored on <code>archive</code> resources. They have a low latency and will inhibit your program. Your iRODS administrator can help you to migrate the data to a suited resources in that case.</li>
-</ul></li>
+<li>Check the resource. There may be several storage resources configured for you in the system. Your iRODS admin will give you advice which one to use for which data and workflow. The drop-down menu is preset with the <code>irods_default_resource</code> from the <em>.irods/irods_environment.json</em>. Your iRODS administrator can help you to decide which resource to use for which data.</li>
 <li>Select the local file or folder and iRODS collection to upload to.</li>
 <li>Press the upload button. As in the download, a pop up window will appear which will execute the same checks as for the data downloads.</li>
 </ol>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../screenshots/howto_upload2.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Upload Dialog</figcaption>
-</figure>
-</div>
+<p><img src="../screenshots/howto_upload2.png" class="img-fluid"></p>
 </section>
 <section id="searching-for-data" class="level2">
 <h2 class="anchored" data-anchor-id="searching-for-data">Searching for data</h2>
 <p>Click on <code>Options</code> in the menu bar of the window and select <code>Search</code>. This will open a mask to search for data objects and collections using metadata key-value pairs, collection paths and data object paths.</p>
+<p><img src="../screenshots/menu_search.png" class="img-fluid"></p>
 <p>The <code>Select and Close</code> button will load the selected collections and objects into the <strong>Browser</strong> tab where you can further inspect and annotate the data.</p>
 </section>
-<section id="additional-features" class="level2">
-<h2 class="anchored" data-anchor-id="additional-features">Additional features</h2>
+<section id="sec-features" class="level2">
+<h2 class="anchored" data-anchor-id="sec-features">Additional features</h2>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -238,7 +255,29 @@ Elabjournal
 </div>
 <div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-
+<ul>
+<li><p>Add <code>"tabELNData"</code> to the <code>"ui_tabs"</code> in <em>.ibridges/ibridges_config</em></p></li>
+<li><p>Store your ElabJournal API token in <em>.ibridges/ibridges_config</em> :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"davrods_server"</span>: <span class="st">"&lt;Fully qualified domain name&gt;"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"eln_token"</span>: <span class="st">"xx.elabjournal.com;*********"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"force_transfers"</span>: false,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"check_free_space"</span>: true,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ui_tabs"</span>:[</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabELNData"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="../screenshots/eln-tab.png" class="img-fluid"></p></li>
+<li><p>Step 1: Provide your Elabjournal API key, it is read from the <em>.ibridges/ibridges_config.json</em> but you can also paste it into the mask. Click <strong>connect</strong>.</p></li>
+<li><p>You will see that the group table will be filled and once you selected (simply click on) a group, the experiments will be loaded. Please click on the experiment you would like to upload data for.</p></li>
+<li><p>Step 2: When you successfully selected a group and an experiment their IDs will show up here.</p></li>
+<li><p>Step 3: Select the data on your PC which you want to upload to iRODS.</p></li>
+<li><p>Step 4: Make sure to provide the path to the correct collection in iRODS where the data should be uploaded to.</p></li>
+<li><p>When you click on <strong>Upload</strong>, a new collection will be created in iRODS (if it does not exist) with the path <em>&lt;collection provided in step 4&gt;/ELN/&lt;groupID&gt;/&lt;experimentID&gt;</em></p></li>
+<li><p>A preview of the data will be shown in the file below the iRODS path.</p></li>
+<li><p>Uploaded data to iRODS will be labeled with the URL to the Elabjournal experiment. You can inspect the metadata in the tab <em>Browser</em>. <img src="../screenshots/eln-metadata.png" class="img-fluid"></p></li>
+</ul>
+<p><strong>Note</strong>: data will always be uploaded to iRODS, there will only be a small section added in your Elabjournal experiment with a link to the data.</p>
 </div>
 </div>
 </div>
@@ -248,14 +287,25 @@ Elabjournal
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Overview tab
+Amberscript
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<section id="resources" class="level3 callout-body-container callout-body">
-<h3 class="anchored" data-anchor-id="resources">Resources</h3>
-</section>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Add <code>tabAmberWorkflow</code> to the <code>"ui_tabs"</code> in <em>.ibridges/ibridges_config.json</em></p></li>
+<li><p>Store your Amberscript API token in <em>.ibridges/ibridges_config.json</em></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"amber_token"</span>: <span class="st">"**************"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"force_transfers"</span>: false,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"check_free_space"</span>: true,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ui_tabs"</span>:[</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabAmberWorkflow"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+</div>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -264,20 +314,37 @@ Overview tab
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Experimental tabs and fetaures
+Create access tokens
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
+<p>iRODS tickets can be created in the tab <em>“Create access tokens”</em> (<code>tabTicketLogin</code> in <em>.ibridges/ibridges_config.json</em>).</p>
+<p>Currently, tickets can only be set to iRODS collections and in mode <em>read</em>. Tickets can be given an expiration date.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Experimental tabs and fetaures
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
 <section id="data-bundeling" class="level3">
 <h3 class="anchored" data-anchor-id="data-bundeling">Data bundeling</h3>
-</section>
-<section id="ticket-creation" class="level3">
-<h3 class="anchored" data-anchor-id="ticket-creation">Ticket creation</h3>
+<p>Please contact us through a ticket to get more information on this feature.</p>
 </section>
 <section id="ticket-login" class="level3">
 <h3 class="anchored" data-anchor-id="ticket-login">Ticket Login</h3>
+<p>Users can login with a ticket, the iRODS server name and the collection name if the <em>anonymous user</em> is allowed on the iRODS server.</p>
+<p><strong>Currently, this feature does not work if the iRODS instance is SSL enabled.</strong></p>
 </section>
 </div>
 </div>

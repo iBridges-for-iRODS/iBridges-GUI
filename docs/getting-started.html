@@ -190,11 +190,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>The iRODS GUI works with any iRODS instance. Here we show how to configure the application to work your specific iRODS instance. <em>Please note</em>, that some features (tab views in the GUI) depend on certain server settings. You will find those dependencies at the end of the document.</p>
+<p>The iRODS GUI works with any iRODS instance. Here, we show how to configure the application to work your specific iRODS instance. <em>Please note</em>, that some features (tab views in the GUI) depend on certain server settings. You will find those dependencies at the end of the document.</p>
 <section id="system-dependencies" class="level2">
 <h2 class="anchored" data-anchor-id="system-dependencies">System dependencies</h2>
 <ul>
-<li>Python: you will need Python 3.10 or higher</li>
+<li>Python: you will need Python 3.9 or higher</li>
 <li>pip: to install package dependencies you will need pip3, version 22.2.2 or higher</li>
 </ul>
 </section>
@@ -214,10 +214,12 @@ Install from git
 <div class="callout-body-container callout-body">
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:chStaiger/iBridges-Gui.git</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> iBridges-Gui</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3.10</span> <span class="at">-m</span> pip install <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can already start the application with</p>
-<pre><code>./iBridges.py</code></pre>
-<p>Please see below how to configure the spftware to connect to your iRODS instance.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridges.py</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#or</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> iBridges.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Please see below how to configure the software to connect to your iRODS instance.</p>
 </div>
 </div>
 </div>
@@ -235,10 +237,12 @@ Install from zip/release
 <div class="callout-body-container callout-body">
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> iBridges-Gui.zip</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> iBridges-Gui</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3.10</span> <span class="at">-m</span> pip install <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can already start the application with</p>
-<pre><code>./iBridges.py</code></pre>
-<p>Please see below how to configure the spftware to connect to your iRODS instance.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridges.py</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#or</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> iBridges.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Please see below how to configure the software to connect to your iRODS instance.</p>
 </div>
 </div>
 </div>
@@ -254,7 +258,7 @@ Download and install binaries
 </div>
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-
+<p>The installation of binaries or executables will follow soon.</p>
 </div>
 </div>
 </div>
@@ -282,38 +286,52 @@ Download and install binaries
 </section>
 <section id="ibridges-config.json" class="level3">
 <h3 class="anchored" data-anchor-id="ibridges-config.json">iBridges config.json</h3>
-<p><em>iBridges</em> will create its own configuration file in <code>~/.ibridges/</code> containing the name of the last <em>iRODS</em> environment file used. This <code>config.json</code> file can be updated to control other aspects of <em>iBridges</em>. For example:</p>
+<p><em>iBridges</em> will create its own configuration file in <code>~/.ibridges/ibridges_config.json</code> containing the name of the last <em>iRODS</em> environment file used. This <code>ibridges_config.json</code> file can be updated to control other aspects of <em>iBridges</em>. For example:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"last_ienv"</span><span class="fu">:</span> <span class="st">"irods_environment.json"</span><span class="fu">,</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"davrods_server"</span><span class="fu">:</span> <span class="st">"https://server.fqdn.nl"</span><span class="fu">,</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"ui_tabs"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabUpDownload"</span><span class="ot">,</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabELNData"</span><span class="ot">,</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabDataBundle"</span><span class="ot">,</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabCreateTicket"</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"force_unknown_free_space"</span><span class="fu">:</span> <span class="kw">false</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"eln_token"</span><span class="fu">:</span> <span class="st">"&lt;api key&gt;"</span><span class="fu">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"amber_token"</span><span class="fu">:</span> <span class="st">"&lt;api key&gt;"</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ui_tabs"</span><span class="er">:</span> <span class="ot">[</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabUpDownload"</span><span class="ot">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabELNData"</span><span class="ot">,</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabAmberWorkflow"</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabDataBundle"</span><span class="ot">,</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tabCreateTicket"</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"force_transfers"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"check_free_space"</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Options:</p>
 <ul>
-<li><code>davrods_server</code>: for annotation of eLabJournal data</li>
+<li><code>davrods_server</code>: the address of a <a href="https://github.com/UtrechtUniversity/davrods">webdav server</a>, used to create entries in <a href="https://www.elabnext.com/products/elabjournal/">ElabJournal</a></li>
+<li><code>eln_token</code>, <code>amber_token</code>: API keys for <code>tabELNData</code> or <code>tabAmberWorkflow</code> respectively</li>
 <li><code>ui_tabs</code>: configure which tabs are shown (Browser and Info tabs always are)
 <ul>
 <li><code>tabUpDownload</code>: a two-pane upload/download tab</li>
 <li><code>tabELNData</code>: for the Electronic Lab Notebook, eLabJournal</li>
+<li><code>tabAmberWorkflow</code>: up and download data to and from <a href="https://www.amberscript.com/en/">Amberscript</a> directly from iRODS.</li>
 <li><code>tabDataBundle</code>: (un)bundle datasets from/to four supported formats</li>
 <li><code>tabCreateTicket</code>: create iRODS tickets for anonymous access</li>
 </ul></li>
-<li><code>force_unknown_free_space</code>: ignore if resources’ free space is unannotated</li>
+<li><code>force_transfers</code>: always write data to iRODS</li>
+<li><code>check_free_space</code>: checks the metadata <em>free_space</em> of resources and only shows resources with a <em>free_space</em> larger than 0.</li>
 </ul>
-<p>The <code>force_unknown_free_space</code> option is <em>REQUIRED</em> to be set to <code>true</code> if your default resource does not yet have its free space annotated. It makes unannotated top-level resources visible in the drop-downs allowing selection of them. In addition, it sets the <code>force</code> flag for uploads overriding resource overflow protection.</p>
-<p>The logs for both GUI and CLI clients can be found in the <code>~/.ibridges/</code> directory/folder.</p>
+<p>The <code>check_free_space</code> and <code>force_transfers</code> options are <em>REQUIRED</em>. The default values are</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">"check_free_space"</span>: true,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">"force_transfers"</span>: false</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>However, if the iRODS instance does not provide information about free space through the resource’s metadata <em>free_space</em>, no resources will be shown and no uploads will be allowed.</p>
+<p>To enable and allow data transfers in case <em>free_space</em> is not set, set the options to:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">"check_free_space"</span>: false,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">"force_transfers"</span>: true</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This setting makes top-level resources which are not annotated with their free space visible in the drop-down menus allowing selection of them. In addition, it sets the <code>force</code> flag for uploads overriding resource overflow protection.</p>
+<p>The logs for both GUI and CLI clients can be found in <code>~/.ibridges/iBridges.log</code>.</p>
 </section>
 </section>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PYTHON_IRODSCLIENT_DEFAULT_XML</span><span class="op">=</span>QUASI_XML</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridges.py</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PYTHON_IRODSCLIENT_DEFAULT_XML</span><span class="op">=</span>QUASI_XML</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> iBridges.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="irods-server-dependencies" class="level2">
 <h2 class="anchored" data-anchor-id="irods-server-dependencies">iRODS server dependencies</h2>
@@ -332,33 +350,33 @@ Example storage capacity rule
 </div>
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div class="sourceCode" id="cb8"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">######################################################</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Storage capacity policies.</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Update the metadata field free_space of the resource</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># when data is moved there or deleted from it.</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Author: Christine Staiger (2021)</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################################</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>acPostProcForParallelTransferReceived(<span class="op">*</span>leaf_resource) {</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    msiWriteRodsLog(<span class="st">"LOGGING: acPostProcForParallelTransferReceived"</span>, <span class="op">*</span>Status)<span class="op">;</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space(<span class="op">*</span>leaf_resource)<span class="op">;</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>acPostProcForDataCopyReceived(<span class="op">*</span>leaf_resource) {</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    msiWriteRodsLog(<span class="st">"LOGGING: acPostProcForDataCopyReceived"</span>, <span class="op">*</span>Status)<span class="op">;</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space(<span class="op">*</span>leaf_resource)<span class="op">;</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># for iput</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>acPostProcForPut {</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space($KVPairs.rescName)<span class="op">;</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co"># for storage update after irmtrash</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>acPostProcForDelete {</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space($KVPairs.rescName)<span class="op">;</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">######################################################</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Storage capacity policies.</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Update the metadata field free_space of the resource</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># when data is moved there or deleted from it.</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Author: Christine Staiger (2021)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################################</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>acPostProcForParallelTransferReceived(<span class="op">*</span>leaf_resource) {</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    msiWriteRodsLog(<span class="st">"LOGGING: acPostProcForParallelTransferReceived"</span>, <span class="op">*</span>Status)<span class="op">;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space(<span class="op">*</span>leaf_resource)<span class="op">;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>acPostProcForDataCopyReceived(<span class="op">*</span>leaf_resource) {</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    msiWriteRodsLog(<span class="st">"LOGGING: acPostProcForDataCopyReceived"</span>, <span class="op">*</span>Status)<span class="op">;</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space(<span class="op">*</span>leaf_resource)<span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># for iput</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>acPostProcForPut {</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space($KVPairs.rescName)<span class="op">;</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co"># for storage update after irmtrash</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>acPostProcForDelete {</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    msi_update_unixfilesystem_resource_free_space($KVPairs.rescName)<span class="op">;</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>For very busy systems, updating this value for every upload or delete can be prevented by commenting out or removing the last two stanzas if performance is being hampered.</p>
 </div>
 </div>

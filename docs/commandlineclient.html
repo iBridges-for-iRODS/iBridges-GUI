@@ -157,6 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ibridges-cli" id="toc-ibridges-cli" class="nav-link active" data-scroll-target="#ibridges-cli">iBridges CLI</a>
   <ul class="collapse">
   <li><a href="#configuration" id="toc-configuration" class="nav-link" data-scroll-target="#configuration">Configuration</a></li>
+  <li><a href="#commandline-parameters" id="toc-commandline-parameters" class="nav-link" data-scroll-target="#commandline-parameters">Commandline parameters</a></li>
   <li><a href="#usage" id="toc-usage" class="nav-link" data-scroll-target="#usage">Usage</a></li>
   </ul></li>
   </ul>
@@ -169,48 +170,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="ibridges-cli" class="level1">
 <h1>iBridges CLI</h1>
-<p>The iBridges CLI is a commandline interface to up and download large amounts of data. It only updates data when necessary, i.e.&nbsp;if checksums of files differ.</p>
+<p>The iBridges CLI is a command line interface to up and download large amounts of data. It only updates data when necessary, i.e.&nbsp;if checksums of files differ.</p>
 <section id="configuration" class="level2">
 <h2 class="anchored" data-anchor-id="configuration">Configuration</h2>
+<p>The client uses the same configuration files as the GUI, i.e.&nbsp;the <em>irods_environment.json</em> and the <em>ibridges_config.json</em>.</p>
 <ul>
-<li>Minimal configuration file for uploading data to iRODs:</li>
-</ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode ini code-with-copy"><code class="sourceCode ini"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[iRODS]</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">irodsenv </span><span class="ot">=</span><span class="st"> /&lt;path to&gt;/irods_environment.json</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">irodscoll </span><span class="ot">=</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">irodsresc </span><span class="ot">=</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="dt">webdav </span><span class="ot">=</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<li>Please create a directory named <code>.irods</code> in your home directory:
 <ul>
-<li>Configuration file for downloading data from iRODS:</li>
+<li>Linux: /home/&lt;username&gt;/.irods/irods_environment.json</li>
+<li>Mac: /Users/&lt;username&gt;/.irods/irods_environment.json</li>
+<li>Windows: C:\\….\&lt;username&gt;\.irods\irods_environment.json</li>
+</ul></li>
+<li>Please create a directory named <code>.ibridges</code> in your home directory</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode ini code-with-copy"><code class="sourceCode ini"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[iRODS]</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">irodsenv </span><span class="ot">=</span><span class="st"> /&lt;path to&gt;/irods_environment.json</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">irodscoll </span><span class="ot">=</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="dt">irodsresc </span><span class="ot">=</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="dt">webdav </span><span class="ot">=</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">[DOWNLOAD]</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="dt">path </span><span class="ot">=</span><span class="st"> /path/to/download/directory</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="commandline-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="commandline-parameters">Commandline parameters</h2>
 <ul>
-<li>Configuration files for uploading data to iRODS and linking them to ElabJournal experiment:</li>
+<li><code>--local_path LOCAL_PATH, -l LOCAL_PATH</code>: mandatory</li>
+<li><code>--irods_path IRODS_PATH, -i IRODS_PATH</code>: mandatory</li>
+<li><code>--operation {upload,download}, -o {upload,download}</code>: mandatory, direction of data transfer</li>
+<li><code>--env ENV, -e ENV</code>: optional, path to <em>irods_environment.json</em>; default value is last irods environment file as mentioned in <em>.ibridges/ibridges_conf.json</em>, if that value is not set in the file it is the default <em>.irods/irods_environment.json</em></li>
+<li><code>--irods_resc IRODS_RESC, -r IRODS_RESC</code>: optional, default should be set in <em>.irods/irods_environment.json</em> as <code>"irods_default_resource": "name of resource"</code></li>
+<li><code>--logdir LOGDIR</code>: optional, default is <em>.ibridges</em> in your home directory</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode ini code-with-copy"><code class="sourceCode ini"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">  </span><span class="kw">[iRODS]</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">  irodsenv </span><span class="ot">=</span><span class="st"> /&lt;path to&gt;/irods_environment.json</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dt">  irodscoll </span><span class="ot">=</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dt">  irodsresc </span><span class="ot">=</span><span class="st"> bigstore</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="dt">  webdav </span><span class="ot">=</span><span class="st"> http://scomp1486.wurnet.nl</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="dt">  </span><span class="kw">[ELN]</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="dt">  token </span><span class="ot">=</span><span class="st"> wur.elabjournal.com;&lt;some hash&gt;</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="dt">  group </span><span class="ot">=</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="dt">  experiment </span><span class="ot">=</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="dt">  title </span><span class="ot">=</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridgesCli.py</span> <span class="at">-h</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridgesCli</span> <span class="at">-c</span> <span class="op">&lt;</span>/path/to/config<span class="op">&gt;</span> -d <span class="op">&lt;</span>/path/to/folder/or/file/to/upload<span class="op">&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridgesCli.py</span> <span class="at">-c</span> <span class="op">&lt;</span>/path/to/config<span class="op">&gt;</span> -i <span class="op">&lt;</span>/zone/home/path/to/coll/or/obj<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridgesCli.py</span> <span class="at">-h</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">usage:</span> python iBridgesCli.py <span class="pp">[-</span><span class="ss">h</span><span class="pp">]</span> [--local_path LOCAL_PATH]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                             <span class="ex">[--irods_path</span> IRODS_PATH] <span class="at">--operation</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span> [--env ENV]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                             <span class="ex">[--irods_resc</span> IRODS_RESC] [--logdir LOGDIR]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">options:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-h,</span> <span class="at">--help</span>            show this help message and exit</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--local_path</span> LOCAL_PATH, <span class="at">-l</span> LOCAL_PATH</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">Local</span> path to download to, or upload from</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--irods_path</span> IRODS_PATH, <span class="at">-i</span> IRODS_PATH</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> path to upload to, or download from</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--operation</span> <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span>, <span class="at">-o</span> <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--env</span> ENV, <span class="at">-e</span> ENV     Path to iRods environment file</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">(</span><span class="ex">irods_environment.json</span><span class="kw">)</span><span class="bu">.</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--irods_resc</span> IRODS_RESC, <span class="at">-r</span> IRODS_RESC</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> resource. If omitted default will be read from</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> env file.</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--logdir</span> LOGDIR       Directory for logfile. Default:</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">/home/user/.ibridges</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>
