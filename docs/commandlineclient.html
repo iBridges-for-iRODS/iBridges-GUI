@@ -175,13 +175,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="configuration">Configuration</h2>
 <p>The client uses the same configuration files as the GUI, i.e.&nbsp;the <em>irods_environment.json</em> and the <em>ibridges_config.json</em>.</p>
 <ul>
-<li>Please create a directory named <code>.irods</code> in your home directory:
+<li><p>Please create a directory <code>~/.irods</code> and place your <code>irods_environment.json</code> there:</p>
 <ul>
 <li>Linux: /home/&lt;username&gt;/.irods/irods_environment.json</li>
 <li>Mac: /Users/&lt;username&gt;/.irods/irods_environment.json</li>
 <li>Windows: C:\\….\&lt;username&gt;\.irods\irods_environment.json</li>
 </ul></li>
-<li>Please create a directory named <code>.ibridges</code> in your home directory</li>
+<li><p>Please create a directory named <code>~/.ibridges</code>. You can start the client and let the configuration file <code>~/.ibridges/ibridges_config.json</code> be created.</p></li>
+<li><p>If your iRODS instance does not provide information on available storage through the resource metadata <em>free_space</em>, please make sure to have the following setting in <code>~/.ibridges/ibridges_config.json</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="st">"check_free_space"</span><span class="ex">:</span> false,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">"force_transfers"</span><span class="ex">:</span> true,</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 </ul>
 </section>
 <section id="commandline-parameters" class="level2">
@@ -190,33 +193,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>--local_path LOCAL_PATH, -l LOCAL_PATH</code>: mandatory</li>
 <li><code>--irods_path IRODS_PATH, -i IRODS_PATH</code>: mandatory</li>
 <li><code>--operation {upload,download}, -o {upload,download}</code>: mandatory, direction of data transfer</li>
-<li><code>--env ENV, -e ENV</code>: optional, path to <em>irods_environment.json</em>; default value is last irods environment file as mentioned in <em>.ibridges/ibridges_conf.json</em>, if that value is not set in the file it is the default <em>.irods/irods_environment.json</em></li>
-<li><code>--irods_resc IRODS_RESC, -r IRODS_RESC</code>: optional, default should be set in <em>.irods/irods_environment.json</em> as <code>"irods_default_resource": "name of resource"</code></li>
-<li><code>--logdir LOGDIR</code>: optional, default is <em>.ibridges</em> in your home directory</li>
+<li><code>--env ENV, -e ENV</code>: optional, path to <em>irods_environment.json</em>; default value is last irods environment file as mentioned in <em><sub>/.ibridges/ibridges_conf.json<em>, if that value is not set in the file it is the default </em></sub>/.irods/irods_environment.json</em></li>
+<li><code>--irods_resc IRODS_RESC, -r IRODS_RESC</code>: optional, default should be set in <em>~/.irods/irods_environment.json</em> as <code>"irods_default_resource": "name of resource"</code></li>
+<li><code>--logdir LOGDIR</code>: optional, default is <em>~/.ibridges</em> in your home directory</li>
 </ul>
 </section>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridgesCli.py</span> <span class="at">-h</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">usage:</span> python iBridgesCli.py <span class="pp">[-</span><span class="ss">h</span><span class="pp">]</span> [--local_path LOCAL_PATH]</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                             <span class="ex">[--irods_path</span> IRODS_PATH] <span class="at">--operation</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span> [--env ENV]</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                             <span class="ex">[--irods_resc</span> IRODS_RESC] [--logdir LOGDIR]</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">options:</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-h,</span> <span class="at">--help</span>            show this help message and exit</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--local_path</span> LOCAL_PATH, <span class="at">-l</span> LOCAL_PATH</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">Local</span> path to download to, or upload from</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--irods_path</span> IRODS_PATH, <span class="at">-i</span> IRODS_PATH</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> path to upload to, or download from</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--operation</span> <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span>, <span class="at">-o</span> <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--env</span> ENV, <span class="at">-e</span> ENV     Path to iRods environment file</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">(</span><span class="ex">irods_environment.json</span><span class="kw">)</span><span class="bu">.</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--irods_resc</span> IRODS_RESC, <span class="at">-r</span> IRODS_RESC</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> resource. If omitted default will be read from</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> env file.</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--logdir</span> LOGDIR       Directory for logfile. Default:</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">/home/user/.ibridges</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridgesCli.py</span> <span class="at">-h</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">usage:</span> python iBridgesCli.py <span class="pp">[-</span><span class="ss">h</span><span class="pp">]</span> [--local_path LOCAL_PATH]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                             <span class="ex">[--irods_path</span> IRODS_PATH] <span class="at">--operation</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span> [--env ENV]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                             <span class="ex">[--irods_resc</span> IRODS_RESC] [--logdir LOGDIR]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">options:</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-h,</span> <span class="at">--help</span>            show this help message and exit</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--local_path</span> LOCAL_PATH, <span class="at">-l</span> LOCAL_PATH</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">Local</span> path to download to, or upload from</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--irods_path</span> IRODS_PATH, <span class="at">-i</span> IRODS_PATH</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> path to upload to, or download from</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--operation</span> <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span>, <span class="at">-o</span> <span class="dt">{upload</span><span class="op">,</span><span class="dt">download}</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--env</span> ENV, <span class="at">-e</span> ENV     Path to iRods environment file</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">(</span><span class="ex">irods_environment.json</span><span class="kw">)</span><span class="bu">.</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--irods_resc</span> IRODS_RESC, <span class="at">-r</span> IRODS_RESC</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> resource. If omitted default will be read from</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">iRods</span> env file.</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="ex">--logdir</span> LOGDIR       Directory for logfile. Default:</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                        <span class="ex">/home/user/.ibridges</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>
