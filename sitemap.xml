@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://chstaiger.github.io/iBridges-Gui/iBridgesGui-HowTo.html</loc>
-    <lastmod>2023-06-07T17:12:04.797Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/roadmap.html</loc>
+    <lastmod>2023-06-07T17:56:49.424Z</lastmod>
   </url>
   <url>
-    <loc>https://chstaiger.github.io/iBridges-Gui/docs/userdoc.html</loc>
-    <lastmod>2023-06-07T17:12:05.393Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/getting-started.html</loc>
+    <lastmod>2023-06-07T17:56:50.740Z</lastmod>
   </url>
   <url>
-    <loc>https://chstaiger.github.io/iBridges-Gui/docs/roadmap.html</loc>
-    <lastmod>2023-06-07T17:12:05.970Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/developer.html</loc>
+    <lastmod>2023-06-07T17:56:51.596Z</lastmod>
   </url>
   <url>
-    <loc>https://chstaiger.github.io/iBridges-Gui/docs/info.html</loc>
-    <lastmod>2023-06-07T17:12:06.375Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/info.html</loc>
+    <lastmod>2023-06-07T17:56:51.988Z</lastmod>
   </url>
   <url>
-    <loc>https://chstaiger.github.io/iBridges-Gui/docs/getting-started.html</loc>
-    <lastmod>2023-06-07T17:12:07.278Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/commandlineclient.html</loc>
+    <lastmod>2023-06-07T17:56:52.596Z</lastmod>
   </url>
   <url>
-    <loc>https://chstaiger.github.io/iBridges-Gui/docs/commandlineclient.html</loc>
-    <lastmod>2023-06-07T17:12:07.946Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/userdoc.html</loc>
+    <lastmod>2023-06-07T17:56:53.544Z</lastmod>
   </url>
   <url>
-    <loc>https://chstaiger.github.io/iBridges-Gui/docs/developer.html</loc>
-    <lastmod>2023-06-07T17:12:08.824Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/iBridgesGui-HowTo.html</loc>
+    <lastmod>2023-06-07T17:56:54.140Z</lastmod>
   </url>
   <url>
-    <loc>https://chstaiger.github.io/iBridges-Gui/index.html</loc>
-    <lastmod>2023-06-07T17:12:09.246Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/index.html</loc>
+    <lastmod>2023-06-07T17:56:54.476Z</lastmod>
   </url>
 </urlset>
