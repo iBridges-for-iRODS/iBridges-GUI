@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/index.html</loc>
-    <lastmod>2023-06-07T08:08:44.068Z</lastmod>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/roadmap.html</loc>
+    <lastmod>2023-06-07T08:56:03.375Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/docs/getting-started.html</loc>
-    <lastmod>2023-06-07T08:08:45.252Z</lastmod>
+    <lastmod>2023-06-07T08:56:04.491Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/docs/developer.html</loc>
-    <lastmod>2023-06-07T08:08:45.556Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/roadmap.html</loc>
-    <lastmod>2023-06-07T08:08:45.840Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/userdoc.html</loc>
-    <lastmod>2023-06-07T08:08:46.624Z</lastmod>
+    <lastmod>2023-06-07T08:56:04.751Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/docs/info.html</loc>
-    <lastmod>2023-06-07T08:08:46.968Z</lastmod>
+    <lastmod>2023-06-07T08:56:05.079Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/docs/commandlineclient.html</loc>
-    <lastmod>2023-06-07T08:08:47.556Z</lastmod>
+    <lastmod>2023-06-07T08:56:05.611Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/userdoc.html</loc>
+    <lastmod>2023-06-07T08:56:06.327Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/iBridgesGui-HowTo.html</loc>
-    <lastmod>2023-06-07T08:08:48.084Z</lastmod>
+    <lastmod>2023-06-07T08:56:06.819Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/index.html</loc>
+    <lastmod>2023-06-07T08:56:07.099Z</lastmod>
   </url>
 </urlset>
