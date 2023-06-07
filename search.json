@@ -25,7 +25,7 @@
     "href": "docs/getting-started.html#installation",
     "title": "iBridges configuration",
     "section": "Installation",
-    "text": "Installation\n\n\n\n\n\n\nInstall from git\n\n\n\n\n\ngit clone git@github.com:chStaiger/iBridges-Gui.git\ncd iBridges-Gui\npip install -r requirements.txt\nYou can already start the application with\n./iBridges.py \n#or\npython iBridges.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nInstall from zip/release\n\n\n\n\n\nunzip iBridges-Gui.zip\ncd iBridges-Gui\ninstall -r requirements.txt\nYou can already start the application with\n./iBridges.py \n#or\npython iBridges.py\nPlease see below how to configure the spftware to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nDownload and install binaries\n\n\n\n\n\nThe installation of binaries or executables will follow soon."
+    "text": "Installation\n\n\n\n\n\n\nInstall from git\n\n\n\n\n\ngit clone git@github.com:chStaiger/iBridges-Gui.git\ncd iBridges-Gui\npip install -r requirements.txt\nYou can already start the application with\n./iBridges.py \n#or\npython iBridges.py\nPlease see below how to configure the software to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nInstall from zip/release\n\n\n\n\n\nunzip iBridges-Gui.zip\ncd iBridges-Gui\ninstall -r requirements.txt\nYou can already start the application with\n./iBridges.py \n#or\npython iBridges.py\nPlease see below how to configure the software to connect to your iRODS instance.\n\n\n\n\n\n\n\n\n\nDownload and install binaries\n\n\n\n\n\nThe installation of binaries or executables will follow soon."
   },
   {
     "objectID": "docs/getting-started.html#configuration",
