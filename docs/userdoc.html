@@ -157,10 +157,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ibridges-user-documentation" id="toc-ibridges-user-documentation" class="nav-link active" data-scroll-target="#ibridges-user-documentation">iBridges User Documentation</a>
   <ul class="collapse">
   <li><a href="#synopsis" id="toc-synopsis" class="nav-link" data-scroll-target="#synopsis">Synopsis</a></li>
-  <li><a href="#browsing-through-your-irods-collections" id="toc-browsing-through-your-irods-collections" class="nav-link" data-scroll-target="#browsing-through-your-irods-collections">Browsing through your iRODS collections</a>
-  <ul class="collapse">
+  <li><a href="#browsing-through-your-irods-collections" id="toc-browsing-through-your-irods-collections" class="nav-link" data-scroll-target="#browsing-through-your-irods-collections">Browsing through your iRODS collections</a></li>
   <li><a href="#downloading-data" id="toc-downloading-data" class="nav-link" data-scroll-target="#downloading-data">Downloading data</a></li>
-  </ul></li>
   <li><a href="#uploading-data" id="toc-uploading-data" class="nav-link" data-scroll-target="#uploading-data">Uploading data</a></li>
   <li><a href="#searching-for-data" id="toc-searching-for-data" class="nav-link" data-scroll-target="#searching-for-data">Searching for data</a></li>
   <li><a href="#sec-features" id="toc-sec-features" class="nav-link" data-scroll-target="#sec-features">Additional features</a></li>
@@ -181,13 +179,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The tabs which currently are in use:</p>
 <ul>
 <li>The <strong>Browser</strong> is a tool to browse through iRODS collections and gather information on iRODS data objects</li>
-<li>The <strong>Up and Download</strong> tab gives tools to up and download large data safely.</li>
-<li>The <strong>ELN Data upload</strong> tab is made for specific data uploads that belong to an Experiment described in an ElabJournal instance.</li>
+<li>The <strong>Data Transfers</strong> tab gives tools to up and download large data safely.</li>
+<li>In the <strong>Compress/bundle data</strong> tab the user is given tools to bundle (tar) iRODS data collections and to extract them again. Note, that this only bundles the files, it will not preserve the metadata.</li>
 <li>The <strong>Create access token</strong> tab allows users to create iRODS tickets to collections in read mode.</li>
+<li>The <strong>ELN Data upload</strong> tab is made for specific data uploads that belong to an Experiment described in an Elabjournal instance.</li>
 <li>The <strong>AmberScript Connection</strong> tab allows to up and download data from and to Amberscript.</li>
 <li>The <strong>Info</strong> tab summarises information from the iRODS server e.g.&nbsp;the user’s group, resources, their status and their available storage etc.</li>
 </ul>
-<p>For experimental feature tabs please refer to section <a href="#sec-features">Section&nbsp;1.5</a>.</p>
 </section>
 <section id="browsing-through-your-irods-collections" class="level2">
 <h2 class="anchored" data-anchor-id="browsing-through-your-irods-collections">Browsing through your iRODS collections</h2>
@@ -202,16 +200,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 <li>Lower tabs
 <ul>
-<li>Preview: Lists the content of a collection or the first 50 lines of text data (.txt, .json, .csv)</li>
-<li>Metadata: You can annotate collections and data objects with own annotation <code>key, value, unit</code>. The keys and values can be used in the search-drop down menu to look for data</li>
-<li>Permissions: Will show the permissions own(er), read, write.</li>
-<li>Resources: The tab shows on which storage resource data objects are stored. Note, collections do not have a resource.</li>
-<li>Delete: In the browser table click on the collection or object you want to delete, then click <code>Load</code> and then <code>Delete</code>. This will delete a whole collection with all its members or the data object.</li>
+<li><strong>Preview</strong>: Lists the content of a collection or the first 50 lines of text data (.txt, .json, .csv)</li>
+<li><strong>Metadata</strong>: You can annotate collections and data objects with own annotations of <code>key, value, unit</code>. The keys and values can be used in the search-drop down menu to search for data.</li>
+<li><strong>Permissions</strong>: Will show the permissions own(er), read, write. It also provides to grant and withdraw rights.</li>
+<li><strong>Replicas</strong>: The tab shows the resource hierarchy and on which storage resource data objects are stored. It also provides information on the size and modificatin dates, and the status (good or broken) per resource which holds a copy of the data. Note, collections do not have a resource.</li>
+<li><strong>Delete</strong>: In the browser table click on the collection or object you want to delete, then click <code>Load</code> and then <code>Delete</code>. This will delete a whole collection with all its members or the data object.</li>
 </ul></li>
 </ol>
 <p>Note: The <code>File Upload</code> and <code>File download</code> buttons are only meant for uploading and downloading small single files. For large data transfers go to the <strong>Data transfer</strong> tab.</p>
-<section id="downloading-data" class="level3">
-<h3 class="anchored" data-anchor-id="downloading-data">Downloading data</h3>
+</section>
+<section id="downloading-data" class="level2">
+<h2 class="anchored" data-anchor-id="downloading-data">Downloading data</h2>
 <p><img src="../screenshots/howto_download.png" class="img-fluid"></p>
 <ol type="1">
 <li><p>Select the iRODS collection or data object to download and the folder to download to.</p></li>
@@ -224,7 +223,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="../screenshots/howto_download2.png" class="img-fluid"></p>
 <p>When the check is done, the loading screen disappears and the number of files which exist with a different checksum (1) and files which only exist on iRODS (2) will be indicated. Press the <code>Download</code> button to start the file transfer. iRODS automatically checks the checksum to ensure all downloaded files are complete.</p>
 </section>
-</section>
 <section id="uploading-data" class="level2">
 <h2 class="anchored" data-anchor-id="uploading-data">Uploading data</h2>
 <p><img src="../screenshots/howto_upload.png" class="img-fluid"></p>
@@ -234,6 +232,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Press the upload button. As in the download, a pop up window will appear which will execute the same checks as for the data downloads.</li>
 </ol>
 <p><img src="../screenshots/howto_upload2.png" class="img-fluid"></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Create access tokens
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>iRODS tickets can be created in the tab <em>“Create access tokens”</em> (<code>tabTicketLogin</code> in <em>.ibridges/ibridges_config.json</em>).</p>
+<p>Currently, tickets can only be set to iRODS collections and in mode <em>read</em>. Tickets can be given an expiration date.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Data bundeling
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Users can bundle their data into tar-archives. Please note that metadata and acls will not be part of the bundled data and will be “forgotten” when unpacking data.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="searching-for-data" class="level2">
 <h2 class="anchored" data-anchor-id="searching-for-data">Searching for data</h2>
@@ -244,7 +275,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="sec-features" class="level2">
 <h2 class="anchored" data-anchor-id="sec-features">Additional features</h2>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -253,7 +284,7 @@ Elabjournal
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><p>Add <code>"tabELNData"</code> to the <code>"ui_tabs"</code> in <em>.ibridges/ibridges_config</em></p></li>
@@ -282,7 +313,7 @@ Elabjournal
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -291,7 +322,7 @@ Amberscript
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><p>Add <code>tabAmberWorkflow</code> to the <code>"ui_tabs"</code> in <em>.ibridges/ibridges_config.json</em></p></li>
@@ -309,44 +340,21 @@ Amberscript
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Create access tokens
+Prototype tabs and fetaures
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>iRODS tickets can be created in the tab <em>“Create access tokens”</em> (<code>tabTicketLogin</code> in <em>.ibridges/ibridges_config.json</em>).</p>
-<p>Currently, tickets can only be set to iRODS collections and in mode <em>read</em>. Tickets can be given an expiration date.</p>
-</div>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Experimental tabs and fetaures
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<section id="data-bundeling" class="level3">
-<h3 class="anchored" data-anchor-id="data-bundeling">Data bundeling</h3>
-<p>Please contact us through a ticket to get more information on this feature.</p>
-</section>
-<section id="ticket-login" class="level3">
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<section id="ticket-login" class="level3 callout-body-container callout-body">
 <h3 class="anchored" data-anchor-id="ticket-login">Ticket Login</h3>
 <p>Users can login with a ticket, the iRODS server name and the collection name if the <em>anonymous user</em> is allowed on the iRODS server.</p>
 <p><strong>Currently, this feature does not work if the iRODS instance is SSL enabled.</strong></p>
 </section>
-</div>
 </div>
 </div>
 

@@ -191,7 +191,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>The iRODS GUI works with any iRODS instance. Here, we show how to configure the application to work your specific iRODS instance. <em>Please note</em>, that some features (tab views in the GUI) depend on certain server settings. You will find those dependencies at the end of the document.</p>
+<p>The iRODS GUI works with iRODS instances of versions 4.2.11, 4.2.12 and 4.3.0.</p>
+<p>Here, we show how to configure the application to work your specific iRODS instance. <em>Please note</em>, that some features (tab views in the GUI) depend on certain server settings. You will find those dependencies at the end of the document.</p>
 <section id="system-dependencies" class="level2">
 <h2 class="anchored" data-anchor-id="system-dependencies">System dependencies</h2>
 <ul>
@@ -215,7 +216,7 @@ Install from git
 <div class="callout-body-container callout-body">
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:chStaiger/iBridges-Gui.git</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> iBridges-Gui</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can already start the application with</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridges.py</span> </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#or</span></span>
@@ -238,7 +239,7 @@ Install from zip/release
 <div class="callout-body-container callout-body">
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> iBridges-Gui.zip</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> iBridges-Gui</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can already start the application with</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./iBridges.py</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#or</span></span>
@@ -319,7 +320,8 @@ Download and install binaries
 <li><code>force_transfers</code>: always write data to iRODS</li>
 <li><code>check_free_space</code>: checks the metadata <em>free_space</em> of resources and only shows resources with a <em>free_space</em> larger than 0.</li>
 </ul>
-<p>The <code>check_free_space</code> and <code>force_transfers</code> options are <em>REQUIRED</em>. The default values are</p>
+<p>The order of the list <code>ui_tabs</code> defines in which order the tabs will be presented in the GUI. By default the first tab is always the iRODS Browser and the last tab is always the Info tab; <a href="../docs/userdoc.html">see here</a>. These two tabs will always be loaded even when no tabs are configured.</p>
+<p>The <code>check_free_space</code> and <code>force_transfers</code> options are <em>REQUIRED</em> and if not provided will be added automatically. The default values are</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">"check_free_space"</span>: true,</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">"force_transfers"</span>: false</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>However, if the iRODS instance does not provide information about free space through the resource’s metadata <em>free_space</em>, no resources will be shown and no uploads will be allowed.</p>
