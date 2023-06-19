@@ -49,14 +49,14 @@ class QPlainTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
 
 
 class MainMenu(PyQt6.QtWidgets.QMainWindow,
-               gui.ui_files.MainMenu.Ui_MainWindow,
-               utils.context.ContextContainer):
+               gui.ui_files.MainMenu.Ui_MainWindow):
     """Main menu widget.
 
     The main window where all tabs reside.  It is "stacked" on top of
     the login widget.
 
     """
+    context = utils.context.Context()
     tab_ticket_access = None
     tab_amber_workflow = None
     tab_browser = None
@@ -85,6 +85,9 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi('gui/ui_files/MainMenu.ui', self)
+        self.conf = self.context.ibridges_configuration.config
+        self.conn = self.context.irods_connector
+        self.ienv = self.context.irods_environment.config
         self.stacked_widget = stacked_widget
         # Menu actions
         self.actionExit.triggered.connect(self.program_exit)
@@ -97,14 +100,15 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         else:
             self.actionSearch.triggered.connect(self.search)
             self.actionSaveConfig.setEnabled(False)
-            # self.actionSaveConfig.triggered.connect(self.saveConfig)
-            # self.actionExportMetadata.triggered.connect(self.exportMeta)
+            # self.actionSaveConfig.triggered.connect(self.save_config)
+            # self.actionExportMetadata.triggered.connect(self.export_meta)
             ui_tabs_lookup = {
                 'tabAmberWorkflow': self.setup_tab_amber_workflow,
                 'tabBrowser': self.setup_tab_browser,
                 'tabCreateTicket': self.setup_tab_create_ticket,
                 'tabDataBundle': self.setup_tab_data_bundle,
                 'tabELNData': self.setup_tab_eln_data,
+                'tabExample': self.setup_tab_example,
                 'tabInfo': self.setup_tab_info,
                 'tabUpDownload': self.setup_tab_up_download,
             }
@@ -167,6 +171,13 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         self.tab_eln_data = gui.elabUpload.elabUpload()
         self.tabWidget.addTab(self.tab_eln_data, "ELN Data upload")
 
+    def setup_tab_example(self):
+        """Add example tab to the stacked tab widget.
+
+        """
+        self.example_tab = gui.IrodsExampleTab.IrodsExampleTab()
+        self.tabWidget.addTab(self.example_tab, 'Example')
+
     def setup_tab_info(self):
         """Add session information tab to the stacked tab widget.
 
@@ -195,9 +206,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
             PyQt6.QtWidgets.QMessageBox.StandardButton.No)
         if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-            # connector must be destroyed directly, not a reference to it.
-            if self.context.irods_connector:
-                del self.context.irods_connector
+            if self.conn:
+                del self.conn
             elif self.tab_ticket_access and self.tab_ticket_access.conn:
                 self.tab_ticket_access.conn.close_session()
             sys.exit()
@@ -234,16 +244,16 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         search = gui.irodsSearch.irodsSearch(self.tab_browser.collTable)
         search.exec()
 
-    def save_config(self):
-        """Save iBridges configuration.
+    # def save_config(self):
+    #     """Save iBridges configuration.
 
-        """
-        logging.warning('iBridges configuration cannot yet be saved.')
-        # raise NotImplemented('iBridges configuration cannot yet be saved.')
+    #     """
+    #     logging.warning('iBridges configuration cannot yet be saved.')
+    #     # raise NotImplemented('iBridges configuration cannot yet be saved.')
 
-    def export_meta(self):
-        """Export metadata.
+    # def export_meta(self):
+    #     """Export metadata.
 
-        """
-        logging.warning('Metadata cannot yet be exported')
-        # raise NotImplemented('Metadata cannot yet be exported')
+    #     """
+    #     logging.warning('Metadata cannot yet be exported')
+    #     # raise NotImplemented('Metadata cannot yet be exported')

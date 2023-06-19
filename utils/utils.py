@@ -274,6 +274,8 @@ def init_logger(app_name: str):
     logging.setLogRecordFactory(new_factory)
     logger = logging.getLogger()
     logdir = path.LocalPath(context.IBRIDGES_DIR).expanduser()
+    if not logdir.is_dir():
+        logdir.mkdir()
     logfile = logdir.joinpath(f'{app_name}.log')
     log_formatter = logging.Formatter(
         '[%(asctime)s] %(name)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s')

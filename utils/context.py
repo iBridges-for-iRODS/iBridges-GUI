@@ -240,7 +240,7 @@ class Context:
 
         """
         logging.debug('Resetting Context.')
-        del self.irods_connector
+        self.irods_connector.reset()
         if self.ibridges_configuration:
             self.ibridges_configuration.reset()
             if self.ibridges_conf_file:
@@ -282,14 +282,14 @@ def is_complete(conf_dict: dict, mandatory: list, conf_type: str) -> bool:
 
 class ContextContainer:
     """Abstract base class for classes needing to use context.
+       DEPRECATED, class will be removed in the next release.
 
     """
     context = Context()
 
-    def __new__(cls, *args, **kwargs):
-        if cls is ContextContainer:
-            raise TypeError("{cls.__name__} cannot be instantiated, please use a subclass")
-        return super().__new__(cls, *args, **kwargs)
+    def __init__(self):
+        logging.debug('ContextContainer inherited by: %s', type(self).__name__)
+        logging.debug('ContextContainer is deprecated!')
 
     @property
     def conf(self) -> dict:

@@ -32,12 +32,12 @@ OBJ_STATUS_HUMAN = {
 
 
 class IrodsBrowser(PyQt6.QtWidgets.QWidget,
-                   gui.ui_files.tabBrowser.Ui_tabBrowser,
-                   utils.context.ContextContainer):
+                   gui.ui_files.tabBrowser.Ui_tabBrowser):
     """Browser view for iRODS session.
 
     """
     current_browser_row = -1
+    context = utils.context.Context()
 
     def __init__(self):
         """Initialize an iRODS browser view.
@@ -48,6 +48,11 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi("gui/ui_files/tabBrowser.ui", self)
+
+        self.conf = self.context.ibridges_configuration.config
+        self.conn = self.context.irods_connector
+        self.ienv = self.context.irods_environment.config
+
         self.force = self.conf.get('force_transfers', False)
         self.viewTabs.setCurrentIndex(0)
         # Browser table
@@ -456,8 +461,6 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.loadTable()
 
     def fileUpload(self):
-        # TODO determine if this unused variable is required
-        # dialog = PyQt6.QtWidgets.QFileDialog(self)
         fileSelect = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self,
                         "Open File", "","All Files (*);;Python Files (*.py)")
         size = utils.utils.get_local_size([fileSelect[0]])
@@ -640,5 +643,8 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             items = self._get_selected_objects()
             avus = meta.metadataFileParser.parse(path)
             if len(items) and len(avus):
-                self.conn.add_multiple_metadata(items, avus)
-                self._fill_metadata_tab(items[0].path)
+                try:
+                    self.conn.add_multiple_metadata(items, avus)
+                    self._fill_metadata_tab(items[0].path)
+                except Exception as error:
+                    self.errorLabel.setText(repr(error)+", do you have iRODS server version 4.2.12 or higher?")
