@@ -108,7 +108,7 @@ class amberWorkflow(QWidget, Ui_tabAmberData):
         self.jobSubmitLabel.clear()
         self.jobSubmitLabel.setText('   ')
         index, path = self.getPathsFromTrees(self.irodsUploadTree, False)
-        obj_path = utils.path.IrodsPath(path)
+        obj_path = utils.path.iRODSPath(path)
         obj_exists = self.context.irods_connector.dataobject_exists(path)
         if obj_exists and obj_path.suffix in ['.wav', '.mp3']:
             obj = self.context.irods_connector.get_dataobject(obj_path)

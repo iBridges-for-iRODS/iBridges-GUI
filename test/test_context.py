@@ -6,6 +6,7 @@ import os
 import pytest
 import tempfile
 
+import irodsConnector
 import utils
 
 CONTEXT = utils.context.Context()
@@ -192,11 +193,11 @@ def test_reset(reset_ibridges_configuration, reset_irods_environment):
         setup of the iRODS environment.
 
     """
-    CONTEXT.irods_connector = 'IrodsConnector'
-    assert CONTEXT.irods_connector == 'IrodsConnector'
+    conn = irodsConnector.manager.IrodsConnector()
+    CONTEXT.irods_connector = conn
+    assert CONTEXT.irods_connector == conn
     CONTEXT.ibridges_conf_file = utils.context.DEFAULT_IBRIDGES_CONF_FILE
-    conf_dict = utils.context.IBRIDGES_CONF_TEMPLATE.copy()
-    conf_dict['extra_key'] = 'extra_val'
+    conf_dict = utils.context.IBRIDGES_CONF_TEMPLATE
     with open(CONTEXT.ibridges_conf_file, 'w') as conffd:
         json.dump(conf_dict, conffd)
     assert CONTEXT.ibridges_configuration.config == conf_dict
@@ -208,7 +209,6 @@ def test_reset(reset_ibridges_configuration, reset_irods_environment):
     assert CONTEXT.irods_environment.config == ienv_dict
     CONTEXT.irods_env_file = ''
     CONTEXT.reset()
-    assert CONTEXT.irods_connector is None
     assert CONTEXT.ibridges_configuration.config == utils.context.IBRIDGES_CONF_TEMPLATE
     assert CONTEXT.ibridges_configuration.filepath == CONTEXT.ibridges_conf_file
     assert CONTEXT.irods_environment.config == {}
@@ -221,38 +221,3 @@ def test_is_complete():
 
     """
     pass
-
-
-def test_context_container(reset_ibridges_configuration, reset_irods_environment):
-    """The ContextContainer class is an abstract base class intended to
-    allow inheritance of convenience methods accessing only specific
-    parts of the Context class.  Check that this is the case.
-
-    Parameters
-    ----------
-    reset_ibridges_configuration : None
-        A pytest fixture with function scope to reset to the pretest
-        setup of the iBridges configuration.
-    reset_irods_environment : None
-        A pytest fixture with function scope to reset to the pretest
-        setup of the iRODS environment.
-
-    """
-    class TestClass(utils.context.ContextContainer):
-        pass
-    test_obj = TestClass()
-    CONTEXT.irods_connector = 'IrodsConnector'
-    CONTEXT.ibridges_conf_file = utils.context.DEFAULT_IBRIDGES_CONF_FILE
-    conf_dict = utils.context.IBRIDGES_CONF_TEMPLATE.copy()
-    with open(CONTEXT.ibridges_conf_file, 'w') as conffd:
-        json.dump(conf_dict, conffd)
-    CONTEXT.irods_env_file = os.path.join(utils.context.IRODS_DIR, IRODS_ENV_FILE)
-    ienv_dict = {key: None for key in utils.context.MANDATORY_IRODS_ENV_KEYS}
-    with open(CONTEXT.irods_env_file, 'w') as envfd:
-        json.dump(ienv_dict, envfd)
-    with pytest.raises(TypeError):
-        _ = utils.context.ContextContainer()
-    assert test_obj.context == CONTEXT
-    assert test_obj.conf == CONTEXT.ibridges_configuration.config
-    assert test_obj.conn == CONTEXT.irods_connector
-    assert test_obj.ienv == CONTEXT.irods_environment.config

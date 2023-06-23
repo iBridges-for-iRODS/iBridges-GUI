@@ -62,6 +62,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
     tab_browser = None
     tab_up_download = None
     tab_eln_data = None
+    tab_example = None
     tab_data_bundle = None
     tab_create_ticket = None
     tab_info = None
@@ -175,8 +176,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         """Add example tab to the stacked tab widget.
 
         """
-        self.example_tab = gui.IrodsExampleTab.IrodsExampleTab()
-        self.tabWidget.addTab(self.example_tab, 'Example')
+        self.tab_example = gui.IrodsExampleTab.IrodsExampleTab()
+        self.tabWidget.addTab(self.tab_example, 'Example')
 
     def setup_tab_info(self):
         """Add session information tab to the stacked tab widget.

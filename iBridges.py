@@ -33,8 +33,6 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
     """The login widget.
 
     """
-    cached_password = ''
-    given_password = ''
     use_icommands = None
     this_application = ''
     context = utils.context.Context()
@@ -91,8 +89,8 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         login credentials have been found.
 
         """
-        self.cached_password = self.context.irods_connector.password
-        self.passwordField.setText(self.cached_password)
+        cached_pwd = self.context.irods_connector.get_cached_password()
+        self.passwordField.setText(cached_pwd)
 
     def reset_mouse_and_error_labels(self):
         """Reset cursor and clear any error text.
@@ -137,7 +135,9 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
 
         """
         irods_env_file = self.irods_path.joinpath(self.envbox.currentText())
+        # Set the user-given filename for both the configuration and the Session
         self.context.irods_env_file = irods_env_file
+        self.context.irods_connector.irods_env_file = irods_env_file
         logging.debug('IRODS ENVIRONMENT FILE SET: %s', irods_env_file.name)
         self.envError.setText('')
         if not (self.context.irods_environment.config and self.context.ienv_is_complete()):
@@ -160,18 +160,9 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self.context.irods_connector.use_icommands = self.use_icommands
         self.context.ibridges_configuration.config['last_ienv'] = irods_env_file.name
         self.context.save_ibridges_configuration()
-        current_password = self.passwordField.text()
-        known_passwords = (self.cached_password, self.given_password)
-        # This a subsequent session if `given_password` is already set.
-        if self.given_password and current_password in known_passwords:
-            self.given_password = self.cached_password
-        else:
-            self.given_password = current_password
-        self.context.irods_connector.password = self.given_password
+        logging.debug('IBRIDGES CONFIGURATION SAVED')
+        self.context.irods_connector.password = self.passwordField.text()
         logging.debug('IRODS PASSWORD SET')
-        self.context.irods_connector.irods_env_file = self.context.irods_env_file
-        self.context.irods_connector.irods_environment = self.context.irods_environment
-        self.context.irods_connector.ibridges_configuration = self.context.ibridges_configuration
         try:
             self.context.irods_connector.connect()
         except (irods.exception.CAT_INVALID_AUTHENTICATION,
@@ -204,12 +195,10 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             self.envError.setText(message % error)
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
-        # stacked_widget is a global variable
         browser = gui.mainmenu.MainMenu(stacked_widget)
-        if len(stacked_widget) == 1:
-            stacked_widget.addWidget(browser)
-        self.reset_mouse_and_error_labels()
-        stacked_widget.setCurrentIndex(stacked_widget.currentIndex()+1)
+        self.activate_browser(browser)
+        # Reinitialize password field for a potential following session.
+        self._init_password()
 
     def ticket_login(self):
         """Log in to iRODS using a ticket.
@@ -219,10 +208,16 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         browser = gui.mainmenu.MainMenu(stacked_widget)
         browser.menuOptions.clear()
         browser.menuOptions.deleteLater()
+        self.activate_browser(browser)
+        # self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
+
+    def activate_browser(self, browser: PyQt6.QtWidgets.QMainWindow):
+        """Activate curent browser widget.
+
+        """
         if len(stacked_widget) == 1:
             stacked_widget.addWidget(browser)
         self.reset_mouse_and_error_labels()
-        # self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
         stacked_widget.setCurrentIndex(stacked_widget.currentIndex()+1)
 
 

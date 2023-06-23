@@ -98,7 +98,7 @@ class IrodsConnector:
             Name of environment file
 
         """
-        logging.debug('getting: self._irods_env_file')
+        logging.debug('getting: self._irods_env_file=%s', self._irods_env_file)
         return self._irods_env_file
 
     @irods_env_file.setter
@@ -114,6 +114,10 @@ class IrodsConnector:
         self._irods_env_file = filepath
         logging.debug(
             'setting: self._irods_env_file=%s', self._irods_env_file)
+        if self.session:
+            logging.debug(
+                'setting: self.session.irods_env_file=%s', self._irods_env_file)
+            self.session.irods_env_file = self._irods_env_file
 
     @property
     def irods_environment(self) -> json_config.JSONConfig:
@@ -192,14 +196,18 @@ class IrodsConnector:
     @property
     def session(self) -> session.Session:
         if self._session is None:
-            self._session = session.Session(self.irods_env_file, self.irods_environment.config,
-                                            self.ibridges_configuration.config, self._password)
+            self._session = session.Session(self._password)
+            self._session.ibridges_configuration = self.ibridges_configuration
+            self._session.irods_env_file = self.irods_env_file
+            self._session.irods_environment = self.irods_environment
         return self._session
 
     @session.deleter
     def session(self):
-        del self._session
-        self._session = None
+        # TODO figure out why this is necessary!
+        if self._session is not None:
+            del self._session
+            self._session = None
 
     @property
     def tickets(self) -> tickets.Tickets:
@@ -342,13 +350,8 @@ class IrodsConnector:
         """Manually establish an iRODS session.
 
         """
-        self._session = session.Session(self.irods_env_file, self.irods_environment.config,
-                                        self.ibridges_configuration.config, self._password) 
         if not self.session.has_irods_session():
             self.session.connect()
-
-    def reset(self):
-        del self.session
 
     def cleanup(self):
         if self.has_session() and self.session.has_irods_session():
@@ -357,6 +360,18 @@ class IrodsConnector:
                 self.session.irods_session.cleanup()
             except NameError:
                 pass
+
+    @staticmethod
+    def get_cached_password() -> str:
+        """Acquire the cached password from the iRODS auth file.
+
+        Returns
+        -------
+        str
+            Cached password or null string.
+
+        """
+        return session.get_cached_password()
 
     def has_session(self) -> bool:
         """Check if an iBridges session has been assigned to its shadow
@@ -369,6 +384,9 @@ class IrodsConnector:
 
         """
         return self._session is not None
+
+    def reset(self):
+        del self.session
 
     @property
     def davrods(self) -> str:
@@ -399,6 +417,9 @@ class IrodsConnector:
     def password(self, password: str):
         """Set the session password.
 
+        This method is _vital_ for updating the session password _after_
+        Session instantiation.
+
         Parameters
         ----------
         password : str
@@ -406,6 +427,8 @@ class IrodsConnector:
 
         """
         self.session.password = password
+        # This is purely cosmetic.  This variable is used only once
+        # when instantiating the Session (a.k.a. self.session).
         self._password = password
 
     @property

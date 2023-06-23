@@ -16,9 +16,11 @@ class Session:
 
     """
     _irods_session = None
+    ibridges_configuration = None
+    irods_env_file = ''
+    irods_environment = None
 
-    def __init__(self, irods_env_file:str, irods_environment:dict, 
-                 ibridges_configuration: dict, password=''):
+    def __init__(self, password=''):
         """ iRODS authentication with Python client.
 
         Parameters
@@ -34,9 +36,6 @@ class Session:
 
         """
         self._password = password
-        self.irods_env_file = irods_env_file
-        self.ibridges_configuration = ibridges_configuration
-        self.irods_environment = irods_environment
 
     def __del__(self):
         del self.irods_session
@@ -55,7 +54,7 @@ class Session:
         """
         logging.debug('getting: self.ibridges_configuration')
         if self.ibridges_configuration:
-            return self.ibridges_configuration
+            return self.ibridges_configuration.config
         return {}
 
     @property
@@ -69,7 +68,7 @@ class Session:
         """
         logging.debug('getting: self.irods_environment')
         if self.irods_environment:
-            return self.irods_environment
+            return self.irods_environment.config
         return {}
 
     # Authentication workflow properties
@@ -86,35 +85,20 @@ class Session:
 
         """
         if not self._password:
-            irods_auth_file = os.environ.get(
-                'IRODS_AUTHENTICATION_FILE', None)
-            if irods_auth_file is None:
-                irods_auth_file = utils.path.LocalPath(
-                    '~/.irods/.irodsA').expanduser()
-            if irods_auth_file.exists():
-                with open(irods_auth_file, encoding='utf-8') as authfd:
-                    self._password = irods.password_obfuscation.decode(
-                        authfd.read())
+            self._password = get_cached_password()
         return self._password
 
     @password.setter
     def password(self, password: str):
         """iRODS password setter method.
 
-        Pararmeters
+        Parameters
         -----------
         password: str
             Unencrypted iRODS password.
 
         """
         self._password = password
-
-    @password.deleter
-    def password(self):
-        """iRODS password deleter method.
-
-        """
-        self._password = ''
 
     @property
     def irods_session(self) -> irods.session.iRODSSession:
@@ -171,7 +155,6 @@ class Session:
         """Establish an iRODS session.
 
         """
-
         logging.debug('self.irods_env_file=%s', self.irods_env_file)
         options = {
             'irods_env_file': str(self.irods_env_file),
@@ -179,10 +162,7 @@ class Session:
         if self.ienv is not None:
             options.update(self.ienv)
         given_pass = self.password
-        del self.password
-        # Accessing reset password property scrapes cached password.
-        cached_pass = self.password
-        del self.password
+        cached_pass = get_cached_password()
         if given_pass != cached_pass:
             options['password'] = given_pass
         self._irods_session = self._get_irods_session(options)
@@ -212,6 +192,8 @@ class Session:
         """
         irods_env_file = options.pop('irods_env_file')
         if 'password' not in options:
+            if not irods_env_file:
+                raise FileNotFoundError('iRODS environment filename not set')
             try:
                 logging.info('AUTH FILE SESSION')
                 session = irods.session.iRODSSession(
@@ -220,7 +202,6 @@ class Session:
                 return session
             except TypeError as error:
                 logging.error('AUTH FILE LOGIN FAILED')
-                logging.error('Have you set the iRODS environment file correctly?')
                 raise error
             except Exception as error:
                 logging.error('AUTH FILE LOGIN FAILED: %r', error)
@@ -339,3 +320,24 @@ class Session:
 
         """
         return self.ienv.get('irods_zone_name', '')
+
+
+def get_cached_password() -> str:
+    """Scrape the cached password from the iRODS authentication file,
+    if it exists.
+
+    Returns
+    -------
+    str
+        Cached password or null string.
+
+    """
+    irods_auth_file = os.environ.get(
+        'IRODS_AUTHENTICATION_FILE', None)
+    if irods_auth_file is None:
+        irods_auth_file = utils.path.LocalPath(
+            utils.context.IRODS_DIR, '.irodsA').expanduser()
+    if irods_auth_file.exists():
+        with open(irods_auth_file, encoding='utf-8') as authfd:
+            return irods.password_obfuscation.decode(authfd.read())
+    return ''

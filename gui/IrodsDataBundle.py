@@ -162,7 +162,7 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
         # TODO generalise checking permissions for all GUI classes
         try:
             coll = self.conn.data_op.get_collection(coll_name)
-            coll_parent = self.conn.data_op.get_collection(utils.path.IrodsPath(coll.path).parent)
+            coll_parent = self.conn.data_op.get_collection(utils.path.iRODSPath(coll.path).parent)
         except Exception as error:
             if hasattr(error, 'message'):
                 self.statusLabel.setText(error.message)
