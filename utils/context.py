@@ -107,6 +107,8 @@ class Context:
                 filepath.write_text(json.dumps(IBRIDGES_CONF_TEMPLATE))
             self._ibridges_configuration = json_config.JSONConfig(filepath)
         elif self.ibridges_conf_file != self._ibridges_configuration.filepath:
+            # Reset the dictionary and filepath so the new configuration
+            # is loaded upon next access.
             self._ibridges_configuration.reset()
             self._ibridges_configuration.filepath = self.ibridges_conf_file
         # iBridges configuration check/default entry update.  Do not overwrite!
@@ -205,6 +207,8 @@ class Context:
         if self._irods_environment is None:
             self._irods_environment = json_config.JSONConfig(self.irods_env_file)
         elif self.irods_env_file != self._irods_environment.filepath:
+            # Reset the dictionary and filepath so the new environment
+            # is loaded upon next access.
             self._irods_environment.reset()
             self._irods_environment.filepath = self.irods_env_file
         return self._irods_environment
@@ -243,7 +247,10 @@ class Context:
 
         """
         logging.debug('Resetting Context.')
-        self.irods_connector.reset()
+        if self.irods_connector:
+            self.irods_connector.reset()
+        else:
+            logging.debug('irods_connector not set.  Cannot reset.')
         if self.ibridges_configuration:
             self.ibridges_configuration.reset()
             if self.ibridges_conf_file:

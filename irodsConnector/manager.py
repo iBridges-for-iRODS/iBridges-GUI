@@ -111,6 +111,9 @@ class IrodsConnector:
             Name of the environment file.
 
         """
+        if filepath == '':
+            logging.warning(
+                'The iRODS environment pathname being set to a null string')
         self._irods_env_file = filepath
         logging.debug(
             'setting: self._irods_env_file=%s', self._irods_env_file)
@@ -142,8 +145,9 @@ class IrodsConnector:
             iRODS environment.
 
         """
+        if config.config == {} and self.irods_env_file != '':
+            logging.warning('The iRODS environment being set is empty.')
         self._irods_environment = config
-
         logging.debug(
             'setting: self._irods_environment=%s', self._irods_environment)
 

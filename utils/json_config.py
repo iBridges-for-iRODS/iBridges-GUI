@@ -42,7 +42,7 @@ class JSONConfig:
             Representation.
 
         """
-        return f'{self.__class__.__name__}("{self._config.__repr__()}")'
+        return f'{self.__class__.__name__}("{self.config.__repr__()}")'
 
     @property
     def config(self) -> dict:

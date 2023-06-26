@@ -159,8 +159,10 @@ class Session:
         options = {
             'irods_env_file': str(self.irods_env_file),
         }
-        if self.ienv is not None:
+        if self.ienv:
             options.update(self.ienv)
+        else:
+            raise RuntimeError('The iRODS environment is empty!')
         given_pass = self.password
         cached_pass = get_cached_password()
         if given_pass != cached_pass:
