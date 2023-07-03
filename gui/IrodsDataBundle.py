@@ -26,11 +26,12 @@ EXTENSIONS = [
 
 
 class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
-                      gui.ui_files.tabDataBundle.Ui_tabDataBundle,
-                      utils.context.ContextContainer):
+                      gui.ui_files.tabDataBundle.Ui_tabDataBundle):
     """Window for (un)bundling data withing the iRODS system.
 
     """
+
+    context = utils.context.Context()
 
     def __init__(self):
         """Construct the data bundle window.
@@ -41,6 +42,9 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi("gui/ui_files/tabDataBundle.ui", self)
+ 
+        self.conf = self.context.ibridges_configuration.config
+        self.conn = self.context.irods_connector
         self.thread_create = None
         self.thread_extract = None
         self.worker_create = None
@@ -124,6 +128,12 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
         self.createButton.setEnabled(False)
         self.extractButton.setEnabled(False)
 
+    def _operation_allowed(self, item, user):
+        acls = self.conn.permission.get_permissions(obj=item)
+        accepted_users = [acl.user_name for acl in acls 
+                          if acl.access_name in ['own']]
+        return user in accepted_users
+
     def create_data_bundle(self):
         """Run an iRODS bundle rule on selected collection.
 
@@ -149,14 +159,30 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
                 PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             self.enable_buttons()
             return
-        # TODO find a better test (add permissions too)
-        if len(coll_name.split('/')) < 5:
-            self.statusLabel.setText(
-                'CREATE ERROR: Collection must be within a user/group collection')
+        # TODO generalise checking permissions for all GUI classes
+        try:
+            coll = self.conn.data_op.get_collection(coll_name)
+            coll_parent = self.conn.data_op.get_collection(utils.path.iRODSPath(coll.path).parent)
+        except Exception as error:
+            if hasattr(error, 'message'):
+                self.statusLabel.setText(error.message)
+            else:
+                self.statusLabel.setText('CREATE ERROR: Invalid collection chosen.')
             self.setCursor(
                 PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             self.enable_buttons()
             return
+
+        if not self._operation_allowed(coll, self.conn.username) or \
+                not self._operation_allowed(coll_parent, self.conn.username):
+        #if len(coll_name.split('/')) < 5:
+            self.statusLabel.setText(
+                'CREATE ERROR: Collection must be within a user/group collection, insufficient rights.')
+            self.setCursor(
+                PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
+            self.enable_buttons()
+            return
+
         src_coll = self.conn.get_collection(coll_name)
         src_size = utils.utils.get_coll_size(src_coll)
         if src_size == 0:
@@ -167,7 +193,7 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
             self.enable_buttons()
             return
         resc_name, free_space = self.resourceBox.currentText().split(' / ')
-        if 2 * src_size * kw.MULTIPLIER > int(free_space):
+        if 2 * src_size * kw.MULTIPLIER > int(free_space) and not self.conf.get("force_transfers", False):
             self.statusLabel.setText(
                 'CREATE ERROR: Resource must have enough free space in it')
             self.setCursor(
@@ -305,6 +331,7 @@ class RuleRunner(PyQt6.QtCore.QObject):
 
     """
     finished = PyQt6.QtCore.pyqtSignal(bool, tuple, str)
+    context = utils.context.Context()
 
     def __init__(self, rule_file, params, operation):
         """
@@ -319,6 +346,8 @@ class RuleRunner(PyQt6.QtCore.QObject):
 
         """
         super().__init__()
+
+        self.conn = self.context.irods_connector
         self.rule_file = rule_file
         self.params = params
         self.operation = operation

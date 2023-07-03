@@ -206,7 +206,7 @@ class iRODSPath(PurePath, irods.path.iRODSPath):
     _posix = True
 
     def __new__(cls, *args):
-        """Instantiate an IrodsPath.
+        """Instantiate an iRODSPath.
 
         Returns
         -------
