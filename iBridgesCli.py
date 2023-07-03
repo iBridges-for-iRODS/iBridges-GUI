@@ -194,7 +194,9 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
             try:
                 if not (self.context.ienv_is_complete()):
                     self._clean_exit("iRODS environment file incomplete", True)
-                self.irods_conn = IrodsConnector(secret)
+                # Fix to having a functional ic
+                # TODO: remove "contect.irods_connector "later
+                self.irods_conn = context.irods_connector = IrodsConnector(secret)
                 self.irods_conn.ibridges_configuration = self.context.ibridges_configuration
                 self.irods_conn.irods_env_file = self.context.irods_env_file
                 self.irods_conn.irods_environment = self.context.irods_environment
