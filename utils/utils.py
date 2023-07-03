@@ -30,17 +30,6 @@ LOG_LEVEL = {
 MAX_MSG_LEN = 1024
 
 
-def is_posix() -> bool:
-    """Determine POSIXicity.
-
-    Returns
-    -------
-    bool
-        Whether or not this is a POSIX operating system.
-    """
-    return sys.platform not in ['win32', 'cygwin']
-
-
 def ensure_dir(pathname: str) -> bool:
     """Ensure `pathname` exists as a directory.
 
@@ -140,6 +129,8 @@ def can_connect(hostname: str, port: int) -> bool:
     ----------
     hostname : str
         FQDN/IP of an iRODS server.
+    port : int
+        Port number on which iRODS is listening.
 
     Returns
     -------
@@ -149,7 +140,7 @@ def can_connect(hostname: str, port: int) -> bool:
     """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
-            sock.settimeout(10.0)
+            sock.settimeout(2.0)
             sock.connect((hostname, port))
             return True
         except socket.error:
@@ -167,7 +158,7 @@ def get_coll_dict(root_coll: irods.collection.iRODSCollection) -> dict:
     Returns
     -------
     dict
-        Keys of logical paths, values
+        keys: logical paths, values: lists of data object names
 
     """
     return {this_coll.path: [data_obj.name for data_obj in data_objs]
@@ -183,7 +174,7 @@ def get_downloads_dir() -> path.LocalPath:
         Absolute path to 'Downloads' directory.
 
     """
-    if is_posix():
+    if path.is_posix():
         return path.LocalPath('~', 'Downloads').expanduser()
     else:
         import winreg
@@ -208,40 +199,6 @@ def get_working_dir() -> path.LocalPath:
         return path.LocalPath(__file__).parent
     else:
         return path.LocalPath('.')
-
-
-def dir_exists(pathname: str) -> bool:
-    """Does `pathname` exist as a directory?
-
-    Parameters
-    ----------
-    pathname : str
-        Name of path to check.
-
-    Returns
-    -------
-    bool
-        Whether the directory exists.
-
-    """
-    return path.LocalPath(pathname).is_dir()
-
-
-def file_exists(pathname: str) -> bool:
-    """Does `pathname` exist as a file?
-
-    Parameters
-    ----------
-    pathname : str
-        Name of path to check.
-
-    Returns
-    -------
-    bool
-        Whether the file exists.
-
-    """
-    return path.LocalPath(pathname).is_file()
 
 
 def bytes_to_str(value: int) -> str:

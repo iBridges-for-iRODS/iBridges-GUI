@@ -162,7 +162,7 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
         # TODO generalise checking permissions for all GUI classes
         try:
             coll = self.conn.data_op.get_collection(coll_name)
-            coll_parent = self.conn.data_op.get_collection(utils.path.IrodsPath(coll.path).parent)
+            coll_parent = self.conn.data_op.get_collection(utils.path.iRODSPath(coll.path).parent)
         except Exception as error:
             if hasattr(error, 'message'):
                 self.statusLabel.setText(error.message)
@@ -255,7 +255,7 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
                 PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             self.enable_buttons()
             return
-        obj_path = utils.path.IrodsPath(obj_path)
+        obj_path = utils.path.iRODSPath(obj_path)
         file_type = ''.join(obj_path.suffixes)[1:]
         if file_type not in EXTENSIONS:
             self.statusLabel.setText(

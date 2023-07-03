@@ -133,7 +133,7 @@ class DataOperation(object):
             iRODS path less the element after the final '/'
 
         """
-        return utils.path.IrodsPath(path).parent
+        return utils.path.iRODSPath(path).parent
 
     def ensure_data_object(self, data_object_name: str) -> irods.data_object.iRODSDataObject:
         """Optimally create a data object with `data_object_name` if one does
@@ -302,7 +302,7 @@ class DataOperation(object):
         source = utils.path.LocalPath(source)
         if source.is_file() or source.is_dir():
             if self.is_collection(destination):
-                cmp_path = utils.path.IrodsPath(destination.path, source.name)
+                cmp_path = utils.path.iRODSPath(destination.path, source.name)
             else:
                 raise irods.exception.CollectionDoesNotExist(destination)
         else:
@@ -387,7 +387,7 @@ class DataOperation(object):
         """
         logging.info('IRODS DOWNLOAD: %s-->%s', source.path, destination)
         if self.is_dataobject_or_collection(source):
-            source_path = utils.path.IrodsPath(source.path)
+            source_path = utils.path.iRODSPath(source.path)
         else:
             raise FileNotFoundError(
                 'IRODS DOWNLOAD: not a valid source path')
@@ -651,7 +651,7 @@ class DataOperation(object):
         """
         irods_sizes = []
         for path_name in path_names:
-            irods_name = utils.path.IrodsPath(path_name)
+            irods_name = utils.path.iRODSPath(path_name)
             if self.collection_exists(irods_name):
                 irods_sizes.append(
                     utils.utils.get_coll_size(

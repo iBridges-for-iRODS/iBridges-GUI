@@ -257,7 +257,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             self.previewBrowser.append(preview_string)
         elif self.conn.dataobject_exists(obj_path):
             obj = self.conn.get_dataobject(obj_path)
-            file_type = utils.path.IrodsPath(obj_path).suffix[1:]
+            file_type = utils.path.iRODSPath(obj_path).suffix[1:]
             if file_type in ['txt', 'json', 'csv']:
                 try:
                     with obj.open('r') as objfd:
@@ -288,7 +288,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
     # @TODO: Add a proper data model for the table model
     def _get_irods_item_of_table_row(self, row):
         obj_path, obj_name = self._get_object_path_name(row)
-        full_path = utils.path.IrodsPath(obj_path, obj_name)
+        full_path = utils.path.iRODSPath(obj_path, obj_name)
         try:
             item = self.conn.get_collection(full_path)
         except irods.exception.CollectionDoesNotExist:
@@ -308,7 +308,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         try:
             self._clear_error_label()
             self._clear_view_tabs()
-            obj_path = utils.path.IrodsPath(self.inputPath.text())
+            obj_path = utils.path.iRODSPath(self.inputPath.text())
             if self.conn.collection_exists(obj_path):
                 coll = self.conn.get_collection(obj_path)
                 self.collTable.setRowCount(len(coll.data_objects)+len(coll.subcollections))
@@ -362,7 +362,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                     "iRODS NETWORK ERROR: No Connection, please check network")
 
     def set_parent_path(self):
-        current_path = utils.path.IrodsPath(self.inputPath.text())
+        current_path = utils.path.iRODSPath(self.inputPath.text())
         self.inputPath.setText(current_path.parent)
         self.loadTable()
 
@@ -375,7 +375,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self._clear_error_label()
         row = index.row()
         obj_path, obj_name = self._get_object_path_name(row)
-        full_path = utils.path.IrodsPath(obj_path, obj_name)
+        full_path = utils.path.iRODSPath(obj_path, obj_name)
         if self.conn.collection_exists(full_path):
             self.inputPath.setText(full_path)
             self.loadTable()
@@ -390,7 +390,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         row = index.row()
         self.current_browser_row = row
         obj_path, obj_name = self._get_object_path_name(row)
-        obj_path = utils.path.IrodsPath(obj_path, obj_name)
+        obj_path = utils.path.iRODSPath(obj_path, obj_name)
         self._clear_view_tabs()
         try:
             self._fill_preview_tab(obj_path)
@@ -545,7 +545,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.errorLabel.clear()
         errors = {}
         obj_path, obj_name = self._get_object_path_name(self.current_browser_row)
-        obj_path = utils.path.IrodsPath(obj_path, obj_name)
+        obj_path = utils.path.iRODSPath(obj_path, obj_name)
         user_name = self.aclUserField.text()
         if not user_name:
             errors['User name'] = None

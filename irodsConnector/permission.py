@@ -19,7 +19,7 @@ class Permission(object):
 
             Parameters
             ----------
-            data_man: dataOperations.DataOperation
+            data_man : dataOperations.DataOperation
                 instance of the Dataoperation class
             sess_man : session.Session
                 instance of the Session class

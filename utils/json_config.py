@@ -6,12 +6,12 @@ import json
 from . import path
 
 
-class JsonConfig:
+class JSONConfig:
     """A configuration stored in a JSON file.
 
     """
 
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str = ''):
         """Create the configuration.
 
         Parameters
@@ -31,7 +31,7 @@ class JsonConfig:
             If self.config is truthy.
 
         """
-        return self._config != {}
+        return self.config != {}
 
     def __repr__(self) -> str:
         """Representation of this configuration.
@@ -42,7 +42,7 @@ class JsonConfig:
             Representation.
 
         """
-        return f'{self.__class__.__name__}("{self._config.__repr__()}")'
+        return f'{self.__class__.__name__}("{self.config.__repr__()}")'
 
     @property
     def config(self) -> dict:
@@ -70,6 +70,11 @@ class JsonConfig:
         Set the configuration to `conf_dict`.
         file.
 
+        Parameters
+        ----------
+        conf_dict : dict
+            New configuration.
+
         """
         self._config.clear()
         self._config.update(conf_dict)
@@ -85,19 +90,28 @@ class JsonConfig:
 
     @property
     def filepath(self) -> path.LocalPath:
-        """
+        """Path to configuration file.
+
+        Returns
+        -------
+        path.LocalPath
 
         """
         if not isinstance(self._filepath, path.LocalPath):
-            return path.LocalPath()
+            self._filepath = path.LocalPath(self._filepath)
         return self._filepath
 
     @filepath.setter
     def filepath(self, filepath: str):
-        """
+        """Filepath setter.
+
+        Parameters
+        ----------
+        filepath : str
+            New filepath.
 
         """
-        self._filepath = path.LocalPath(filepath)
+        self._filepath = path.LocalPath(filepath).expanduser()
 
     def clear(self):
         """Clear the configuration .

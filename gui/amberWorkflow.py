@@ -107,31 +107,31 @@ class amberWorkflow(QWidget, Ui_tabAmberData):
     def submitData(self):
         self.jobSubmitLabel.clear()
         self.jobSubmitLabel.setText('   ')
-        (index, path) = self.getPathsFromTrees(self.irodsUploadTree, False)
-        obj_path = utils.path.IrodsPath(path) 
-        if  self.context.irods_connector.dataobject_exists(path) and obj_path.suffix in ['.wav', '.mp3']:
+        index, path = self.getPathsFromTrees(self.irodsUploadTree, False)
+        obj_path = utils.path.iRODSPath(path)
+        obj_exists = self.context.irods_connector.dataobject_exists(path)
+        if obj_exists and obj_path.suffix in ['.wav', '.mp3']:
             obj = self.context.irods_connector.get_dataobject(obj_path)
-            tempFile = utils.path.LocalPath(self.context.ibridges_conf_file.parent,
-                                            obj.name)
+            temp_file = utils.path.LocalPath(
+                utils.context.IBRIDGES_DIR, obj.name)
             glossary = None
             if self.glossaryBox.currentText() != "None":
                 glossary = self.glossaryBox.currentText().split(" / ")[1]
-
             try:
                 obj = self.context.irods_connector.get_dataobject(path)
                 g = io.BytesIO(obj.open('r').read())
-                print(tempFile, glossary)
-                with open(tempFile, 'wb') as out:
+                print(temp_file, glossary)
+                with open(temp_file, 'wb') as out:
                     out.write(g.read())
-                info = self.ac.submit_job(tempFile, glossary_id=glossary)
+                info = self.ac.submit_job(temp_file, glossary_id=glossary)
                 self.jobSubmitLabel.setText(
                         info["jobStatus"]["jobId"]+" / "+info["jobStatus"]["filename"]+ \
                                 " / "+info["jobStatus"]["status"])
             except Exception as error:
                 self.jobSubmitLabel.setText(f'AMBER ERROR: {error!r}')
             finally:
-                if tempFile.exists():
-                    os.remove(tempFile)
+                if temp_file.exists():
+                    os.remove(temp_file)
         else:
             self.jobSubmitLabel.setText("AMBER ERROR: Not a valid file.")
 

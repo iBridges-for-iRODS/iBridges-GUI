@@ -22,7 +22,7 @@ THIS_APPLICATION = 'iBridges'
 
 # Application globals
 app = PyQt6.QtWidgets.QApplication(sys.argv)
-widget = PyQt6.QtWidgets.QStackedWidget()
+stacked_widget = PyQt6.QtWidgets.QStackedWidget()
 
 # Work around a PRC XML issue handling special characters
 os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
@@ -30,7 +30,7 @@ os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
 
 class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
                        gui.ui_files.irodsLogin.Ui_irodsLogin):
-    """Definition and initialization of the iRODS login window.
+    """The login widget.
 
     """
     use_icommands = None
@@ -38,6 +38,9 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
     context = utils.context.Context()
 
     def __init__(self):
+        """Initialize the iRODS login window.
+
+        """
         super().__init__()
         self.irods_path = utils.path.LocalPath(utils.context.IRODS_DIR).expanduser()
         self._load_gui()
@@ -45,7 +48,7 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self._init_password()
 
     def _load_gui(self):
-        """
+        """Initialize and connect the GUI elements.
 
         """
         if getattr(sys, 'frozen', False):
@@ -81,14 +84,16 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self.envbox.setCurrentIndex(index)
 
     def _init_password(self):
-        """
+        """Store this initial cached password scraped from auth file and
+        set it to the password field so the user sees that previous
+        login credentials have been found.
 
         """
-        if self.context.irods_connector.password:
-            self.passwordField.setText(self.context.irods_connector.password)
+        cached_pwd = self.context.irods_connector.get_cached_password()
+        self.passwordField.setText(cached_pwd)
 
-    def _reset_mouse_and_error_labels(self):
-        """Reset cursor and clear error text
+    def reset_mouse_and_error_labels(self):
+        """Reset cursor and clear any error text.
 
         """
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
@@ -124,9 +129,15 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
     def login_function(self):
         """Check connectivity and log in to iRODS handling common errors.
 
+        The initial and subsequent sessions need to be handled
+        differently.  Store the initial given password to see when the
+        user has entered a new one.
+
         """
         irods_env_file = self.irods_path.joinpath(self.envbox.currentText())
+        # Set the user-given filename for both the configuration and the Session
         self.context.irods_env_file = irods_env_file
+        self.context.irods_connector.irods_env_file = irods_env_file
         logging.debug('IRODS ENVIRONMENT FILE SET: %s', irods_env_file.name)
         self.envError.setText('')
         if not (self.context.irods_environment.config and self.context.ienv_is_complete()):
@@ -137,24 +148,21 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             self.passError.clear()
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
-        if not utils.utils.can_connect(
-                self.context.irods_environment.config.get('irods_host', ''),
-                self.context.irods_environment.config.get('irods_port', '')):
-            message = 'No network connection to server'
-            logging.warning(message)
-            self.envError.setText(message)
+        irods_host = self.context.irods_environment.config.get('irods_host', '')
+        irods_port = self.context.irods_environment.config.get('irods_port', '')
+        if not utils.utils.can_connect(irods_host, irods_port):
+            message = 'No network connection to server: %s:%s'
+            logging.warning(message, irods_host, irods_port)
+            self.envError.setText(message % (irods_host, irods_port))
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
         self.context.irods_connector.use_icommands = self.use_icommands
         self.context.ibridges_configuration.config['last_ienv'] = irods_env_file.name
         self.context.save_ibridges_configuration()
-        password = self.passwordField.text()
-        self.context.irods_connector.password = password
+        logging.debug('IBRIDGES CONFIGURATION SAVED')
+        self.context.irods_connector.password = self.passwordField.text()
         logging.debug('IRODS PASSWORD SET')
-        self.context.irods_connector.irods_env_file = self.context.irods_env_file
-        self.context.irods_connector.irods_environment = self.context.irods_environment
-        self.context.irods_connector.ibridges_configuration = self.context.ibridges_configuration
         try:
             self.context.irods_connector.connect()
         except (irods.exception.CAT_INVALID_AUTHENTICATION,
@@ -187,37 +195,46 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             self.envError.setText(message % error)
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
-        # widget is a global variable
-        browser = gui.mainmenu.mainmenu(widget)
-        if len(widget) == 1:
-            widget.addWidget(browser)
-        self._reset_mouse_and_error_labels()
-        widget.setCurrentIndex(widget.currentIndex()+1)
+        browser = gui.mainmenu.MainMenu(stacked_widget)
+        self.activate_browser(browser)
+        # Reinitialize password field for a potential following session.
+        self._init_password()
 
     def ticket_login(self):
         """Log in to iRODS using a ticket.
 
         """
-        # widget is a global variable
-        browser = gui.mainmenu.mainmenu(widget)
+        # stacked_widget is a global variable
+        browser = gui.mainmenu.MainMenu(stacked_widget)
         browser.menuOptions.clear()
         browser.menuOptions.deleteLater()
-        if len(widget) == 1:
-            widget.addWidget(browser)
-        self._reset_mouse_and_error_labels()
+        self.activate_browser(browser)
         # self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
-        widget.setCurrentIndex(widget.currentIndex()+1)
+
+    def activate_browser(self, browser: PyQt6.QtWidgets.QMainWindow):
+        """Activate curent browser widget.
+
+        """
+        if len(stacked_widget) == 1:
+            stacked_widget.addWidget(browser)
+        self.reset_mouse_and_error_labels()
+        stacked_widget.setCurrentIndex(stacked_widget.currentIndex()+1)
 
 
-def closeClean():
+def close_clean():
+    """Clean up connections in preparation to close application.
 
+    """
     context = utils.context.Context()
     if context.irods_connector:
         context.irods_connector.cleanup()
 
 
 def main():
-    """Main function
+    """Main function.
+
+    Initialize the context singleton, create the login widget, and
+    execute the main application thread.
 
     """
     # Initialize logger first because Context may want to log as well.
@@ -232,10 +249,10 @@ def main():
     setproctitle.setproctitle(context.application_name)
     login_window = IrodsLoginWindow()
     login_window.this_application = context.application_name
-    widget.addWidget(login_window)
-    widget.show()
+    stacked_widget.addWidget(login_window)
+    stacked_widget.show()
     # app.setQuitOnLastWindowClosed(False)
-    app.lastWindowClosed.connect(closeClean)
+    app.lastWindowClosed.connect(close_clean)
     app.exec()
 
 

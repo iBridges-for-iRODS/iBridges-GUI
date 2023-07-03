@@ -52,10 +52,7 @@ export PYTHON_IRODSCLIENT_DEFAULT_XML=QUASI_XML
 ./iBridges.py
 ```
 
-
-
 Please consult the documentation for more information about the configuration: 
-	
 
 <p align="center">
     <a href="https://chstaiger.github.io/iBridges-Gui/docs/getting-started.html#configuration"><strong> iBridges Configuration »</strong></a> .

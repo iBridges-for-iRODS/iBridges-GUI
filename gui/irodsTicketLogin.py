@@ -146,7 +146,7 @@ class irodsTicketLogin(QWidget, Ui_tabTicketAccess):
             raise
 
     def __fillPreview(self, value, path):
-        newPath = utils.path.IrodsPath(path, value)
+        newPath = utils.path.iRODSPath(path, value)
         if self.conn.session.collections.exists(newPath):
             coll = self.conn.session.collections.get(newPath)
             content = ['Collections:', '-----------------'] + \

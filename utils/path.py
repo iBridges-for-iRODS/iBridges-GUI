@@ -5,7 +5,6 @@ import logging
 import os
 import pathlib
 import shutil
-import sys
 
 import irods.path
 
@@ -18,7 +17,7 @@ def is_posix() -> bool:
     bool
         Whether or not this is a POSIX operating system.
     """
-    return sys.platform not in ['win32', 'cygwin']
+    return os.name == 'posix'
 
 
 class PurePath(str):
@@ -51,17 +50,6 @@ class PurePath(str):
         """
         self.args = args
 
-    def __str__(self) -> str:
-        """Render Paths into a string.
-
-        Returns
-        -------
-        str
-            String value of the pathlib.Path.
-
-        """
-        return self.path.__str__()
-
     def __repr__(self) -> str:
         """Render Paths into a representation.
 
@@ -73,54 +61,16 @@ class PurePath(str):
         """
         return f'{self.__class__.__name__}("{self.path.__str__()}")'
 
-    @property
-    def path(self) -> pathlib.PurePath:
-        """A pathlib.Path instance providing extra functionality.
+    def __str__(self) -> str:
+        """Render Paths into a string.
 
         Returns
         -------
-        pathlib.PurePath
-            Initialized from self.args.
+        str
+            String value of the pathlib.Path.
 
         """
-        if self._path is None:
-            if is_posix() or self._posix:
-                self._path = pathlib.PurePosixPath(*self.args)
-            else:
-                self._path = pathlib.PureWindowsPath(*self.args)
-        return self._path
-
-    def joinpath(self, *args):
-        """Combine this path with one or several arguments, and return
-        a new path representing either a subpath (if all arguments are
-        relative paths) or a totally different path (if one of the
-        arguments is anchored).
-
-        Returns
-        -------
-        *Path
-            Joined Path.
-
-        """
-        return type(self)(str(self.path.joinpath(*args)))
-
-    def with_suffix(self, suffix: str):
-        """Create a new path with the file `suffix` changed.  If the
-        path has no `suffix`, add given `suffix`.  If the given
-        `suffix` is an empty string, remove the `suffix` from the path.
-
-        Parameters
-        ----------
-        suffix : str
-            New extension for the file 'stem'.
-
-        Returns
-        -------
-        *Path
-            Suffix-updated Path.
-
-        """
-        return type(self)(str(self.path.with_suffix(suffix)))
+        return self.path.__str__()
 
     @property
     def name(self) -> str:
@@ -160,6 +110,23 @@ class PurePath(str):
         return self.path.parts
 
     @property
+    def path(self) -> pathlib.PurePath:
+        """A pathlib.Path instance providing extra functionality.
+
+        Returns
+        -------
+        pathlib.PurePath
+            Initialized from self.args.
+
+        """
+        if self._path is None:
+            if is_posix() or self._posix:
+                self._path = pathlib.PurePosixPath(*self.args)
+            else:
+                self._path = pathlib.PureWindowsPath(*self.args)
+        return self._path
+
+    @property
     def stem(self) -> str:
         """The final path component, minus its last suffix.
 
@@ -197,24 +164,56 @@ class PurePath(str):
         """
         return self.path.suffixes
 
+    def joinpath(self, *args):
+        """Combine this path with one or several arguments, and return
+        a new path representing either a subpath (if all arguments are
+        relative paths) or a totally different path (if one of the
+        arguments is anchored).
 
-class IrodsPath(PurePath, irods.path.iRODSPath):
+        Returns
+        -------
+        *Path
+            Joined Path.
+
+        """
+        return type(self)(str(self.path.joinpath(*args)))
+
+    def with_suffix(self, suffix: str):
+        """Create a new path with the file `suffix` changed.  If the
+        path has no `suffix`, add given `suffix`.  If the given
+        `suffix` is an empty string, remove the `suffix` from the path.
+
+        Parameters
+        ----------
+        suffix : str
+            New extension for the file 'stem'.
+
+        Returns
+        -------
+        *Path
+            Suffix-updated Path.
+
+        """
+        return type(self)(str(self.path.with_suffix(suffix)))
+
+
+class iRODSPath(PurePath, irods.path.iRODSPath):
     """A pure POSIX path without file system functionality based on the
     best of str, pathlib, and iRODSPath.  This path is normalized upon
     instantiation.
 
     """
+    _posix = True
 
     def __new__(cls, *args):
-        """Instantiate an IrodsPath.
+        """Instantiate an iRODSPath.
 
         Returns
         -------
-        IrodsPath
+        iRODSPath
             Uninitialized instance.
 
         """
-        cls._posix = True
         path = pathlib.PurePosixPath(*args)
         return super().__new__(cls, path.__str__())
 
@@ -273,8 +272,8 @@ class LocalPath(PurePath):
         return type(self)(str(self.path.absolute()))
 
     def copy_path(self, target: str, squash: bool = False):
-        """Copy this path to the target path, overwriting existing
-        elements if that path exists and `squash` is True.
+        """Copy this path to (not into) the target path, overwriting
+        existing elements if that path exists and `squash` is True.
 
         The target path may be absolute or relative. Relative paths are
         interpreted relative to the current working directory, *not*
@@ -288,8 +287,12 @@ class LocalPath(PurePath):
             Whether to overwrite path.
 
         """
+        options = {'symlinks': True}
+        if squash:
+            # This option works for Python 3.8+
+            options['dirs_exist_ok'] = True
         try:
-            shutil.copytree(self, target, symlinks=True)
+            shutil.copytree(self, target, **options)
         except FileExistsError as error:
             if squash:
                 type(self)(target).rmdir(squash=True)
@@ -312,16 +315,19 @@ class LocalPath(PurePath):
     def exists(self) -> bool:
         """Whether this path exists.
 
+        Path.exists() sometimes raises an error prior to Python 3.8
+
         Returns
         -------
         bool
             Path exists or not.
 
         """
-        # try:
-        return self.path.exists()
-        # except AttributeError:
-        #     return os.path.exists(self.path)
+        try:
+            return self.path.exists()
+        except Exception as error:
+            print(f'WARNING -- problem ({error}) determining if {self.path} exists')
+            return False
 
     def expanduser(self):
         """Return a new path with expanded ~ and ~user constructs (as
@@ -358,20 +364,25 @@ class LocalPath(PurePath):
     def is_dir(self) -> bool:
         """Whether this path is a directory.
 
+        Path.is_dir() sometimes raises an error prior to Python 3.8
+
         Returns
         -------
         bool
             Is a directory (folder) or not.
 
         """
-        # try:
-        return self.path.is_dir()
-        # except AttributeError:
-        #     return os.path.isdir(self.path)
+        try:
+            return self.path.is_dir()
+        except Exception as error:
+            print(f'WARNING -- problem ({error}) determining if {self.path} is a directory')
+            return False
 
     def is_file(self) -> bool:
         """Whether this path is a regular file (also True for symlinks
         pointing to regular files)
+
+        Path.is_file() sometimes raises an error prior to Python 3.8
 
         Returns
         -------
@@ -379,10 +390,11 @@ class LocalPath(PurePath):
             Is a regular file (symlink) or not.
 
         """
-        # try:
-        return self.path.is_file()
-        # except AttributeError:
-        #     return os.path.isfile(os.path)
+        try:
+            return self.path.is_file()
+        except Exception as error:
+            print(f'WARNING -- problem ({error}) determining if {self.path} is a file')
+            return False
 
     def mkdir(self, mode: int = 511, parents: bool = False, exist_ok: bool = False):
         """Create a new directory at this path.
@@ -400,8 +412,11 @@ class LocalPath(PurePath):
         try:
             self.path.mkdir(mode=mode, parents=parents, exist_ok=exist_ok)
         except AttributeError:
-            # TODO use os.mkdir() to implement this.
-            pass
+            if not parents:
+                if not self.path.exists():
+                    os.mkdir(self.path, mode=mode)
+            else:
+                os.makedirs(self.path, mode=mode, exist_ok=exist_ok)
 
     def read_bytes(self) -> bytes:
         """Open the file in bytes mode, read it, and close the file.
@@ -453,11 +468,14 @@ class LocalPath(PurePath):
             The target path.
 
         """
-        return type(self)(str(self.path.rename(target)))
+        if not type(self)(target).exists():
+            return type(self)(str(self.path.rename(target)))
+        logging.warning('Cannot rename %s: directory exists', target)
+        return self
 
     def replace_path(self, target: str, squash: bool = False):
         """Rename (move) this path to the target path, overwriting the
-        directory if it exists and overwriting any contents if `squash`
+        directory if it exists, and overwriting any contents if `squash`
         is set.
 
         The target path may be absolute or relative. Relative paths are

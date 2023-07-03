@@ -9,13 +9,16 @@ from . import path
 
 IBRIDGES_DIR = '~/.ibridges'
 IRODS_DIR = '~/.irods'
-DEFAULT_IBRIDGES_CONF_FILE = f'{IBRIDGES_DIR}/ibridges_config.json'
-IBRIDGES_TEMPLATE = {
+DEFAULT_IBRIDGES_CONF_FILE = path.LocalPath(
+    IBRIDGES_DIR, 'ibridges_config.json').expanduser()
+DEFAULT_IRODS_ENV_FILE = path.LocalPath(
+    IRODS_DIR, 'irods_environment.json').expanduser()
+IBRIDGES_CONF_TEMPLATE = {
     'check_free_space': True,
     'force_transfers': False,
     'verbose': 'info',
 }
-MANDATORY_IRODS_KEYS = [
+MANDATORY_IRODS_ENV_KEYS = [
     'irods_default_resource',
     'irods_host',
     'irods_port',
@@ -54,15 +57,16 @@ class Context:
         del self.irods_connector
 
     @property
-    def ibridges_conf_file(self) -> str:
+    def ibridges_conf_file(self) -> path.LocalPath:
         """iBridges configuration filename.
 
         Returns
         -------
-        str
+        utils.path.LocalPath
             Name of configuration file
 
         """
+        logging.debug('getting: self._ibridges_conf_file=%s', self._ibridges_conf_file)
         return self._ibridges_conf_file
 
     @ibridges_conf_file.setter
@@ -76,17 +80,20 @@ class Context:
 
         """
         self._ibridges_conf_file = path.LocalPath(filename).expanduser()
+        logging.debug(
+            'setting: self._ibridges_conf_file=%s', self._ibridges_conf_file)
+        # TODO keep conditional and use shadow variable?
         if self._ibridges_configuration:
             self._ibridges_configuration.filepath = self._ibridges_conf_file
 
     @property
-    def ibridges_configuration(self) -> json_config.JsonConfig:
+    def ibridges_configuration(self) -> json_config.JSONConfig:
         """iBridges configuration dictionary loaded from the
         configuration file or from template.
 
         Returns
         -------
-        utils.json_config.JsonConfig
+        utils.json_config.JSONConfig
             Configuration instance.
 
         """
@@ -96,15 +103,17 @@ class Context:
             filepath = path.LocalPath(self.ibridges_conf_file).expanduser()
             if not filepath.parent.is_dir():
                 filepath.parent.mkdir()
-            if not filepath.is_file():
-                filepath.write_text(json.dumps(IBRIDGES_TEMPLATE))
-            self._ibridges_configuration = json_config.JsonConfig(filepath)
+            if not filepath.exists():
+                filepath.write_text(json.dumps(IBRIDGES_CONF_TEMPLATE))
+            self._ibridges_configuration = json_config.JSONConfig(filepath)
         elif self.ibridges_conf_file != self._ibridges_configuration.filepath:
+            # Reset the dictionary and filepath so the new configuration
+            # is loaded upon next access.
             self._ibridges_configuration.reset()
             self._ibridges_configuration.filepath = self.ibridges_conf_file
         # iBridges configuration check/default entry update.  Do not overwrite!
         conf_dict = self._ibridges_configuration.config
-        for key, val in IBRIDGES_TEMPLATE.items():
+        for key, val in IBRIDGES_CONF_TEMPLATE.items():
             if key not in conf_dict:
                 logging.info(
                     'Adding missing entry to iBridges configuration: (%s, %s)',
@@ -136,10 +145,10 @@ class Context:
         self._irods_connector = connector
         import irodsConnector
         if isinstance(connector, irodsConnector.manager.IrodsConnector):
+            logging.debug('assigning: self._irods_connector.ibridges_configuration')
             self._irods_connector.ibridges_configuration = self.ibridges_configuration
-            logging.debug('self._irods_connector.ibridges_configuration')
+            logging.debug('assigning: self._irods_connector.irods_environment')
             self._irods_connector.irods_environment = self.irods_environment
-            logging.debug('self._irods_connector.irods_environment')
 
     @irods_connector.deleter
     def irods_connector(self):
@@ -148,50 +157,58 @@ class Context:
         """
         if self._irods_connector is not None:
             del self._irods_connector
-        self._irods_connector = None
+            self._irods_connector = None
 
     @property
-    def irods_env_file(self) -> str:
+    def irods_env_file(self) -> path.LocalPath:
         """iRODS environment filename.
 
         Returns
         -------
-        str
+        utils.path.LocalPath
             Name of environment file
 
         """
-        logging.debug('getting: self._irods_env_file')
+        logging.debug('getting: self._irods_env_file=%s', self._irods_env_file)
         return self._irods_env_file
 
     @irods_env_file.setter
-    def irods_env_file(self, filename: str):
+    def irods_env_file(self, filepath: str):
         """iRODS environment filename setter.
 
         Parameters
         ----------
-        filename : str
-            Name of the environment file.
+        filepath : str
+            Full path of the environment file.
 
         """
-        self._irods_env_file = path.LocalPath(filename).expanduser()
-        logging.debug('setting: self._irods_env_file')
-        self._irods_environment.filepath = self._irods_env_file
+        self._irods_env_file = path.LocalPath(filepath).expanduser()
+        logging.debug(
+            'setting: self._irods_env_file=%s', self._irods_env_file)
+        # TODO keep conditional and use shadow variable?
+        if self._irods_environment is not None:
+            logging.debug(
+                'setting: self._irods_environment.filepath=%s',
+                self._irods_env_file)
+            self._irods_environment.filepath = self._irods_env_file
 
     @property
-    def irods_environment(self) -> json_config.JsonConfig:
+    def irods_environment(self) -> json_config.JSONConfig:
         """iRODS environment dictionary loaded from the configuration
         file.  Returns a blank, initialized instance if the
         configuration is not set.
 
         Returns
         -------
-        utils.json_config.JsonConfig
+        utils.json_config.JSONConfig
             Configuration instance.
 
         """
         if self._irods_environment is None:
-            self._irods_environment = json_config.JsonConfig(self.irods_env_file)
+            self._irods_environment = json_config.JSONConfig(self.irods_env_file)
         elif self.irods_env_file != self._irods_environment.filepath:
+            # Reset the dictionary and filepath so the new environment
+            # is loaded upon next access.
             self._irods_environment.reset()
             self._irods_environment.filepath = self.irods_env_file
         return self._irods_environment
@@ -205,11 +222,11 @@ class Context:
             Whether the environment is complete.
 
         """
-        if self._irods_environment is not None:
+        if self.irods_environment is not None:
             env_dict = self._irods_environment.config
             if env_dict:
                 return is_complete(
-                    env_dict, MANDATORY_IRODS_KEYS, 'iRODS environment')
+                    env_dict, MANDATORY_IRODS_ENV_KEYS, 'iRODS environment')
             return False
         return False
 
@@ -226,18 +243,22 @@ class Context:
         self.irods_environment.save()
 
     def reset(self):
-        """Reset existing instances of dynamic class members
+        """Reset existing instances of dynamic class members.
 
         """
-        self.irods_connector.reset()
+        logging.debug('Resetting Context.')
+        if self.irods_connector:
+            self.irods_connector.reset()
+        else:
+            logging.debug('irods_connector not set.  Cannot reset.')
         if self.ibridges_configuration:
             self.ibridges_configuration.reset()
-            filepath = path.LocalPath(self.ibridges_conf_file).expanduser()
-            self.ibridges_configuration.filepath = filepath
+            if self.ibridges_conf_file:
+                self.ibridges_configuration.filepath = self.ibridges_conf_file
         if self.irods_environment:
             self.irods_environment.reset()
-            filepath = path.LocalPath(self.irods_env_file).expanduser()
-            self.irods_environment.filepath = filepath
+            if self.irods_env_file:
+                self.irods_environment.filepath = self.irods_env_file
 
 
 def is_complete(conf_dict: dict, mandatory: list, conf_type: str) -> bool:
@@ -290,7 +311,7 @@ class ContextContainer:
             Configuration from JSON serialized string.
 
         """
-        if self.context.ibridges_configuration:
+        if self.context.ibridges_configuration is not None:
             return self.context.ibridges_configuration.config
         return {}
 
@@ -303,6 +324,9 @@ class ContextContainer:
         irodsConnector.manager.IrodsConnector
             iRODS connection instance set into the context.
         """
+        if not self.context.irods_connector:
+            raise AttributeError(
+                'The iRODS connector has not been properly created/assigned.')
         return self.context.irods_connector
 
     @property
@@ -314,6 +338,6 @@ class ContextContainer:
         dict
             Environment from JSON serialized string.
         """
-        if self.context.irods_environment:
+        if self.context.irods_environment is not None:
             return self.context.irods_environment.config
         return {}

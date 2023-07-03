@@ -30,10 +30,10 @@ class IrodsExampleTab(PyQt6.QtWidgets.QWidget,
         self.irodsmodel = IrodsModel(treeView)
         treeView.setModel(self.irodsmodel)
 
-        home_coll_str = utils.path.IrodsPath(
+        home_coll_str = utils.path.iRODSPath(
             '/', self.context.irods_connector.zone, 'home')
         irods_root_coll = self.ienv_dict.get('irods_home', home_coll_str)
-        
+
         self.irodsmodel.setHorizontalHeaderLabels([irods_root_coll,
                                               'Level', 'iRODS ID',
                                               'parent ID', 'type'])
