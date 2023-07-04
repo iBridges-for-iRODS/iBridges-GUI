@@ -10,7 +10,7 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 
 import gui
-import utils
+import irodsConnector
 
 REMOVE_LOCAL = 'ui_remLocalcopy'
 UPLOAD_HOSTS = [
@@ -26,8 +26,7 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
     system.
 
     """
-
-    context = utils.context.Context()
+    conn = irodsConnector.manager.IrodsConnector()
 
     def __init__(self):
         """Construct the transfer window.
@@ -38,8 +37,6 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi("gui/ui_files/tabUpDownload.ui", self)
-
-        self.conn = self.context.irods_connector
         self.localmodel = None
         self.irodsmodel = None
         self.syncing = False
@@ -90,7 +87,6 @@ class IrodsUpDownload(PyQt6.QtWidgets.QWidget,
         #     PyQt6.QtGui.QStandardItem(self.irodsmodel.base_path))
         # self.irodsFsTreeView.setCurrentIndex(index)
         # self.irodsFsTreeView.scrollTo(index)
-
 
     def _create_buttons(self):
         """Create panel buttons.

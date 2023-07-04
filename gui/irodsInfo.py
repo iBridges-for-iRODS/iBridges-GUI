@@ -8,7 +8,7 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 
 import gui
-import utils
+import irodsConnector
 
 
 class irodsInfo(PyQt6.QtWidgets.QWidget,
@@ -16,8 +16,7 @@ class irodsInfo(PyQt6.QtWidgets.QWidget,
     """Set iRODS information in the GUI
 
     """
-
-    context = utils.context.Context()
+    conn = irodsConnector.manager.IrodsConnector()
 
     def __init__(self):
         super().__init__()
@@ -25,8 +24,6 @@ class irodsInfo(PyQt6.QtWidgets.QWidget,
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi("gui/ui_files/tabInfo.ui", self)
-        self.conn = self.context.irods_connector
-
         self.refreshButton.clicked.connect(self.refresh_info)
         self.refresh_info()
 

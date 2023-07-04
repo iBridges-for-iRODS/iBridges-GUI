@@ -13,6 +13,7 @@ from PyQt6.QtGui import QFileSystemModel
 from PyQt6.uic import loadUi
 from gui.ui_files.tabELNData import Ui_tabELNData
 
+import irodsConnector
 import utils
 
 
@@ -20,28 +21,26 @@ class elabUpload(QWidget, Ui_tabELNData):
     """ELabJournal upload tab.
 
     """
+    conn = irodsConnector.manager.IrodsConnector()
+    context = utils.context.Context()
     thread = None
     worker = None
-    context = utils.context.Context()
+    error = False
+    elab = None
+    coll = None
 
     def __init__(self):
         """
 
         """
-        self.error = False
-        self.elab = None
-        self.coll = None
         super().__init__()
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
             loadUi("gui/ui_files/tabELNData.ui", self)
-        # Selecting and uploading local files and folders
-
         self.conf = self.context.ibridges_configuration.config
-        self.conn = self.context.irods_connector
         self.ienv = self.context.irods_environment.config
-
+        # Selecting and uploading local files and folders
         self.dirmodel = QFileSystemModel(self.localFsTable)
         self.localFsTable.setModel(self.dirmodel)
         self.localFsTable.setColumnHidden(1, True)
@@ -227,10 +226,11 @@ class Worker(QObject):
     """
 
     """
+    conn = irodsConnector.manager.IrodsConnector()
+    context = utils.context.Context()
     finished = pyqtSignal()
     progress = pyqtSignal()
     error = pyqtSignal(str)
-    context = utils.context.Context()
 
     def __init__(self, elab, coll, size, filePath, expUrl,
                  elnPreviewBrowser, errorLabel):
@@ -247,6 +247,8 @@ class Worker(QObject):
         errorLabel
         """
         super().__init__()
+        self.conf = self.context.ibridges_configuration.config
+        self.ienv = self.context.irods_environment.config
         self.coll = coll
         self.filePath = filePath
         self.elnPreviewBrowser = elnPreviewBrowser
@@ -255,9 +257,6 @@ class Worker(QObject):
         self.elab = elab
         self.errorLabel = errorLabel
         self.status = ""
-        self.conf = self.context.ibridges_configuration.config
-        self.conn = self.context.irods_connector
-        self.ienv = self.context.irods_environment.config
         logging.debug("Start worker: ")
 
     @pyqtSlot()
@@ -266,7 +265,7 @@ class Worker(QObject):
             if os.path.isfile(self.filePath):
                 # TODO shouldn't all the "force"es here be configurable?
                 force = self.conf.get("force_transfers", False)
-                self.context.irods_connector.upload_data(self.filePath, self.coll, None, self.size, force=force)
+                self.conn.upload_data(self.filePath, self.coll, None, self.size, force=force)
                 item = self.conn.get_dataobject(
                         self.coll.path+'/'+os.path.basename(self.filePath))
                 self.conn.add_metadata([item], 'ELN', self.expUrl)

@@ -181,7 +181,7 @@ class Context:
 
         """
         if self.irods_environment is not None:
-            env_dict = self._irods_environment.config
+            env_dict = self.irods_environment.config
             if env_dict:
                 return is_complete(
                     env_dict, MANDATORY_IRODS_ENV_KEYS, 'iRODS environment')
@@ -242,42 +242,3 @@ def is_complete(conf_dict: dict, mandatory: list, conf_type: str) -> bool:
         logging.warning('Please fix and try again!')
         return False
     return True
-
-
-class ContextContainer:
-    """Abstract base class for classes needing to use context.
-       DEPRECATED, class will be removed in the next release.
-
-    """
-    context = Context()
-
-    def __init__(self):
-        logging.debug('ContextContainer inherited by: %s', type(self).__name__)
-        logging.debug('ContextContainer is deprecated!')
-
-    @property
-    def conf(self) -> dict:
-        """iBridges configuration dictionary.
-
-        Returns
-        -------
-        dict
-            Configuration from JSON serialized string.
-
-        """
-        if self.context.ibridges_configuration is not None:
-            return self.context.ibridges_configuration.config
-        return {}
-
-    @property
-    def ienv(self) -> dict:
-        """iRODS environment dictionary.
-
-        Returns
-        -------
-        dict
-            Environment from JSON serialized string.
-        """
-        if self.context.irods_environment is not None:
-            return self.context.irods_environment.config
-        return {}

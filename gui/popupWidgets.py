@@ -16,19 +16,17 @@ from PyQt6 import QtGui
 
 from gui.ui_files.createCollection import Ui_createCollection
 from gui.ui_files.irodsIndexPopup import Ui_irodsIndexPopup
-
-import utils
+import irodsConnector
 
 class irodsCreateCollection(QDialog, Ui_createCollection):
-    context = utils.context.Context()
+    conn = irodsConnector.manager.IrodsConnector()
+
     def __init__(self, parent):
         super().__init__()
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
             loadUi("gui/ui_files/createCollection.ui", self)
-
-        self.conn = self.context.irods_connector
         self.setWindowTitle("Create iRODS collection")
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.parent = parent

@@ -14,7 +14,7 @@ import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
 
-import utils
+import irodsConnector
 
 ACCESS_NAMES = [
     'own',
@@ -29,7 +29,7 @@ class IrodsModel(PyQt6.QtGui.QStandardItemModel):
     """Model for an iRODS tree view.
 
     """
-    context = utils.context.Context()
+    conn = irodsConnector.manager.IrodsConnector()
 
     def __init__(self, tree_view, parent=None):
         """Initializes the tree view with the root node and first level.
@@ -49,7 +49,6 @@ class IrodsModel(PyQt6.QtGui.QStandardItemModel):
         """
         super().__init__(parent)
         self.tree_view = tree_view
-        self.conn = self.context.irods_connector
         try:
             self.user_groups = self.conn.get_user_info()[1]
         except irods.exception.NetworkException:
