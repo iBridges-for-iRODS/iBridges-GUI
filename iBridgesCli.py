@@ -70,7 +70,6 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
         self.config_file = None
         self.download_finished = None
         self.upload_finished = None
-        self.irods_conn = None
 
         default_irods_env = utils.path.LocalPath('~/.irods', 'irods_environment.json').expanduser()
         logdir_path = utils.path.LocalPath(logdir)
