@@ -2,34 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/iBridgesGui-HowTo.html</loc>
-    <lastmod>2023-07-05T20:10:37.280Z</lastmod>
+    <lastmod>2023-07-07T08:26:16.669Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/docs/userdoc.html</loc>
-    <lastmod>2023-07-05T20:10:35.928Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/roadmap.html</loc>
-    <lastmod>2023-07-05T20:10:34.188Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/commandlineclient.html</loc>
-    <lastmod>2023-07-05T20:10:33.416Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/index.html</loc>
-    <lastmod>2023-07-05T20:10:32.388Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/info.html</loc>
-    <lastmod>2023-07-05T20:10:33.844Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/chStaiger/iBridges-Gui/docs/getting-started.html</loc>
-    <lastmod>2023-07-05T20:10:35.040Z</lastmod>
+    <lastmod>2023-07-07T08:26:15.345Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/chStaiger/iBridges-Gui/docs/developer.html</loc>
-    <lastmod>2023-07-05T20:10:36.740Z</lastmod>
+    <lastmod>2023-07-07T08:26:14.253Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/info.html</loc>
+    <lastmod>2023-07-07T08:26:12.913Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/index.html</loc>
+    <lastmod>2023-07-07T08:26:12.189Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/commandlineclient.html</loc>
+    <lastmod>2023-07-07T08:26:13.497Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/roadmap.html</loc>
+    <lastmod>2023-07-07T08:26:14.521Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/chStaiger/iBridges-Gui/docs/getting-started.html</loc>
+    <lastmod>2023-07-07T08:26:16.121Z</lastmod>
   </url>
 </urlset>
