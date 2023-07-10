@@ -86,7 +86,7 @@ def test_pure_path_new(pure_path):
     os.name = 'posix'
     assert pure_path.__class__(raw) == raw
     os.name = orig_name
-    assert pure_path.__class__('a', 'b', 'c') == 'a/b/c'
+    assert pure_path.__class__('a', 'b', 'c') == os.path.join('a', 'b', 'c')
 
 
 def test_pure_path_repr(pure_path):
@@ -160,7 +160,7 @@ def test_pure_path_joinpath(pure_path):
     """Test that the joinpath method does just that.
 
     """
-    assert pure_path.joinpath('a').joinpath('b') == 'a/b'
+    assert pure_path.joinpath('a').joinpath('b') == os.path.join('a', 'b')
 
 
 def test_pure_path_with_suffix(pure_path):

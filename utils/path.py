@@ -497,11 +497,23 @@ class LocalPath(PurePath):
         """
         try:
             return type(self)(str(self.path.replace(target)))
-        except OSError as error:
+        # Weird Windows PermissionError: [WinError 5] Access is denied:
+        except PermissionError:
+            if len(list(type(self)(target).glob('*'))) == 0:
+                type(self)(target).rmdir(squash=True)
+                return type(self)(str(self.path.replace(target)))
+            else:
+                if squash:
+                    type(self)(target).rmdir(squash=True)
+                    return type(self)(str(self.path.replace(target)))
+                logging.warning('Cannot replace %s: directory not empty', target)
+                return self
+        # Directory not empty
+        except OSError:
             if squash:
                 type(self)(target).rmdir(squash=True)
                 return type(self)(str(self.path.replace(target)))
-            logging.warning('Cannot replace %s: %r', target, error)
+            logging.warning('Cannot replace %s: directory not empty', target)
             return self
 
     def resolve(self):
@@ -529,11 +541,21 @@ class LocalPath(PurePath):
         """
         try:
             self.path.rmdir()
-        except OSError as error:
+        # Weird Windows PermissionError: [WinError 5] Access is denied:
+        except PermissionError:
+            if len(list(self.glob('*'))) == 0:
+                shutil.rmtree(self)
+            else:
+                if squash:
+                    shutil.rmtree(self)
+                else:
+                    logging.warning('Cannot rmdir %s: directory not empty', self)
+        # Directory not empty
+        except OSError:
             if squash:
                 shutil.rmtree(self)
             else:
-                logging.warning('Cannot rmdir %s: %r', self, error)
+                logging.warning('Cannot rmdir %s: directory not empty', self)
 
     def stat(self) -> os.stat_result:
         """Run os.stat() on this path.
