@@ -608,22 +608,24 @@ class LocalPath(PurePath):
         self.path.write_text(data=data, encoding=encoding, errors=errors)
 
 
-def normalize(*args) -> list[str]:
+def normalize(*args) -> tuple[str]:
     """Normalize (i.e. remove path seperators) the incoming arguments
     and construct a sequence of path "parts".
 
     Returns
     -------
-    list[str]
+    tuple[str]
         Sequence of path "parts".
 
     """
-    parts = []
-    for arg in args:
-        if isinstance(arg, (PurePath, pathlib.Path)):
-            parts.extend(arg.parts)
-        else:
-            comps = arg.split('/')
-            for comp in comps:
-                parts.extend(comp.split('\\'))
-    return parts
+    if args:
+        parts = [pathlib.PurePath(args[0]).anchor]
+        for arg in args:
+            if isinstance(arg, (PurePath, pathlib.PurePath)):
+                parts.extend(arg.parts)
+            else:
+                comps = arg.split('/')
+                for comp in comps:
+                    parts.extend(comp.split('\\'))
+        return tuple(parts)
+    return args
