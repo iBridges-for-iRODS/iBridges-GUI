@@ -48,7 +48,7 @@ class PurePath(str):
         """Initialize a PurePath.
 
         """
-        self.args = args
+        self.args = normalize(*args)
 
     def __repr__(self) -> str:
         """Render Paths into a representation.
@@ -176,7 +176,7 @@ class PurePath(str):
             Joined Path.
 
         """
-        return type(self)(str(self.path.joinpath(*args)))
+        return type(self)(str(self.path.joinpath(*normalize(*args))))
 
     def with_suffix(self, suffix: str):
         """Create a new path with the file `suffix` changed.  If the
@@ -502,12 +502,11 @@ class LocalPath(PurePath):
             if len(list(type(self)(target).glob('*'))) == 0:
                 type(self)(target).rmdir(squash=True)
                 return type(self)(str(self.path.replace(target)))
-            else:
-                if squash:
-                    type(self)(target).rmdir(squash=True)
-                    return type(self)(str(self.path.replace(target)))
-                logging.warning('Cannot replace %s: directory not empty', target)
-                return self
+            if squash:
+                type(self)(target).rmdir(squash=True)
+                return type(self)(str(self.path.replace(target)))
+            logging.warning('Cannot replace %s: directory not empty', target)
+            return self
         # Directory not empty
         except OSError:
             if squash:
@@ -607,3 +606,24 @@ class LocalPath(PurePath):
 
         """
         self.path.write_text(data=data, encoding=encoding, errors=errors)
+
+
+def normalize(*args) -> list[str]:
+    """Normalize (i.e. remove path seperators) the incoming arguments
+    and construct a sequence of path "parts".
+
+    Returns
+    -------
+    list[str]
+        Sequence of path "parts".
+
+    """
+    parts = []
+    for arg in args:
+        if isinstance(arg, (PurePath, pathlib.Path)):
+            parts.extend(arg.parts)
+        else:
+            comps = arg.split('/')
+            for comp in comps:
+                parts.extend(comp.split('\\'))
+    return parts
