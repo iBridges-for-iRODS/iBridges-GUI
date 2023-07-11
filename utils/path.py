@@ -48,7 +48,7 @@ class PurePath(str):
         """Initialize a PurePath.
 
         """
-        self.args = normalize(*args)
+        self.args = normalize(*args, posix=self._posix)
 
     def __repr__(self) -> str:
         """Render Paths into a representation.
@@ -176,7 +176,8 @@ class PurePath(str):
             Joined Path.
 
         """
-        return type(self)(str(self.path.joinpath(*normalize(*args))))
+        return type(self)(
+            str(self.path.joinpath(*normalize(*args, posix=self._posix))))
 
     def with_suffix(self, suffix: str):
         """Create a new path with the file `suffix` changed.  If the
@@ -608,9 +609,14 @@ class LocalPath(PurePath):
         self.path.write_text(data=data, encoding=encoding, errors=errors)
 
 
-def normalize(*args) -> tuple:
+def normalize(*args, posix: bool) -> tuple:
     """Normalize (i.e. remove path separators) the incoming arguments
     and construct a sequence of path "parts".
+
+    Parameters
+    ----------
+    posix : bool
+        Does the output need to follow POSIX path conventions?
 
     Returns
     -------
@@ -619,7 +625,10 @@ def normalize(*args) -> tuple:
 
     """
     if args:
-        argpath = pathlib.PurePath(args[0])
+        if posix:
+            argpath = pathlib.PurePosixPath(args[0])
+        else:
+            argpath = pathlib.PurePath(args[0])
         anchor = argpath.anchor
         drive = argpath.drive
         parts = []
