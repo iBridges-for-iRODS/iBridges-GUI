@@ -396,7 +396,12 @@ def test_local_path_replace_path(local_path):
         if os.path.isdir(f'{TEMP_DIR}/{dirname}'):
             os.rmdir(f'{TEMP_DIR}/{dirname}')
 
-
+@pytest.mark.xfail(reason="This test is currently broken, but this is the behavior irodsConnector.dataOperations.DataOperation.download_data relies on")
+def test_joinpath_between_irods_and_pure_path():
+    rel_path = utils.path.PurePath('irods-main/server/core/include/irods/rsGlobalExtern.hpp')
+    source_path = utils.path.iRODSPath('/RDMacc/home/terst007/frut')
+    irods_path = source_path.joinpath(rel_path)
+    assert irods_path == utils.path.iRODSPath('/RDMacc/home/terst007/frut/irods-main/server/core/include/irods/rsGlobalExtern.hpp')
 def test_local_path_resolve(local_path):
     """Test the resolve method resolves the absolute path taking into
     account '.' and '..' references within.
