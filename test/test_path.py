@@ -103,6 +103,7 @@ def test_pure_path_str(pure_path):
 
     """
     assert str(pure_path) == '.'
+    assert pure_path.__class__('/a/b/c') == '/a/b/c'
 
 
 def test_pure_path_name(pure_path):
@@ -214,6 +215,7 @@ def test_irods_path_joinpath(pure_path, irods_path):
     rel_path = pure_path.__class__('d/e/f')
     rds_path = src_path.joinpath(rel_path)
     assert rds_path == irods_path.__class__('/a/b/c/d/e/f')
+    assert rds_path == '/a/b/c/d/e/f'
 
 
 def test_local_path_new(local_path):
