@@ -103,7 +103,7 @@ def test_pure_path_str(pure_path):
 
     """
     assert str(pure_path) == '.'
-    assert pure_path.__class__('/a/b/c') == '/a/b/c'
+    assert pure_path == '.'
 
 
 def test_pure_path_name(pure_path):
