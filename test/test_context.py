@@ -60,6 +60,14 @@ def test_context_is_singleton():
     assert utils.context.Context() is CONTEXT
 
 
+def test_ibridges_conf_file():
+    """Check that the iBridges configuration file is set and returned
+    properly.
+
+    """
+    pass
+
+
 def test_ibridges_configuration(reset_ibridges_configuration):
     """Missing iBridges configuration file is given the default
     contents.  Check that the property does this and loads the
@@ -78,16 +86,12 @@ def test_ibridges_configuration(reset_ibridges_configuration):
     assert CONTEXT.ibridges_conf_file == utils.context.DEFAULT_IBRIDGES_CONF_FILE
 
 
-def test_irods_connector():
-    """The IrodsConnector is manually set to a property prior to a new
-    session.  Check that the property handles it correctly.
+def test_irods_env_file():
+    """Check that the iRODS environment file is set and returned
+    properly.
 
     """
-    assert CONTEXT.irods_connector is None
-    CONTEXT.irods_connector = 'IrodsConnector'
-    assert CONTEXT.irods_connector == 'IrodsConnector'
-    del CONTEXT.irods_connector
-    assert CONTEXT.irods_connector is None
+    pass
 
 
 def test_irods_environment(reset_irods_environment):
@@ -193,9 +197,6 @@ def test_reset(reset_ibridges_configuration, reset_irods_environment):
         setup of the iRODS environment.
 
     """
-    conn = irodsConnector.manager.IrodsConnector()
-    CONTEXT.irods_connector = conn
-    assert CONTEXT.irods_connector == conn
     CONTEXT.ibridges_conf_file = utils.context.DEFAULT_IBRIDGES_CONF_FILE
     conf_dict = utils.context.IBRIDGES_CONF_TEMPLATE
     with open(CONTEXT.ibridges_conf_file, 'w') as conffd:

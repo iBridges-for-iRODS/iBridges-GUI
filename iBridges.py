@@ -33,15 +33,18 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
     """The login widget.
 
     """
+    conn = irodsConnector.manager.IrodsConnector()
+    context = utils.context.Context()
     use_icommands = None
     this_application = ''
-    context = utils.context.Context()
 
     def __init__(self):
         """Initialize the iRODS login window.
 
         """
         super().__init__()
+        self.conf = self.context.ibridges_configuration.config
+        self.ienv = self.context.irods_environment.config
         self.irods_path = utils.path.LocalPath(utils.context.IRODS_DIR).expanduser()
         self._load_gui()
         self._init_envbox()
@@ -73,9 +76,8 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self.envbox.clear()
         self.envbox.addItems(env_jsons)
         envname = ''
-        if 'last_ienv' in self.context.ibridges_configuration.config and \
-                self.context.ibridges_configuration.config['last_ienv'] in env_jsons:
-            envname = self.context.ibridges_configuration.config['last_ienv']
+        if self.conf.get('last_ienv') in env_jsons:
+            envname = self.conf['last_ienv']
         elif 'irods_environment.json' in env_jsons:
             envname = 'irods_environment.json'
         index = 0
@@ -89,7 +91,7 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         login credentials have been found.
 
         """
-        cached_pwd = self.context.irods_connector.get_cached_password()
+        cached_pwd = self.conn.get_cached_password()
         self.passwordField.setText(cached_pwd)
 
     def reset_mouse_and_error_labels(self):
@@ -118,7 +120,7 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         # TODO support arbitrary iRODS environment file for iCommands
         if self.selectIcommandsButton.isChecked():
             self.icommandsError.setText('')
-            if self.context.irods_connector.icommands.has_icommands:
+            if self.conn.icommands.has_icommands:
                 self.use_icommands = True
             else:
                 self.use_icommands = False
@@ -135,12 +137,10 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
 
         """
         irods_env_file = self.irods_path.joinpath(self.envbox.currentText())
-        # Set the user-given filename for both the configuration and the Session
         self.context.irods_env_file = irods_env_file
-        self.context.irods_connector.irods_env_file = irods_env_file
         logging.debug('IRODS ENVIRONMENT FILE SET: %s', irods_env_file.name)
         self.envError.setText('')
-        if not (self.context.irods_environment.config and self.context.ienv_is_complete()):
+        if not self.context.ienv_is_complete():
             message = 'iRODS environment missing or incomplete.'
             logging.error(message)
             self.envError.setText(message)
@@ -148,8 +148,8 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             self.passError.clear()
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
-        irods_host = self.context.irods_environment.config.get('irods_host', '')
-        irods_port = self.context.irods_environment.config.get('irods_port', '')
+        irods_host = self.ienv.get('irods_host', '')
+        irods_port = self.ienv.get('irods_port', '')
         if not utils.utils.can_connect(irods_host, irods_port):
             message = 'No network connection to server: %s:%s'
             logging.warning(message, irods_host, irods_port)
@@ -157,14 +157,14 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
-        self.context.irods_connector.use_icommands = self.use_icommands
-        self.context.ibridges_configuration.config['last_ienv'] = irods_env_file.name
+        self.conn.use_icommands = self.use_icommands
+        self.conf['last_ienv'] = irods_env_file.name
         self.context.save_ibridges_configuration()
         logging.debug('IBRIDGES CONFIGURATION SAVED')
-        self.context.irods_connector.password = self.passwordField.text()
+        self.conn.password = self.passwordField.text()
         logging.debug('IRODS PASSWORD SET')
         try:
-            self.context.irods_connector.connect()
+            self.conn.connect()
         except (irods.exception.CAT_INVALID_AUTHENTICATION,
                 irods.exception.PAM_AUTH_PASSWORD_FAILED,
                 irods.exception.CAT_INVALID_USER,
@@ -220,14 +220,12 @@ class IrodsLoginWindow(PyQt6.QtWidgets.QDialog,
         self.reset_mouse_and_error_labels()
         stacked_widget.setCurrentIndex(stacked_widget.currentIndex()+1)
 
+    def close_clean(self):
+        """Clean up connections in preparation to close application.
 
-def close_clean():
-    """Clean up connections in preparation to close application.
-
-    """
-    context = utils.context.Context()
-    if context.irods_connector:
-        context.irods_connector.cleanup()
+        """
+        if self.conn:
+            self.conn.cleanup()
 
 
 def main():
@@ -245,14 +243,13 @@ def main():
     # Here, it is taken from the configuration if not specified.
     utils.utils.set_log_level()
     context.application_name = THIS_APPLICATION
-    context.irods_connector = irodsConnector.manager.IrodsConnector()
     setproctitle.setproctitle(context.application_name)
     login_window = IrodsLoginWindow()
     login_window.this_application = context.application_name
     stacked_widget.addWidget(login_window)
     stacked_widget.show()
     # app.setQuitOnLastWindowClosed(False)
-    app.lastWindowClosed.connect(close_clean)
+    app.lastWindowClosed.connect(login_window.close_clean)
     app.exec()
 
 

@@ -16,9 +16,7 @@ class Session:
 
     """
     _irods_session = None
-    ibridges_configuration = None
-    irods_env_file = ''
-    irods_environment = None
+    context = utils.context.Context()
 
     def __init__(self, password=''):
         """ iRODS authentication with Python client.
@@ -52,10 +50,8 @@ class Session:
             Configuration from JSON serialized string.
 
         """
-        logging.debug('getting: self.ibridges_configuration')
-        if self.ibridges_configuration:
-            return self.ibridges_configuration.config
-        return {}
+        logging.debug('getting: self.context.ibridges_configuration')
+        return self.context.ibridges_configuration.config
 
     @property
     def ienv(self) -> dict:
@@ -66,10 +62,8 @@ class Session:
         dict
             Environment from JSON serialized string.
         """
-        logging.debug('getting: self.irods_environment')
-        if self.irods_environment:
-            return self.irods_environment.config
-        return {}
+        logging.debug('getting: self.context.irods_environment')
+        return self.context.irods_environment.config
 
     # Authentication workflow properties
     #
@@ -112,6 +106,7 @@ class Session:
         """
         if self.has_valid_irods_session():
             return self._irods_session
+        return None
 
     @irods_session.deleter
     def irods_session(self):
@@ -155,9 +150,10 @@ class Session:
         """Establish an iRODS session.
 
         """
-        logging.debug('self.irods_env_file=%s', self.irods_env_file)
+        logging.debug(
+            'self.context.irods_env_file=%s', self.context.irods_env_file)
         options = {
-            'irods_env_file': str(self.irods_env_file),
+            'irods_env_file': self.context.irods_env_file,
         }
         if self.ienv:
             options.update(self.ienv)

@@ -10,6 +10,7 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 
 import gui
+import irodsConnector
 import utils
 
 
@@ -56,6 +57,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
     the login widget.
 
     """
+    conn = irodsConnector.manager.IrodsConnector()
     context = utils.context.Context()
     tab_ticket_access = None
     tab_amber_workflow = None
@@ -87,13 +89,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         else:
             PyQt6.uic.loadUi('gui/ui_files/MainMenu.ui', self)
         self.conf = self.context.ibridges_configuration.config
-        self.conn = self.context.irods_connector
         self.ienv = self.context.irods_environment.config
         self.stacked_widget = stacked_widget
         # Menu actions
         self.actionExit.triggered.connect(self.program_exit)
         self.actionCloseSession.triggered.connect(self.close_session)
-        if not self.ienv or not self.context.irods_connector:
+        if not self.ienv:
             self.actionSearch.setEnabled(False)
             # self.actionSaveConfig.setEnabled(False)
             self.tab_ticket_access = gui.irodsTicketLogin.irodsTicketLogin()
@@ -208,7 +209,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             PyQt6.QtWidgets.QMessageBox.StandardButton.No)
         if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
             if self.conn:
-                del self.conn
+                self.conn.cleanup()
             elif self.tab_ticket_access and self.tab_ticket_access.conn:
                 self.tab_ticket_access.conn.close_session()
             sys.exit()
@@ -225,10 +226,11 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
             PyQt6.QtWidgets.QMessageBox.StandardButton.No)
         if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-            if self.context.irods_connector:
-                self.context.reset()
-            elif self.tab_ticket_access and self.tab_ticket_access.conn:
+            if self.tab_ticket_access and self.tab_ticket_access.conn:
                 self.tab_ticket_access.conn.close_session()
+            else:
+                self.conn.reset()
+                self.context.reset()
             current_widget = self.stacked_widget.currentWidget()
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
             self.stacked_widget.removeWidget(current_widget)

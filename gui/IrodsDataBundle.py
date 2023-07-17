@@ -11,8 +11,9 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 
 import gui
-import utils
+import irodsConnector
 import irodsConnector.keywords as kw
+import utils
 
 CWD = os.getcwd()
 EXTENSIONS = [
@@ -30,7 +31,7 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
     """Window for (un)bundling data withing the iRODS system.
 
     """
-
+    conn = irodsConnector.manager.IrodsConnector()
     context = utils.context.Context()
 
     def __init__(self):
@@ -42,9 +43,7 @@ class IrodsDataBundle(PyQt6.QtWidgets.QWidget,
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi("gui/ui_files/tabDataBundle.ui", self)
- 
         self.conf = self.context.ibridges_configuration.config
-        self.conn = self.context.irods_connector
         self.thread_create = None
         self.thread_extract = None
         self.worker_create = None
@@ -330,8 +329,9 @@ class RuleRunner(PyQt6.QtCore.QObject):
     """Run an iRODS rule in a Qt thread.
 
     """
-    finished = PyQt6.QtCore.pyqtSignal(bool, tuple, str)
+    conn = irodsConnector.manager.IrodsConnector()
     context = utils.context.Context()
+    finished = PyQt6.QtCore.pyqtSignal(bool, tuple, str)
 
     def __init__(self, rule_file, params, operation):
         """
@@ -347,7 +347,6 @@ class RuleRunner(PyQt6.QtCore.QObject):
         """
         super().__init__()
 
-        self.conn = self.context.irods_connector
         self.rule_file = rule_file
         self.params = params
         self.operation = operation

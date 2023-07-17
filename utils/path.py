@@ -48,7 +48,7 @@ class PurePath(str):
         """Initialize a PurePath.
 
         """
-        self.args = args
+        self.args = normalize(*args, posix=self._posix)
 
     def __repr__(self) -> str:
         """Render Paths into a representation.
@@ -176,7 +176,8 @@ class PurePath(str):
             Joined Path.
 
         """
-        return type(self)(str(self.path.joinpath(*args)))
+        return type(self)(
+            str(self.path.joinpath(*normalize(*args, posix=self._posix))))
 
     def with_suffix(self, suffix: str):
         """Create a new path with the file `suffix` changed.  If the
@@ -497,11 +498,22 @@ class LocalPath(PurePath):
         """
         try:
             return type(self)(str(self.path.replace(target)))
-        except OSError as error:
+        # Weird Windows PermissionError: [WinError 5] Access is denied:
+        except PermissionError:
+            if len(list(type(self)(target).glob('*'))) == 0:
+                type(self)(target).rmdir(squash=True)
+                return type(self)(str(self.path.replace(target)))
             if squash:
                 type(self)(target).rmdir(squash=True)
                 return type(self)(str(self.path.replace(target)))
-            logging.warning('Cannot replace %s: %r', target, error)
+            logging.warning('Cannot replace %s: directory not empty', target)
+            return self
+        # Directory not empty
+        except OSError:
+            if squash:
+                type(self)(target).rmdir(squash=True)
+                return type(self)(str(self.path.replace(target)))
+            logging.warning('Cannot replace %s: directory not empty', target)
             return self
 
     def resolve(self):
@@ -529,11 +541,21 @@ class LocalPath(PurePath):
         """
         try:
             self.path.rmdir()
-        except OSError as error:
+        # Weird Windows PermissionError: [WinError 5] Access is denied:
+        except PermissionError:
+            if len(list(self.glob('*'))) == 0:
+                shutil.rmtree(self)
+            else:
+                if squash:
+                    shutil.rmtree(self)
+                else:
+                    logging.warning('Cannot rmdir %s: directory not empty', self)
+        # Directory not empty
+        except OSError:
             if squash:
                 shutil.rmtree(self)
             else:
-                logging.warning('Cannot rmdir %s: %r', self, error)
+                logging.warning('Cannot rmdir %s: directory not empty', self)
 
     def stat(self) -> os.stat_result:
         """Run os.stat() on this path.
@@ -585,3 +607,41 @@ class LocalPath(PurePath):
 
         """
         self.path.write_text(data=data, encoding=encoding, errors=errors)
+
+
+def normalize(*args, posix: bool) -> tuple:
+    """Normalize (i.e. remove path separators) the incoming arguments
+    and construct a sequence of path "parts".
+
+    Parameters
+    ----------
+    posix : bool
+        Does the output need to follow POSIX path conventions?
+
+    Returns
+    -------
+    tuple
+        Sequence of path "parts".
+
+    """
+    if args:
+        if posix:
+            argpath = pathlib.PurePosixPath(args[0])
+        else:
+            argpath = pathlib.PurePath(args[0])
+        anchor = argpath.anchor
+        drive = argpath.drive
+        parts = []
+        for arg in args:
+            if isinstance(arg, (PurePath, pathlib.PurePath)):
+                parts.extend(arg.parts)
+            else:
+                comps = arg.split('/')
+                for comp in comps:
+                    parts.extend(comp.split('\\'))
+        if drive in parts:
+            _ = parts.pop(parts.index(drive))
+        if parts and parts[0] != anchor:
+            parts.insert(0, anchor)
+        return tuple(parts)
+    return args

@@ -35,7 +35,6 @@ class Context:
     _ibridges_conf_file = ''
     _ibridges_configuration = None
     _instance = None
-    _irods_connector = None
     _irods_env_file = ''
     _irods_environment = None
     application_name = ''
@@ -52,9 +51,6 @@ class Context:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
-
-    def __del__(self):
-        del self.irods_connector
 
     @property
     def ibridges_conf_file(self) -> path.LocalPath:
@@ -122,44 +118,6 @@ class Context:
         return self._ibridges_configuration
 
     @property
-    def irods_connector(self):
-        """An iBridges connection manager.
-
-        Returns
-        -------
-        irodsConnector.manager.IrodsConnector
-            The iBridges connection manager.
-        """
-        return self._irods_connector
-
-    @irods_connector.setter
-    def irods_connector(self, connector):
-        """Connection manager setter.
-
-        Parameters
-        ----------
-        connector : irodsConnector.manager.IrodsConnector
-            The iBridges connection manager.
-
-        """
-        self._irods_connector = connector
-        import irodsConnector
-        if isinstance(connector, irodsConnector.manager.IrodsConnector):
-            logging.debug('assigning: self._irods_connector.ibridges_configuration')
-            self._irods_connector.ibridges_configuration = self.ibridges_configuration
-            logging.debug('assigning: self._irods_connector.irods_environment')
-            self._irods_connector.irods_environment = self.irods_environment
-
-    @irods_connector.deleter
-    def irods_connector(self):
-        """Connection manager deleter.
-
-        """
-        if self._irods_connector is not None:
-            del self._irods_connector
-            self._irods_connector = None
-
-    @property
     def irods_env_file(self) -> path.LocalPath:
         """iRODS environment filename.
 
@@ -223,7 +181,7 @@ class Context:
 
         """
         if self.irods_environment is not None:
-            env_dict = self._irods_environment.config
+            env_dict = self.irods_environment.config
             if env_dict:
                 return is_complete(
                     env_dict, MANDATORY_IRODS_ENV_KEYS, 'iRODS environment')
@@ -247,10 +205,6 @@ class Context:
 
         """
         logging.debug('Resetting Context.')
-        if self.irods_connector:
-            self.irods_connector.reset()
-        else:
-            logging.debug('irods_connector not set.  Cannot reset.')
         if self.ibridges_configuration:
             self.ibridges_configuration.reset()
             if self.ibridges_conf_file:
@@ -288,56 +242,3 @@ def is_complete(conf_dict: dict, mandatory: list, conf_type: str) -> bool:
         logging.warning('Please fix and try again!')
         return False
     return True
-
-
-class ContextContainer:
-    """Abstract base class for classes needing to use context.
-       DEPRECATED, class will be removed in the next release.
-
-    """
-    context = Context()
-
-    def __init__(self):
-        logging.debug('ContextContainer inherited by: %s', type(self).__name__)
-        logging.debug('ContextContainer is deprecated!')
-
-    @property
-    def conf(self) -> dict:
-        """iBridges configuration dictionary.
-
-        Returns
-        -------
-        dict
-            Configuration from JSON serialized string.
-
-        """
-        if self.context.ibridges_configuration is not None:
-            return self.context.ibridges_configuration.config
-        return {}
-
-    @property
-    def conn(self):
-        """IrodsConnector instance.
-
-        Returns
-        -------
-        irodsConnector.manager.IrodsConnector
-            iRODS connection instance set into the context.
-        """
-        if not self.context.irods_connector:
-            raise AttributeError(
-                'The iRODS connector has not been properly created/assigned.')
-        return self.context.irods_connector
-
-    @property
-    def ienv(self) -> dict:
-        """iRODS environment dictionary.
-
-        Returns
-        -------
-        dict
-            Environment from JSON serialized string.
-        """
-        if self.context.irods_environment is not None:
-            return self.context.irods_environment.config
-        return {}

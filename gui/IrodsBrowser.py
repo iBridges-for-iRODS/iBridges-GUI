@@ -11,6 +11,7 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 
 import gui
+import irodsConnector
 import meta
 import utils
 
@@ -36,8 +37,9 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
     """Browser view for iRODS session.
 
     """
-    current_browser_row = -1
+    conn = irodsConnector.manager.IrodsConnector()
     context = utils.context.Context()
+    current_browser_row = -1
 
     def __init__(self):
         """Initialize an iRODS browser view.
@@ -48,11 +50,8 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi("gui/ui_files/tabBrowser.ui", self)
-
         self.conf = self.context.ibridges_configuration.config
-        self.conn = self.context.irods_connector
         self.ienv = self.context.irods_environment.config
-
         self.force = self.conf.get('force_transfers', False)
         self.viewTabs.setCurrentIndex(0)
         # Browser table

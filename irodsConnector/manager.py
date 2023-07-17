@@ -1,14 +1,11 @@
 """ Irods connection factory
 
 """
-import logging
-
 import irods.collection
 import irods.data_object
 import irods.resource
 import irods.session
 
-from utils import json_config
 from . import dataOperations
 from . import Icommands
 from . import keywords as kw
@@ -26,6 +23,7 @@ class IrodsConnector:
     """Top-level connection to the Python iRODS client
 
     """
+    _instance = None
     _data_op = None
     _icommands = None
     _meta = None
@@ -36,10 +34,20 @@ class IrodsConnector:
     _session = None
     _tickets = None
     _users = None
-    _ibridges_configuration = None
-    _irods_env_file = ''
-    _irods_environment = None
     use_icommands = None
+
+    def __new__(cls):
+        """Give only a single new instance ever.
+
+        Returns
+        -------
+        IrodsConnector
+            A singleton instance.
+
+        """
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self, password=''):
         """Initialize connection to iRODS functionality based on the
@@ -57,99 +65,6 @@ class IrodsConnector:
     def __del__(self):
         self.cleanup()
         del self.session
-
-    # Configuration properties
-    #
-    @property
-    def ibridges_configuration(self) -> json_config.JSONConfig:
-        """iBridges configuration.
-
-        Returns
-        -------
-        utils.json_config.JsonConfig or None
-            iBridges configuration.
-
-        """
-        logging.debug('getting: self._ibridges_configuration')
-        return self._ibridges_configuration
-
-    @ibridges_configuration.setter
-    def ibridges_configuration(self, config: json_config.JSONConfig):
-        """iBridges configuration setter.
-
-        Parameters
-        ----------
-        config : utils.json_config.JSONConfig
-            iBridges configuration.
-
-        """
-        self._ibridges_configuration = config
-        logging.debug(
-            'setting: self._ibridges_configuration=%s',
-            self._ibridges_configuration)
-
-    @property
-    def irods_env_file(self) -> str:
-        """iRODS environment filename.
-
-        Returns
-        -------
-        str
-            Name of environment file
-
-        """
-        logging.debug('getting: self._irods_env_file=%s', self._irods_env_file)
-        return self._irods_env_file
-
-    @irods_env_file.setter
-    def irods_env_file(self, filepath: str):
-        """iRODS environment filename setter.
-
-        Parameters
-        ----------
-        filepath : str
-            Name of the environment file.
-
-        """
-        if filepath == '':
-            logging.warning(
-                'The iRODS environment pathname being set to a null string')
-        self._irods_env_file = filepath
-        logging.debug(
-            'setting: self._irods_env_file=%s', self._irods_env_file)
-        if self.session:
-            logging.debug(
-                'setting: self.session.irods_env_file=%s', self._irods_env_file)
-            self.session.irods_env_file = self._irods_env_file
-
-    @property
-    def irods_environment(self) -> json_config.JSONConfig:
-        """iRODS environment.
-
-        Returns
-        -------
-        utils.json_config.JsonConfig or None
-            iRODS environment.
-
-        """
-        logging.debug('getting: self._irods_environment')
-        return self._irods_environment
-
-    @irods_environment.setter
-    def irods_environment(self, config: json_config.JSONConfig):
-        """iRODS environment setter.
-
-        Parameters
-        ----------
-        config : utils.json_config.JSONConfig
-            iRODS environment.
-
-        """
-        if config.config == {} and self.irods_env_file != '':
-            logging.warning('The iRODS environment being set is empty.')
-        self._irods_environment = config
-        logging.debug(
-            'setting: self._irods_environment=%s', self._irods_environment)
 
     # Properties for all the classes themselves
     #
@@ -187,8 +102,6 @@ class IrodsConnector:
     def resource(self) -> resource.Resource:
         if self._resource is None:
             self._resource = resource.Resource(self.session)
-            self._resource.ibridges_configuration = self.ibridges_configuration
-            self._resource.irods_environment = self.irods_environment
         return self._resource
 
     @property
@@ -201,9 +114,6 @@ class IrodsConnector:
     def session(self) -> session.Session:
         if self._session is None:
             self._session = session.Session(self._password)
-            self._session.ibridges_configuration = self.ibridges_configuration
-            self._session.irods_env_file = self.irods_env_file
-            self._session.irods_environment = self.irods_environment
         return self._session
 
     @session.deleter

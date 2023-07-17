@@ -13,6 +13,7 @@ from PyQt6.QtGui import QMovie
 from PyQt6.uic import loadUi
 
 from gui.ui_files.dataTransferState import Ui_dataTransferState
+import irodsConnector
 import utils
 
 
@@ -20,8 +21,9 @@ class dataTransfer(QDialog, Ui_dataTransferState):
     """
 
     """
-    finished = pyqtSignal(bool, object)
+    conn = irodsConnector.manager.IrodsConnector()
     context = utils.context.Context()
+    finished = pyqtSignal(bool, object)
 
     def __init__(self, upload, localFsPath, irodsColl, irodsTreeIdx=None, resource=None):
         """
@@ -39,10 +41,7 @@ class dataTransfer(QDialog, Ui_dataTransferState):
             super().setupUi(self)
         else:
             loadUi("gui/ui_files/dataTransferState.ui", self)
-
-        self.conn = self.context.irods_connector
         self.conf = self.context.ibridges_configuration.config
-
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.localFsPath = localFsPath
         self.coll = irodsColl
@@ -203,11 +202,12 @@ class getDataState(QObject):
     """Background worker to load the menu.
 
     """
+    conn = irodsConnector.manager.IrodsConnector()
+    context = utils.context.Context()
     # Number of files
     updLabels = pyqtSignal(int, int)
     # Lists with size in bytes
     finished = pyqtSignal(list, list, str, str)
-    context = utils.context.Context()
 
     def __init__(self, localFsPath, coll, upload):
         """
@@ -219,11 +219,10 @@ class getDataState(QObject):
         upload
         """
         super().__init__()
+        self.conf = self.context.ibridges_configuration.config
         self.localFsPath = localFsPath
         self.coll = coll
         self.upload = upload
-        self.conn = self.context.irods_connector
-        self.conf = self.context.ibridges_configuration.config
 
     def run(self):
         # Diff
@@ -289,8 +288,9 @@ class UpDownload(QObject):
     """Background worker for the up/download
 
     """
+    conn = irodsConnector.manager.IrodsConnector()
+    context = utils.context.Context()
     finished = pyqtSignal(bool, str)
-    context =  utils.context.Context() 
 
     def __init__(self, upload, localFS, Coll, totalSize, resource, diff, addFiles, force):
         """
@@ -307,6 +307,7 @@ class UpDownload(QObject):
         force
         """
         super().__init__()
+        self.conf = self.context.ibridges_configuration.config
         self.upload = upload
         self.localFS = localFS
         self.Coll = Coll
@@ -314,9 +315,6 @@ class UpDownload(QObject):
         self.resource = resource
         self.diff = diff
         self.addFiles = addFiles
-        # TODO prefer setting here?
-        self.conn = self.context.irods_connector
-        self.conf = self.context.ibridges_configuration.config
         self.force = self.conf.get('force_transfers', force)
 
     def run(self):

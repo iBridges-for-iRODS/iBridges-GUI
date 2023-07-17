@@ -9,19 +9,18 @@ from PyQt6.uic import loadUi
 
 from gui.irodsTreeView import IrodsModel
 from gui.ui_files.tabTicketCreate import Ui_tabticketCreate
-import utils
+import irodsConnector
 
 
 class irodsCreateTicket(QWidget, Ui_tabticketCreate):
-    context = utils.context.Context()
+    conn = irodsConnector.manager.IrodsConnector()
+
     def __init__(self):
         super().__init__()
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
             loadUi("gui/ui_files/tabTicketCreate.ui", self)
-
-        self.conn = self.context.irods_connector
         self.irodsmodel = IrodsModel(self.irodsFsTreeView)
         self.irodsFsTreeView.setModel(self.irodsmodel)
         self.irodsRootColl = f'/{self.conn.zone}'
@@ -36,7 +35,6 @@ class irodsCreateTicket(QWidget, Ui_tabticketCreate):
         self.irodsFsTreeView.setColumnHidden(2, True)
         self.irodsFsTreeView.setColumnHidden(3, True)
         self.irodsFsTreeView.setColumnHidden(4, True)
-
         self.createTicketButton.clicked.connect(self.create_ticket)
 
     def create_ticket(self):

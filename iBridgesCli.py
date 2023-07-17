@@ -9,16 +9,14 @@ Implemented for:
 """
 from __future__ import annotations
 import argparse
-import logging
-import configparser
-import os
-import sys
-import json
 import getpass
-from pathlib import Path
+import logging
+import sys
+
 from irods.exception import CollectionDoesNotExist, SYS_INVALID_INPUT_PARAM
+
+import irodsConnector
 import irodsConnector.keywords as kw
-from irodsConnector.manager import IrodsConnector
 import utils
 from utils.elab_plugin import ElabPlugin
 
@@ -54,6 +52,7 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
     Class for up- and downloading to YODA/iRODS via the command line.
     Includes option for writing metadata to Elab Journal.
     """
+    irods_conn = irodsConnector.manager.IrodsConnector()
     context = utils.context.Context()
 
     def __init__(self,                      # pylint: disable=too-many-arguments
@@ -64,7 +63,6 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
                  operation: str,
                  logdir: str,
                  plugins: list[dict] = None) -> None:
-
         self.irods_env = None
         self.irods_path = None
         self.irods_resc = None
@@ -72,8 +70,7 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
         self.config_file = None
         self.download_finished = None
         self.upload_finished = None
-        self.irods_conn = None
-        
+
         default_irods_env = utils.path.LocalPath('~/.irods', 'irods_environment.json').expanduser()
         logdir_path = utils.path.LocalPath(logdir)
 
@@ -84,13 +81,12 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
                     '~/.irods/'+self.context.ibridges_configuration.config.get('last_ienv', ''))
         irods_env_file = irods_env or last_env or default_irods_env \
             or self._clean_exit("need iRODS environment file", True)
-        self.context.irods_environment.reset()
         self.context.irods_env_file = irods_env_file
         self.irods_path = irods_path or self._clean_exit("need iRODS path", True)
         self.local_path = local_path or self._clean_exit("need local path", True)
 
-        self.local_path = Path(os.path.expanduser(self.local_path))
-        self.irods_path = self.irods_path.rstrip("/")
+        self.local_path = utils.path.LocalPath(self.local_path).expanduser()
+        self.irods_path = utils.path.iRODSPath(self.irods_path)
 
         # checking if paths actually exist
         for path in [self.context.irods_env_file, self.local_path, logdir_path]:
@@ -99,8 +95,8 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
 
         # reading default irods_resc from env file if not specified otherwise
         self.irods_resc = irods_resc \
-                or self.context.irods_environment.config.get('irods_default_resource', '') \
-                or self._clean_exit("need an iRODS resource", True)
+            or self.context.irods_environment.config.get('irods_default_resource', '') \
+            or self._clean_exit("need an iRODS resource", True)
 
         self.operation = operation
         self.plugins = self._cleanup_plugins(plugins)
@@ -195,20 +191,15 @@ class IBridgesCli:                          # pylint: disable=too-many-instance-
             try:
                 if not (self.context.ienv_is_complete()):
                     self._clean_exit("iRODS environment file incomplete", True)
-                # Fix to having a functional ic
-                # TODO: remove "contect.irods_connector "later
-                self.irods_conn = context.irods_connector = IrodsConnector(secret)
-                self.irods_conn.ibridges_configuration = self.context.ibridges_configuration
-                self.irods_conn.irods_env_file = self.context.irods_env_file
-                self.irods_conn.irods_environment = self.context.irods_environment
+                self.irods_conn.password = secret
                 self.irods_conn.connect()
-                
+
                 if self.irods_conn.icommands.has_icommands:
                     in_var = input("Use icommands (Y/N, default Y): ").strip().lower()
                     if in_var in ['', 'y', 'yes']:
                         self.irods_conn.use_icommands = True
                         self.irods_conn.icommands.set_irods_env_file(self.context.irods_env_file)
-                        
+
                 assert self.irods_conn.session.has_valid_irods_session(), "No session"
 
                 break
