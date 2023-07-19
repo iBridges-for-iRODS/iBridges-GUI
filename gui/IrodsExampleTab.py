@@ -12,10 +12,10 @@ import gui
 import irodsConnector
 import utils
 from gui.irodsTreeView import IrodsModel
-
+from gui.ui_files.ExampleTab import Ui_ExampleTab
 
 class IrodsExampleTab(PyQt6.QtWidgets.QWidget,
-                      gui.ui_files.ExampleTab.Ui_ExampleTab):
+                      Ui_ExampleTab):
     """Example tab class.
 
     """
