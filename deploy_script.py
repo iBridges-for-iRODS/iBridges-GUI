@@ -6,11 +6,13 @@ slower than the current variant.
 """
 import subprocess
 import utils
+from datetime import datetime
 
 ICON_VAR = 'icon'
 TAB_LEN = 4
 TAB = ' ' * TAB_LEN
 PIXMAP_STR = '.addPixmap(QtGui.QPixmap('
+DEBUG_MODE = False
 
 
 def run_cmd(command: str):
@@ -75,6 +77,21 @@ def ui_to_py(dirname: str, py_exec: str):
             '\n'.join(line for line in outlines if not line.startswith('#')))
 
 
+def cleanup_prev_build(distpath: str, ibridgedistpath: str):
+    """Cleanup the dist/iBridges.dist folders from previous builds. 
+    Parameters
+    ----------
+    distpath : str
+        Name of pyinstaller output folder
+    ibridgedistpath : str
+        Name of the Nuitka output folder
+    """
+    if distpath.exists():
+        distpath.rmdir(squash=True)
+    if ibridgedistpath.exists():
+        ibridgedistpath.rmdir(squash=True)
+
+
 def remove_pyui_files(dirname: str):
     """Remove the locally stored Python versions of the UI files.
 
@@ -119,10 +136,19 @@ def main() -> int:
         Exit code of the program.
 
     """
+    buildtool = "nuitka"
     relpath = utils.path.LocalPath('.')
     iconpath = relpath.joinpath('gui', 'icons')
     uipath = relpath.joinpath('gui', 'ui_files')
     venvpath = relpath.joinpath('venv')
+    distpath = relpath.joinpath('dist')
+    ibridgedistpath = relpath.joinpath('iBridges.dist')
+
+    
+    cleanup_prev_build(distpath, ibridgedistpath)
+    confirmation = input("Do you want to build with nuitka (default) pyinstaller (py)?")
+    if (len(confirmation) > 0) and confirmation[0].upper().startswith('PY'):
+        buildtool = "pyinstaller"
     # Step 1: Convert .ui files to .py files after first removing .py
     # files that already exist.  Recompiling is the best way to ensure
     # they are up-to-date.
@@ -132,8 +158,8 @@ def main() -> int:
     except Exception as error:
         print(f'Error converting UI files to Python: {error}')
         return 1
-    # Step 2: Pyinstaller includes all dependencies in the environment,
-    # so we need to use a venv.
+    # Step 2: The buildtools includes all dependencies in the environment,
+    # a venv is created to minimize the overhead.
     try:
         venvpath.mkdir(exist_ok=True)
         if utils.path.is_posix():
@@ -150,10 +176,26 @@ def main() -> int:
     except Exception as error:
         print(f'Error finding/creating virtual environment: {error}')
         return 2
-    # Step 3: Activate venv and run pyinstaller.
+    # Step 3: Activate venv and run pyinstaller/nuitka.
+    filenames = f'{iconpath.joinpath("iBridges.ico")} iBridges.py'
     try:
-        filenames = f'{iconpath.joinpath("iBridges.ico")} iBridges.py'
-        run_cmd(f'{venv_activate} && pyinstaller --clean --noconfirm --icon {filenames}')
+        if buildtool == "nuitka":
+            cmd = f"{venv_activate} && python -m nuitka "
+            if DEBUG_MODE == False:
+                cmd += "--disable-console "
+            print(datetime.now())
+            run_cmd(f'{cmd} --standalone \
+                --remove-output --enable-plugin=pyqt6 --include-qt-plugins=sensible,styles \
+                --assume-yes-for-downloads --show-progress --quiet \
+                --nofollow-import-to=tkinter \
+                --windows-icon-from-ico={filenames}')
+            print(datetime.now())
+            # Rename Ibridges.dist to dist
+            ibridgedistpath.rename_path(distpath)
+        elif buildtool == "pyinstaller":
+            run_cmd(f'{venv_activate} && pyinstaller --clean --noconfirm --icon {filenames}')
+        else:
+            print('unknown buildtoold:', buildtool)
     except Exception as error:
         print(f'Error creating executable: {error}')
         return 3
@@ -165,14 +207,15 @@ def main() -> int:
         print(f'Error copying icons: {error}')
         return 4
     # Optional post-installer actions.
-    confirmation = input("Do you want to cleanup the build environment (Y/N): ")
-    if confirmation[0].upper().startswith('Y'):
-        try:
-            relpath.joinpath('build').rmdir(squash=True)
-            relpath.joinpath('iBridges.spec').unlink()
-        except Exception as error:
-            print(f'Error cleaning up: {error}')
-            return 5
+    if buildtool == "pyinstaller":
+        confirmation = input("Do you want to cleanup the build environment (Y/N): ")
+        if (len(confirmation) > 0) and (confirmation[0].upper().startswith('Y')):
+            try:
+                relpath.joinpath('build').rmdir(squash=True)
+                relpath.joinpath('iBridges.spec').unlink()
+            except Exception as error:
+                print(f'Error cleaning up: {error}')
+                return 5
     return 0
 
 
