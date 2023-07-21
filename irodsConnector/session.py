@@ -44,6 +44,10 @@ class Session:
     def conf(self) -> dict:
         """iBridges configuration dictionary.
 
+        This accesses the `config` property of the `ibridges_configuration`
+        property of the Context singleton instance.  An empty `config`
+        is (re)loaded from the `filepath` of the JSONConfig.
+
         Returns
         -------
         dict
@@ -56,6 +60,10 @@ class Session:
     @property
     def ienv(self) -> dict:
         """iRODS environment dictionary.
+
+        This accesses the `config` property of the `irods_environment`
+        property of the Context singleton instance.  An empty `config`
+        is (re)loaded from the `filepath` of the JSONConfig.
 
         Returns
         -------
