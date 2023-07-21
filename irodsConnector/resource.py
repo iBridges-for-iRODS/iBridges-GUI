@@ -93,22 +93,12 @@ class Resource(object):
             # Check for inclusion of default resource.
             resc_names = []
             for name, metadata in self._resources.items():
-                context = metadata['context']
-                if context is not None:
-                    for kvp in context.split(';'):
-                        if 'write' in kvp:
-                            _, val = kvp.split('=')
-                            if float(val) == 0.0:
-                                continue
-                status = metadata['status']
-                if status is not None:
-                    if 'down' in status:
-                        continue
-                resc_is_root = metadata['parent'] is None
+                if not resc_is_writable(metadata) or not resc_is_up(metadata):
+                    continue
                 has_free_space = True
                 if self.conf.get('check_free_space', True):
                     has_free_space = metadata['free_space'] > 0
-                if resc_is_root and has_free_space:
+                if resc_is_root(metadata) and has_free_space:
                     resc_names.append(name)
             if self.sess_man.default_resc not in resc_names:
                 logging.warning('    -=WARNING=-    '*4)
@@ -146,21 +136,10 @@ class Resource(object):
         for name, metadata in self.resources.items():
             # Add name to dictionary for convenience.
             metadata['name'] = name
-            # Resource is writable?
-            context = metadata['context']
-            if context is not None:
-                for kvp in context.split(';'):
-                    if 'write' in kvp:
-                        _, val = kvp.split('=')
-                        if float(val) == 0.0:
-                            continue
-            # Resource is up?
-            status = metadata['status']
-            if status is not None:
-                if 'down' in status:
-                    continue
+            if not resc_is_writable(metadata) or not resc_is_up(metadata):
+                continue
             # Is a root resource?
-            if metadata['parent'] is None:
+            if resc_is_root(metadata):
                 vals.append([metadata.get(attr) for attr in attr_names])
                 spaces.append(metadata['free_space'])
         if self.conf.get('check_free_space', True):
@@ -280,3 +259,63 @@ class Resource(object):
         for child in resc.children:
             children.extend(self.get_resource_children(child))
         return resc.children + children
+
+
+def resc_is_root(metadata: dict) -> bool:
+    """Determine if `metadata` indicates a root resource.
+
+    Parameters
+    ----------
+    metadata : dict
+        Select resource metadata.
+
+    Returns
+    -------
+    bool
+        Whether the resource is root.
+
+    """
+    return metadata['parent'] is None
+
+
+def resc_is_up(metadata: dict) -> bool:
+    """Determine if `metadata` indicates a resource in an "up" state.
+
+    Parameters
+    ----------
+    metadata : dict
+        Select resource metadata.
+
+    Returns
+    -------
+    bool
+        Whether the resource is up.
+
+    """
+    status = metadata['status']
+    if status is not None:
+        return 'down' not in status
+    return True
+
+
+def resc_is_writable(metadata: dict) -> bool:
+    """Determine if `metadata` indicates a writable resource.
+
+    Parameters
+    ----------
+    metadata : dict
+        Select resource metadata.
+
+    Returns
+    -------
+    bool
+        Whether the resource is writable.
+
+    """
+    context = metadata['context']
+    if context is not None:
+        for kvp in context.split(';'):
+            if 'write' in kvp:
+                _, val = kvp.split('=')
+                return float(val) != 0.0
+    return True
