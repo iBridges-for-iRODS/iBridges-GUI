@@ -6,7 +6,6 @@ slower than the current variant.
 """
 import subprocess
 import utils
-from datetime import datetime
 
 ICON_VAR = 'icon'
 TAB_LEN = 4
@@ -183,13 +182,11 @@ def main() -> int:
             cmd = f"{venv_activate} && python -m nuitka "
             if DEBUG_MODE == False:
                 cmd += "--disable-console "
-            print(datetime.now())
             run_cmd(f'{cmd} --standalone \
                 --remove-output --enable-plugin=pyqt6 --include-qt-plugins=sensible,styles \
                 --assume-yes-for-downloads --show-progress --quiet \
                 --nofollow-import-to=tkinter \
                 --windows-icon-from-ico={filenames}')
-            print(datetime.now())
             # Rename Ibridges.dist to dist
             ibridgedistpath.rename_path(distpath)
         elif buildtool == "pyinstaller":
