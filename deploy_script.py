@@ -4,6 +4,9 @@ The --onefile option is not used because Windows must upack the
 executable before it can run.  This makes it roughly 30 seconds
 slower than the current variant.
 """
+from datetime import datetime
+import xml.etree.ElementTree as ET
+import platform
 import subprocess
 import utils
 
@@ -14,21 +17,24 @@ PIXMAP_STR = '.addPixmap(QtGui.QPixmap('
 DEBUG_MODE = False
 
 
-def run_cmd(command: str):
+def run_cmd(command: str, pass_error: bool = False):
     """Run command in shell, stdout is printed to the screen
 
     Parameters
     ----------
     command : str
         Input shell command line.
-
+    pass_error : bool
+        Exit or pass on error
     """
-    proc = subprocess.run(command, stderr=subprocess.STDOUT, shell=True,
+    proc = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
                           universal_newlines=True)
     # Print all errors
-    if proc.stderr is not None:
+    if proc.stderr != '':
         print(f'commandline error: {proc.stderr}')
-        raise Exception('shell run error')
+        if pass_error == False:
+            raise Exception('shell run error')
+    return proc.stdout
 
 
 def ui_to_py(dirname: str, py_exec: str):
@@ -120,6 +126,27 @@ def replace_directory(source: str, destination: str):
     utils.path.LocalPath(source).copy_path(destination, squash=True)
 
 
+def QT_ifw_installed(qt_ifwpath):
+    """Check if QT installer framework is available 
+
+    Parameters
+    ----------
+    qt_ifwpath : str
+        Installation directory
+
+    Returns
+    -------
+    boolean
+
+    """
+    try:
+        if ('win' in platform.platform().lower() and qt_ifwpath.joinpath('binarycreator.exe').exists()):
+            return True
+        return (subprocess.call(['which', 'binarycreator']) == 0)
+    except Exception as error:
+        return False
+
+
 def main() -> int:
     """Main function.
 
@@ -142,8 +169,9 @@ def main() -> int:
     venvpath = relpath.joinpath('venv')
     distpath = relpath.joinpath('dist')
     ibridgedistpath = relpath.joinpath('iBridges.dist')
+    installerpath = relpath.joinpath('installer')
+    qt_ifwpath = utils.path.LocalPath('C:/Qt/QtIFW-4.6.0/bin')
 
-    
     cleanup_prev_build(distpath, ibridgedistpath)
     confirmation = input("Do you want to build with nuitka (default) pyinstaller (py)?")
     if (len(confirmation) > 0) and confirmation[0].upper().startswith('PY'):
@@ -180,15 +208,13 @@ def main() -> int:
     try:
         if buildtool == "nuitka":
             cmd = f"{venv_activate} && python -m nuitka "
-            if DEBUG_MODE == False:
+            if DEBUG_MODE is False:
                 cmd += "--disable-console "
             run_cmd(f'{cmd} --standalone \
                 --remove-output --enable-plugin=pyqt6 --include-qt-plugins=sensible,styles \
                 --assume-yes-for-downloads --show-progress --quiet \
                 --nofollow-import-to=tkinter \
-                --windows-icon-from-ico={filenames}')
-            # Rename Ibridges.dist to dist
-            ibridgedistpath.rename_path(distpath)
+                --windows-icon-from-ico={filenames}', True)
         elif buildtool == "pyinstaller":
             run_cmd(f'{venv_activate} && pyinstaller --clean --noconfirm --icon {filenames}')
         else:
@@ -196,13 +222,6 @@ def main() -> int:
     except Exception as error:
         print(f'Error creating executable: {error}')
         return 3
-    # Step 4: Copy icons folder to dist folder, replace if exists.
-    try:
-        dist_icons = relpath.joinpath('dist', 'icons')
-        replace_directory(iconpath, dist_icons)
-    except Exception as error:
-        print(f'Error copying icons: {error}')
-        return 4
     # Optional post-installer actions.
     if buildtool == "pyinstaller":
         confirmation = input("Do you want to cleanup the build environment (Y/N): ")
@@ -212,7 +231,59 @@ def main() -> int:
                 relpath.joinpath('iBridges.spec').unlink()
             except Exception as error:
                 print(f'Error cleaning up: {error}')
-                return 5
+                return 4
+    
+    # Check if QT installer framework is available 
+    # On windows binarycreator was not added to the path
+    # Create QT installation framework installer
+    confirmation = input("Do you want to create an installer? (Y/N): ")
+    if QT_ifw_installed(qt_ifwpath) and (len(confirmation) > 0) and (confirmation[0].upper().startswith('Y')):
+        # Step 4: Create the folders: data, icon & meta
+        data_ipath = installerpath.joinpath('dist', 'data')
+        icons_ipath = installerpath.joinpath('dist', 'icon')
+        meta_ipath = installerpath.joinpath('dist', 'meta')
+        data_ipath.mkdir(parents=True, exist_ok=True)
+        icons_ipath.mkdir(parents=True, exist_ok=True)
+        meta_ipath.mkdir(parents=True, exist_ok=True)
+
+        # Step 5: Copy icons, license, config files & code to the right folders
+        try:
+            if buildtool == "nuitka":
+                ibridgedistpath.replace_path(data_ipath, True)
+            else:
+                distpath.replace_path(data_ipath, True)
+            dist_icons = data_ipath.joinpath('icons')
+            replace_directory(iconpath, dist_icons)
+            (iconpath.joinpath('iBridges.ico')).copy_path(icons_ipath.joinpath('icon.ico'), squash=True)
+            (relpath.joinpath('LICENSE')).copy_path(meta_ipath.joinpath('license.txt'), squash=True)
+            (installerpath.joinpath('installerscript.qs')).copy_path(meta_ipath.joinpath('installerscript.qs'),
+                                                                     squash=True)
+            (installerpath.joinpath('package.xml')).copy_path(meta_ipath.joinpath('package.xml'), squash=True)
+        except Exception as error:
+            print(f'Error copying files to installer folders: {error}')
+            return 5
+        
+        # step 6: Update the config
+        package_xml = ET.parse(meta_ipath.joinpath('package.xml'))
+        release_date = package_xml.find("ReleaseDate")
+        release_date.text = datetime.now().strftime("%Y-%m-%d")
+        code_version = run_cmd('git describe --tag', True).strip()
+        if code_version != '':
+            version = package_xml.find("Version")
+            version.text = code_version
+        package_xml.write(meta_ipath.joinpath('package.xml'))
+
+        # Step 7: Create installer
+        try:
+            cmd = f" cd {installerpath} && \
+            {qt_ifwpath.joinpath('binarycreator.exe')} --offline-only \
+            -t {qt_ifwpath.joinpath('installerbase.exe')} -p . \
+            -c config.xml iBridges_installer.exe"
+            print(cmd)
+            run_cmd(cmd)
+        except Exception as error:
+            print(f'Error creating installer: {error}')
+            return 6
     return 0
 
 
