@@ -22,35 +22,39 @@ class Rules(object):
         """
         self.sess_man = sess_man
 
-    def execute_rule(self, rule_file: str, params: dict, output: str = 'ruleExecOut') -> tuple:
+    def execute_rule(self, parameters: dict, rule_type: str = 'irods_rule_language') -> tuple:
         """Execute an iRODS rule.
+        Works for rules on the server and with rule files
 
         Parameters
         ----------
-        rule_file : str, file-like
-            Name of the iRODS rule file, or a file-like object representing it.
-        params : dict
-            Rule arguments.
-        output : str
-            Rule output variable(s).
+        parameters : dict
+            Rule arguments, passed as variable.
+        rule_type : str
+            changes between irods rule language and python rules.
 
         Returns
         -------
         tuple
             (stdout, stderr)
 
-        `params` format example:
-        params = {  # extra quotes for string literals
+        rule file example:
+        parameters = {
+        'rule_file': 'filename.r',
+        'output': 'ruleExecOut',
+        'params': {  # extra quotes for string literals
             '*obj': '"/zone/home/user"',
             '*name': '"attr_name"',
             '*value': '"attr_value"'
         }
+        }
+        rule on server example:
 
         """
         try:
             rule = irods.rule.Rule(
-                self.sess_man.irods_session, rule_file=rule_file, params=params, output=output,
-                instance_name='irods_rule_engine_plugin-irods_rule_language-instance')
+                self.sess_man.irods_session,
+                instance_name=f'irods_rule_engine_plugin-{rule_type}-instance', **parameters)
             out = rule.execute()
         except irods.exception.NetworkException as error:
             logging.info('Lost connection to iRODS server.')

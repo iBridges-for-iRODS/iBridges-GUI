@@ -255,8 +255,8 @@ class IrodsConnector:
 
     # Rules functionality
     #
-    def execute_rule(self, rule_file: str, params: dict, output: str = 'ruleExecOut') -> tuple:
-        return self.rules.execute_rule(rule_file, params, output)
+    def execute_rule(self, parameters: dict, rule_type: str = 'irods_rule_language') -> tuple:
+        return self.rules.execute_rule(parameters, rule_type)
 
     # Session functionality
     #
