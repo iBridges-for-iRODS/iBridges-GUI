@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Installer>
+    <Name>iBridges</Name>
+    <Version>0.0.2</Version>
+    <Title>iBridges Installer</Title>
+    <Publisher>Opensource</Publisher>
+    <ProductUrl>https://github.com/chStaiger/iBridges-Gui</ProductUrl>
+    <InstallerWindowIcon>iBridges.icon</InstallerWindowIcon>
+    <InstallerApplicationIcon>iBridges.icon</InstallerApplicationIcon>
+    <Logo>iBridges.icon</Logo>
+    <RunProgram>@TargetDir@/iBridges.exe</RunProgram>
+    <RunProgramDescription>launch iBridges</RunProgramDescription>
+    <StartMenuDir>iBridges</StartMenuDir>
+    <MaintenanceToolName>iBridgesMaintenanceTool</MaintenanceToolName>
+    <AllowNonAsciiCharacters>true</AllowNonAsciiCharacters>
+    <TargetDir>@ApplicationsDir@/iBridges</TargetDir>
+    <AdminTargetDir>@ApplicationsDir@/iBridges</AdminTargetDir>
+    <ControlScript>controlscript.js</ControlScript>
+</Installer>
