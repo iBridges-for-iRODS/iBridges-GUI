@@ -288,6 +288,9 @@ class LocalPath(PurePath):
             Whether to overwrite path.
 
         """
+        if self.is_file():
+            shutil.copy(self, target, follow_symlinks = True)
+            return
         options = {'symlinks': True}
         if squash:
             # This option works for Python 3.8+
