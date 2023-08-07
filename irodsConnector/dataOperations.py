@@ -236,17 +236,17 @@ class DataOperation(object):
         if self.is_collection(item):
             try:
                 item.move(new_path)
+                return {"successful": True}
             except Exception as e:
-                return {"succesfull": False, "reason": repr(e)}
+                return {"successful": False, "reason": repr(e)}
         elif self.is_dataobject(item):
-            print("data object move")
             try:
                self.sess_man.irods_session.data_objects.move(item.path, new_path)
+               return {"successful": True}
             except Exception as e:
-                return {"succesfull": False, "reason": repr(e)}
+                return {"successful": False, "reason": repr(e)}
         else:
-           return {"succesfull": False, "reason": "Item is not a dataobject or collection"}
-        return {"successfull": True}
+           return {"succesful": False, "reason": "Item is not a dataobject or collection"}
 
     def irods_put(self, local_path: str, irods_path: str, resc_name: str = ''):
         """Upload `local_path` to `irods_path` following iRODS `options`.

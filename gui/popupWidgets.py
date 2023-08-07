@@ -46,6 +46,40 @@ class irodsCreateCollection(QDialog, Ui_createCollection):
                     self.errorLabel.setText("ERROR: insufficient rights.")
 
 
+class renameItem(QDialog, Ui_createCollection):
+    conn = irodsConnector.manager.IrodsConnector()
+
+    def __init__(self, item):
+        super().__init__()
+        if getattr(sys, 'frozen', False):
+            super().setupUi(self)
+        else:
+            loadUi("gui/ui_files/renameItem.ui", self)
+        self.setWindowTitle("Rename/Move")
+        self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.item = item
+        self.label.setText(self.item.path)
+        self.pathLine.setText(self.item.path)
+        self.pathLine.resize(QtCore.QSize(300, 30))
+        self.okButton.clicked.connect(self.dialog)
+        self.cancelButton.clicked.connect(self.cancel)
+
+    def cancel(self):
+        self.done(1)
+
+    def dialog(self):
+        new_path = self.pathLine.text()
+        if new_path != self.item.path:
+            result = self.conn.item_move(self.item, new_path)
+            print(result)
+            if result["successful"]:
+                self.done(1)
+            else:
+                self.errorLabel.setText(result["reason"])
+        else:
+            self.errorLabel.setText("Choose new path")
+
+
 class createDirectory(QDialog, Ui_createCollection):
     def __init__(self, parent):
         super().__init__()

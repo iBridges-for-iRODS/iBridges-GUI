@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1278</width>
-    <height>813</height>
+    <height>838</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -150,16 +150,23 @@ QPushButton#dataDeleteButton
      <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QPushButton" name="UploadButton">
+        <widget class="QPushButton" name="createCollButton">
          <property name="text">
-          <string>File Upload</string>
+          <string>Create Collection</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="createCollButton">
+        <widget class="QPushButton" name="renameButton">
          <property name="text">
-          <string>Create Collection</string>
+          <string>Rename</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="UploadButton">
+         <property name="text">
+          <string>File Upload</string>
          </property>
         </widget>
        </item>
@@ -169,19 +176,6 @@ QPushButton#dataDeleteButton
           <string>File Download</string>
          </property>
         </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>

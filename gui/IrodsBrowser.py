@@ -110,6 +110,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.DownloadButton.clicked.connect(self.fileDownload)
         # new collection
         self.createCollButton.clicked.connect(self.createCollection)
+        self.renameButton.clicked.connect(self.renameItem)
         self.dataDeleteButton.clicked.connect(self.deleteData)
         self.loadDeleteSelectionButton.clicked.connect(self.loadSelection)
         # functionality to lower tabs for metadata, acls and replicas
@@ -452,6 +453,27 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                     self.errorLabel.clear()
                 except Exception as error:
                     self.errorLabel.setText("ERROR DELETE DATA: "+repr(error))
+
+    def renameItem(self):
+        self._clear_error_label()
+        row = self.collTable.currentRow()
+        itemPath = ''
+        if row == -1:
+            self.errorLabel.setText("RENAME: select a row")
+            return
+        elif self.collTable.item(row, 0).text().lower() == "search":
+            itemPath = self.collTable.item(row, 1).text()
+        else:
+            itemPath = self.inputPath.text()+"/"+ self.collTable.item(row, 1).text()
+        print(itemPath)
+        if self.conn.dataobject_exists(itemPath):
+            item = self.conn.get_dataobject(itemPath)
+        else:
+            item = self.conn.get_collection(itemPath)
+        renameWidget = gui.popupWidgets.renameItem(item)
+        renameWidget.exec()
+        self.loadTable()
+
 
     def createCollection(self):
         parent = "/"+self.inputPath.text().strip("/")
