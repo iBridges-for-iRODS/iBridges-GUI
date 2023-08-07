@@ -143,6 +143,9 @@ class IrodsConnector:
     def dataobject_exists(self, path: str) -> bool:
         return self.data_op.dataobject_exists(path)
 
+    def item_move(self, item: (irods.collection.iRODSCollection, irods.data_object.iRODSDataObject), new_path: str) -> dict:
+        return self.data_op.item_move(item, new_path)
+
     def delete_data(self, item: None):
         return self.data_op.delete_data(item)
 
