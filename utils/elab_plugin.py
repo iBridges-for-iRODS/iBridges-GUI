@@ -25,7 +25,7 @@ class ElabPlugin():
         #self.group = calling_class.context.ibridges_configuration.config.get('eln_group', '')
         #self.experiment = calling_class.context.ibridges_configuration.config.get('eln_experiment', '')
         #self.title = calling_class.context.ibridges_configuration.config.get('eln_title', '')
-        
+ 
         in_var = input('Link data to ElabJournal experiment (Y/N, default N): ').strip().lower()
         if in_var in ['', 'n', 'no']:
             logging.info('Skipping ELN')
@@ -43,7 +43,7 @@ class ElabPlugin():
         if in_var in ['y', 'yes']:
             self.elab.showGroups()
             self.elab.updateMetadataUrlInteractive(group=True)
-        
+ 
         if not self.title:
             title = input('ELN paragraph title (default "iRODS data"): ')
             if title:
@@ -69,10 +69,10 @@ class ElabPlugin():
             logging.warning('Upload unsuccesful, aborting eLab annotation')
             return
 
-        irods_conn = calling_class.irods_conn
+        conn = calling_class.conn
 
         try:
-            coll = irods_conn.get_collection(calling_class.target_path)
+            coll = conn.get_collection(calling_class.target_path)
         except CollectionDoesNotExist as error:
             logging.error(
                 'Could not get collection %s: %r',
@@ -81,20 +81,20 @@ class ElabPlugin():
 
         annotation = {
             "iRODS path": coll.path,
-            "iRODS server": irods_conn.host,
-            "iRODS user": irods_conn.username,
+            "iRODS server": conn.host,
+            "iRODS user": conn.username,
         }
 
         # YODA: webdav URL does not contain "home", but iRODS path does!
-        if irods_conn.davrods and ("yoda" in irods_conn.host or "uu.nl" in irods_conn.host):
-            url = f"{irods_conn.davrods}/{coll.path.split('home/')[1].strip()}"
-        elif irods_conn.davrods and "surfsara.nl" in irods_conn.host:
-            url = f"{irods_conn.davrods}/{coll.path.split(irods_conn.zone)[1].strip('/')}"
-        elif irods_conn.davrods:
-            url = f"{irods_conn.davrods}/{coll.path.strip('/')}"
+        if conn.davrods and ("yoda" in conn.host or "uu.nl" in conn.host):
+            url = f"{conn.davrods}/{coll.path.split('home/')[1].strip()}"
+        elif conn.davrods and "surfsara.nl" in conn.host:
+            url = f"{conn.davrods}/{coll.path.split(conn.zone)[1].strip('/')}"
+        elif conn.davrods:
+            url = f"{conn.davrods}/{coll.path.strip('/')}"
         else:
-            url = '{' + "\n".join([irods_conn.host, irods_conn.zone,
-                                   irods_conn.username, str(irods_conn.port), coll.path]) + '}'
+            url = '{' + "\n".join([conn.host, conn.zone,
+                                   conn.username, str(conn.port), coll.path]) + '}'
 
         try:
             self.elab.addMetadata(url=url, meta=annotation, title=self.title)
@@ -103,15 +103,15 @@ class ElabPlugin():
 
         try:
             if os.path.isfile(calling_class.local_path):
-                item = irods_conn.get_dataobject(f"{coll.path}/{os.path.basename(calling_class.local_path)}")
-                irods_conn.add_metadata([item], 'ELN', self.elab.metadataUrl)
+                item = conn.get_dataobject(f"{coll.path}/{os.path.basename(calling_class.local_path)}")
+                conn.add_metadata([item], 'ELN', self.elab.metadataUrl)
             elif os.path.isdir(calling_class.local_path):
-                uploaded_coll = irods_conn.get_collection(f"{coll.path}/{os.path.basename(calling_class.local_path)}")
+                uploaded_coll = conn.get_collection(f"{coll.path}/{os.path.basename(calling_class.local_path)}")
                 items = [uploaded_coll]
                 for this_coll, _, objs in uploaded_coll.walk():
                     items.append(this_coll)
                     items.extend(objs)
 
-                irods_conn.add_metadata(items, 'ELN', self.elab.metadataUrl)
+                conn.add_metadata(items, 'ELN', self.elab.metadataUrl)
         except CAT_NO_ACCESS_PERMISSION as error:
             logging.error('Could not add iRODS-metadata: %r', error)
