@@ -71,7 +71,6 @@ class renameItem(QDialog, Ui_createCollection):
         new_path = self.pathLine.text()
         if new_path != self.item.path:
             result = self.conn.item_move(self.item, new_path)
-            print(result)
             if result["successful"]:
                 self.done(1)
             else:
