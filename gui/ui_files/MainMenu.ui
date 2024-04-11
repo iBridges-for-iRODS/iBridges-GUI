@@ -74,7 +74,7 @@ QTabBar::tab:top:selected {
      <x>0</x>
      <y>0</y>
      <width>1300</width>
-     <height>24</height>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu">
@@ -87,6 +87,7 @@ QTabBar::tab:top:selected {
     <property name="title">
      <string>Menu</string>
     </property>
+    <addaction name="actionConnect"/>
     <addaction name="actionCloseSession"/>
     <addaction name="actionExit"/>
    </widget>
@@ -135,6 +136,11 @@ QTabBar::tab:top:selected {
    </property>
    <property name="font">
     <font/>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="text">
+    <string>Connect</string>
    </property>
   </action>
  </widget>
