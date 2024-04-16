@@ -39,9 +39,9 @@ class irodsInfo(PyQt6.QtWidgets.QWidget,
         # irods user
         self.userLabel.setText(self.session.username)
         # irods user type and groups
-        #user_type, user_groups = self.session.get_user_info()
-        #self.typeLabel.setText(user_type)
-        #self.groupsLabel.setText('\n'.join(user_groups))
+        user_type, user_groups = self.session.get_user_info()
+        self.typeLabel.setText(user_type)
+        self.groupsLabel.setText('\n'.join(user_groups))
         # default resource
         self.rescLabel.setText(self.session.default_resc)
         # irods server and version
