@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>480</height>
+    <height>547</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,9 +54,9 @@ QTextBrowser
       <widget class="QLabel" name="label_7">
        <property name="font">
         <font>
-         <pointsize>13</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <pointsize>18</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -142,9 +142,9 @@ QTextBrowser
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
-         <pointsize>13</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <pointsize>18</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -225,9 +225,9 @@ QTextBrowser
         <widget class="QPushButton" name="refreshButton">
          <property name="font">
           <font>
-           <pointsize>11</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
+           <pointsize>18</pointsize>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="text">
@@ -289,12 +289,12 @@ QTextBrowser
        </column>
        <column>
         <property name="text">
-         <string>Free space [GB]</string>
+         <string>Status</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string>Status</string>
+         <string>Free Space</string>
         </property>
        </column>
       </widget>

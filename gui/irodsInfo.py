@@ -7,9 +7,9 @@ import PyQt6
 import PyQt6.QtWidgets
 import PyQt6.uic
 
-import gui
-import utils
 from ibridges.resources import Resources
+import gui
+from gui.gui_utils import populate_table
 
 class irodsInfo(PyQt6.QtWidgets.QWidget,
                 gui.ui_files.tabInfo.Ui_tabInfo):
@@ -50,10 +50,6 @@ class irodsInfo(PyQt6.QtWidgets.QWidget,
             '.'.join((str(num) for num in self.session.server_version)))
         # irods resources
         resc_info = Resources(self.session).root_resources
-        self.rescTable.setRowCount(len(resc_info[0]))
-        for row, (name, status, space, _) in enumerate(resc_info):
-            self.rescTable.setItem(row, 0, PyQt6.QtWidgets.QTableWidgetItem(name))
-            self.rescTable.setItem(row, 1, PyQt6.QtWidgets.QTableWidgetItem(str(space)))
-            self.rescTable.setItem(row, 2, PyQt6.QtWidgets.QTableWidgetItem(str(status or '')))
+        populate_table(self.rescTable, len(resc_info[0]), resc_info)
         self.rescTable.resizeColumnsToContents()
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))

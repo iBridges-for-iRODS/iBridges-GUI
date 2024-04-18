@@ -25,23 +25,26 @@
 	background-color: rgb(54, 54, 54);
 	color: rgb(86, 184, 139);
     border-color: rgb(217, 174, 23);
+    font: 16pt;
 }
 
 QLineEdit
 {
 	background-color: rgb(85, 87, 83);
 	border-color: rgb(217, 174, 23);
-}
-
-QRadioButton
-{
-	border-bottom-color: rgb(206, 92, 0);
-    selection-color: rgb(217, 174, 23);
+	font: 18pt;
 }
 
 QLabel#passError, QLabel#envError, QLabel#icommandsError
 {
 	color: rgb(217, 174, 23);
+     font: 18pt;
+}
+
+QLabel#labelTitle
+{
+    font: 22pt;
+    
 }
 
 QRadioButton
@@ -83,8 +86,10 @@ QRadioButton
      <widget class="QLabel" name="labelTitle">
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
-        <bold>true</bold>
+        <pointsize>22</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+        <underline>false</underline>
        </font>
       </property>
       <property name="text">
@@ -145,6 +150,16 @@ QRadioButton
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
+     <widget class="QLabel" name="passError">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
      <spacer name="horizontalSpacer">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -158,16 +173,6 @@ QRadioButton
      </spacer>
     </item>
     <item>
-     <widget class="QLabel" name="passError">
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QPushButton" name="cancelButton">
       <property name="text">
        <string>Cancel</string>
@@ -178,8 +183,9 @@ QRadioButton
      <widget class="QPushButton" name="connectButton">
       <property name="font">
        <font>
-        <pointsize>13</pointsize>
-        <bold>true</bold>
+        <pointsize>16</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
        </font>
       </property>
       <property name="text">

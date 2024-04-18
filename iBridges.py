@@ -16,6 +16,7 @@ import PyQt6.uic
 from gui import ui_files
 from gui.irodsInfo import irodsInfo
 from gui.LoginWindow import IrodsLoginWindow
+from gui.IrodsBrowser import IrodsBrowser
 #import irodsConnector
 #import utils
 
@@ -49,8 +50,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         session_dict = {}
         login_window = IrodsLoginWindow(session_dict)
         login_window.exec()
-        self.session = session_dict['session']
-        self.setup_tabs()
+        try:
+            self.session = session_dict['session']
+            self.setup_tabs()
+        except:
+            self.session = None
+            raise
 
     def programExit(self):
         quit_msg = "Are you sure you want to exit the program?"
@@ -65,7 +70,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
     
     def setup_tabs(self):
         ui_tabs_lookup = {
-                #'tabBrowser': self.setupTabBrowser,
+            'tabBrowser': self.setupTabBrowser,
                 #'tabUpDownload': self.setupTabUpDownload,
                 #'tabDataBundle': self.setupTabDataBundle,
                 #'tabCreateTicket': self.setupTabCreateTicket,
@@ -76,11 +81,16 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         }
 
         for uitab in ui_tabs_lookup:
+            print(uitab)
             ui_tabs_lookup[uitab]()
 
     def setupTabInfo(self):
         self.irodsInfo = irodsInfo(self.session)
         self.tabWidget.addTab(self.irodsInfo, "Info")
+
+    def setupTabBrowser(self):
+        self.irodsBrowser = IrodsBrowser(self.session)
+        self.tabWidget.addTab(self.irodsBrowser, "Browser")
 
 def main():
     """Main function

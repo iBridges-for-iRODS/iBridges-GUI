@@ -1,3 +1,5 @@
+"""Pop up Widget for Login.
+"""
 import sys
 from pathlib import Path
 
@@ -6,7 +8,7 @@ from PyQt6.uic import loadUi
 
 from gui.ui_files.irodsLogin import Ui_irodsLogin
 from ibridges import Session
-from ibridges.session import LoginError
+from ibridges.session import LoginError, PasswordError
 
 class IrodsLoginWindow(QDialog, Ui_irodsLogin):
     """Definition and initialization of the iRODS login window.
@@ -67,8 +69,9 @@ class IrodsLoginWindow(QDialog, Ui_irodsLogin):
             self.session_dict['session'] = self.session
             self.close()
         except LoginError as e:
-            self.passError.setText(repr(e))
-        except:
-            raise()
-            self.passError.setText("Unknown Error")
+            self.passError.setText("irods_environment.json not setup correctly.")
+        except PasswordError as e:
+            self.passError.setText("Wrong password!")
+        except ConnectionError as e:
+            self.passError.setText("Cannot connect to server. Check Internet, host name and port.")
 

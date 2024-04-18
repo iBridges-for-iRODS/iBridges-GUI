@@ -10,36 +10,22 @@ import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
 
+from ibridges import get_collection, get_dataobject
+from ibridges import IrodsPath
+from ibridges.data_operations import obj_replicas
+from ibridges.meta import MetaData
+from ibridges.permissions import Permissions
+
 import gui
-import meta
-import utils
-
-# See: https://github.com/irods/irods_docs/blob/main/docs/system_overview/data_objects.md
-OBJ_STATUS_SYMBOL = {
-    '0': 'X',
-    '1': '&',
-    '2': '?',
-    '3': '?',
-    '4': '?',
-}
-OBJ_STATUS_HUMAN = {
-    '0': 'stale',
-    '1': 'good',
-    '2': 'intermediate',
-    '3': 'read-locked',
-    '4': 'write-locked',
-}
-
+from gui.gui_utils import populate_table
 
 class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                    gui.ui_files.tabBrowser.Ui_tabBrowser):
     """Browser view for iRODS session.
 
     """
-    current_browser_row = -1
-    context = utils.context.Context()
 
-    def __init__(self):
+    def __init__(self, session):
         """Initialize an iRODS browser view.
 
         """
@@ -49,17 +35,9 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         else:
             PyQt6.uic.loadUi("gui/ui_files/tabBrowser.ui", self)
 
-        self.conf = self.context.ibridges_configuration.config
-        self.conn = self.context.irods_connector
-        self.ienv = self.context.irods_environment.config
+        self.session = session
 
-        self.force = self.conf.get('force_transfers', False)
         self.viewTabs.setCurrentIndex(0)
-        # Browser table
-        self.collTable.setColumnWidth(0, 20)
-        self.collTable.setColumnWidth(1, 399)
-        self.collTable.setColumnWidth(2, 199)
-        self.collTable.setColumnWidth(3, 399)
         # Metadata table
         self.metadataTable.setColumnWidth(0, 199)
         self.metadataTable.setColumnWidth(1, 199)
@@ -70,7 +48,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         # If user is not a rodsadmin, hide Admin controls.
         user_type = ''
         try:
-            user_type, _ = self.conn.get_user_info()
+            user_type, _ = self.session.get_user_info()
         except irods.exception.NetworkException:
             self.errorLabel.setText(
                     "iRODS NETWORK ERROR: No Connection, please check network")
@@ -79,22 +57,27 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         # Replica table
         self.replicaTable.setColumnWidth(0, 500)
         self.replicaTable.setColumnWidth(1, 90)
-        # iRODS defaults
-        if 'irods_cwd' in self.ienv:
-            root_path = self.ienv['irods_cwd']
-        elif 'irods_home' in self.ienv:
-            root_path = self.ienv['irods_home']
+        
+        # iRODS default home
+        if self.session.home is not None:
+            root_path = self.session.home
         else:
-            root_path = f'/{self.conn.zone}/home/{self.conn.username}'
+            root_path = f'/{self.session.zone}/home/{self.session.username}'
         try:
-            self.root_coll = self.conn.get_collection(root_path)
+            self.root_coll = get_collection(self.session, root_path)
         except irods.exception.CollectionDoesNotExist:
-            self.root_coll = self.conn.get_collection(f'/{self.conn.zone}/home')
+            self.root_coll = get_collection(self.session, f'/{self.session.zone}/home')
         except irods.exception.NetworkException:
             self.errorLabel.setText(
                 'iRODS NETWORK ERROR: No Connection, please check network')
+        except:
+            self.errorLabel.setText('Cannot set root collection. Set "irods_home" in your environment.json')
         self.resetPath()
         self.browse()
+
+    def resetPath(self):
+        self.inputPath.setText(self.root_coll.path)
+        self.loadTable()
 
     def browse(self):
         """Initialize browser view GUI elements.  Defines the signals
@@ -105,25 +88,25 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.inputPath.returnPressed.connect(self.loadTable)
         self.refreshButton.clicked.connect(self.loadTable)
         self.homeButton.clicked.connect(self.resetPath)
-        self.parentButton.clicked.connect(self.set_parent_path)
+        self.parentButton.clicked.connect(self.setParent)
         # quick data upload and download (files only)
-        self.UploadButton.clicked.connect(self.fileUpload)
-        self.DownloadButton.clicked.connect(self.fileDownload)
+        #self.UploadButton.clicked.connect(self.fileUpload)
+        #self.DownloadButton.clicked.connect(self.fileDownload)
         # new collection
-        self.createCollButton.clicked.connect(self.createCollection)
-        self.dataDeleteButton.clicked.connect(self.deleteData)
-        self.loadDeleteSelectionButton.clicked.connect(self.loadSelection)
+        #self.createCollButton.clicked.connect(self.createCollection)
+        #self.dataDeleteButton.clicked.connect(self.deleteData)
+        #self.loadDeleteSelectionButton.clicked.connect(self.loadSelection)
         # functionality to lower tabs for metadata, acls and replicas
-        self.collTable.doubleClicked.connect(self.updatePath)
-        self.collTable.clicked.connect(self.fillInfo)
-        self.metadataTable.clicked.connect(self.edit_metadata)
-        self.aclTable.clicked.connect(self.edit_acl)
+        self.browserTable.doubleClicked.connect(self.updatePath)
+        self.browserTable.clicked.connect(self.fillInfo)
+        #self.metadataTable.clicked.connect(self.edit_metadata)
+        #self.aclTable.clicked.connect(self.edit_acl)
         # actions to update iCat entries of metadata and acls
-        self.metaAddButton.clicked.connect(self.addIcatMeta)
-        self.metaUpdateButton.clicked.connect(self.updateIcatMeta)
-        self.metaDeleteButton.clicked.connect(self.deleteIcatMeta)
-        self.metaLoadFile.clicked.connect(self.loadMetadataFile)
-        self.aclAddButton.clicked.connect(self.update_icat_acl)
+        #self.metaAddButton.clicked.connect(self.addIcatMeta)
+        #self.metaUpdateButton.clicked.connect(self.updateIcatMeta)
+        #self.metaDeleteButton.clicked.connect(self.deleteIcatMeta)
+        #self.metaLoadFile.clicked.connect(self.loadMetadataFile)
+        #self.aclAddButton.clicked.connect(self.update_icat_acl)
 
     def _clear_error_label(self):
         """Clear any error text.
@@ -171,7 +154,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                         f'{OBJ_STATUS_SYMBOL[repl.status]} ({OBJ_STATUS_HUMAN[repl.status]})'))
         self.replicaTable.resizeColumnsToContents()
 
-    def _fill_acls_tab(self, obj_path):
+    def _fill_acls_tab(self, irods_path):
         """Populate the table in the ACLs tab.
 
         Parameters
@@ -185,30 +168,22 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.aclZoneField.clear()
         self.aclBox.setCurrentText('')
         obj = None
-        if self.conn.collection_exists(obj_path):
-            obj = self.conn.get_collection(obj_path)
-        elif self.conn.dataobject_exists(obj_path):
-            obj = self.conn.get_dataobject(obj_path)
-        if obj is not None:
+        if irods_path.collection_exists():
+            obj = get_collection(self.session, irods_path)
+            inheritance = obj.inheritance
+        elif irods_path.dataobject_exists():
+            obj = get_dataobject(irods_path)
             inheritance = ''
-            if self.conn.is_collection(obj):
-                inheritance = obj.inheritance
-            acls = self.conn.get_permissions(obj=obj)
-            self.aclTable.setRowCount(len(acls))
-            for row, acl in enumerate(acls):
-                acl_access_name = self.conn.permissions[acl.access_name]
-                self.aclTable.setItem(
-                    row, 0, PyQt6.QtWidgets.QTableWidgetItem(acl.user_name))
-                self.aclTable.setItem(
-                    row, 1, PyQt6.QtWidgets.QTableWidgetItem(acl.user_zone))
-                self.aclTable.setItem(
-                    row, 2, PyQt6.QtWidgets.QTableWidgetItem(acl_access_name))
-                self.aclTable.setItem(
-                    row, 3, PyQt6.QtWidgets.QTableWidgetItem(str(inheritance)))
+        if obj is not None:
+            acls = Permissions(self.session, obj)
+            acl_data = [(p.access_name, p.user_zone, p.user_name, obj.inheritance) 
+                        for p in acls]
+
+            populate_table(self.aclTable, len(list(acls.__iter__())), acl_data)
         self.aclTable.resizeColumnsToContents()
         self.owner_label.setText(f'Owner: {obj.owner_name}')
 
-    def _fill_metadata_tab(self, obj_path):
+    def _fill_metadata_tab(self, irods_path):
         """Populate the table in the metadata tab.
 
         Parameters
@@ -220,24 +195,17 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.metaKeyField.clear()
         self.metaValueField.clear()
         self.metaUnitsField.clear()
-        obj = None
-        if self.conn.collection_exists(obj_path):
-            obj = self.conn.get_collection(obj_path)
-        elif self.conn.dataobject_exists(obj_path):
-            obj = self.conn.get_dataobject(obj_path)
-        if obj is not None:
-            metadata = obj.metadata.items()
-            self.metadataTable.setRowCount(len(metadata))
-            for row, avu in enumerate(metadata):
-                self.metadataTable.setItem(
-                    row, 0, PyQt6.QtWidgets.QTableWidgetItem(avu.name))
-                self.metadataTable.setItem(
-                    row, 1, PyQt6.QtWidgets.QTableWidgetItem(avu.value))
-                self.metadataTable.setItem(
-                    row, 2, PyQt6.QtWidgets.QTableWidgetItem(avu.units))
+        item = None
+        if irods_path.collection_exists():
+            item = get_collection(self.session, irods_path)
+        elif irods_path.dataobject_exists():
+            item = get_dataobject(self.session, irods_path)
+        if item is not None:
+            meta = MetaData(item)
+            populate_table(self.metadataTable, len(list(meta.__iter__())), meta)
         self.metadataTable.resizeColumnsToContents()
 
-    def _fill_preview_tab(self, obj_path):
+    def _fill_preview_tab(self, irods_path):
         """Populate the table in the metadata tab.
 
         Parameters
@@ -246,18 +214,17 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             Full name of iRODS collection or data object selected.
 
         """
-        obj = None
-        if self.conn.collection_exists(obj_path):
-            obj = self.conn.get_collection(obj_path)
+        if irods_path.collection_exists():
+            obj = get_collection(self.session, irods_path)
             content = ['Collections:', '-----------------']
             content.extend([sc.name for sc in obj.subcollections])
             content.extend(['\n', 'DataObjects:', '-----------------'])
             content.extend([do.name for do in obj.data_objects])
             preview_string = '\n'.join(content)
             self.previewBrowser.append(preview_string)
-        elif self.conn.dataobject_exists(obj_path):
-            obj = self.conn.get_dataobject(obj_path)
-            file_type = utils.path.IrodsPath(obj_path).suffix[1:]
+        elif irods_path.dataobject_exists():
+            obj = get_dataobject(self.session, irods_path)
+            file_type = irods_path.parts[-1].split('.')[1]
             if file_type in ['txt', 'json', 'csv']:
                 try:
                     with obj.open('r') as objfd:
@@ -265,119 +232,86 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                     self.previewBrowser.append(preview_string)
                 except Exception as error:
                     self.previewBrowser.append(
-                        f'No Preview for: {obj_path}')
+                        f'No Preview for: {irods_path}')
                     self.previewBrowser.append(repr(error))
                     self.previewBrowser.append(
                         "Storage resource might be down.")
             else:
                 self.previewBrowser.append(
-                    f'No Preview for: {obj_path}')
+                    f'No Preview for: {irods_path}')
 
-    def _get_object_path_name(self, row):
-        """"""
-        if self.collTable.item(row, 1).text().startswith("/"+self.conn.zone):
-            logging.debug(self.collTable.item(row, 1).text())
-            sub_paths = self.collTable.item(row, 1).text().strip("/").split("/")
+    def _get_object_path(self, row):
+        #if table was populated from a search
+        if self.browserTable.item(row, 1).text().startswith("/"+self.session.zone):
+            sub_paths = self.browserTable.item(row, 1).text().strip("/").split("/")
             obj_path = "/"+"/".join(sub_paths[:len(sub_paths)-1])
             obj_name = sub_paths[-1]
+        #if tables input path is valid
         else:
             obj_path = self.inputPath.text()
-            obj_name = self.collTable.item(row, 1).text()
-        return obj_path, obj_name
+            obj_name = self.browserTable.item(row, 1).text()
+        return IrodsPath(self.session, obj_path, obj_name)
 
     # @TODO: Add a proper data model for the table model
     def _get_irods_item_of_table_row(self, row):
-        obj_path, obj_name = self._get_object_path_name(row)
-        full_path = utils.path.IrodsPath(obj_path, obj_name)
+        irods_path = self._get_object_path(row)
         try:
-            item = self.conn.get_collection(full_path)
+            item = get_collection(self.session, irods_path)
         except irods.exception.CollectionDoesNotExist:
-            item = self.conn.get_dataobject(full_path)
+            item = get_dataobject(self.session, irods_path)
         return item
 
     def _get_selected_objects(self):
-        rows = {row.row() for row in self.collTable.selectedIndexes()}
+        rows = {row.row() for row in self.browserTable.selectedIndexes()}
         objects = []
         for row in rows:
             item = self._get_irods_item_of_table_row(row)
             objects.append(item)
         return objects
 
+
     def loadTable(self):
         # loads main browser table
-        try:
-            self._clear_error_label()
-            self._clear_view_tabs()
-            obj_path = utils.path.IrodsPath(self.inputPath.text())
-            if self.conn.collection_exists(obj_path):
-                coll = self.conn.get_collection(obj_path)
-                self.collTable.setRowCount(len(coll.data_objects)+len(coll.subcollections))
-                row = 0
-                for subcoll in coll.subcollections:
-                    self.collTable.setItem(
-                        row, 0, PyQt6.QtWidgets.QTableWidgetItem('C-'))
-                    self.collTable.setItem(
-                        row, 1, PyQt6.QtWidgets.QTableWidgetItem(subcoll.name))
-                    # TODO see if a collection size calculation can be backgrounded
-                    # coll_size = sum((sum(obj.size for obj in objs) for _, _, objs in subcoll.walk()))
-                    self.collTable.setItem(
-                        row, 2, PyQt6.QtWidgets.QTableWidgetItem(''))
-                    self.collTable.setItem(
-                        row, 3, PyQt6.QtWidgets.QTableWidgetItem(''))
-                    self.collTable.setItem(
-                        row, 4, PyQt6.QtWidgets.QTableWidgetItem(str(subcoll.create_time)))
-                    self.collTable.setItem(
-                        row, 5, PyQt6.QtWidgets.QTableWidgetItem(str(subcoll.modify_time)))
-                    row += 1
-                for obj in coll.data_objects:
-                    statuses = {repl.status: None for repl in obj.replicas}
-                    if len(set(statuses.keys())) == 1:
-                        status = OBJ_STATUS_SYMBOL[list(statuses.keys())[0]]
-                    else:
-                        statuses.pop('1', None)
-                        if len(set(statuses.keys())) == 1:
-                            status = OBJ_STATUS_SYMBOL[list(statuses.keys())[0]]
-                        else:
-                            status = OBJ_STATUS_SYMBOL[sorted(statuses.keys())[-1]]
-                    self.collTable.setItem(
-                        row, 0, PyQt6.QtWidgets.QTableWidgetItem(status))
-                    self.collTable.setItem(
-                        row, 1, PyQt6.QtWidgets.QTableWidgetItem(obj.name))
-                    self.collTable.setItem(
-                        row, 2, PyQt6.QtWidgets.QTableWidgetItem(str(obj.size)))
-                    self.collTable.setItem(
-                        row, 3, PyQt6.QtWidgets.QTableWidgetItem(obj.checksum))
-                    self.collTable.setItem(
-                        row, 4, PyQt6.QtWidgets.QTableWidgetItem(str(obj.create_time)))
-                    self.collTable.setItem(
-                        row, 5, PyQt6.QtWidgets.QTableWidgetItem(str(obj.modify_time)))
-                    row += 1
-                self.collTable.resizeColumnsToContents()
-            else:
-                self.collTable.setRowCount(0)
-                self.errorLabel.setText("Collection does not exist.")
-        except irods.exception.NetworkException as error:
-            logging.error('Something went wrong: %r', error)
-            self.errorLabel.setText(
-                    "iRODS NETWORK ERROR: No Connection, please check network")
+        self._clear_error_label()
+        self._clear_view_tabs()
+        obj_path = IrodsPath(self.session, self.inputPath.text())
+        if obj_path.collection_exists():
+            try:
+                coll = get_collection(self.session, obj_path)
 
-    def set_parent_path(self):
-        current_path = utils.path.IrodsPath(self.inputPath.text())
-        self.inputPath.setText(current_path.parent)
-        self.loadTable()
+                coll_data = [('C-', subcoll.name, '', '',
+                                subcoll.create_time.strftime('%d-%m-%Y'),
+                                subcoll.modify_time.strftime('%d-%m-%Y %H:%m'))
+                                for subcoll in coll.subcollections]
+                obj_data = [(max(repl[4] for repl in obj_replicas(obj)),
+                             obj.name, str(obj.size),
+                             obj.checksum, obj.create_time.strftime('%d-%m-%Y'),
+                             obj.modify_time.strftime('%d-%m-%Y %H:%m'))
+                             for obj in coll.data_objects]
+                
+                populate_table(self.browserTable, 
+                                len(coll.data_objects)+len(coll.subcollections),
+                                coll_data+obj_data)
+                self.browserTable.resizeColumnsToContents()
+            except Exception as e:
+                self.browserTable.setRowCount(0)
+                self.errorLabel.setText(repr(e))
+        else:
+            self.browserTable.setRowCount(0)
+            self.errorLabel.setText("Collection does not exist.")
 
-    def resetPath(self):
-        self.inputPath.setText(self.root_coll.path)
+    def setParent(self):
+        current_path = IrodsPath(self.session, self.inputPath.text())
+        self.inputPath.setText(str(current_path.parent))
         self.loadTable()
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def updatePath(self, index):
         self._clear_error_label()
         row = index.row()
-        obj_path, obj_name = self._get_object_path_name(row)
-        full_path = utils.path.IrodsPath(obj_path, obj_name)
-        if self.conn.collection_exists(full_path):
-            self.inputPath.setText(full_path)
+        irods_path = self._get_object_path(row)
+        if irods_path.collection_exists():
+            self.inputPath.setText(str(irods_path))
             self.loadTable()
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
@@ -389,14 +323,13 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.replicaTable.setRowCount(0)
         row = index.row()
         self.current_browser_row = row
-        obj_path, obj_name = self._get_object_path_name(row)
-        obj_path = utils.path.IrodsPath(obj_path, obj_name)
+        irods_path = self._get_object_path(row)
         self._clear_view_tabs()
         try:
-            self._fill_preview_tab(obj_path)
-            self._fill_metadata_tab(obj_path)
-            self._fill_acls_tab(obj_path)
-            self._fill_replicas_tab(obj_path)
+            self._fill_preview_tab(irods_path)
+            self._fill_metadata_tab(irods_path)
+            self._fill_acls_tab(irods_path)
+            #self._fill_replicas_tab(irods_path)
         except Exception as error:
             logging.error('Browser', exc_info=True)
             self.errorLabel.setText(repr(error))
@@ -406,9 +339,9 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
         self.deleteSelectionBrowser.clear()
         path_name = self.inputPath.text()
-        row = self.collTable.currentRow()
+        row = self.browserTable.currentRow()
         if row > -1:
-            obj_name = self.collTable.item(row, 1).text()
+            obj_name = self.browserTable.item(row, 1).text()
             obj_path = "/"+path_name.strip("/")+"/"+obj_name.strip("/")
             try:
                 if self.conn.collection_exists(obj_path):
@@ -487,9 +420,9 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             self.errorLabel.setText('Please select an object first!')
             return
         # If table is filled
-        if self.collTable.item(self.current_browser_row, 1) is not None:
-            objName = self.collTable.item(self.current_browser_row, 1).text()
-            if self.collTable.item(self.current_browser_row, 1).text().startswith("/" + self.conn.zone):
+        if self.browserTable.item(self.current_browser_row, 1) is not None:
+            objName = self.browserTable.item(self.current_browser_row, 1).text()
+            if self.browserTable.item(self.current_browser_row, 1).text().startswith("/" + self.conn.zone):
                 parent = '/'.join(objName.split("/")[:len(objName.split("/"))-1])
                 objName = objName.split("/")[len(objName.split("/"))-1]
             else:
@@ -544,8 +477,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             return
         self.errorLabel.clear()
         errors = {}
-        obj_path, obj_name = self._get_object_path_name(self.current_browser_row)
-        obj_path = utils.path.IrodsPath(obj_path, obj_name)
+        irods_path = self._get_object_path(self.current_browser_row)
         user_name = self.aclUserField.text()
         if not user_name:
             errors['User name'] = None
@@ -554,7 +486,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         if not acc_name:
             errors['Access name'] = None
         if acc_name.endswith('inherit'):
-            if self.conn.dataobject_exists(obj_path):
+            if irods_path.is_dataobject():
                 self.errorLabel.setText(
                     'WARNING: (no)inherit is not applicable to data objects')
                 return
