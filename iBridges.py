@@ -14,8 +14,8 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 
 from gui import ui_files
-from gui.irodsInfo import irodsInfo
-from gui.LoginWindow import IrodsLoginWindow
+from gui.IrodsInfo import IrodsInfo
+from gui.IrodsLogin import IrodsLogin
 from gui.IrodsBrowser import IrodsBrowser
 #import irodsConnector
 #import utils
@@ -48,7 +48,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
     def connectIrods(self):
         # Trick to get the session object from the QDialog
         session_dict = {}
-        login_window = IrodsLoginWindow(session_dict)
+        login_window = IrodsLogin(session_dict)
         login_window.exec()
         try:
             self.session = session_dict['session']
@@ -85,7 +85,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             ui_tabs_lookup[uitab]()
 
     def setupTabInfo(self):
-        self.irodsInfo = irodsInfo(self.session)
+        self.irodsInfo = IrodsInfo(self.session)
         self.tabWidget.addTab(self.irodsInfo, "Info")
 
     def setupTabBrowser(self):

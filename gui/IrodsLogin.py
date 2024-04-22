@@ -10,7 +10,7 @@ from gui.ui_files.irodsLogin import Ui_irodsLogin
 from ibridges import Session
 from ibridges.session import LoginError, PasswordError
 
-class IrodsLoginWindow(QDialog, Ui_irodsLogin):
+class IrodsLogin(QDialog, Ui_irodsLogin):
     """Definition and initialization of the iRODS login window.
 
     """
@@ -73,6 +73,5 @@ class IrodsLoginWindow(QDialog, Ui_irodsLogin):
             self.passError.setText("irods_environment.json not setup correctly.")
         except PasswordError as e:
             self.passError.setText("Wrong password!")
-        except ConnectionError as e:
+        except ConnectionError:
             self.passError.setText("Cannot connect to server. Check Internet, host name and port.")
-

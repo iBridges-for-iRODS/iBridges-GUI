@@ -9,6 +9,7 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 
 import gui
+from gui.IrodsLogin import IrodsLogin
 import utils
 
 

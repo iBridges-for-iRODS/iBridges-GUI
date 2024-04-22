@@ -11,7 +11,7 @@ from ibridges.resources import Resources
 import gui
 from gui.gui_utils import populate_table
 
-class irodsInfo(PyQt6.QtWidgets.QWidget,
+class IrodsInfo(PyQt6.QtWidgets.QWidget,
                 gui.ui_files.tabInfo.Ui_tabInfo):
     """Set iRODS information in the GUI
 
