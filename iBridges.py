@@ -40,18 +40,36 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
         else:
             PyQt6.uic.loadUi('gui/ui_files/MainMenu.ui', self)
 
+        self.ui_tabs_lookup = {
+            'tabBrowser': self.setupTabBrowser,
+                #'tabUpDownload': self.setupTabUpDownload,
+                #'tabDataBundle': self.setupTabDataBundle,
+                #'tabCreateTicket': self.setupTabCreateTicket,
+                #'tabELNData': self.setupTabELNData,
+                #'tabAmberWorkflow': self.setupTabAmberWorkflow,
+            'tabInfo': self.setupTabInfo
+            #'tabExample': self.setupTabExample,
+        }
+
         self.widget = widget
+        self.session_dict = {}
         self.actionConnect.triggered.connect(self.connectIrods)
         self.actionExit.triggered.connect(self.programExit)
+        self.actionCloseSession.triggered.connect(self.closeIrods)
         self.tabWidget.setCurrentIndex(0)
+
+    def closeIrods(self):
+        if self.session_dict != {}:
+            self.session_dict['session'].close()
+        self.tabWidget.clear()
+
 
     def connectIrods(self):
         # Trick to get the session object from the QDialog
-        session_dict = {}
-        login_window = IrodsLogin(session_dict)
+        login_window = IrodsLogin(self.session_dict)
         login_window.exec()
         try:
-            self.session = session_dict['session']
+            self.session = self.session_dict['session']
             self.setup_tabs()
         except:
             self.session = None
@@ -67,22 +85,11 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             sys.exit()
         else:
             pass
-    
-    def setup_tabs(self):
-        ui_tabs_lookup = {
-            'tabBrowser': self.setupTabBrowser,
-                #'tabUpDownload': self.setupTabUpDownload,
-                #'tabDataBundle': self.setupTabDataBundle,
-                #'tabCreateTicket': self.setupTabCreateTicket,
-                #'tabELNData': self.setupTabELNData,
-                #'tabAmberWorkflow': self.setupTabAmberWorkflow,
-            'tabInfo': self.setupTabInfo
-            #'tabExample': self.setupTabExample,
-        }
 
-        for uitab in ui_tabs_lookup:
+    def setup_tabs(self):
+        for uitab in self.ui_tabs_lookup:
             print(uitab)
-            ui_tabs_lookup[uitab]()
+            self.ui_tabs_lookup[uitab]()
 
     def setupTabInfo(self):
         self.irodsInfo = IrodsInfo(self.session)
