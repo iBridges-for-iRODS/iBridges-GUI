@@ -17,7 +17,7 @@ from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
 
 import gui
-from gui.gui_utils import populate_table
+from gui.gui_utils import populate_table, get_irods_item
 
 class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                    gui.ui_files.tabBrowser.Ui_tabBrowser):
@@ -36,27 +36,8 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             PyQt6.uic.loadUi("gui/ui_files/tabBrowser.ui", self)
 
         self.session = session
-
+        self.current_browser_row = -1
         self.viewTabs.setCurrentIndex(0)
-        # Metadata table
-        self.metadataTable.setColumnWidth(0, 199)
-        self.metadataTable.setColumnWidth(1, 199)
-        self.metadataTable.setColumnWidth(2, 199)
-        # ACL table
-        self.aclTable.setColumnWidth(0, 299)
-        self.aclTable.setColumnWidth(1, 299)
-        # If user is not a rodsadmin, hide Admin controls.
-        user_type = ''
-        try:
-            user_type, _ = self.session.get_user_info()
-        except irods.exception.NetworkException:
-            self.errorLabel.setText(
-                    "iRODS NETWORK ERROR: No Connection, please check network")
-        if user_type != 'rodsadmin':
-            self.aclAdminBox.hide()
-        # Replica table
-        self.replicaTable.setColumnWidth(0, 500)
-        self.replicaTable.setColumnWidth(1, 90)
         
         # iRODS default home
         if self.session.home is not None:
@@ -99,12 +80,12 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         # functionality to lower tabs for metadata, acls and replicas
         self.browserTable.doubleClicked.connect(self.updatePath)
         self.browserTable.clicked.connect(self.fillInfo)
-        #self.metadataTable.clicked.connect(self.edit_metadata)
+        self.metadataTable.clicked.connect(self.edit_metadata)
         #self.aclTable.clicked.connect(self.edit_acl)
         # actions to update iCat entries of metadata and acls
-        #self.metaAddButton.clicked.connect(self.addIcatMeta)
-        #self.metaUpdateButton.clicked.connect(self.updateIcatMeta)
-        #self.metaDeleteButton.clicked.connect(self.deleteIcatMeta)
+        self.metaAddButton.clicked.connect(self.addIcatMeta)
+        self.metaUpdateButton.clicked.connect(self.updateIcatMeta)
+        self.metaDeleteButton.clicked.connect(self.deleteIcatMeta)
         #self.metaLoadFile.clicked.connect(self.loadMetadataFile)
         #self.aclAddButton.clicked.connect(self.update_icat_acl)
 
@@ -123,7 +104,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.replicaTable.setRowCount(0)
         self.previewBrowser.clear()
 
-    def _fill_replicas_tab(self, obj_path):
+    def _fill_replicas_tab(self, irods_path):
         """Populate the table in the Replicas tab with the details of
         the replicas of the selected data object.
 
@@ -134,24 +115,10 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
 
         """
         self.replicaTable.setRowCount(0)
-        if self.conn.dataobject_exists(obj_path):
-            obj = self.conn.get_dataobject(obj_path)
-            # hierarchies = [(repl.number, repl.resc_hier) for repl in obj.replicas]
+        if irods_path.dataobject_exists():
+            obj = get_dataobject(self.session, irods_path)
+            populate_table(self.replicaTable, len(obj_replicas(obj)), obj_replicas(obj))
             self.replicaTable.setRowCount(len(obj.replicas))
-            for row, repl in enumerate(obj.replicas):
-                self.replicaTable.setItem(
-                    row, 0, PyQt6.QtWidgets.QTableWidgetItem(obj.owner_name))
-                self.replicaTable.setItem(
-                    row, 1, PyQt6.QtWidgets.QTableWidgetItem(str(repl.number)))
-                self.replicaTable.setItem(
-                    row, 2, PyQt6.QtWidgets.QTableWidgetItem(repl.resc_hier))
-                self.replicaTable.setItem(
-                    row, 3, PyQt6.QtWidgets.QTableWidgetItem(str(repl.size)))
-                self.replicaTable.setItem(
-                    row, 4, PyQt6.QtWidgets.QTableWidgetItem(str(obj.modify_time)))
-                self.replicaTable.setItem(
-                    row, 5, PyQt6.QtWidgets.QTableWidgetItem(
-                        f'{OBJ_STATUS_SYMBOL[repl.status]} ({OBJ_STATUS_HUMAN[repl.status]})'))
         self.replicaTable.resizeColumnsToContents()
 
     def _fill_acls_tab(self, irods_path):
@@ -170,18 +137,18 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         obj = None
         if irods_path.collection_exists():
             obj = get_collection(self.session, irods_path)
-            inheritance = obj.inheritance
+            inheritance = f'{obj.inheritance}'
         elif irods_path.dataobject_exists():
-            obj = get_dataobject(irods_path)
+            obj = get_dataobject(self.session, irods_path)
             inheritance = ''
         if obj is not None:
             acls = Permissions(self.session, obj)
-            acl_data = [(p.access_name, p.user_zone, p.user_name, obj.inheritance) 
+            acl_data = [(p.access_name, p.user_zone, p.user_name, inheritance) 
                         for p in acls]
 
             populate_table(self.aclTable, len(list(acls.__iter__())), acl_data)
         self.aclTable.resizeColumnsToContents()
-        self.owner_label.setText(f'Owner: {obj.owner_name}')
+        self.owner_label.setText(f'{obj.owner_name}')
 
     def _fill_metadata_tab(self, irods_path):
         """Populate the table in the metadata tab.
@@ -252,15 +219,6 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             obj_name = self.browserTable.item(row, 1).text()
         return IrodsPath(self.session, obj_path, obj_name)
 
-    # @TODO: Add a proper data model for the table model
-    def _get_irods_item_of_table_row(self, row):
-        irods_path = self._get_object_path(row)
-        try:
-            item = get_collection(self.session, irods_path)
-        except irods.exception.CollectionDoesNotExist:
-            item = get_dataobject(self.session, irods_path)
-        return item
-
     def _get_selected_objects(self):
         rows = {row.row() for row in self.browserTable.selectedIndexes()}
         objects = []
@@ -268,7 +226,6 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             item = self._get_irods_item_of_table_row(row)
             objects.append(item)
         return objects
-
 
     def loadTable(self):
         # loads main browser table
@@ -329,7 +286,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             self._fill_preview_tab(irods_path)
             self._fill_metadata_tab(irods_path)
             self._fill_acls_tab(irods_path)
-            #self._fill_replicas_tab(irods_path)
+            self._fill_replicas_tab(irods_path)
         except Exception as error:
             logging.error('Browser', exc_info=True)
             self.errorLabel.setText(repr(error))
@@ -452,7 +409,10 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         row = index.row()
         key = self.metadataTable.item(row, 0).text()
         value = self.metadataTable.item(row, 1).text()
-        units = self.metadataTable.item(row, 2).text()
+        if self.metadataTable.item(row, 2):
+            units = self.metadataTable.item(row, 2).text()
+        else:
+            units = ""
         self.metaKeyField.setText(key)
         self.metaValueField.setText(value)
         self.metaUnitsField.setText(units)
@@ -507,62 +467,52 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         except Exception as error:
             self.errorLabel.setText(repr(error))
 
-    def updateIcatMeta(self):
+    def _prep_meta(self):
+        print(self.current_browser_row)
         if self.current_browser_row == -1:
             self.errorLabel.setText('Please select an object first!')
-            return
-        self.errorLabel.clear()
-        newKey = self.metaKeyField.text()
-        newVal = self.metaValueField.text()
-        newUnits = self.metaUnitsField.text()
-        try:
-            if newKey != "" and newVal != "":
-                item = self._get_irods_item_of_table_row(self.current_browser_row)
-                self.conn.update_metadata([item], newKey, newVal, newUnits)
-                self._fill_metadata_tab(item.path)
-                self._fill_replicas_tab(item.path)
-        except irods.exception.NetworkException:
-            self.errorLabel.setText(
-                "iRODS NETWORK ERROR: No Connection, please check network")
-        except Exception as error:
-            self.errorLabel.setText(repr(error))
-
-    def addIcatMeta(self):
-        if self.current_browser_row == -1:
-            self.errorLabel.setText('Please select an object first!')
-            return
+            raise ValueError
         self.errorLabel.clear()
         newKey = self.metaKeyField.text()
         newVal = self.metaValueField.text()
         newUnits = self.metaUnitsField.text()
         if newKey != "" and newVal != "":
-            try:
-                item = self._get_irods_item_of_table_row(self.current_browser_row)
-                self.conn.add_metadata([item], newKey, newVal, newUnits)
-                self._fill_metadata_tab(item.path)
-                self._fill_replicas_tab(item.path)
-            except irods.exception.NetworkException:
-                self.errorLabel.setText(
-                    "iRODS NETWORK ERROR: No Connection, please check network")
-            except Exception as error:
-                self.errorLabel.setText(repr(error))
+            irods_path = self._get_object_path(self.current_browser_row)
+            item = get_irods_item(irods_path)
+            meta = MetaData(item)
+            return meta, newKey, newVal, newUnits, irods_path
+        return None, newKey, newVal, newUnits, irods_path
+
+    def updateIcatMeta(self):
+        try:
+            meta, newKey, newVal, newUnits, irods_path = self._prep_meta()
+            if meta is not None:
+                meta.set(newKey, newVal, newUnits)
+                self._fill_metadata_tab(irods_path)
+        except ValueError:
+            return
+        except Exception as error:
+            self.errorLabel.setText(repr(error))
+
+    def addIcatMeta(self):
+        try:
+            meta, newKey, newVal, newUnits, irods_path = self._prep_meta()
+            if meta is not None:
+                meta.add(newKey, newVal, newUnits)
+                self._fill_metadata_tab(irods_path)
+        except ValueError:
+            return
+        except Exception as error:
+            self.errorLabel.setText(repr(error))
 
     def deleteIcatMeta(self):
-        if self.current_browser_row == -1:
-            self.errorLabel.setText('Please select an object first!')
-            return
-        self.errorLabel.clear()
-        key = self.metaKeyField.text()
-        val = self.metaValueField.text()
-        units = self.metaUnitsField.text()
         try:
-            if key != "" and val != "":
-                item = self._get_irods_item_of_table_row(self.current_browser_row)
-                self.conn.delete_metadata([item], key, val, units)
-                self._fill_metadata_tab(item.path)
-        except irods.exception.NetworkException:
-            self.errorLabel.setText(
-                "iRODS NETWORK ERROR: No Connection, please check network")
+            meta, newKey, newVal, newUnits, irods_path = self._prep_meta()
+            if meta is not None:
+                meta.delete(newKey, newVal, newUnits)
+                self._fill_metadata_tab(irods_path)
+        except ValueError:
+            return
         except Exception as error:
             self.errorLabel.setText(repr(error))
 

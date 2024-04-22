@@ -67,6 +67,7 @@ class IrodsLoginWindow(QDialog, Ui_irodsLogin):
             else:
                 self.session = Session(irods_env=env_file, password=self.passwordField.text())
             self.session_dict['session'] = self.session
+            self.session.write_pam_password()
             self.close()
         except LoginError as e:
             self.passError.setText("irods_environment.json not setup correctly.")
