@@ -18,6 +18,7 @@ from gui.ui_files.createCollection import Ui_createCollection
 from gui.ui_files.irodsIndexPopup import Ui_irodsIndexPopup
 
 import utils
+from ibridges import IrodsPath
 
 class irodsCreateCollection(QDialog, Ui_createCollection):
     context = utils.context.Context()
@@ -28,24 +29,21 @@ class irodsCreateCollection(QDialog, Ui_createCollection):
         else:
             loadUi("gui/ui_files/createCollection.ui", self)
 
-        self.conn = self.context.irods_connector
         self.setWindowTitle("Create iRODS collection")
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.parent = parent
-        self.label.setText(self.parent + "/")
+        self.label.setText(str(self.parent) + "/")
         self.buttonBox.accepted.connect(self.accept)
 
     def accept(self):
         if self.collPathLine.text() != "":
-            newCollPath = self.parent + "/" + self.collPathLine.text()
-            try:
-                self.conn.ensure_coll(newCollPath)
-                self.done(1)
-            except Exception as error:
-                if hasattr(error, 'message'):
-                    self.errorLabel.setText(error.message)
-                else:
-                    self.errorLabel.setText("ERROR: insufficient rights.")
+            newCollPath = IrodsPath(self.parent.session, self.parent,
+                                    self.collPathLine.text())
+            if newCollPath.exists():
+                self.errorLabel.setText(f'{newCollPath} already exists.')
+            else:
+                IrodsPath.create_collection(newCollPath.session, newCollPath)
+                self.done(0)
 
 
 class createDirectory(QDialog, Ui_createCollection):

@@ -276,7 +276,7 @@ QPushButton#dataDeleteButton
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="preview">
       <property name="font">

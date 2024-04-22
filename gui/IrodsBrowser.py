@@ -1,7 +1,6 @@
 """Browser tab.
 
 """
-import logging
 import sys
 
 import irods.exception
@@ -16,8 +15,8 @@ from ibridges.data_operations import obj_replicas
 from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
 
-import gui
-from gui.gui_utils import populate_table, get_irods_item
+import gui.popupWidgets
+from gui.gui_utils import populate_table, get_irods_item, get_coll_dict
 
 class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                    gui.ui_files.tabBrowser.Ui_tabBrowser):
@@ -70,7 +69,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         # Main manipulation buttons Upload/Download create collection
         #self.UploadButton.clicked.connect(self.fileUpload)
         #self.DownloadButton.clicked.connect(self.fileDownload)
-        #self.createCollButton.clicked.connect(self.createCollection)
+        self.createCollButton.clicked.connect(self.createCollection)
         
         # Browser table behaviour
         self.browserTable.doubleClicked.connect(self.updatePath)
@@ -86,8 +85,8 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.aclTable.clicked.connect(self.edit_acl)
         self.aclAddButton.clicked.connect(self.update_icat_acl)
         # Delete        
-        #self.dataDeleteButton.clicked.connect(self.deleteData)
-        #self.loadDeleteSelectionButton.clicked.connect(self.loadSelection)
+        self.dataDeleteButton.clicked.connect(self.deleteData)
+        self.loadDeleteSelectionButton.clicked.connect(self.loadSelection)
 
 
     def resetPath(self):
@@ -112,6 +111,12 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         if irods_path.collection_exists():
             self.inputPath.setText(str(irods_path))
             self.loadBrowserTable()
+
+    def createCollection(self):
+        parent = IrodsPath(self.session, "/"+self.inputPath.text().strip("/"))
+        creteCollWidget = gui.popupWidgets.irodsCreateCollection(parent)
+        creteCollWidget.exec()
+        self.loadBrowserTable()
 
 
     def loadBrowserTable(self):
@@ -161,7 +166,6 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
             self._fill_acls_tab(irods_path)
             self._fill_replicas_tab(irods_path)
         except Exception as error:
-            logging.error('Browser', exc_info=True)
             self.errorLabel.setText(repr(error))
 
 
@@ -230,7 +234,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                 self.errorLabel.setText(
                     'WARNING: (no)inherit is not applicable to data objects')
                 return
-        elif user_name is "":
+        elif user_name == "":
             self.errorLabel.setText("Please provide a user.")
             return
         elif acc_name == "":
@@ -386,27 +390,23 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
         self.deleteSelectionBrowser.clear()
         path_name = self.inputPath.text()
         row = self.browserTable.currentRow()
-        if row > -1:
-            obj_name = self.browserTable.item(row, 1).text()
-            obj_path = "/"+path_name.strip("/")+"/"+obj_name.strip("/")
-            try:
-                if self.conn.collection_exists(obj_path):
-                    irodsDict = utils.utils.get_coll_dict(self.conn.get_collection(obj_path))
-                elif self.conn.dataobject_exists(obj_path):
-                    irodsDict = {self.conn.get_dataobject(obj_path).path: []}
-                else:
-                    self.errorLabel.setText("Load: nothing selected.")
-                    pass
-                for key in list(irodsDict.keys())[:20]:
+        if row == -1:
+            self.errorLabel.setText("Please select a collection or data object.")
+            return
+        item_name = self.browserTable.item(row, 1).text()
+        item_path = IrodsPath(self.session, '/', *path_name.split('/'), item_name)
+        if item_path.exists():
+            item = get_irods_item(item_path)
+            if item_path.collection_exists():
+                dataDict = get_coll_dict(item)
+                for key in list(dataDict.keys())[:20]:
                     self.deleteSelectionBrowser.append(key)
-                    if len(irodsDict[key]) > 0:
-                        for item in irodsDict[key]:
+                    if len(dataDict[key]) > 0:
+                        for item in dataDict[key]:
                             self.deleteSelectionBrowser.append('\t'+item)
                 self.deleteSelectionBrowser.append('...')
-            except irods.exception.NetworkException:
-                self.errorLabel.setText(
-                    "iRODS NETWORK ERROR: No Connection, please check network")
-                self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
+            else:
+                self.deleteSelectionBrowser.append(str(item_path))
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
 
     def deleteData(self):
@@ -422,22 +422,13 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                 PyQt6.QtWidgets.QMessageBox.StandardButton.No)
             if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
                 try:
-                    if self.conn.collection_exists(deleteItem):
-                        item = self.conn.get_collection(deleteItem)
-                    else:
-                        item = self.conn.get_dataobject(deleteItem)
-                    self.conn.delete_data(item)
+                    IrodsPath(self.session, deleteItem).remove()
                     self.deleteSelectionBrowser.clear()
                     self.loadBrowserTable()
                     self.errorLabel.clear()
                 except Exception as error:
                     self.errorLabel.setText("ERROR DELETE DATA: "+repr(error))
 
-    def createCollection(self):
-        parent = "/"+self.inputPath.text().strip("/")
-        creteCollWidget = gui.popupWidgets.irodsCreateCollection(parent)
-        creteCollWidget.exec()
-        self.loadBrowserTable()
 
     def fileUpload(self):
         fileSelect = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self,
@@ -458,7 +449,6 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                 self.errorLabel.setText(
                     "iRODS NETWORK ERROR: No Connection, please check network")
             except Exception as error:
-                logging.error('Upload failed %s: %r', fileSelect[0], error)
                 self.errorLabel.setText(repr(error))
 
     def fileDownload(self):
@@ -487,7 +477,6 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                 self.errorLabel.setText(
                     "iRODS NETWORK ERROR: No Connection, please check network")
             except Exception as error:
-                logging.error('Download failed %s/%s: %r', parent, objName, error)
                 self.errorLabel.setText(repr(error))
 
 
@@ -506,7 +495,7 @@ class IrodsBrowser(PyQt6.QtWidgets.QWidget,
                 self.errorLabel.setText(
                     'WARNING: (no)inherit is not applicable to data objects')
                 return
-        elif user_name is "":
+        elif user_name == "":
             self.errorLabel.setText("Please provide a user.")
             return
         elif acc_name == "":
