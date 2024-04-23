@@ -1,6 +1,8 @@
 """Handy and reusable functions for the GUI"""
 import PyQt6
 import irods
+import pathlib
+
 from ibridges import get_collection, get_dataobject
 
 def populate_table(tableWidget, rows, data_by_row):
@@ -35,3 +37,21 @@ def get_coll_dict(root_coll: irods.collection.iRODSCollection) -> dict:
     """
     return {this_coll.path: [data_obj.name for data_obj in data_objs]
             for this_coll, _, data_objs in root_coll.walk()}
+
+def get_downloads_dir() -> pathlib.Path:
+    """Find the platform-dependent 'Downloads' directory.
+
+    Returns
+    -------
+    LocalPath
+        Absolute path to 'Downloads' directory.
+
+    """
+    if isinstance(pathlib.Path('~'), pathlib.PosixPath):
+        return pathlib.Path('~', 'Downloads').expanduser()
+    else:
+        import winreg
+        sub_key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
+        downloads_guid = '{374DE290-123F-4565-9164-39C4925E467B}'
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
+            return pathlib.Path(winreg.QueryValueEx(key, downloads_guid)[0])

@@ -1,2 +1,1 @@
-"""iBridges GUI modules
-"""
+"""iBridges GUI modules"""

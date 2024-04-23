@@ -1,24 +1,16 @@
 #!/usr/bin/env python3
-"""iBridges GUI startup script.
-
-"""
-import logging
+"""iBridges GUI startup script."""
 import os
-import setproctitle
 import sys
+import setproctitle
 
-import irods.exception
-import PyQt6.QtCore
-import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
 
 from gui import ui_files
-from gui.IrodsInfo import IrodsInfo
-from gui.IrodsLogin import IrodsLogin
-from gui.IrodsBrowser import IrodsBrowser
-#import irodsConnector
-#import utils
+from gui.info import Info
+from gui.login import Login
+from gui.browser import Browser
 
 # Global constants
 THIS_APPLICATION = 'iBridges-GUI'
@@ -30,8 +22,8 @@ widget = PyQt6.QtWidgets.QStackedWidget()
 # Work around a PRC XML issue handling special characters
 os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
 
-class MainMenu(PyQt6.QtWidgets.QMainWindow,
-               ui_files.MainMenu.Ui_MainWindow):
+class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
+    """GUI Main Menu"""
 
     def __init__(self, widget):
         super().__init__()
@@ -41,41 +33,46 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             PyQt6.uic.loadUi('gui/ui_files/MainMenu.ui', self)
 
         self.ui_tabs_lookup = {
-            'tabBrowser': self.setupTabBrowser,
+            'tabBrowser': self.init_browser_tab,
                 #'tabUpDownload': self.setupTabUpDownload,
                 #'tabDataBundle': self.setupTabDataBundle,
                 #'tabCreateTicket': self.setupTabCreateTicket,
                 #'tabELNData': self.setupTabELNData,
                 #'tabAmberWorkflow': self.setupTabAmberWorkflow,
-            'tabInfo': self.setupTabInfo
+            'tabInfo': self.init_info_tab
             #'tabExample': self.setupTabExample,
         }
 
         self.widget = widget
+        self.session = None
         self.session_dict = {}
-        self.actionConnect.triggered.connect(self.connectIrods)
-        self.actionExit.triggered.connect(self.programExit)
-        self.actionCloseSession.triggered.connect(self.closeIrods)
+        self.actionConnect.triggered.connect(self.connect)
+        self.actionExit.triggered.connect(self.exit)
+        self.actionCloseSession.triggered.connect(self.disconnect)
         self.tabWidget.setCurrentIndex(0)
 
-    def closeIrods(self):
-        if self.session_dict != {}:
+    def disconnect(self):
+        """Close iRODS session"""
+        if 'session' in self.session_dict:
             self.session_dict['session'].close()
         self.tabWidget.clear()
 
 
-    def connectIrods(self):
+    def connect(self):
+        """Create iRODS session"""
         # Trick to get the session object from the QDialog
-        login_window = IrodsLogin(self.session_dict)
+        login_window = Login(self.session_dict)
         login_window.exec()
-        try:
+        if 'session' in self.session_dict:
             self.session = self.session_dict['session']
-            self.setup_tabs()
-        except:
-            self.session = None
-            raise
+            try:
+                self.setup_tabs()
+            except:
+                self.session = None
+                raise
 
-    def programExit(self):
+    def exit(self):
+        """Quit program"""
         quit_msg = "Are you sure you want to exit the program?"
         reply = PyQt6.QtWidgets.QMessageBox.question(
             self, 'Message', quit_msg,
@@ -87,33 +84,32 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow,
             pass
 
     def setup_tabs(self):
-        for uitab in self.ui_tabs_lookup:
-            print(uitab)
-            self.ui_tabs_lookup[uitab]()
+        """Init tab view"""
+        for tab_fun in self.ui_tabs_lookup.values():
+            tab_fun()
+            #self.ui_tabs_lookup[tab_name]()
 
-    def setupTabInfo(self):
-        self.irodsInfo = IrodsInfo(self.session)
-        self.tabWidget.addTab(self.irodsInfo, "Info")
+    def init_info_tab(self):
+        """Create info"""
+        self.irods_info = Info(self.session)
+        self.tabWidget.addTab(self.irods_info, "Info")
 
-    def setupTabBrowser(self):
-        self.irodsBrowser = IrodsBrowser(self.session)
-        self.tabWidget.addTab(self.irodsBrowser, "Browser")
+    def init_browser_tab(self):
+        """Create browser"""
+        self.irods_browser = Browser(self.session)
+        self.tabWidget.addTab(self.irods_browser, "Browser")
 
 def main():
     """Main function
 
     """
     # Initialize logger first because Context may want to log as well.
-    #utils.utils.init_logger(THIS_APPLICATION)
-    #utils.utils.set_log_level()
     application_name = THIS_APPLICATION
     setproctitle.setproctitle(application_name)
-    login_window = MainMenu(widget)
-    login_window.this_application = application_name
-    widget.addWidget(login_window)
+    main_app = MainMenu(widget)
+    main_app.this_application = application_name
+    widget.addWidget(main_app)
     widget.show()
-    # app.setQuitOnLastWindowClosed(False)
-    #app.lastWindowClosed.connect(closeClean)
     app.exec()
 
 
