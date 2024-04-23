@@ -25,6 +25,7 @@
 	color: rgb(86, 184, 139);
 	background-color: rgb(54, 54, 54);
 	selection-background-color: rgb(58, 152, 112);
+    font: 18pt;
 }
 
 QLabel#globalErrorLabel
@@ -51,6 +52,13 @@ QTabBar::tab:top:selected {
         <height>300</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>18</pointsize>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
       <property name="currentIndex">
        <number>-1</number>
       </property>
@@ -74,40 +82,37 @@ QTabBar::tab:top:selected {
      <x>0</x>
      <y>0</y>
      <width>1300</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>18</pointsize>
+     <italic>false</italic>
+     <bold>false</bold>
+    </font>
    </property>
    <widget class="QMenu" name="menuMenu">
     <property name="font">
      <font>
-      <pointsize>13</pointsize>
+      <pointsize>18</pointsize>
+      <italic>false</italic>
       <bold>false</bold>
      </font>
     </property>
     <property name="title">
-     <string>Menu</string>
+     <string>iRODS Connection</string>
     </property>
+    <addaction name="actionConnect"/>
     <addaction name="actionCloseSession"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuOptions">
-    <property name="font">
-     <font>
-      <pointsize>13</pointsize>
-     </font>
-    </property>
-    <property name="title">
-     <string>Options</string>
-    </property>
-    <addaction name="actionSearch"/>
-   </widget>
    <addaction name="menuMenu"/>
-   <addaction name="menuOptions"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionCloseSession">
    <property name="text">
-    <string>Close Session</string>
+    <string>Close Connection</string>
    </property>
    <property name="font">
     <font/>
@@ -115,7 +120,7 @@ QTabBar::tab:top:selected {
   </action>
   <action name="actionExit">
    <property name="text">
-    <string>Exit</string>
+    <string>Exit iBridges</string>
    </property>
    <property name="font">
     <font/>
@@ -135,6 +140,11 @@ QTabBar::tab:top:selected {
    </property>
    <property name="font">
     <font/>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="text">
+    <string>Connect to iRODS</string>
    </property>
   </action>
  </widget>
