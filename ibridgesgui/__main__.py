@@ -56,6 +56,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
         """Close iRODS session"""
         if 'session' in self.session_dict:
             self.session_dict['session'].close()
+            self.session_dict.clear()
         self.tabWidget.clear()
 
 
