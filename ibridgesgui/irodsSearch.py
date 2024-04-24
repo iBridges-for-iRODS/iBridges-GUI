@@ -10,8 +10,9 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QDialog, QMessageBox
 from PyQt6.uic import loadUi
 
-from ibridgesgui.ui_files.searchDialog import Ui_searchDialog
 from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.ui_files.searchDialog import Ui_searchDialog
+
 
 class irodsSearch(QDialog, Ui_searchDialog):
     """

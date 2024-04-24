@@ -13,7 +13,6 @@ import PyQt6
 import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
-
 import utils
 
 ACCESS_NAMES = [

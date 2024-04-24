@@ -1,16 +1,16 @@
 import logging
 import sys
 
-import gui
 import meta
 import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
 import utils
-from ibridgesgui.irodsTreeView import IrodsModel
 
+import ibridgesgui as gui
 from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.irodsTreeView import IrodsModel
 
 
 class IrodsExampleTab(PyQt6.QtWidgets.QWidget,
@@ -21,7 +21,7 @@ class IrodsExampleTab(PyQt6.QtWidgets.QWidget,
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi("gui/ui_files/ExampleTab.ui", self)
+            PyQt6.uic.loadUi(UI_FILE_DIR / "ExampleTab.ui", self)
         self.error_label.setText("Whooohoo")
 
         self.ienv_dict = self.context.irods_environment.config
