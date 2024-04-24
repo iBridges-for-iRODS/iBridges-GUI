@@ -6,10 +6,11 @@ import sys
 import PyQt6
 import PyQt6.QtWidgets
 import PyQt6.uic
-
 from ibridges.resources import Resources
-import gui
-from gui.gui_utils import populate_table
+
+import ibridgesgui as gui
+from ibridgesgui.gui_utils import populate_table, UI_FILE_DIR
+
 
 class Info(PyQt6.QtWidgets.QWidget, gui.ui_files.tabInfo.Ui_tabInfo):
     """Set iRODS information in the GUI"""
@@ -19,7 +20,7 @@ class Info(PyQt6.QtWidgets.QWidget, gui.ui_files.tabInfo.Ui_tabInfo):
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi("gui/ui_files/tabInfo.ui", self)
+            PyQt6.uic.loadUi(UI_FILE_DIR / "tabInfo.ui", self)
         self.session = session
 
         self.refreshButton.clicked.connect(self.refresh_info)

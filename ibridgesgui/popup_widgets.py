@@ -2,14 +2,15 @@
 import os
 import sys
 
-from PyQt6.QtWidgets import QDialog
-from PyQt6.uic import loadUi
-from PyQt6 import QtCore
-
 import irods
 from ibridges import IrodsPath
+from PyQt6 import QtCore
+from PyQt6.QtWidgets import QDialog
+from PyQt6.uic import loadUi
 
-from gui.ui_files.createCollection import Ui_createCollection
+from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.ui_files.createCollection import Ui_createCollection
+
 
 class CreateCollection(QDialog, Ui_createCollection):
     """Popup window to create a new collection"""
@@ -18,7 +19,7 @@ class CreateCollection(QDialog, Ui_createCollection):
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            loadUi("gui/ui_files/createCollection.ui", self)
+            loadUi(UI_FILE_DIR / "createCollection.ui", self)
 
         self.setWindowTitle("Create iRODS collection")
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)

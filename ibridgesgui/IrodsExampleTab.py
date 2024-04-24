@@ -1,15 +1,17 @@
 import logging
 import sys
 
+import gui
+import meta
 import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
-
-import gui
-import meta
 import utils
-from gui.irodsTreeView import IrodsModel
+from ibridgesgui.irodsTreeView import IrodsModel
+
+from ibridgesgui.gui_utils import UI_FILE_DIR
+
 
 class IrodsExampleTab(PyQt6.QtWidgets.QWidget,
                    gui.ui_files.ExampleTab.Ui_ExampleTab):

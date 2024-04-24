@@ -2,15 +2,16 @@
 """iBridges GUI startup script."""
 import os
 import sys
-import setproctitle
 
 import PyQt6.QtWidgets
 import PyQt6.uic
+import setproctitle
 
-from gui import ui_files
-from gui.info import Info
-from gui.login import Login
-from gui.browser import Browser
+from ibridgesgui import ui_files
+from ibridgesgui.browser import Browser
+from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.info import Info
+from ibridgesgui.login import Login
 
 # Global constants
 THIS_APPLICATION = 'iBridges-GUI'
@@ -30,7 +31,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi('gui/ui_files/MainMenu.ui', self)
+            PyQt6.uic.loadUi(UI_FILE_DIR/'MainMenu.ui', self)
 
         self.ui_tabs_lookup = {
             'tabBrowser': self.init_browser_tab,
@@ -100,9 +101,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
         self.tabWidget.addTab(self.irods_browser, "Browser")
 
 def main():
-    """Main function
-
-    """
+    """Main function"""
     # Initialize logger first because Context may want to log as well.
     application_name = THIS_APPLICATION
     setproctitle.setproctitle(application_name)

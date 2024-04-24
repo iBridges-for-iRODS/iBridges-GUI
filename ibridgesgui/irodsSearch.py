@@ -5,13 +5,13 @@ import logging
 import os
 import sys
 
-from PyQt6 import QtWidgets, QtGui, QtCore
+import utils
+from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QDialog, QMessageBox
 from PyQt6.uic import loadUi
 
-from gui.ui_files.searchDialog import Ui_searchDialog
-import utils
-
+from ibridgesgui.ui_files.searchDialog import Ui_searchDialog
+from ibridgesgui.gui_utils import UI_FILE_DIR
 
 class irodsSearch(QDialog, Ui_searchDialog):
     """
@@ -32,7 +32,7 @@ class irodsSearch(QDialog, Ui_searchDialog):
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            loadUi("gui/ui_files/searchDialog.ui", self)
+            loadUi(UI_FILE_DIR / "searchDialog.ui", self)
 
         self.conn = self.context.irods_connector
 
