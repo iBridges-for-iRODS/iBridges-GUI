@@ -1,10 +1,12 @@
-from PyQt6.QtWidgets import QFileIconProvider, QMessageBox
-from PyQt6.QtCore import QFile, Qt, QDir
-from PyQt6.QtGui import QFileSystemModel, QStandardItemModel, QStandardItem
-from sys import platform
-from time import sleep
 import logging
 import os
+from sys import platform
+from time import sleep
+
+from PyQt6.QtCore import QDir, QFile, Qt
+from PyQt6.QtGui import QFileSystemModel, QStandardItem, QStandardItemModel
+from PyQt6.QtWidgets import QFileIconProvider, QMessageBox
+
 
 # a class to put checkbox on the folders and record which ones are checked.
 class checkableFsTreeModel(QFileSystemModel):
