@@ -7,19 +7,24 @@ import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
-
-from ibridges import get_collection, get_dataobject
-from ibridges import upload, download
-from ibridges import IrodsPath
+from ibridges import IrodsPath, download, get_collection, get_dataobject, upload
 from ibridges.data_operations import obj_replicas
 from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
 
-import gui.popup_widgets
-from gui.gui_utils import populate_table, get_irods_item, get_coll_dict, get_downloads_dir
+import ibridgesgui as gui
+import ibridgesgui.popup_widgets
+from ibridgesgui.gui_utils import (
+    UI_FILE_DIR,
+    get_coll_dict,
+    get_downloads_dir,
+    get_irods_item,
+    populate_table,
+)
+
 
 class Browser(PyQt6.QtWidgets.QWidget,
-                   gui.ui_files.tabBrowser.Ui_tabBrowser):
+              gui.ui_files.tabBrowser.Ui_tabBrowser):
     """Browser view for iRODS session.
 
     """
@@ -32,7 +37,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi("gui/ui_files/tabBrowser.ui", self)
+            PyQt6.uic.loadUi(UI_FILE_DIR / "tabBrowser.ui", self)
 
         self.session = session
         self.viewTabs.setCurrentIndex(0)

@@ -10,55 +10,67 @@
 
 ## About
 
-The git repository contains a generic *iRODS* graphical user interface and the corresponding command-line interface clients.  The GUI and CLI work with any *iRODS* instance.  However, for user and data security we depend on some *iRODS* event hooks that need to be installed on the *iRODS* server.  Please refer to the documentation below.
+The git repository contains a generic *iRODS* graphical user interface.  The iRODS functioality is based on [ibridges](https://github.com/UtrechtUniversity/iBridges) and works with any *iRODS* instance.  
+
+
+  
+## Highlights
+
+- Works on Windows, Mac OS and Linux
+- Runs on Python 3.9 or higher.
+- Supported iRODS server versions: 4.2.11 or higher and 4.3.0 or higher.
+- **Upload** and **Download** your data.
+- Manipulate the **metadata** on the iRODS server.
+- **Synchronize** your data between your local computer and the iRODS server.
+- **Search** through all metadata for your dataset or collection.
+- Safe default options when working with your data.
+
+## Installation
+- As python package
+
+  ```bash
+  pip install ibridges
+  pip install git+https://github.com/chStaiger/iBridges-Gui.git@develop
+  ```
+- Locally from code (for developers)
+
+  ```bash
+  git clone git@github.com:chStaiger/iBridges-Gui.git
+  cd iBridges-Gui
+  pip install .
+  ```
+  
+## Start the GUI
+- From a pip python package
+
+  ```bash
+  ibridges-gui
+  ```
+- From code (for developers)
+
+  ```bash
+  python ibridgesgui/__main__.py
+  ```
+ 
+ 
 
 ## Authors
+**Christine Staiger (Maintainer) [ORCID](https://orcid.org/0000-0002-6754-7647)**
 
-Tim van Daalen, Christine Staiger
+- *Wageningen University & Research* 2021 - 2022
+- *Utrecht University* 2022
 
-Wageningen University & Research 2021
+**Tim van Daalen**, *Wageningen University & Research* 2021
+
+**Maarten Schermer (Maintainer) [ORCID](https://orcid.org/my-orcid?orcid=0000-0001-6770-3155)**, *Utrecht University* 2023
+
+**Raoul Schram (Maintainer) [ORCID](https://orcid.org/my-orcid?orcid=0000-0001-6616-230X)**. 
+*Utrecht University* 2023
 
 ## Contributors
 
-J.P. Mc Farland
-
-University of Groningen, Center for Information Technology, 2022
-
-## Dependencies
-
-### Supported iRODS versions
-
-- 4.2.11, 4.2.12
-- 4.3.0
-
-### Python
-
-- Python 3 (>= 3.9)
-  - Tested with python versions 3.9 and 3.10 on Windows, Ubuntu20.22 and MacOs
-- pip-22.2.2
-- Python packages (see install via `requirements.txt` below)
-
-Install dependencies with, for example:
-
-```sh
-python3.10 -m pip install -r requirements.txt
-```
-### icommands (optional)
-If the icommands are installed, the users can choose them as backend for up and downloads.
-
-## Usage
-```
-export PYTHON_IRODSCLIENT_DEFAULT_XML=QUASI_XML
-./iBridges.py
-```
-
-
-
-Please consult the documentation for more information about the configuration: 
-	
-
-<p align="center">
-    <a href="https://chstaiger.github.io/iBridges-Gui/docs/getting-started.html#configuration"><strong> iBridges Configuration »</strong></a> .
+**J.P. Mc Farland**,
+*University of Groningen, Center for Information Technology*, 2022
     
 ## Contributing
 ### Code

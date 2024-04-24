@@ -3,12 +3,14 @@
 import sys
 from pathlib import Path
 
+from ibridges import Session
+from ibridges.session import LoginError, PasswordError
 from PyQt6.QtWidgets import QDialog, QLineEdit
 from PyQt6.uic import loadUi
 
-from gui.ui_files.irodsLogin import Ui_irodsLogin
-from ibridges import Session
-from ibridges.session import LoginError, PasswordError
+from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
+
 
 class IrodsLogin(QDialog, Ui_irodsLogin):
     """Definition and initialization of the iRODS login window.
@@ -20,7 +22,7 @@ class IrodsLogin(QDialog, Ui_irodsLogin):
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
-            loadUi("gui/ui_files/irodsLogin.ui", self)
+            loadUi(UI_FILE_DIR / "irodsLogin.ui", self)
 
         self.session_dict = session_dict
         self.irods_path = Path('~', '.irods').expanduser()
