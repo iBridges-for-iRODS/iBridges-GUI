@@ -172,7 +172,14 @@ QPushButton#dataDeleteButton
        <item>
         <widget class="QPushButton" name="UploadButton">
          <property name="text">
-          <string>File Upload</string>
+          <string>Upload File</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="folderUploadButton">
+         <property name="text">
+          <string>Upload Folder</string>
          </property>
         </widget>
        </item>

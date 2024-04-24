@@ -71,6 +71,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
         # Main manipulation buttons Upload/Download create collection
         self.UploadButton.clicked.connect(self.file_upload)
+        self.folderUploadButton.clicked.connect(self.folder_upload)
         self.DownloadButton.clicked.connect(self.download)
         self.createCollButton.clicked.connect(self.create_collection)
 
@@ -122,26 +123,22 @@ class Browser(PyQt6.QtWidgets.QWidget,
         coll_widget.exec()
         self.load_browser_table()
 
+    def folder_upload(self):
+        """Select a folder and upload"""
+        select_dir = PyQt6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
+        path = self._fs_select(select_dir)
+        #print(path)
+        if path is not None:
+            self._upload(path)
+
     def file_upload(self):
         """Select a file and upload"""
-        file_select = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self,
-                        "Open File", "","All Files (*);;Python Files (*.py)")
-        button_reply = PyQt6.QtWidgets.QMessageBox.question(
-                self, 'Message Box', "Upload " + file_select[0],
-                PyQt6.QtWidgets.QMessageBox.StandardButton.Yes | PyQt6.QtWidgets.QMessageBox.StandardButton.No,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.No)
-        overwrite = self.overwrite.isChecked()
-        if button_reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes and file_select[0] != '':
-            try:
-                parent_path = IrodsPath(self.session, '/',
-                                       *self.inputPath.text().split('/'))
-                upload(self.session, file_select[0], parent_path, overwrite=overwrite)
-                self.load_browser_table()
-            except FileExistsError:
-                self.errorLabel.setText(f'Data already exists in {parent_path}.'+\
-                                        ' Check "overwrite" to overwrite the data.')
-            except Exception as error:
-                self.errorLabel.setText(repr(error))
+        select_file = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self, "Open Filie")
+        path = self._fs_select(select_file)
+        #print(path)
+        if path is not None:
+            self._upload(path)
+
 
     def download(self):
         """Download collection or data object"""
@@ -488,3 +485,41 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 elif operation == "delete":
                     meta.delete(new_key, new_val, new_units)
                 self._fill_metadata_tab(irods_path)
+
+    def _fs_select(self, path_select):
+        """Retrieve the path (file or folder) from a QFileDialog
+           path_select: PyQt6.QtWidgets.QFileDialog.getExistingDirectory
+                        PyQt6.QtWidgets.QFileDialog.getOpenFileName
+
+        """
+        yes_button = PyQt6.QtWidgets.QMessageBox.StandardButton.Yes
+        no_button = PyQt6.QtWidgets.QMessageBox.StandardButton.No
+        if isinstance(path_select, tuple):
+            path = path_select[0]
+            reply = PyQt6.QtWidgets.QMessageBox.question(self,
+                                     'Upload File', path,
+                                     yes_button | no_button, no_button)
+        else:
+            path = path_select
+            reply = PyQt6.QtWidgets.QMessageBox.question(self,
+                                     'Upload Folder', path,
+                                     yes_button | no_button, no_button)
+
+        if reply == yes_button and path != '':
+            return Path(path)
+
+    def _upload(self, source):
+        """Uploads data to path in inputPath"""
+        overwrite = self.overwrite.isChecked()
+        parent_path = IrodsPath(self.session, '/', *self.inputPath.text().split('/'))
+
+        try:
+            if parent_path.joinpath(source.name).exists():
+                raise FileExistsError
+            upload(self.session, source, parent_path, overwrite=overwrite)
+            self.load_browser_table()
+        except FileExistsError:
+            self.errorLabel.setText(f'Data already exists in {parent_path}.'+\
+                                    ' Check "overwrite" to overwrite the data.')
+        except Exception as error:
+            self.errorLabel.setText(repr(error))
