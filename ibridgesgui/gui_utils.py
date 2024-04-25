@@ -4,6 +4,7 @@ from importlib.resources import files
 
 import irods
 import PyQt6
+
 from ibridges import get_collection, get_dataobject
 
 UI_FILE_DIR = files(__package__) / "ui_files"
@@ -16,6 +17,7 @@ def populate_table(tableWidget, rows, data_by_row):
         for col, item in enumerate(data):
             tableWidget.setItem(row, col, PyQt6.QtWidgets.QTableWidgetItem(str(item)))
     tableWidget.resizeColumnsToContents()
+
 
 def get_irods_item(irods_path):
     try:

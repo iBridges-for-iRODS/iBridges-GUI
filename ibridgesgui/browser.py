@@ -71,6 +71,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
         # Main manipulation buttons Upload/Download create collection
         self.UploadButton.clicked.connect(self.file_upload)
+        self.folderUploadButton.clicked.connect(self.folder_upload)
         self.DownloadButton.clicked.connect(self.download)
         self.createCollButton.clicked.connect(self.create_collection)
 
@@ -108,7 +109,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def update_path(self, index):
         """Takes path from inputPath and loads browser table"""
-        self._clear_error_label()
+        self.errorLabel.clear()
         row = index.row()
         irods_path = self._get_item_path(row)
         if irods_path.collection_exists():
@@ -122,61 +123,62 @@ class Browser(PyQt6.QtWidgets.QWidget,
         coll_widget.exec()
         self.load_browser_table()
 
+    def folder_upload(self):
+        """Select a folder and upload"""
+        self.errorLabel.clear()
+        select_dir = PyQt6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
+        path = self._fs_select(select_dir)
+        if path is not None:
+            self._upload(path)
+
     def file_upload(self):
         """Select a file and upload"""
-        file_select = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self,
-                        "Open File", "","All Files (*);;Python Files (*.py)")
-        button_reply = PyQt6.QtWidgets.QMessageBox.question(
-                self, 'Message Box', "Upload " + file_select[0],
-                PyQt6.QtWidgets.QMessageBox.StandardButton.Yes | PyQt6.QtWidgets.QMessageBox.StandardButton.No,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.No)
-        overwrite = self.overwrite.isChecked()
-        if button_reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes and file_select[0] != '':
-            try:
-                parent_path = IrodsPath(self.session, '/',
-                                       *self.inputPath.text().split('/'))
-                upload(self.session, file_select[0], parent_path, overwrite=overwrite)
-                self.load_browser_table()
-            except FileExistsError:
-                self.errorLabel.setText(f'Data already exists in {parent_path}.'+\
-                                        ' Check "overwrite" to overwrite the data.')
-            except Exception as error:
-                self.errorLabel.setText(repr(error))
+        self.errorLabel.clear()
+        select_file = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self, "Open Filie")
+        path = self._fs_select(select_file)
+        if path is not None:
+            self._upload(path)
+
 
     def download(self):
         """Download collection or data object"""
+        self.errorLabel.clear()
         if self.browserTable.currentRow() == -1:
             self.errorLabel.setText('Please select a row from the table first!')
             return
-
+        
         if self.browserTable.item(self.browserTable.currentRow(), 1) is not None:
-            obj_name = self.browserTable.item(self.browserTable.currentRow(), 1).text()
-            parent_path = IrodsPath(self.session, '/', *self.inputPath.text().split('/'))
+            item_name = self.browserTable.item(self.browserTable.currentRow(), 1).text()
+            path = IrodsPath(self.session, '/', *self.inputPath.text().split('/'), item_name)
             overwrite = self.overwrite.isChecked()
+            download_dir = get_downloads_dir()
+            if overwrite:
+                ow = "All data will be updated."
+            else:
+                ow = "Only new data will be added."
+            info = f'Download data:\n{path}\n\nto\n\n{download_dir}\n\n{ow}'
             try:
-                if parent_path.joinpath(obj_name).exists():
-                    download_dir = get_downloads_dir()
-                    button_reply = PyQt6.QtWidgets.QMessageBox.question(
-                        self, 'Message Box',
-                        f'Download\n{parent_path.joinpath(obj_name)}\tto\n{download_dir}')
+                if path.exists():
+                    button_reply = PyQt6.QtWidgets.QMessageBox.question(self, '', info)
                     if button_reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-                        if Path(download_dir).joinpath(obj_name).exists and not overwrite:
+                        if Path(download_dir).joinpath(item_name).exists and not overwrite:
                             raise FileExistsError
-                        download(self.session, parent_path.joinpath(obj_name), download_dir,
-                                 overwrite=overwrite)
+                        self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.BusyCursor))
+                        download(self.session, path, download_dir, overwrite=overwrite)
+                        self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
                         self.errorLabel.setText("Data downloaded to: "+str(download_dir))
                 else:
-                    self.errorLabel.setText(f'Data {str(parent_path.joinpath(obj_name))} does not exist.')
+                    self.errorLabel.setText(
+                            f'Data {path.parent} does not exist.')
             except FileExistsError:
                 self.errorLabel.setText(f'Data already exists in {download_dir}.'+\
                                         ' Check "overwrite" to overwrite the data.')
             except Exception as error:
                 self.errorLabel.setText(repr(error))
 
-
     def load_browser_table(self):
         """Loads main browser table"""
-        self._clear_error_label()
+        self.errorLabel.clear()
         self._clear_view_tabs()
         obj_path = IrodsPath(self.session, self.inputPath.text())
         if obj_path.collection_exists():
@@ -207,7 +209,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
     def fill_info(self):
         """Fill lower tabs with info"""
-        self._clear_error_label()
+        self.errorLabel.clear()
         self._clear_view_tabs()
         self.metadataTable.setRowCount(0)
         self.aclTable.setRowCount(0)
@@ -221,6 +223,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self._fill_replicas_tab(irods_path)
         except Exception as error:
             self.errorLabel.setText(repr(error))
+            raise(error)
 
 
     def set_icat_meta(self):
@@ -248,7 +251,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def edit_metadata(self, index):
         """Load selected metadata into edit fields"""
-        self._clear_error_label()
+        self.errorLabel.clear()
         self.metaValueField.clear()
         self.metaUnitsField.clear()
         row = index.row()
@@ -265,7 +268,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def edit_acl(self, index):
         """Load selected acl into editing fields"""
-        self._clear_error_label()
+        self.errorLabel.clear()
         self.aclUserField.clear()
         self.aclZoneField.clear()
         self.aclBox.setCurrentText('')
@@ -316,6 +319,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
         row = self.browserTable.currentRow()
         if row == -1:
             self.errorLabel.setText("Please select a row from the table first.")
+            self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
         item_path = self._get_item_path(row)
         if item_path.exists():
@@ -352,10 +356,6 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 except Exception as error:
                     self.errorLabel.setText("ERROR DELETE DATA: "+repr(error))
 # Internal functions
-    def _clear_error_label(self):
-        """Clear any error text."""
-        self.errorLabel.clear()
-
     def _clear_view_tabs(self):
         """Clear the tabs view."""
         self.aclTable.setRowCount(0)
@@ -447,8 +447,10 @@ class Browser(PyQt6.QtWidgets.QWidget,
             preview_string = '\n'.join(content)
             self.previewBrowser.append(preview_string)
         elif irods_path.dataobject_exists():
+            file_type = ''
             obj = get_dataobject(self.session, irods_path)
-            file_type = irods_path.parts[-1].split('.')[1]
+            if '.' in irods_path.parts[-1]:
+                file_type = irods_path.parts[-1].split('.')[1]
             if file_type in ['txt', 'json', 'csv']:
                 try:
                     with obj.open('r') as objfd:
@@ -488,3 +490,45 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 elif operation == "delete":
                     meta.delete(new_key, new_val, new_units)
                 self._fill_metadata_tab(irods_path)
+
+    def _fs_select(self, path_select):
+        """Retrieve the path (file or folder) from a QFileDialog
+           path_select: PyQt6.QtWidgets.QFileDialog.getExistingDirectory
+                        PyQt6.QtWidgets.QFileDialog.getOpenFileName
+
+        """
+        yes_button = PyQt6.QtWidgets.QMessageBox.StandardButton.Yes
+        no_button = PyQt6.QtWidgets.QMessageBox.StandardButton.No
+        dest = self.inputPath.text()
+        if isinstance(path_select, tuple):
+            path = path_select[0]
+        else:
+            path = path_select
+
+        if path != '':
+            if self.overwrite.isChecked():
+                ow = "All data will be updated."
+            else:
+                ow = "Only new data will be added."
+            info = f'Upload data:\n{path}\n\nto\n{self.inputPath.text()}\n\n{ow}'
+            reply = PyQt6.QtWidgets.QMessageBox.question(self, "", info) 
+                                                         #yes_button | no_button, no_button)
+            if reply == yes_button:
+                return Path(path)
+        return None
+
+    def _upload(self, source):
+        """Uploads data to path in inputPath"""
+        overwrite = self.overwrite.isChecked()
+        parent_path = IrodsPath(self.session, '/', *self.inputPath.text().split('/'))
+
+        try:
+            if parent_path.joinpath(source.name).exists():
+                raise FileExistsError
+            upload(self.session, source, parent_path, overwrite=overwrite)
+            self.load_browser_table()
+        except FileExistsError:
+            self.errorLabel.setText(f'Data already exists in {parent_path}.'+\
+                                    ' Check "overwrite" to overwrite the data.')
+        except Exception as error:
+            self.errorLabel.setText(repr(error))
