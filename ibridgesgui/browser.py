@@ -223,6 +223,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self._fill_replicas_tab(irods_path)
         except Exception as error:
             self.errorLabel.setText(repr(error))
+            raise(error)
 
 
     def set_icat_meta(self):
@@ -446,8 +447,10 @@ class Browser(PyQt6.QtWidgets.QWidget,
             preview_string = '\n'.join(content)
             self.previewBrowser.append(preview_string)
         elif irods_path.dataobject_exists():
+            file_type = ''
             obj = get_dataobject(self.session, irods_path)
-            file_type = irods_path.parts[-1].split('.')[1]
+            if '.' in irods_path.parts[-1]:
+                file_type = irods_path.parts[-1].split('.')[1]
             if file_type in ['txt', 'json', 'csv']:
                 try:
                     with obj.open('r') as objfd:
