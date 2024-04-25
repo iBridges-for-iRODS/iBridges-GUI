@@ -127,7 +127,6 @@ class Browser(PyQt6.QtWidgets.QWidget,
         """Select a folder and upload"""
         select_dir = PyQt6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
         path = self._fs_select(select_dir)
-        #print(path)
         if path is not None:
             self._upload(path)
 
@@ -135,7 +134,6 @@ class Browser(PyQt6.QtWidgets.QWidget,
         """Select a file and upload"""
         select_file = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self, "Open Filie")
         path = self._fs_select(select_file)
-        #print(path)
         if path is not None:
             self._upload(path)
 
@@ -494,19 +492,23 @@ class Browser(PyQt6.QtWidgets.QWidget,
         """
         yes_button = PyQt6.QtWidgets.QMessageBox.StandardButton.Yes
         no_button = PyQt6.QtWidgets.QMessageBox.StandardButton.No
+        dest = self.inputPath.text()
         if isinstance(path_select, tuple):
             path = path_select[0]
-            reply = PyQt6.QtWidgets.QMessageBox.question(self,
-                                     'Upload File', path,
-                                     yes_button | no_button, no_button)
         else:
             path = path_select
-            reply = PyQt6.QtWidgets.QMessageBox.question(self,
-                                     'Upload Folder', path,
-                                     yes_button | no_button, no_button)
 
-        if reply == yes_button and path != '':
-            return Path(path)
+        if path != '':
+            if self.overwrite.isChecked():
+                ow = "All data will be updated."
+            else:
+                ow = "Only new data will be added."
+            info = f'Upload File:\n{path}\n\nto\n{self.inputPath.text()}\n\n{ow}'
+            reply = PyQt6.QtWidgets.QMessageBox.question(self, "", info, 
+                                                         yes_button | no_button, no_button)
+            if reply == yes_button:
+                return Path(path)
+        return None
 
     def _upload(self, source):
         """Uploads data to path in inputPath"""
