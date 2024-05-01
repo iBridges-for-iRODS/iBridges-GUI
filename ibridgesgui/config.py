@@ -2,6 +2,7 @@
 from pathlib import Path
 import logging
 import logging.handlers
+import datetime
 
 LOG_LEVEL = {
     'fulldebug': logging.DEBUG - 5,
@@ -32,5 +33,14 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
         logger.setLevel(LOG_LEVEL[log_level])
     else:
         logger.setLevel(LOG_LEVEL["info"])
+
+    # Logger greeting when app is started
+    with open(logfile, 'a', encoding='utf-8') as logfd:
+        logfd.write('\n\n')
+        underscores = f'{"_" * 50}\n'
+        logfd.write(underscores * 2)
+        logfd.write(f'\t Starting iBridges-GUI \n\t{datetime.datetime.now().isoformat()}\n')
+        logfd.write(underscores * 2)
+
     return logger
 
