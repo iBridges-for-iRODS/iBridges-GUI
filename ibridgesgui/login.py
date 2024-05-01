@@ -1,6 +1,7 @@
 """Pop up Widget for Login."""
 import sys
 from pathlib import Path
+import logging
 
 from ibridges import Session
 from ibridges.session import LoginError, PasswordError
@@ -20,6 +21,8 @@ class Login(QDialog, Ui_irodsLogin):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "irodsLogin.ui", self)
+        
+        self.logger = logging.getLogger('ibridges-gui')
 
         self.session_dict = session_dict
         self.irods_path = Path('~', '.irods').expanduser()
@@ -61,10 +64,13 @@ class Login(QDialog, Ui_irodsLogin):
         env_file = self.irods_path.joinpath(self.envbox.currentText())
         try:
             if self.cached_pw is True and self.passwordField.text() == "***********":
+                self.logger.debug(f"Login with {env_file} and cached password.")
                 session = Session(irods_env=env_file)
             else:
                 session = Session(irods_env=env_file, password=self.passwordField.text())
+                self.logger.debug(f"Login with {env_file} and password from prompt.")
             self.session_dict['session'] = session
+            self.logger.info(f"Login as {session.username} to {session.host}; working coll {session.home}")
             session.write_pam_password()
             self.close()
         except LoginError:
@@ -73,3 +79,7 @@ class Login(QDialog, Ui_irodsLogin):
             self.passError.setText("Wrong password!")
         except ConnectionError:
             self.passError.setText("Cannot connect to server. Check Internet, host name and port.")
+        except Exception as e:
+            log_path = Path('~/.ibridges')
+            self.logger.exception(f'Failed to login: {e}')
+            self.passError.setText(f'Login failed, consult the log file(s) in {log_path}')

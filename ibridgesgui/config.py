@@ -1,0 +1,36 @@
+"""Setting up logger and configuration files"""
+from pathlib import Path
+import logging
+import logging.handlers
+
+LOG_LEVEL = {
+    'fulldebug': logging.DEBUG - 5,
+    'debug': logging.DEBUG,
+    'info': logging.INFO,
+    'warn': logging.WARNING,
+    'error': logging.ERROR,
+    'critical': logging.CRITICAL,
+}
+
+def _log_config_location() -> Path:
+    """The location for logs and config files"""
+    logdir = Path("~/.ibridges").expanduser()
+    logdir.mkdir(parents=True, exist_ok=True)
+    return logdir
+
+def init_logger(app_name: str, log_level: str) -> logging.Logger: 
+    logger = logging.getLogger(app_name)
+    logfile = _log_config_location().joinpath(f'{app_name}.log')
+
+    # Direct logging to logfile
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler = logging.handlers.RotatingFileHandler(logfile, 'a', 100000, 1)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    if log_level in LOG_LEVEL:
+        logger.setLevel(LOG_LEVEL[log_level])
+    else:
+        logger.setLevel(LOG_LEVEL["info"])
+    return logger
+

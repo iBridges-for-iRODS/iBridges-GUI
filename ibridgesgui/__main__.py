@@ -2,6 +2,8 @@
 """iBridges GUI startup script."""
 import os
 import sys
+from pathlib import Path
+import logging
 
 import PyQt6.QtWidgets
 import PyQt6.uic
@@ -12,16 +14,17 @@ from ibridgesgui.browser import Browser
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
+from ibridgesgui.config import LOG_LEVEL, init_logger
 
 # Global constants
-THIS_APPLICATION = 'iBridges-GUI'
+THIS_APPLICATION = 'ibridges-gui'
 
 # Application globals
 app = PyQt6.QtWidgets.QApplication(sys.argv)
 widget = PyQt6.QtWidgets.QStackedWidget()
 
 # Work around a PRC XML issue handling special characters
-os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
+#os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
 
 class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
     """GUI Main Menu"""
@@ -33,6 +36,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
         else:
             PyQt6.uic.loadUi(UI_FILE_DIR/'MainMenu.ui', self)
 
+        self.logger = logging.getLogger('ibridges-gui') 
         self.ui_tabs_lookup = {
             'tabBrowser': self.init_browser_tab,
                 #'tabUpDownload': self.setupTabUpDownload,
@@ -55,6 +59,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
     def disconnect(self):
         """Close iRODS session"""
         if 'session' in self.session_dict:
+            session = self.session_dict['session']
+            self.logger.info(f'Disconnecting {session.username} from {session.host}')
             self.session_dict['session'].close()
             self.session_dict.clear()
         self.tabWidget.clear()
@@ -104,14 +110,13 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
 def main():
     """Main function"""
     # Initialize logger first because Context may want to log as well.
-    application_name = THIS_APPLICATION
-    setproctitle.setproctitle(application_name)
+    setproctitle.setproctitle(THIS_APPLICATION)
+    init_logger(THIS_APPLICATION, 'info')
     main_app = MainMenu(widget)
-    main_app.this_application = application_name
+    main_app.this_application = THIS_APPLICATION
     widget.addWidget(main_app)
     widget.show()
     app.exec()
-
 
 if __name__ == "__main__":
     main()
