@@ -1,8 +1,11 @@
 """Setting up logger and configuration files"""
 from pathlib import Path
+from typing import Union
+
 import logging
 import logging.handlers
 import datetime
+import json
 
 LOG_LEVEL = {
     'fulldebug': logging.DEBUG - 5,
@@ -13,26 +16,23 @@ LOG_LEVEL = {
     'critical': logging.CRITICAL,
 }
 
-def _log_config_location() -> Path:
+CONFIG_DIR = Path("~/.ibridges").expanduser()
+CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
+
+def ensure_log_config_location():
     """The location for logs and config files"""
-    logdir = Path("~/.ibridges").expanduser()
-    logdir.mkdir(parents=True, exist_ok=True)
-    return logdir
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 def init_logger(app_name: str, log_level: str) -> logging.Logger: 
     logger = logging.getLogger(app_name)
-    logfile = _log_config_location().joinpath(f'{app_name}.log')
+    logfile = CONFIG_DIR.joinpath(f'{app_name}.log')
 
     # Direct logging to logfile
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     file_handler = logging.handlers.RotatingFileHandler(logfile, 'a', 100000, 1)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
-
-    if log_level in LOG_LEVEL:
-        logger.setLevel(LOG_LEVEL[log_level])
-    else:
-        logger.setLevel(LOG_LEVEL["info"])
+    logger.setLevel(LOG_LEVEL.get(log_level, LOG_LEVEL['info']))
 
     # Logger greeting when app is started
     with open(logfile, 'a', encoding='utf-8') as logfd:
@@ -44,3 +44,49 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
 
     return logger
 
+def _get_config() -> Union[None, dict]:
+    try:
+        with open(CONFIG_FILE, "r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except FileNotFoundError:
+        return None
+    except json.decoder.JSONDecodeError as err:
+        # empty file
+        if err.msg == "Expecting value":
+            return None
+        else:
+            print(f"CANNOT START APP: {CONFIG_FILE} incorrectly formatted.")
+            exit(1)
+
+def get_last_ienv_path() -> Union[None, str]:
+    config = _get_config()
+    if config is not None:
+        return config.get("gui_last_env")
+    return None
+
+def set_last_ienv_path(ienv_path: Path):
+    config = _get_config()
+    if config is not None:
+        config['gui_last_env'] = ienv_path
+    else:
+        config = {'gui_last_env': ienv_path}
+    _save_config(config)
+
+def get_log_level() -> Union[None, str]:
+    config = _get_config()
+    if config is not None:
+        return config.get("log_level")
+    return None
+
+def set_log_level(level: str):
+    config = _get_config()
+    if config is not None:
+        config['log_level'] = level
+    else:
+        config = {'log_level': level}
+    _save_config(config)
+
+def _save_config(conf: dict):
+    ensure_log_config_location()
+    with open(CONFIG_FILE, "w", encoding="utf-8") as handle:
+        json.dump(conf, handle)
