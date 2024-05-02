@@ -6,6 +6,7 @@ import logging
 import logging.handlers
 import datetime
 import json
+import sys
 
 LOG_LEVEL = {
     'fulldebug': logging.DEBUG - 5,
@@ -23,7 +24,15 @@ def ensure_log_config_location():
     """The location for logs and config files"""
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
-def init_logger(app_name: str, log_level: str) -> logging.Logger: 
+def init_logger(app_name: str, log_level: str) -> logging.Logger:
+    """
+    Create a logger for an app
+
+    app_name : str
+        Name of the app, will be used as file name
+    log_level : str
+        String that will be mapped to python's log levels, default is info
+    """
     logger = logging.getLogger(app_name)
     logfile = CONFIG_DIR.joinpath(f'{app_name}.log')
 
@@ -54,17 +63,23 @@ def _get_config() -> Union[None, dict]:
         # empty file
         if err.msg == "Expecting value":
             return None
-        else:
-            print(f"CANNOT START APP: {CONFIG_FILE} incorrectly formatted.")
-            exit(1)
+        print(f"CANNOT START APP: {CONFIG_FILE} incorrectly formatted.")
+        sys.exit(1)
 
 def get_last_ienv_path() -> Union[None, str]:
+    """Retrieve last used environment path from the config file"""
     config = _get_config()
     if config is not None:
         return config.get("gui_last_env")
     return None
 
 def set_last_ienv_path(ienv_path: Path):
+    """
+    Save the last used environment path to the config file
+
+    ienv_path : Path
+        Path to last environment
+    """
     config = _get_config()
     if config is not None:
         config['gui_last_env'] = ienv_path
@@ -73,12 +88,14 @@ def set_last_ienv_path(ienv_path: Path):
     _save_config(config)
 
 def get_log_level() -> Union[None, str]:
+    """Retrieve log level from config"""
     config = _get_config()
     if config is not None:
         return config.get("log_level")
     return None
 
 def set_log_level(level: str):
+    """Save log level to config"""
     config = _get_config()
     if config is not None:
         config['log_level'] = level
