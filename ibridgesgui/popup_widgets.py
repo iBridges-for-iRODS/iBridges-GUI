@@ -14,13 +14,14 @@ from ibridgesgui.ui_files.createCollection import Ui_createCollection
 
 class CreateCollection(QDialog, Ui_createCollection):
     """Popup window to create a new collection"""
-    def __init__(self, parent):
+    def __init__(self, parent, logger):
         super().__init__()
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "createCollection.ui", self)
 
+        self.logger = logger
         self.setWindowTitle("Create iRODS collection")
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.parent = parent
@@ -36,13 +37,15 @@ class CreateCollection(QDialog, Ui_createCollection):
                 self.errorLabel.setText(f'{new_coll_path} already exists.')
             else:
                 try:
+                    self.logger.info(f'Creating collection {new_coll_path}')
                     IrodsPath.create_collection(new_coll_path.session, new_coll_path)
                     self.done(0)
                 except irods.exception.CAT_NO_ACCESS_PERMISSION:
                     self.errorLabel.setText(f'No access rights to {new_coll_path.parent}.'+\
                                             f' Cannot create {self.collPathLine.text()}.')
-                except Exception as error:
-                    self.errorLabel.setText(repr(error))
+                except Exception as err:
+                    self.logger.exception(f'Could not create {new_coll_path}: {err}')
+                    self.errorLabel.setText(f'Could not create {new_coll_path}, consult the logs.')
 
 class CreateDirectory(QDialog, Ui_createCollection):
     """Popup window to create a new directory"""

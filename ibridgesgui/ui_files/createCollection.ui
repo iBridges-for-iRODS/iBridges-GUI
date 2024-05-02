@@ -30,6 +30,7 @@
 {
 	color: rgb(86, 184, 139);
 	background-color: rgb(54, 54, 54);
+    font: 14pt
 }
 
 QLabel#errorLabel
@@ -63,10 +64,10 @@ QLabel#errorLabel
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QLineEdit" name="collPathLine"/>
-     </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="collPathLine"/>
    </item>
    <item>
     <widget class="QLabel" name="errorLabel">

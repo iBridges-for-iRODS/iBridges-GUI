@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """iBridges GUI startup script."""
-import os
 import sys
-from pathlib import Path
 import logging
 
 import PyQt6.QtWidgets
@@ -61,7 +59,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
         """Close iRODS session"""
         if 'session' in self.session_dict:
             session = self.session_dict['session']
-            self.logger.info(f'Disconnecting {session.username} from {session.host}')
+            self.logger.info('Disconnecting %s from %s', session.username, session.host)
             self.session_dict['session'].close()
             self.session_dict.clear()
         self.tabWidget.clear()
@@ -100,19 +98,19 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
 
     def init_info_tab(self):
         """Create info"""
-        self.irods_info = Info(self.session)
-        self.tabWidget.addTab(self.irods_info, "Info")
+        irods_info = Info(self.session)
+        self.tabWidget.addTab(irods_info, "Info")
 
     def init_browser_tab(self):
         """Create browser"""
-        self.irods_browser = Browser(self.session, self.app_name)
-        self.tabWidget.addTab(self.irods_browser, "Browser")
+        irods_browser = Browser(self.session, self.app_name)
+        self.tabWidget.addTab(irods_browser, "Browser")
 
 def main():
     """Main function"""
     # Initialize logger first because Context may want to log as well.
     setproctitle.setproctitle(THIS_APPLICATION)
-    
+
     #ensure_log_config_location()
     log_level = get_log_level()
     if log_level is not None:
@@ -120,7 +118,7 @@ def main():
     else:
         set_log_level('debug')
         init_logger(THIS_APPLICATION, 'debug')
-    
+
     main_app = MainMenu(widget, THIS_APPLICATION)
     widget.addWidget(main_app)
     widget.show()
