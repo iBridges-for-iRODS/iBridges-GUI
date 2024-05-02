@@ -69,8 +69,11 @@ class Browser(PyQt6.QtWidgets.QWidget,
         # Main navigation elements
         self.inputPath.returnPressed.connect(self.load_browser_table)
         self.refreshButton.clicked.connect(self.load_browser_table)
+        self.refreshButton.setToolTip('Reload Collection')
         self.homeButton.clicked.connect(self.reset_path)
+        self.homeButton.setToolTip('Load Home')
         self.parentButton.clicked.connect(self.set_parent)
+        self.parentButton.setToolTip('Go one collection up')
 
         # Main manipulation buttons Upload/Download create collection
         self.UploadButton.clicked.connect(self.file_upload)
