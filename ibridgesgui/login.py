@@ -85,7 +85,7 @@ class Login(QDialog, Ui_irodsLogin):
             self.passError.setText("Wrong password!")
         except ConnectionError:
             self.passError.setText("Cannot connect to server. Check Internet, host name and port.")
-        except Exception as e:
+        except Exception as err:
             log_path = Path('~/.ibridges')
-            self.logger.exception(f'Failed to login: {e}')
+            self.logger.exception(f'Failed to login: {err}')
             self.passError.setText(f'Login failed, consult the log file(s) in {log_path}')

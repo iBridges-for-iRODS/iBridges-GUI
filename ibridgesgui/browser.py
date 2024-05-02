@@ -1,5 +1,6 @@
 """Browser tab."""
 import sys
+import logging
 from pathlib import Path
 
 import irods.exception
@@ -29,7 +30,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
     """
 
-    def __init__(self, session):
+    def __init__(self, session, app_name):
         """Initialize an iRODS browser view.
 
         """
@@ -39,6 +40,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
         else:
             PyQt6.uic.loadUi(UI_FILE_DIR / "tabBrowser.ui", self)
 
+        self.logger = logging.getLogger(app_name)
         self.session = session
         self.viewTabs.setCurrentIndex(0)
         # iRODS default home
@@ -53,8 +55,9 @@ class Browser(PyQt6.QtWidgets.QWidget,
         except irods.exception.NetworkException:
             self.errorLabel.setText(
                 'iRODS NETWORK ERROR: No Connection, please check network')
-        except Exception:
+        except Exception as err:
             self.errorLabel.setText('Cannot set root collection. Set "irods_home" in your environment.json')
+            self.logger.exception(f'Failed to set iRODS home: {err}')
         self.reset_path()
         self.browse()
 
@@ -119,7 +122,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
     def create_collection(self):
         """Create a new collection in current collection"""
         parent = IrodsPath(self.session, "/"+self.inputPath.text().strip("/"))
-        coll_widget = gui.popup_widgets.CreateCollection(parent)
+        coll_widget = gui.popup_widgets.CreateCollection(parent, self.logger)
         coll_widget.exec()
         self.load_browser_table()
 
@@ -164,6 +167,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
                         if Path(download_dir).joinpath(item_name).exists and not overwrite:
                             raise FileExistsError
                         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.BusyCursor))
+                        self.logger.info(f'Downloading {path} to {download_dir}, overwrite {overwrite}')
                         download(self.session, path, download_dir, overwrite=overwrite)
                         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
                         self.errorLabel.setText("Data downloaded to: "+str(download_dir))
@@ -173,8 +177,9 @@ class Browser(PyQt6.QtWidgets.QWidget,
             except FileExistsError:
                 self.errorLabel.setText(f'Data already exists in {download_dir}.'+\
                                         ' Check "overwrite" to overwrite the data.')
-            except Exception as error:
-                self.errorLabel.setText(repr(error))
+            except Exception as err:
+                self.logger.exception(f'Downloading {path} failed: {err}')
+                self.errorLabel.setText(repr(err))
 
     def load_browser_table(self):
         """Loads main browser table"""
@@ -523,12 +528,14 @@ class Browser(PyQt6.QtWidgets.QWidget,
         parent_path = IrodsPath(self.session, '/', *self.inputPath.text().split('/'))
 
         try:
-            if parent_path.joinpath(source.name).exists():
+            if parent_path.joinpath(source.name).exists() and not overwrite:
                 raise FileExistsError
+            self.logger.info(f'Uploading {source} to {parent_path}, overwrite {overwrite}')
             upload(self.session, source, parent_path, overwrite=overwrite)
             self.load_browser_table()
         except FileExistsError:
             self.errorLabel.setText(f'Data already exists in {parent_path}.'+\
                                     ' Check "overwrite" to overwrite the data.')
-        except Exception as error:
-            self.errorLabel.setText(repr(error))
+        except Exception as err:
+            self.logger.exception(f'Failed to upload {source} to {parent_path}: {err}')
+            self.errorLabel.setText(repr(err))

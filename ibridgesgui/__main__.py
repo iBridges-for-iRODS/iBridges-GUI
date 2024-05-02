@@ -105,7 +105,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
 
     def init_browser_tab(self):
         """Create browser"""
-        self.irods_browser = Browser(self.session)
+        self.irods_browser = Browser(self.session, self.app_name)
         self.tabWidget.addTab(self.irods_browser, "Browser")
 
 def main():
