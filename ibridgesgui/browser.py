@@ -317,7 +317,12 @@ class Browser(PyQt6.QtWidgets.QWidget,
             item = get_irods_item(irods_path)
             perm = Permissions(self.session, item)
             perm.set(perm=acc_name, user=user_name, zone=user_zone, recursive=recursive)
-            
+            if acc_name == "null":
+                self.logger.info('Delete access (%s, %s, %s, %s) for %s',
+                                 acc_name, user_name, user_zone, str(recursive), item.path)
+            else:
+                self.logger.info('Add/change access of %s to (%s, %s, %s, %s)',
+                             item.path, acc_name, user_name, user_zone, str(recursive))
             self._fill_acls_tab(irods_path)
         except Exception as error:
             self.errorLabel.setText(repr(error))
