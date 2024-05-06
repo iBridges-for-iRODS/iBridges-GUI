@@ -37,8 +37,8 @@ class CreateCollection(QDialog, Ui_createCollection):
                 self.errorLabel.setText(f'{new_coll_path} already exists.')
             else:
                 try:
-                    self.logger.info(f'Creating collection {new_coll_path}')
                     IrodsPath.create_collection(new_coll_path.session, new_coll_path)
+                    self.logger.info(f'Created collection {new_coll_path}')
                     self.done(0)
                 except irods.exception.CAT_NO_ACCESS_PERMISSION:
                     self.errorLabel.setText(f'No access rights to {new_coll_path.parent}.'+\
