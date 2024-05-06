@@ -317,6 +317,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
             item = get_irods_item(irods_path)
             perm = Permissions(self.session, item)
             perm.set(perm=acc_name, user=user_name, zone=user_zone, recursive=recursive)
+            
             self._fill_acls_tab(irods_path)
         except Exception as error:
             self.errorLabel.setText(repr(error))
@@ -495,10 +496,16 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 meta = MetaData(item)
                 if operation == "add":
                     meta.add(new_key, new_val, new_units)
+                    self.logger.info('Add metadata (%s, %s, %s) to %s',
+                                     new_key, new_val, new_units, irods_path)
                 elif operation == "set":
                     meta.set(new_key, new_val, new_units)
+                    self.logger.info('Set all metadata with key %s to (%s, %s, %s) for %s',
+                                     new_key, new_key, new_val, new_units, irods_path)
                 elif operation == "delete":
                     meta.delete(new_key, new_val, new_units)
+                    self.logger.info('Delete metadata (%s, %s, %s) from %s',
+                                     new_key, new_val, new_units, irods_path)
                 self._fill_metadata_tab(irods_path)
 
     def _fs_select(self, path_select):
