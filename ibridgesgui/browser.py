@@ -210,7 +210,8 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 self.browserTable.resizeColumnsToContents()
             except Exception as exception:
                 self.browserTable.setRowCount(0)
-                self.errorLabel.setText(repr(exception))
+                self.logger.exception("Cannot load browser.")
+                self.errorLabel.setText(f"Cannot load browser table. Consult the logs.")
         else:
             self.browserTable.setRowCount(0)
             self.errorLabel.setText("Collection does not exist.")
@@ -232,8 +233,8 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self._fill_acls_tab(irods_path)
             self._fill_replicas_tab(irods_path)
         except Exception as error:
-            self.errorLabel.setText(repr(error))
-            raise
+            self.logger.exception("Cannot load info tabs.")
+            self.errorLabel.setText(f"Cannot load info tabs. Consult the logs.")
 
 
     def set_icat_meta(self):
@@ -325,7 +326,8 @@ class Browser(PyQt6.QtWidgets.QWidget,
                              item.path, acc_name, user_name, user_zone, str(recursive))
             self._fill_acls_tab(irods_path)
         except Exception as error:
-            self.errorLabel.setText(repr(error))
+            self.logger.exception("Cannot update ACLs.")
+            self.errorLabel.setText(f"Cannot update ACLs. Consult the logs.")
 
 
     def load_selection(self):
@@ -366,11 +368,18 @@ class Browser(PyQt6.QtWidgets.QWidget,
             if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
                 try:
                     IrodsPath(self.session, item).remove()
+                    self.logger.info('Delete data %s', item)
                     self.deleteSelectionBrowser.clear()
                     self.load_browser_table()
                     self.errorLabel.clear()
+                except irods.exception.CAT_NO_ACCESS_PERMISSION:
+                    self.errorLabel.setText(f"No permissions to delete {item}")
+                except PermissionError:
+                    self.errorLabel.setText(f"No permissions to delete {item}")
                 except Exception as error:
-                    self.errorLabel.setText("ERROR DELETE DATA: "+repr(error))
+                    self.logger.exception('FAILED: Delete data %s', item)
+                    self.errorLabel.setText(f"FAILED: Delete data {item}. Consult the logs.")
+
 # Internal functions
     def _clear_view_tabs(self):
         """Clear the tabs view."""
