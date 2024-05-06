@@ -167,10 +167,11 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 if path.exists():
                     button_reply = PyQt6.QtWidgets.QMessageBox.question(self, '', info)
                     if button_reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-                        if Path(download_dir).joinpath(item_name).exists and not overwrite:
+                        if Path(download_dir).joinpath(item_name).exists() and not overwrite:
                             raise FileExistsError
                         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.BusyCursor))
-                        self.logger.info('Downloading %s to %s, overwrite %s', path, download_dir, str(overwrite))
+                        self.logger.info('Downloading %s to %s, overwrite %s', path, download_dir,
+                                         str(overwrite))
                         download(self.session, path, download_dir, overwrite=overwrite)
                         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
                         self.errorLabel.setText("Data downloaded to: "+str(download_dir))
@@ -178,7 +179,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
                     self.errorLabel.setText(
                             f'Data {path.parent} does not exist.')
             except FileExistsError:
-                self.errorLabel.setText('Data already exists in {download_dir}.'+\
+                self.errorLabel.setText(f'Data already exists in {download_dir}.'+\
                                         ' Check "overwrite" to overwrite the data.')
             except Exception as err:
                 self.logger.exception('Downloading %s failed: %s', path, err)
@@ -537,6 +538,10 @@ class Browser(PyQt6.QtWidgets.QWidget,
         except FileExistsError:
             self.errorLabel.setText(f'Data already exists in {parent_path}.'+\
                                     ' Check "overwrite" to overwrite the data.')
+        except irods.exception.CAT_NO_ACCESS_PERMISSION:
+            self.errorLabel.setText(f'No permission to upload data to {parent_path}.')
+            self.logger.info('Uploading %s to %s, overwrite %s failed. No permissions.',
+                             source, parent_path, str(overwrite))
         except Exception as err:
             self.logger.exception('Failed to upload %s to %s: %s', source, parent_path, err)
             self.errorLabel.setText(f'Failed to upload {source}. Consult the logs.')
