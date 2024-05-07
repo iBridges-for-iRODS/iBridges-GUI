@@ -372,9 +372,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
                     self.deleteSelectionBrowser.clear()
                     self.load_browser_table()
                     self.errorLabel.clear()
-                except irods.exception.CAT_NO_ACCESS_PERMISSION:
-                    self.errorLabel.setText(f"No permissions to delete {item}")
-                except PermissionError:
+                except (irods.exception.CAT_NO_ACCESS_PERMISSION, PermissionError):
                     self.errorLabel.setText(f"No permissions to delete {item}")
                 except Exception as error:
                     self.logger.exception('FAILED: Delete data %s', item)
