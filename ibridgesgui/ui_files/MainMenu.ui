@@ -25,7 +25,7 @@
 	color: rgb(86, 184, 139);
 	background-color: rgb(54, 54, 54);
 	selection-background-color: rgb(58, 152, 112);
-    font: 18pt;
+    font: 16pt;
 }
 
 QLabel#globalErrorLabel
@@ -54,7 +54,7 @@ QTabBar::tab:top:selected {
       </property>
       <property name="font">
        <font>
-        <pointsize>18</pointsize>
+        <pointsize>16</pointsize>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -82,12 +82,12 @@ QTabBar::tab:top:selected {
      <x>0</x>
      <y>0</y>
      <width>1300</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>18</pointsize>
+     <pointsize>16</pointsize>
      <italic>false</italic>
      <bold>false</bold>
     </font>
@@ -95,19 +95,27 @@ QTabBar::tab:top:selected {
    <widget class="QMenu" name="menuMenu">
     <property name="font">
      <font>
-      <pointsize>18</pointsize>
+      <pointsize>16</pointsize>
       <italic>false</italic>
       <bold>false</bold>
      </font>
     </property>
     <property name="title">
-     <string>iRODS Connection</string>
+     <string>Connect</string>
     </property>
     <addaction name="actionConnect"/>
     <addaction name="actionCloseSession"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuConfigure">
+    <property name="title">
+     <string>Configure</string>
+    </property>
+    <addaction name="actionCheck_configuration"/>
+    <addaction name="actionAdd_Configuration"/>
+   </widget>
    <addaction name="menuMenu"/>
+   <addaction name="menuConfigure"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionCloseSession">
@@ -145,6 +153,16 @@ QTabBar::tab:top:selected {
   <action name="actionConnect">
    <property name="text">
     <string>Connect to iRODS</string>
+   </property>
+  </action>
+  <action name="actionCheck_configuration">
+   <property name="text">
+    <string>Check Configuration</string>
+   </property>
+  </action>
+  <action name="actionAdd_Configuration">
+   <property name="text">
+    <string>Add Configuration</string>
    </property>
   </action>
  </widget>
