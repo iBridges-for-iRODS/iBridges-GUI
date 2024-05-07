@@ -6,7 +6,9 @@ import logging
 import logging.handlers
 import datetime
 import json
+import socket
 import sys
+import irods.session import iRODSSession
 
 LOG_LEVEL = {
     'fulldebug': logging.DEBUG - 5,
@@ -20,10 +22,12 @@ LOG_LEVEL = {
 CONFIG_DIR = Path("~/.ibridges").expanduser()
 CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
 
+
 def ensure_log_config_location():
     """The location for logs and config files"""
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
+# logging functions
 def init_logger(app_name: str, log_level: str) -> logging.Logger:
     """
     Create a logger for an app
@@ -53,19 +57,7 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
 
     return logger
 
-def _get_config() -> Union[None, dict]:
-    try:
-        with open(CONFIG_FILE, "r", encoding="utf-8") as handle:
-            return json.load(handle)
-    except FileNotFoundError:
-        return None
-    except json.decoder.JSONDecodeError as err:
-        # empty file
-        if err.msg == "Expecting value":
-            return None
-        print(f"CANNOT START APP: {CONFIG_FILE} incorrectly formatted.")
-        sys.exit(1)
-
+# ibridges config functions
 def get_last_ienv_path() -> Union[None, str]:
     """Retrieve last used environment path from the config file"""
     config = _get_config()
@@ -107,3 +99,85 @@ def _save_config(conf: dict):
     ensure_log_config_location()
     with open(CONFIG_FILE, "w", encoding="utf-8") as handle:
         json.dump(conf, handle)
+
+def _get_config() -> Union[None, dict]:
+    try:
+        with open(CONFIG_FILE, "r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except FileNotFoundError:
+        return None
+    except json.decoder.JSONDecodeError as err:
+        # empty file
+        if err.msg == "Expecting value":
+            return None
+        print(f"CANNOT START APP: {CONFIG_FILE} incorrectly formatted.")
+        sys.exit(1)
+
+# irods config functions
+def check_irods_config(env_path: Path) -> str:
+    """
+    Checks whether an iRODS cofiguration file is correct.
+
+    Parameters:
+    -----------
+    conf_path : Path
+        Path to the irods_environment.json
+
+    Returns:
+    --------
+    str :
+        good -> well-formatted
+        not found -> file is missing
+        json -> json malformatted
+    """
+    if not env_path.is_file():
+        return("file not found")
+
+    try:
+        with open(env_path, "r") as f:
+            env = json.load(f)
+    except JSONDecodeError as err:
+        return(f'{env_path} not well formatted.\n{err.msg}')
+
+    # check host and port and connectivity
+    if "irods_host" not in env:
+        return('"irods_host" is missing in environment')
+    if "irods_port" not in env:
+        return('"irods_port" is missing in environment')
+    if not _network_check(env["irods_host"], env["irods_port"]):
+        return(f'No connection: {env["irods_host"]} or {env["irods_port"]} are incorrect')
+    # check authentication scheme
+    try:
+        sess = iRODSSession(irods_env_file=env_path)
+        sess.server_version
+    except TypeError as err:
+        return repr(err)
+    except NetworkException as err:
+        return repr(err)
+    except AttributeError as err:
+        return repr(err)
+
+    # all tests passed
+    return "good"
+
+def _network_check(hostname: str, port: int) -> bool:
+    """Check connectivity to an iRODS server.
+
+    Parameters
+    ----------
+    hostname : str
+        FQDN/IP of an iRODS server.
+
+    Returns
+    -------
+    bool
+        Connection to `hostname` possible.
+
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        try:
+            sock.settimeout(10.0)
+            sock.connect((hostname, port))
+            return True
+        except socket.error:
+            return False
