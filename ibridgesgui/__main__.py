@@ -21,9 +21,6 @@ THIS_APPLICATION = 'ibridges-gui'
 app = PyQt6.QtWidgets.QApplication(sys.argv)
 widget = PyQt6.QtWidgets.QStackedWidget()
 
-# Work around a PRC XML issue handling special characters
-#os.environ['PYTHON_IRODSCLIENT_DEFAULT_XML'] = 'QUASI_XML'
-
 class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
     """GUI Main Menu"""
 
@@ -108,10 +105,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
 
 def main():
     """Main function"""
-    # Initialize logger first because Context may want to log as well.
     setproctitle.setproctitle(THIS_APPLICATION)
 
-    #ensure_log_config_location()
     log_level = get_log_level()
     if log_level is not None:
         init_logger(THIS_APPLICATION, log_level)
