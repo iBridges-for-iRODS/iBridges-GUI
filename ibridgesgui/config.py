@@ -6,9 +6,11 @@ import logging
 import logging.handlers
 import datetime
 import json
+from json import JSONDecodeError
 import socket
 import sys
-import irods.session import iRODSSession
+from irods.session import iRODSSession
+from irods.exception import NetworkException, CAT_INVALID_USER
 
 LOG_LEVEL = {
     'fulldebug': logging.DEBUG - 5,
@@ -144,6 +146,9 @@ def check_irods_config(env_path: Path) -> str:
         return('"irods_host" is missing in environment')
     if "irods_port" not in env:
         return('"irods_port" is missing in environment')
+    print(type(env["irods_port"]))
+    if not isinstance(env["irods_port"], int):
+        return('"irods_port" needs to be an integer, remove quotes.')
     if not _network_check(env["irods_host"], env["irods_port"]):
         return(f'No connection: {env["irods_host"]} or {env["irods_port"]} are incorrect')
     # check authentication scheme
@@ -156,9 +161,30 @@ def check_irods_config(env_path: Path) -> str:
         return repr(err)
     except AttributeError as err:
         return repr(err)
-
+    except CAT_INVALID_USER:
+        pass
     # all tests passed
     return "good"
+
+def save_irods_config(env_name: str, conf: dict):
+    """
+    Saves an irods environment as json in ~/.irods
+
+    Parmeters
+    ---------
+    env_name : str
+        file name
+    """
+    if not env_name.endswith(".json"):
+        raise TypeError("Filetype needs to be '.json'.")
+    env_path = Path("~").expanduser().joinpath(".irods", env_name)
+    
+    if env_path.exists():
+        raise FileExistsError(env_path)
+
+    with open(env_path, "w", encoding="utf-8") as handle:
+        json.dump(conf, handle)
+
 
 def _network_check(hostname: str, port: int) -> bool:
     """Check connectivity to an iRODS server.
