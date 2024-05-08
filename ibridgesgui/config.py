@@ -128,43 +128,43 @@ def check_irods_config(env_path: Path) -> str:
     Returns:
     --------
     str :
-        good -> well-formatted
-        not found -> file is missing
-        json -> json malformatted
+        Error message why login with the settings would fail.
+        "All checks passed successfully" in case all seems to be fine.
     """
+
     if not env_path.is_file():
-        return("file not found")
+        return "File not found."
 
     try:
-        with open(env_path, "r") as f:
-            env = json.load(f)
+        with open(env_path, "r", encoding='utf-8') as handle:
+            env = json.load(handle)
     except JSONDecodeError as err:
-        return(f'{env_path} not well formatted.\n{err.msg}')
+        return f'{env_path} not well formatted.\n{err.msg}'
 
     # check host and port and connectivity
     if "irods_host" not in env:
-        return('"irods_host" is missing in environment')
+        return '"irods_host" is missing in environment.'
     if "irods_port" not in env:
-        return('"irods_port" is missing in environment')
-    print(type(env["irods_port"]))
+        return '"irods_port" is missing in environment.'
     if not isinstance(env["irods_port"], int):
-        return('"irods_port" needs to be an integer, remove quotes.')
+        return '"irods_port" needs to be an integer, remove quotes.'
     if not _network_check(env["irods_host"], env["irods_port"]):
-        return(f'No connection: {env["irods_host"]} or {env["irods_port"]} are incorrect')
+        return f'No connection: {env["irods_host"]} or {env["irods_port"]} are incorrect.'
     # check authentication scheme
     try:
         sess = iRODSSession(irods_env_file=env_path)
-        sess.server_version
+        _ = sess.server_version
     except TypeError as err:
         return repr(err)
     except NetworkException as err:
         return repr(err)
     except AttributeError as err:
         return repr(err)
+    # password incorrect but rest is fine
     except CAT_INVALID_USER:
-        pass
+        return "All checks passed successfully."
     # all tests passed
-    return "good"
+    return "All checks passed successfully."
 
 def save_irods_config(env_name: str, conf: dict):
     """
@@ -178,7 +178,7 @@ def save_irods_config(env_name: str, conf: dict):
     if not env_name.endswith(".json"):
         raise TypeError("Filetype needs to be '.json'.")
     env_path = Path("~").expanduser().joinpath(".irods", env_name)
-    
+
     if env_path.exists():
         raise FileExistsError(env_path)
 
