@@ -99,13 +99,11 @@ def set_log_level(level: str):
 
 def _save_config(conf: dict):
     ensure_log_config_location()
-    with open(CONFIG_FILE, "w", encoding="utf-8") as handle:
-        json.dump(conf, handle)
+    _write_json(CONFIG_FILE, conf)
 
 def _get_config() -> Union[None, dict]:
     try:
-        with open(CONFIG_FILE, "r", encoding="utf-8") as handle:
-            return json.load(handle)
+        return _read_json(CONFIG_FILE)
     except FileNotFoundError:
         return None
     except json.decoder.JSONDecodeError as err:
@@ -116,7 +114,7 @@ def _get_config() -> Union[None, dict]:
         sys.exit(1)
 
 # irods config functions
-def check_irods_config(env_path: Path) -> str:
+def check_irods_config(ienv: Union[Path, dict]) -> str:
     """
     Checks whether an iRODS cofiguration file is correct.
 
@@ -131,16 +129,15 @@ def check_irods_config(env_path: Path) -> str:
         Error message why login with the settings would fail.
         "All checks passed successfully" in case all seems to be fine.
     """
-
-    if not env_path.is_file():
-        return "File not found."
-
-    try:
-        with open(env_path, "r", encoding='utf-8') as handle:
-            env = json.load(handle)
-    except JSONDecodeError as err:
-        return f'{env_path} not well formatted.\n{err.msg}'
-
+    if isinstance(ienv, Path):
+        try:
+            env = _read_json(ienv)
+        except FileNotFoundError as err:
+            return f'{env_path} not found.'
+        except JSONDecodeError as err:
+            return f'{env_path} not well formatted.\n{err.msg}'
+    else:
+        env = ienv
     # check host and port and connectivity
     if "irods_host" not in env:
         return '"irods_host" is missing in environment.'
@@ -182,8 +179,7 @@ def save_irods_config(env_name: str, conf: dict):
     if env_path.exists():
         raise FileExistsError(env_path)
 
-    with open(env_path, "w", encoding="utf-8") as handle:
-        json.dump(conf, handle)
+    _write_json(env_path, conf)
 
 
 def _network_check(hostname: str, port: int) -> bool:
@@ -200,6 +196,8 @@ def _network_check(hostname: str, port: int) -> bool:
         Connection to `hostname` possible.
 
     """
+    if hostname is None or port is None:
+        raise LoginError("No host or port set in environment file.")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.settimeout(10.0)
@@ -207,3 +205,11 @@ def _network_check(hostname: str, port: int) -> bool:
             return True
         except socket.error:
             return False
+
+def _read_json(file_path: Path) -> dict:
+    with open(file_path, "r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+def _write_json(file_path: Path, content: dict):
+    with open(file_path, "r", encoding="utf-8") as handle:
+        json.dump(content, handle)
