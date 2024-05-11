@@ -73,3 +73,29 @@ class CreateDirectory(QDialog, Ui_createCollection):
                     self.errorLabel.setText(error.message)
                 else:
                     self.errorLabel.setText("ERROR: insufficient rights.")
+
+class CheckConfig(QDialog):
+    """Popup window to edit, create and check an environment.json"""
+    def __init__(self, logger, env_path):
+        super().__init__()
+        if getattr(sys, 'frozen', False):
+            super().setupUi(self)
+        else:
+            loadUi(UI_FILE_DIR / "configCheck.ui", self)
+
+        self.logger = logger
+        self.env_path = env_path
+        self.setWindowTitle("Create, edit and inspect iRODS environment")
+        self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self._init_env_box()
+
+    def _init_env_box(self):
+        self.envbox.clear()
+        print("env box")
+        env_jsons = [
+            path.name for path in
+            self.env_path.glob('irods_environment*json')]
+        print(len(env_jsons))
+        if len(env_jsons) != 0:
+            self.envbox.addItems(env_jsons)
+            self.envbox.setCurrentIndex(0)

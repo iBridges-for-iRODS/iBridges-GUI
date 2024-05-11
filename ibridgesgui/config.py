@@ -211,5 +211,5 @@ def _read_json(file_path: Path) -> dict:
         return json.load(handle)
 
 def _write_json(file_path: Path, content: dict):
-    with open(file_path, "r", encoding="utf-8") as handle:
+    with open(file_path, "w", encoding="utf-8") as handle:
         json.dump(content, handle)

@@ -2,17 +2,19 @@
 """iBridges GUI startup script."""
 import sys
 import logging
+from pathlib import Path
 
 import PyQt6.QtWidgets
 import PyQt6.uic
 import setproctitle
 
-from ibridgesgui import ui_files
+from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.browser import Browser
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.config import get_log_level, set_log_level, init_logger
+from ibridgesgui.popup_widgets import CheckConfig
 
 # Global constants
 THIS_APPLICATION = 'ibridges-gui'
@@ -21,7 +23,7 @@ THIS_APPLICATION = 'ibridges-gui'
 app = PyQt6.QtWidgets.QApplication(sys.argv)
 widget = PyQt6.QtWidgets.QStackedWidget()
 
-class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
+class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     """GUI Main Menu"""
 
     def __init__(self, widget, app_name):
@@ -32,6 +34,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
             PyQt6.uic.loadUi(UI_FILE_DIR/'MainMenu.ui', self)
 
         self.logger = logging.getLogger(app_name)
+        self.irods_path = Path('~', '.irods').expanduser()
         self.app_name = app_name
         self.ui_tabs_lookup = {
             'tabBrowser': self.init_browser_tab,
@@ -50,6 +53,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
         self.actionConnect.triggered.connect(self.connect)
         self.actionExit.triggered.connect(self.exit)
         self.actionCloseSession.triggered.connect(self.disconnect)
+        self.actionAdd_configuration.triggered.connect(self.create_env_file)
+        self.actionCheck_configuration.triggered.connect(self.inspect_env_file)
         self.tabWidget.setCurrentIndex(0)
 
     def disconnect(self):
@@ -102,6 +107,14 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, ui_files.MainMenu.Ui_MainWindow):
         """Create browser"""
         irods_browser = Browser(self.session, self.app_name)
         self.tabWidget.addTab(irods_browser, "Browser")
+
+    def create_env_file(self):
+        create_widget = CheckConfig(self.logger, self.irods_path)
+        create_widget.exec()
+
+    def inspect_env_file(self):
+        create_widget = CheckConfig(self.logger, self.irods_path)
+        create_widget.exec()
 
 def main():
     """Main function"""
