@@ -21,7 +21,7 @@ from ibridgesgui.config import (
 from ibridgesgui.popup_widgets import CheckConfig
 
 # Global constants
-THIS_APPLICATION = 'ibridges-gui'
+THIS_APPLICATION = "ibridges-gui"
 
 # Application globals
 app = PyQt6.QtWidgets.QApplication(sys.argv)
@@ -31,22 +31,22 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def __init__(self, parent_widget, app_name):
         super().__init__()
-        if getattr(sys, 'frozen', False):
+        if getattr(sys, "frozen", False):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi(UI_FILE_DIR/'MainMenu.ui', self)
+            PyQt6.uic.loadUi(UI_FILE_DIR/"MainMenu.ui", self)
 
         self.logger = logging.getLogger(app_name)
-        self.irods_path = Path('~', '.irods').expanduser()
+        self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.ui_tabs_lookup = {
-            'tabBrowser': self.init_browser_tab,
+            "tabBrowser": self.init_browser_tab,
                 #'tabUpDownload': self.setupTabUpDownload,
                 #'tabDataBundle': self.setupTabDataBundle,
                 #'tabCreateTicket': self.setupTabCreateTicket,
                 #'tabELNData': self.setupTabELNData,
                 #'tabAmberWorkflow': self.setupTabAmberWorkflow,
-            'tabInfo': self.init_info_tab
+            "tabInfo": self.init_info_tab
             #'tabExample': self.setupTabExample,
         }
 
@@ -62,10 +62,10 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def disconnect(self):
         """Close iRODS session"""
-        if 'session' in self.session_dict:
-            session = self.session_dict['session']
-            self.logger.info('Disconnecting %s from %s', session.username, session.host)
-            self.session_dict['session'].close()
+        if "session" in self.session_dict:
+            session = self.session_dict["session"]
+            self.logger.info("Disconnecting %s from %s", session.username, session.host)
+            self.session_dict["session"].close()
             self.session_dict.clear()
         self.tabWidget.clear()
 
@@ -75,8 +75,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         # Trick to get the session object from the QDialog
         login_window = Login(self.session_dict, self.app_name)
         login_window.exec()
-        if 'session' in self.session_dict:
-            self.session = self.session_dict['session']
+        if "session" in self.session_dict:
+            self.session = self.session_dict["session"]
             try:
                 self.setup_tabs()
             except:
@@ -87,7 +87,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Quit program"""
         quit_msg = "Are you sure you want to exit the program?"
         reply = PyQt6.QtWidgets.QMessageBox.question(
-            self, 'Message', quit_msg,
+            self, "Message", quit_msg,
             PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
             PyQt6.QtWidgets.QMessageBox.StandardButton.No)
         if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
@@ -129,8 +129,8 @@ def main():
     if log_level is not None:
         init_logger(THIS_APPLICATION, log_level)
     else:
-        set_log_level('debug')
-        init_logger(THIS_APPLICATION, 'debug')
+        set_log_level("debug")
+        init_logger(THIS_APPLICATION, "debug")
     main_widget = PyQt6.QtWidgets.QStackedWidget()
     main_app = MainMenu(main_widget, THIS_APPLICATION)
     main_widget.addWidget(main_app)
