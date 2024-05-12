@@ -25,12 +25,11 @@ THIS_APPLICATION = 'ibridges-gui'
 
 # Application globals
 app = PyQt6.QtWidgets.QApplication(sys.argv)
-widget = PyQt6.QtWidgets.QStackedWidget()
 
 class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     """GUI Main Menu"""
 
-    def __init__(self, widget, app_name):
+    def __init__(self, parent_widget, app_name):
         super().__init__()
         if getattr(sys, 'frozen', False):
             super().setupUi(self)
@@ -51,7 +50,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             #'tabExample': self.setupTabExample,
         }
 
-        self.widget = widget
+        self.parent_widget = parent_widget
         self.session = None
         self.session_dict = {}
         self.actionConnect.triggered.connect(self.connect)
@@ -113,10 +112,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.tabWidget.addTab(irods_browser, "Browser")
 
     def create_env_file(self):
+        """Drop down menu to create a new environment.json"""
         create_widget = CheckConfig(self.logger, self.irods_path)
         create_widget.exec()
 
     def inspect_env_file(self):
+        """Drop down menu to inspect an environment.json"""
         create_widget = CheckConfig(self.logger, self.irods_path)
         create_widget.exec()
 
@@ -130,10 +131,10 @@ def main():
     else:
         set_log_level('debug')
         init_logger(THIS_APPLICATION, 'debug')
-
-    main_app = MainMenu(widget, THIS_APPLICATION)
-    widget.addWidget(main_app)
-    widget.show()
+    main_widget = PyQt6.QtWidgets.QStackedWidget()
+    main_app = MainMenu(main_widget, THIS_APPLICATION)
+    main_widget.addWidget(main_app)
+    main_widget.show()
     app.exec()
 
 if __name__ == "__main__":
