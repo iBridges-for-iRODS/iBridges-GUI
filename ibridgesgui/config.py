@@ -24,7 +24,7 @@ LOG_LEVEL = {
     "critical": logging.CRITICAL,
 }
 
-CONFIG_DIR = Path("~/.ibridges").expanduser()
+CONFIG_DIR = Path("~", ".ibridges").expanduser()
 CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
 
 
