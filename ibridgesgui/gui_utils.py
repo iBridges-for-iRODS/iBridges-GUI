@@ -73,11 +73,3 @@ def get_downloads_dir() -> pathlib.Path:
     # Try to create Downloads
     pathlib.Path("~", "Downloads").expanduser().mkdir(parents=True)
     return pathlib.Path("~", "Downloads").expanduser()
-
-    # Some windows systems have a different Dowloads path
-    # winreg does not exist anylonger
-    # FIXME: Test is code above is enough for windows
-    #sub_key = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
-    #downloads_guid = "{374DE290-123F-4565-9164-39C4925E467B}"
-    #with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
-    #    return pathlib.Path(winreg.QueryValueEx(key, downloads_guid)[0])
