@@ -5,20 +5,23 @@ from typing import Union
 import logging
 import logging.handlers
 import datetime
-import json
-from json import JSONDecodeError
 import socket
 import sys
+
+import json
+from json import JSONDecodeError
+
 from irods.session import iRODSSession
 from irods.exception import NetworkException, CAT_INVALID_USER
+from ibridges.session import LoginError
 
 LOG_LEVEL = {
-    'fulldebug': logging.DEBUG - 5,
-    'debug': logging.DEBUG,
-    'info': logging.INFO,
-    'warn': logging.WARNING,
-    'error': logging.ERROR,
-    'critical': logging.CRITICAL,
+    "fulldebug": logging.DEBUG - 5,
+    "debug": logging.DEBUG,
+    "info": logging.INFO,
+    "warn": logging.WARNING,
+    "error": logging.ERROR,
+    "critical": logging.CRITICAL,
 }
 
 CONFIG_DIR = Path("~/.ibridges").expanduser()
@@ -40,21 +43,21 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
         String that will be mapped to python's log levels, default is info
     """
     logger = logging.getLogger(app_name)
-    logfile = CONFIG_DIR.joinpath(f'{app_name}.log')
+    logfile = CONFIG_DIR.joinpath(f"{app_name}.log")
 
     # Direct logging to logfile
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler = logging.handlers.RotatingFileHandler(logfile, 'a', 100000, 1)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    file_handler = logging.handlers.RotatingFileHandler(logfile, "a", 100000, 1)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
-    logger.setLevel(LOG_LEVEL.get(log_level, LOG_LEVEL['info']))
+    logger.setLevel(LOG_LEVEL.get(log_level, LOG_LEVEL["info"]))
 
     # Logger greeting when app is started
-    with open(logfile, 'a', encoding='utf-8') as logfd:
-        logfd.write('\n\n')
-        underscores = f'{"_" * 50}\n'
+    with open(logfile, "a", encoding="utf-8") as logfd:
+        logfd.write("\n\n")
+        underscores = f"{'_' * 50}\n"
         logfd.write(underscores * 2)
-        logfd.write(f'\t Starting iBridges-GUI \n\t{datetime.datetime.now().isoformat()}\n')
+        logfd.write(f"\t Starting iBridges-GUI \n\t{datetime.datetime.now().isoformat()}\n")
         logfd.write(underscores * 2)
 
     return logger
@@ -76,9 +79,9 @@ def set_last_ienv_path(ienv_path: Path):
     """
     config = _get_config()
     if config is not None:
-        config['gui_last_env'] = ienv_path
+        config["gui_last_env"] = ienv_path
     else:
-        config = {'gui_last_env': ienv_path}
+        config = {"gui_last_env": ienv_path}
     _save_config(config)
 
 def get_log_level() -> Union[None, str]:
@@ -92,9 +95,9 @@ def set_log_level(level: str):
     """Save log level to config"""
     config = _get_config()
     if config is not None:
-        config['log_level'] = level
+        config["log_level"] = level
     else:
-        config = {'log_level': level}
+        config = {"log_level": level}
     _save_config(config)
 
 def _save_config(conf: dict):
@@ -132,10 +135,10 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
     if isinstance(ienv, Path):
         try:
             env = _read_json(ienv)
-        except FileNotFoundError as err:
-            return f'{env_path} not found.'
+        except FileNotFoundError:
+            return f"{ienv} not found."
         except JSONDecodeError as err:
-            return f'{env_path} not well formatted.\n{err.msg}'
+            return f"{ienv} not well formatted.\n{err.msg}"
     else:
         env = ienv
     # check host and port and connectivity
@@ -157,12 +160,13 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return repr(err)
     except AttributeError as err:
         return repr(err)
+
     # password incorrect but rest is fine
     except ValueError as err:
         return "All checks passed successfully."
-    # password incorrect but rest is fine
     except CAT_INVALID_USER:
         return "All checks passed successfully."
+
     # all tests passed
     return "All checks passed successfully."
 
