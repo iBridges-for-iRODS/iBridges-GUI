@@ -1,10 +1,10 @@
 """Handy and reusable functions for the GUI"""
 import pathlib
 from importlib.resources import files
+from typing import Union
 
 import irods
 import PyQt6
-from typing import Union
 
 from ibridges import get_collection, get_dataobject
 from ibridges.path import IrodsPath
@@ -13,6 +13,7 @@ UI_FILE_DIR = files(__package__) / "ui_files"
 
 # Widget utils
 def populate_table(table_widget, rows: int, data_by_row: list):
+    """Populate a table-like pyqt widget with data"""
 
     table_widget.setRowCount(rows)
     for row, data in enumerate(data_by_row):
@@ -21,6 +22,7 @@ def populate_table(table_widget, rows: int, data_by_row: list):
     table_widget.resizeColumnsToContents()
 
 def populate_textfield(text_widget, text_by_row: Union[str, list]):
+    """Populate a text viewer or editor with text"""
     text_widget.clear()
     if isinstance(text_by_row, str):
         text_widget.append(text_by_row)
@@ -30,6 +32,7 @@ def populate_textfield(text_widget, text_by_row: Union[str, list]):
 
 # iBridges/iRODS utils
 def get_irods_item(irods_path: IrodsPath):
+    """Get the item behind an iRODS path"""
     try:
         item = get_collection(irods_path.session, irods_path)
     except ValueError:
@@ -63,11 +66,18 @@ def get_downloads_dir() -> pathlib.Path:
         Absolute path to 'Downloads' directory.
 
     """
-    if isinstance(pathlib.Path('~'), pathlib.PosixPath):
-        return pathlib.Path('~', 'Downloads').expanduser()
-    else:
-        import winreg
-        sub_key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
-        downloads_guid = '{374DE290-123F-4565-9164-39C4925E467B}'
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
-            return pathlib.Path(winreg.QueryValueEx(key, downloads_guid)[0])
+    # Linux and Mac Download folders
+    if pathlib.Path("~", "Downloads").expanduser().is_dir():
+        return pathlib.Path("~", "Downloads").expanduser()
+
+    # Try to create Downloads
+    pathlib.Path("~", "Downloads").expanduser().mkdir(parents=True)
+    return pathlib.Path("~", "Downloads").expanduser()
+
+    # Some windows systems have a different Dowloads path
+    # winreg does not exist anylonger
+    # FIXME: Test is code above is enough for windows
+    #sub_key = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+    #downloads_guid = "{374DE290-123F-4565-9164-39C4925E467B}"
+    #with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
+    #    return pathlib.Path(winreg.QueryValueEx(key, downloads_guid)[0])
