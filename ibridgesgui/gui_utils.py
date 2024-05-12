@@ -20,6 +20,13 @@ def populate_table(table_widget, rows: int, data_by_row: list):
             table_widget.setItem(row, col, PyQt6.QtWidgets.QTableWidgetItem(str(item)))
     table_widget.resizeColumnsToContents()
 
+def populate_textfield(text_widget, text_by_row: Union[str, list]):
+    text_widget.clear()
+    if isinstance(text_by_row, str):
+        text_widget.append(text_by_row)
+    else:
+        for row in text_by_row:
+            text_widget.append(row)
 
 # iBridges/iRODS utils
 def get_irods_item(irods_path: IrodsPath):

@@ -13,7 +13,7 @@ from ibridges.data_operations import obj_replicas
 from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
 
-import ibridgesgui as gui
+from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 from ibridgesgui.popup_widgets import CreateCollection
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
@@ -21,11 +21,12 @@ from ibridgesgui.gui_utils import (
     get_downloads_dir,
     get_irods_item,
     populate_table,
+    populate_textfield
 )
 
 
 class Browser(PyQt6.QtWidgets.QWidget,
-              gui.ui_files.tabBrowser.Ui_tabBrowser):
+              Ui_tabBrowser):
     """Browser view for iRODS session.
 
     """
@@ -339,19 +340,21 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self.errorLabel.setText("Please select a row from the table first.")
             self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
             return
+        content = []
         item_path = self._get_item_path(row)
         if item_path.exists():
             item = get_irods_item(item_path)
             if item_path.collection_exists():
                 data_dict = get_coll_dict(item)
                 for key in list(data_dict.keys())[:20]:
-                    self.deleteSelectionBrowser.append(key)
+                    content.append(key)
                     if len(data_dict[key]) > 0:
                         for item in data_dict[key]:
-                            self.deleteSelectionBrowser.append('\t'+item)
-                self.deleteSelectionBrowser.append('...')
+                            content.append('\t'+item)
+                content.append('...')
             else:
-                self.deleteSelectionBrowser.append(str(item_path))
+                content.append(str(item_path))
+            populate_textfield(self.deleteSelectionBrowser, content)
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
 
     def delete_data(self):
@@ -467,8 +470,6 @@ class Browser(PyQt6.QtWidgets.QWidget,
             content.extend([sc.name for sc in obj.subcollections])
             content.extend(['\n', 'DataObjects:', '-----------------'])
             content.extend([do.name for do in obj.data_objects])
-            preview_string = '\n'.join(content)
-            self.previewBrowser.append(preview_string)
         elif irods_path.dataobject_exists():
             file_type = ''
             obj = get_dataobject(self.session, irods_path)
@@ -477,17 +478,16 @@ class Browser(PyQt6.QtWidgets.QWidget,
             if file_type in ['txt', 'json', 'csv']:
                 try:
                     with obj.open('r') as objfd:
-                        preview_string = objfd.read(1024).decode('utf-8')
-                    self.previewBrowser.append(preview_string)
+                        content = [objfd.read(1024).decode('utf-8')]
+                    #self.previewBrowser.append(preview_string)
                 except Exception as error:
-                    self.previewBrowser.append(
-                        f'No Preview for: {irods_path}')
-                    self.previewBrowser.append(repr(error))
-                    self.previewBrowser.append(
-                        "Storage resource might be down.")
+                    content = [f'No Preview for: {irods_path}',
+                              repr(error),
+                              "Storage resource might be down."
+                              ]
             else:
-                self.previewBrowser.append(
-                    f'No Preview for: {irods_path}')
+                content = [f'No Preview for: {irods_path}']
+        populate_textfield(self.previewBrowser, content)
 
     def _get_item_path(self, row):
         item_name = self.browserTable.item(row, 1).text()

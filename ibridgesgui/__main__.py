@@ -13,7 +13,11 @@ from ibridgesgui.browser import Browser
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
-from ibridgesgui.config import get_log_level, set_log_level, init_logger
+from ibridgesgui.config import (
+                        get_log_level,
+                        set_log_level,
+                        init_logger
+                        )
 from ibridgesgui.popup_widgets import CheckConfig
 
 # Global constants

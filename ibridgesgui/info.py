@@ -8,11 +8,11 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 from ibridges.resources import Resources
 
-import ibridgesgui as gui
+from ibridgesgui.ui_files.tabInfo import Ui_tabInfo
 from ibridgesgui.gui_utils import populate_table, UI_FILE_DIR
 
 
-class Info(PyQt6.QtWidgets.QWidget, gui.ui_files.tabInfo.Ui_tabInfo):
+class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
     """Set iRODS information in the GUI"""
 
     def __init__(self, session):

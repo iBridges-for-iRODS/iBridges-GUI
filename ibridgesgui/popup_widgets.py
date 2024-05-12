@@ -1,15 +1,22 @@
 """Pop-up widget definitions."""
 import os
 import sys
+import json
 
 import irods
 from ibridges import IrodsPath
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import QDialog
+from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PyQt6.uic import loadUi
 
-from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.gui_utils import UI_FILE_DIR, populate_textfield
+from ibridgesgui.config import (
+                                _read_json,
+                                save_irods_config,
+                                check_irods_config
+                                )
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
+#from ibridgesgui.ui_files.configCheck import Ui_configCheck
 
 
 class CreateCollection(QDialog, Ui_createCollection):
@@ -74,6 +81,7 @@ class CreateDirectory(QDialog, Ui_createCollection):
                 else:
                     self.errorLabel.setText("ERROR: insufficient rights.")
 
+#class CheckConfig(QDialog, Ui_configCheck):
 class CheckConfig(QDialog):
     """Popup window to edit, create and check an environment.json"""
     def __init__(self, logger, env_path):
@@ -89,13 +97,88 @@ class CheckConfig(QDialog):
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self._init_env_box()
 
+        self.envbox.activated.connect(self.load_env)
+        self.createButton.clicked.connect(self.create_env)
+        self.checkButton.clicked.connect(self.check_env)
+        self.saveButton.clicked.connect(self.save_env)
+        self.saveasButton.clicked.connect(self.save_env_as)
+        self.closeButton.clicked.connect(self.close)
+
+
     def _init_env_box(self):
         self.envbox.clear()
-        print("env box")
-        env_jsons = [
+        env_jsons = ['']+[
             path.name for path in
             self.env_path.glob('irods_environment*json')]
-        print(len(env_jsons))
         if len(env_jsons) != 0:
             self.envbox.addItems(env_jsons)
             self.envbox.setCurrentIndex(0)
+
+    def load_env(self):
+        self.errorLabel.clear()
+        env_file = self.env_path.joinpath(self.envbox.currentText())
+        try:
+            content = json.dumps(_read_json(env_file),
+                                sort_keys=True, indent=4, separators=(',', ': '))
+            populate_textfield(self.envEdit, content)
+        except IsADirectoryError:
+            self.errorLabel.setText('Choose and environment or create a new one.')
+        except FileNotFoundError:
+            self.errorLabel.setText(f'File does not exist {env_file}')
+        except Exception as err:
+            self.errorLabel.setText(f'{repr(err)}')
+
+    def create_env(self):
+        self.errorLabel.clear()
+        self.envbox.setCurrentIndex(0)
+        env = {
+                "irods_host": "its.data.uu.nl",
+                "irods_port": 1247,
+                "irods_home": "/nluu12p/home",
+                "irods_user_name": "exampleuser@uu.nl",
+                "irods_zone_name": "nluu12p",
+                "irods_authentication_scheme": "pam",
+                "irods_encryption_algorithm": "AES-256-CBC",
+                "irods_encryption_key_size": 32,
+                "irods_encryption_num_hash_rounds": 16,
+                "irods_encryption_salt_size": 8,
+                "irods_client_server_policy": "CS_NEG_REQUIRE",
+                "irods_client_server_negotiation": "request_server_negotiation"
+              }
+        populate_textfield(self.envEdit,
+                           json.dumps(env, sort_keys=True, indent=4, separators=(',', ': ')))
+
+    def check_env(self):
+        self.errorLabel.clear()
+        try:
+            msg = check_irods_config(json.loads(self.envEdit.toPlainText()))
+        except json.decoder.JSONDecodeError as err:
+            msg = "JSON decoding error: "+err.msg
+        self.errorLabel.setText(msg)
+
+    def save_env(self):
+        self.errorLabel.clear()
+        env_file = self.env_path.joinpath(self.envbox.currentText())
+        if env_file.exists():
+            try:
+                save_irods_config(env_file, json.loads(self.envEdit.toPlainText()))
+                self.errorLabel.setText(f'Configuration saved  as {env_file}')
+            except json.decoder.JSONDecodeError as err:
+                self.errorLabel.setText("Incorrectly formatted. Click 'Check' for more information.")
+        else:
+            self.errorLabel.setText("Choose 'Save as' to save")
+
+    def save_env_as(self):
+        self.errorLabel.clear()
+        dialog = QFileDialog(self)
+        dialog.setFileMode(QFileDialog.FileMode.AnyFile)
+        dialog.setNameFilter("(*.json)")
+        create_file = QFileDialog.getSaveFileName(self, "Save as File", str(self.env_path), "(*.json)")
+        if create_file[0] != '':
+            try:
+                save_irods_config(create_file[0], json.loads(self.envEdit.toPlainText()))
+                self.errorLabel.setText(f'Configuration saved  as {create_file[0]}')
+            except json.decoder.JSONDecodeError as err:
+                self.errorLabel.setText("Incorrectly formatted. Click 'Check' for more information.")
+            except TypeError:
+                self.errorLabel.setText("File type needs to be .json")

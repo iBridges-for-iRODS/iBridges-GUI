@@ -106,7 +106,7 @@ def _get_config() -> Union[None, dict]:
         return _read_json(CONFIG_FILE)
     except FileNotFoundError:
         return None
-    except json.decoder.JSONDecodeError as err:
+    except JSONDecodeError as err:
         # empty file
         if err.msg == "Expecting value":
             return None
@@ -149,7 +149,7 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return f'No connection: {env["irods_host"]} or {env["irods_port"]} are incorrect.'
     # check authentication scheme
     try:
-        sess = iRODSSession(irods_env_file=env_path)
+        sess = iRODSSession(password="bogus", **env)
         _ = sess.server_version
     except TypeError as err:
         return repr(err)
@@ -158,12 +158,15 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
     except AttributeError as err:
         return repr(err)
     # password incorrect but rest is fine
+    except ValueError as err:
+        return "All checks passed successfully."
+    # password incorrect but rest is fine
     except CAT_INVALID_USER:
         return "All checks passed successfully."
     # all tests passed
     return "All checks passed successfully."
 
-def save_irods_config(env_name: str, conf: dict):
+def save_irods_config(env_path: Union[Path, str], conf: dict):
     """
     Saves an irods environment as json in ~/.irods
 
@@ -172,15 +175,11 @@ def save_irods_config(env_name: str, conf: dict):
     env_name : str
         file name
     """
-    if not env_name.endswith(".json"):
+    env_path = Path(env_path)
+    if env_path.suffix == ".json":
+        _write_json(env_path, conf)
+    else:
         raise TypeError("Filetype needs to be '.json'.")
-    env_path = Path("~").expanduser().joinpath(".irods", env_name)
-
-    if env_path.exists():
-        raise FileExistsError(env_path)
-
-    _write_json(env_path, conf)
-
 
 def _network_check(hostname: str, port: int) -> bool:
     """Check connectivity to an iRODS server.

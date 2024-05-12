@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1034</width>
-    <height>485</height>
+    <height>457</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,9 +38,9 @@ QLabel#errorLabel
       <widget class="QComboBox" name="envbox"/>
      </item>
      <item>
-      <widget class="QPushButton" name="loadButton">
+      <widget class="QPushButton" name="createButton">
        <property name="text">
-        <string>Load</string>
+        <string>Create new</string>
        </property>
       </widget>
      </item>
@@ -56,13 +56,6 @@ QLabel#errorLabel
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="createButton">
-       <property name="text">
-        <string>Create new</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

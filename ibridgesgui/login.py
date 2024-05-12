@@ -21,7 +21,7 @@ class Login(QDialog, Ui_irodsLogin):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "irodsLogin.ui", self)
-        
+
         self.logger = logging.getLogger(app_name)
 
         self.session_dict = session_dict
