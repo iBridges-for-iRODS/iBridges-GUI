@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1034</width>
-    <height>457</height>
+    <height>429</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@ QLabel#errorLabel
      <item>
       <widget class="QPushButton" name="createButton">
        <property name="text">
-        <string>Create new</string>
+        <string>New Config</string>
        </property>
       </widget>
      </item>
