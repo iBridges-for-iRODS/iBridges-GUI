@@ -12,7 +12,7 @@ import json
 from json import JSONDecodeError
 
 from irods.session import iRODSSession
-from irods.exception import NetworkException, CAT_INVALID_USER
+from irods.exception import NetworkException, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED
 from ibridges.session import LoginError
 
 LOG_LEVEL = {
@@ -162,9 +162,7 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return repr(err)
 
     # password incorrect but rest is fine
-    except ValueError as err:
-        return "All checks passed successfully."
-    except CAT_INVALID_USER:
+    except (ValueError, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
         return "All checks passed successfully."
 
     # all tests passed
