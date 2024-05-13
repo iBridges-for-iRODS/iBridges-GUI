@@ -16,7 +16,7 @@ from ibridgesgui.config import (
                                 check_irods_config
                                 )
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
-#from ibridgesgui.ui_files.configCheck import Ui_configCheck
+from ibridgesgui.ui_files.configCheck import Ui_configCheck
 
 
 class CreateCollection(QDialog, Ui_createCollection):
@@ -81,8 +81,7 @@ class CreateDirectory(QDialog, Ui_createCollection):
                 else:
                     self.errorLabel.setText("ERROR: insufficient rights.")
 
-#class CheckConfig(QDialog, Ui_configCheck):
-class CheckConfig(QDialog):
+class CheckConfig(QDialog, Ui_configCheck):
     """Popup window to edit, create and check an environment.json"""
     def __init__(self, logger, env_path):
         super().__init__()
@@ -134,11 +133,11 @@ class CheckConfig(QDialog):
         self.errorLabel.clear()
         self.envbox.setCurrentIndex(0)
         env = {
-                "irods_host": "its.data.uu.nl",
+                "irods_host": "<THE SERVER NAME OR IP ADDRESS>",
                 "irods_port": 1247,
-                "irods_home": "/nluu12p/home",
-                "irods_user_name": "exampleuser@uu.nl",
-                "irods_zone_name": "nluu12p",
+                "irods_home": "<A DEFAULT LOCATION ON THE IRODS SERVER AS YOUR HOME>",
+                "irods_user_name": "<YOUR IRODS USERNAME>",
+                "irods_zone_name": "<THE IRODS ZONE NAME>",
                 "irods_authentication_scheme": "pam",
                 "irods_encryption_algorithm": "AES-256-CBC",
                 "irods_encryption_key_size": 32,
