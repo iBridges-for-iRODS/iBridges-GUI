@@ -119,7 +119,7 @@ def _get_config() -> Union[None, dict]:
 # irods config functions
 def check_irods_config(ienv: Union[Path, dict]) -> str:
     """
-    Checks whether an iRODS cofiguration file is correct.
+    Checks whether an iRODS configuration file is correct.
 
     Parameters:
     -----------
