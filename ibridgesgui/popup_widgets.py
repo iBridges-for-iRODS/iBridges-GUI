@@ -93,7 +93,6 @@ class CheckConfig(QDialog, Ui_configCheck):
         self.logger = logger
         self.env_path = env_path
         self.setWindowTitle("Create, edit and inspect iRODS environment")
-        self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self._init_env_box()
 
         self.envbox.activated.connect(self.load_env)
