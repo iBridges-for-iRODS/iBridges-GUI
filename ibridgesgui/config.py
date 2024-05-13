@@ -14,7 +14,6 @@ from json import JSONDecodeError
 from irods.session import iRODSSession
 from irods.exception import NetworkException, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED
 from ibridges.session import LoginError
-from ibridges
 
 LOG_LEVEL = {
     "fulldebug": logging.DEBUG - 5,
