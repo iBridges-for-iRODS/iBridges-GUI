@@ -14,6 +14,7 @@ from json import JSONDecodeError
 from irods.session import iRODSSession
 from irods.exception import NetworkException, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED
 from ibridges.session import LoginError
+from ibridges
 
 LOG_LEVEL = {
     "fulldebug": logging.DEBUG - 5,
@@ -181,7 +182,7 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
     if env_path.suffix == ".json":
         _write_json(env_path, conf)
     else:
-        raise TypeError("Filetype needs to be '.json'.")
+        raise ValueError("Filetype needs to be '.json'.")
 
 def _network_check(hostname: str, port: int) -> bool:
     """Check connectivity to an iRODS server.
