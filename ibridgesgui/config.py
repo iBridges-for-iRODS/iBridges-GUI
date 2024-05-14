@@ -13,8 +13,7 @@ from json import JSONDecodeError
 
 from irods.session import iRODSSession
 from irods.exception import NetworkException, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED
-from ibridges.session import LoginError
-from ibridges
+from ibridges.session import Session, LoginError
 
 LOG_LEVEL = {
     "fulldebug": logging.DEBUG - 5,
@@ -149,7 +148,7 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return '"irods_port" is missing in environment.'
     if not isinstance(env["irods_port"], int):
         return '"irods_port" needs to be an integer, remove quotes.'
-    if not _network_check(env["irods_host"], env["irods_port"]):
+    if not Session.network_check(env["irods_host"], env["irods_port"]):
         return f'No connection: {env["irods_host"]} or {env["irods_port"]} are incorrect.'
     # check authentication scheme
     try:
@@ -183,30 +182,6 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
         _write_json(env_path, conf)
     else:
         raise ValueError("Filetype needs to be '.json'.")
-
-def _network_check(hostname: str, port: int) -> bool:
-    """Check connectivity to an iRODS server.
-
-    Parameters
-    ----------
-    hostname : str
-        FQDN/IP of an iRODS server.
-
-    Returns
-    -------
-    bool
-        Connection to `hostname` possible.
-
-    """
-    if hostname is None or port is None:
-        raise LoginError("No host or port set in environment file.")
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        try:
-            sock.settimeout(10.0)
-            sock.connect((hostname, port))
-            return True
-        except socket.error:
-            return False
 
 def _read_json(file_path: Path) -> dict:
     with open(file_path, "r", encoding="utf-8") as handle:
