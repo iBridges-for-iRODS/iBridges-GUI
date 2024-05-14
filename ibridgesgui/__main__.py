@@ -1,24 +1,20 @@
 #!/usr/bin/env python3
 """iBridges GUI startup script."""
-import sys
 import logging
+import sys
 from pathlib import Path
 
 import PyQt6.QtWidgets
 import PyQt6.uic
 import setproctitle
 
-from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.browser import Browser
+from ibridgesgui.config import get_log_level, init_logger, set_log_level
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
-from ibridgesgui.config import (
-                        get_log_level,
-                        set_log_level,
-                        init_logger
-                        )
 from ibridgesgui.popup_widgets import CheckConfig
+from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 
 # Global constants
 THIS_APPLICATION = "ibridges-gui"
@@ -27,9 +23,10 @@ THIS_APPLICATION = "ibridges-gui"
 app = PyQt6.QtWidgets.QApplication(sys.argv)
 
 class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
-    """GUI Main Menu"""
+    """Set up the GUI Main Menu."""
 
     def __init__(self, parent_widget, app_name):
+        """Initialise the main window."""
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
@@ -61,7 +58,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.tabWidget.setCurrentIndex(0)
 
     def disconnect(self):
-        """Close iRODS session"""
+        """Close iRODS session."""
         if "session" in self.session_dict:
             session = self.session_dict["session"]
             self.logger.info("Disconnecting %s from %s", session.username, session.host)
@@ -71,7 +68,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     def connect(self):
-        """Create iRODS session"""
+        """Create iRODS session."""
         # Trick to get the session object from the QDialog
         login_window = Login(self.session_dict, self.app_name)
         login_window.exec()
@@ -84,7 +81,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
                 raise
 
     def exit(self):
-        """Quit program"""
+        """Quit program."""
         quit_msg = "Are you sure you want to exit the program?"
         reply = PyQt6.QtWidgets.QMessageBox.question(
             self, "Message", quit_msg,
@@ -96,33 +93,33 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             pass
 
     def setup_tabs(self):
-        """Init tab view"""
+        """Init tab view."""
         for tab_fun in self.ui_tabs_lookup.values():
             tab_fun()
             #self.ui_tabs_lookup[tab_name]()
 
     def init_info_tab(self):
-        """Create info"""
+        """Create info."""
         irods_info = Info(self.session)
         self.tabWidget.addTab(irods_info, "Info")
 
     def init_browser_tab(self):
-        """Create browser"""
+        """Create browser."""
         irods_browser = Browser(self.session, self.app_name)
         self.tabWidget.addTab(irods_browser, "Browser")
 
     def create_env_file(self):
-        """Drop down menu to create a new environment.json"""
+        """Populate drop down menu to create a new environment.json."""
         create_widget = CheckConfig(self.logger, self.irods_path)
         create_widget.exec()
 
     def inspect_env_file(self):
-        """Drop down menu to inspect an environment.json"""
+        """Init drop down menu to inspect an environment.json."""
         create_widget = CheckConfig(self.logger, self.irods_path)
         create_widget.exec()
 
 def main():
-    """Main function"""
+    """Call main function."""
     setproctitle.setproctitle(THIS_APPLICATION)
 
     log_level = get_log_level()
