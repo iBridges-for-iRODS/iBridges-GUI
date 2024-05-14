@@ -144,7 +144,9 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
     if not isinstance(env["irods_port"], int):
         return '"irods_port" needs to be an integer, remove quotes.'
     if not Session.network_check(env["irods_host"], env["irods_port"]):
-        return f'No connection: {env["irods_host"]} or {env["irods_port"]} are incorrect.'
+        return f'No connection: Network might be down or\n \
+                server name {env["irods_host"]} is incorrect or\n \
+                port {env["irods_port"]} is incorrect.'
     # check authentication scheme
     try:
         sess = iRODSSession(password="bogus", **env)
