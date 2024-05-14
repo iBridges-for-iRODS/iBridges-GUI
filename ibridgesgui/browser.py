@@ -1,6 +1,6 @@
 """Browser tab."""
-import sys
 import logging
+import sys
 from pathlib import Path
 
 import irods.exception
@@ -13,28 +13,24 @@ from ibridges.data_operations import obj_replicas
 from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
 
-from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
-from ibridgesgui.popup_widgets import CreateCollection
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
     get_coll_dict,
     get_downloads_dir,
     get_irods_item,
     populate_table,
-    populate_textfield
+    populate_textfield,
 )
+from ibridgesgui.popup_widgets import CreateCollection
+from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 
 
 class Browser(PyQt6.QtWidgets.QWidget,
               Ui_tabBrowser):
-    """Browser view for iRODS session.
-
-    """
+    """Browser view for iRODS session."""
 
     def __init__(self, session, app_name):
-        """Initialize an iRODS browser view.
-
-        """
+        """Initialize an iRODS browser view."""
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
@@ -57,16 +53,15 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self.errorLabel.setText(
                 "iRODS NETWORK ERROR: No Connection, please check network")
         except Exception as err:
-            self.errorLabel.setText('Cannot set root collection. Set "irods_home" in your environment.json')
+            self.errorLabel.setText(
+                    'Cannot set root collection. Set "irods_home" in your environment.json')
             self.logger.exception("Failed to set iRODS home: %s", err)
         self.reset_path()
         self.browse()
 
 
     def browse(self):
-        """Initialize browser view GUI elements.
-            Defines the signals and slots.
-        """
+        """Initialize browser view GUI elements. Define the signals and slots."""
         # Main navigation elements
         self.inputPath.returnPressed.connect(self.load_browser_table)
         self.refreshButton.clicked.connect(self.load_browser_table)
@@ -101,13 +96,13 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
 
     def reset_path(self):
-        """Reset browser table to root path"""
+        """Reset browser table to root path."""
         self.inputPath.setText(self.root_coll.path)
         self.load_browser_table()
 
 
     def set_parent(self):
-        """Set browser path to parent of current collection and update browser table"""
+        """Set browser path to parent of current collection and update browser table."""
         current_path = IrodsPath(self.session, self.inputPath.text())
         self.inputPath.setText(str(current_path.parent))
         self.load_browser_table()
@@ -115,7 +110,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def update_path(self, index):
-        """Takes path from inputPath and loads browser table"""
+        """Take path from inputPath and loads browser table."""
         self.errorLabel.clear()
         row = index.row()
         irods_path = self._get_item_path(row)
@@ -124,14 +119,14 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self.load_browser_table()
 
     def create_collection(self):
-        """Create a new collection in current collection"""
+        """Create a new collection in current collection."""
         parent = IrodsPath(self.session, "/"+self.inputPath.text().strip("/"))
         coll_widget = CreateCollection(parent, self.logger)
         coll_widget.exec()
         self.load_browser_table()
 
     def folder_upload(self):
-        """Select a folder and upload"""
+        """Select a folder and upload."""
         self.errorLabel.clear()
         select_dir = PyQt6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
         path = self._fs_select(select_dir)
@@ -139,7 +134,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self._upload(path)
 
     def file_upload(self):
-        """Select a file and upload"""
+        """Select a file and upload."""
         self.errorLabel.clear()
         select_file = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self, "Open Filie")
         path = self._fs_select(select_file)
@@ -148,7 +143,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
 
     def download(self):
-        """Download collection or data object"""
+        """Download collection or data object."""
         self.errorLabel.clear()
         if self.browserTable.currentRow() == -1:
             self.errorLabel.setText("Please select a row from the table first!")
@@ -188,7 +183,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 self.errorLabel.setText(f"Could not download {path}. Consult the logs.")
 
     def load_browser_table(self):
-        """Loads main browser table"""
+        """Load main browser table."""
         self.errorLabel.clear()
         self._clear_view_tabs()
         obj_path = IrodsPath(self.session, self.inputPath.text())
@@ -220,7 +215,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
 
     def fill_info(self):
-        """Fill lower tabs with info"""
+        """Fill lower tabs with info."""
         self.errorLabel.clear()
         self._clear_view_tabs()
         self.deleteSelectionBrowser.clear()
@@ -240,21 +235,21 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
 
     def set_icat_meta(self):
-        """Button metadata set"""
+        """Button metadata set."""
         try:
             self._metadata_edits("set")
         except Exception as error:
             self.errorLabel.setText(repr(error))
 
     def add_icat_meta(self):
-        """Button metadata add"""
+        """Button metadata add."""
         try:
             self._metadata_edits("add")
         except Exception as error:
             self.errorLabel.setText(repr(error))
 
     def delete_icat_meta(self):
-        """Button metadata delete"""
+        """Button metadata delete."""
         try:
             self._metadata_edits("delete")
         except Exception as error:
@@ -263,7 +258,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def edit_metadata(self, index):
-        """Load selected metadata into edit fields"""
+        """Load selected metadata into edit fields."""
         self.errorLabel.clear()
         self.metaValueField.clear()
         self.metaUnitsField.clear()
@@ -280,7 +275,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def edit_acl(self, index):
-        """Load selected acl into editing fields"""
+        """Load selected acl into editing fields."""
         self.errorLabel.clear()
         self.aclUserField.clear()
         self.aclZoneField.clear()
@@ -294,7 +289,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
         self.aclBox.setCurrentText(acc_name)
 
     def update_icat_acl(self):
-        """Send acls to iRODS server"""
+        """Send acls to iRODS server."""
         self.errorLabel.clear()
         if self.browserTable.currentRow() == -1:
             self.errorLabel.setText("Please select a row from the table first!")
@@ -331,9 +326,8 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self.logger.exception("Cannot update ACLs.")
             self.errorLabel.setText("Cannot update ACLs. Consult the logs.")
 
-
     def load_selection(self):
-        """loads selection from main table into delete tab"""
+        """Load selection from main table into delete tab."""
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
         self.deleteSelectionBrowser.clear()
         row = self.browserTable.currentRow()
@@ -359,7 +353,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
 
     def delete_data(self):
-        """Deletes all data in the deleteSelectionBrowser"""
+        """Delete all data in the deleteSelectionBrowser."""
         self.errorLabel.clear()
         data = self.deleteSelectionBrowser.toPlainText().split("\n")
         if data[0] != "":
@@ -391,12 +385,11 @@ class Browser(PyQt6.QtWidgets.QWidget,
         self.previewBrowser.clear()
 
     def _fill_replicas_tab(self, irods_path):
-        """Populate the table in the Replicas tab with the details of
-        the replicas of the selected data object.
+        """Populate the table in the Replicas tab.
 
         Parameters
         ----------
-        obj_path : str
+        irods_path : str
             Path of iRODS collection or data object selected.
 
         """
@@ -412,7 +405,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
         Parameters
         ----------
-        obj_path : str
+        irods_path : str
             Path of iRODS collection or data object selected.
 
         """
@@ -439,7 +432,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
         Parameters
         ----------
-        obj_path : str
+        irods_path : str
             Full name of iRODS collection or data object selected.
 
         """
@@ -461,7 +454,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
         Parameters
         ----------
-        obj_path : str
+        irods_path : str
             Full name of iRODS collection or data object selected.
 
         """
@@ -522,9 +515,12 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 self._fill_metadata_tab(irods_path)
 
     def _fs_select(self, path_select):
-        """Retrieve the path (file or folder) from a QFileDialog
-           path_select: PyQt6.QtWidgets.QFileDialog.getExistingDirectory
-                        PyQt6.QtWidgets.QFileDialog.getOpenFileName
+        """Retrieve the path (file or folder) from a QFileDialog.
+
+        Parameters
+        ----------
+        path_select: PyQt6.QtWidgets.QFileDialog.getExistingDirectory
+                     PyQt6.QtWidgets.QFileDialog.getOpenFileName
 
         """
         yes_button = PyQt6.QtWidgets.QMessageBox.StandardButton.Yes
@@ -545,14 +541,15 @@ class Browser(PyQt6.QtWidgets.QWidget,
         return None
 
     def _upload(self, source):
-        """Uploads data to path in inputPath"""
+        """Upload data to path in inputPath."""
         overwrite = self.overwrite.isChecked()
         parent_path = IrodsPath(self.session, "/", *self.inputPath.text().split("/"))
 
         try:
             if parent_path.joinpath(source.name).exists() and not overwrite:
                 raise FileExistsError
-            self.logger.info("Uploading %s to %s, overwrite %s", source, parent_path, str(overwrite))
+            self.logger.info("Uploading %s to %s, overwrite %s",
+                             source, parent_path, str(overwrite))
             upload(self.session, source, parent_path, overwrite=overwrite)
             self.load_browser_table()
         except FileExistsError:

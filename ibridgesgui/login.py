@@ -1,21 +1,23 @@
 """Pop up Widget for Login."""
+import logging
 import sys
 from pathlib import Path
-import logging
 
 from ibridges import Session
 from ibridges.session import LoginError, PasswordError
 from PyQt6.QtWidgets import QDialog, QLineEdit
 from PyQt6.uic import loadUi
 
+from ibridgesgui.config import get_last_ienv_path, set_last_ienv_path
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
-from ibridgesgui.config import get_last_ienv_path, set_last_ienv_path
+
 
 class Login(QDialog, Ui_irodsLogin):
     """Definition and initialization of the iRODS login window."""
 
     def __init__(self, session_dict, app_name):
+        """Initialise tab."""
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
@@ -61,11 +63,11 @@ class Login(QDialog, Ui_irodsLogin):
         return False
 
     def close(self):
-        """Abort login"""
+        """Abort login."""
         self.done(0)
 
     def login_function(self):
-        """Connect to iRODS server with gathered info"""
+        """Connect to iRODS server with gathered info."""
         self.passError.clear()
         env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
         try:

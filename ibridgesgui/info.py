@@ -1,6 +1,4 @@
-"""Provide the GUI with iRODS information
-
-"""
+"""Provide the GUI with iRODS information."""
 import sys
 
 import PyQt6
@@ -8,15 +6,16 @@ import PyQt6.QtWidgets
 import PyQt6.uic
 from ibridges.resources import Resources
 
-from ibridgesgui.ui_files.tabInfo import Ui_tabInfo
-from ibridgesgui.gui_utils import populate_table, populate_textfield, UI_FILE_DIR
 from ibridgesgui.config import CONFIG_DIR
+from ibridgesgui.gui_utils import UI_FILE_DIR, populate_table, populate_textfield
+from ibridgesgui.ui_files.tabInfo import Ui_tabInfo
 
 
 class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
-    """Set iRODS information in the GUI"""
+    """Set iRODS information in the GUI."""
 
     def __init__(self, session):
+        """Initialise the tab."""
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
@@ -28,9 +27,7 @@ class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
         self.refresh_info()
 
     def refresh_info(self):
-        """Find and set the information of the connected iRODS system
-        including the availble top-level resources.
-        """
+        """Find and set the information of the connected iRODS system."""
         self.rescTable.setRowCount(0)
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
         # irods Zone

@@ -1,19 +1,16 @@
-"""Setting up logger and configuration files"""
+"""Setting up logger and configuration files."""
+import datetime
+import json
+import logging
+import logging.handlers
+import sys
+from json import JSONDecodeError
 from pathlib import Path
 from typing import Union
 
-import logging
-import logging.handlers
-import datetime
-import socket
-import sys
-
-import json
-from json import JSONDecodeError
-
+from ibridges.session import Session
+from irods.exception import CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED, NetworkException
 from irods.session import iRODSSession
-from irods.exception import NetworkException, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED
-from ibridges.session import Session, LoginError
 
 LOG_LEVEL = {
     "fulldebug": logging.DEBUG - 5,
@@ -29,13 +26,12 @@ CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
 
 
 def ensure_log_config_location():
-    """The location for logs and config files"""
+    """Ensure the location for logs and config files."""
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 # logging functions
 def init_logger(app_name: str, log_level: str) -> logging.Logger:
-    """
-    Create a logger for an app
+    """Create a logger for the app.
 
     app_name : str
         Name of the app, will be used as file name
@@ -64,15 +60,14 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
 
 # ibridges config functions
 def get_last_ienv_path() -> Union[None, str]:
-    """Retrieve last used environment path from the config file"""
+    """Retrieve last used environment path from the config file."""
     config = _get_config()
     if config is not None:
         return config.get("gui_last_env")
     return None
 
 def set_last_ienv_path(ienv_path: Path):
-    """
-    Save the last used environment path to the config file
+    """Save the last used environment path to the config file.
 
     ienv_path : Path
         Path to last environment
@@ -85,14 +80,14 @@ def set_last_ienv_path(ienv_path: Path):
     _save_config(config)
 
 def get_log_level() -> Union[None, str]:
-    """Retrieve log level from config"""
+    """Retrieve log level from config."""
     config = _get_config()
     if config is not None:
         return config.get("log_level")
     return None
 
 def set_log_level(level: str):
-    """Save log level to config"""
+    """Save log level to config."""
     config = _get_config()
     if config is not None:
         config["log_level"] = level
@@ -118,19 +113,19 @@ def _get_config() -> Union[None, dict]:
 
 # irods config functions
 def check_irods_config(ienv: Union[Path, dict]) -> str:
-    """
-    Checks whether an iRODS configuration file is correct.
+    """Check whether an iRODS configuration file is correct.
 
-    Parameters:
-    -----------
-    conf_path : Path
-        Path to the irods_environment.json
+    Parameters
+    ----------
+    ienv : Path or dict
+        Path to the irods_environment.json or the dictionary conatining the json.
 
-    Returns:
-    --------
+    Returns
+    -------
     str :
         Error message why login with the settings would fail.
         "All checks passed successfully" in case all seems to be fine.
+
     """
     if isinstance(ienv, Path):
         try:
@@ -169,8 +164,7 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
     return "All checks passed successfully."
 
 def save_irods_config(env_path: Union[Path, str], conf: dict):
-    """
-    Saves an irods environment as json in ~/.irods
+    """Save an irods environment as json in ~/.irods.
 
     Parmeters
     ---------

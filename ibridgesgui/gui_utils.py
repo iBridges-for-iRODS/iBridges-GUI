@@ -1,11 +1,10 @@
-"""Handy and reusable functions for the GUI"""
+"""Handy and reusable functions for the GUI."""
 import pathlib
 from importlib.resources import files
 from typing import Union
 
 import irods
 import PyQt6
-
 from ibridges import get_collection, get_dataobject
 from ibridges.path import IrodsPath
 
@@ -13,8 +12,7 @@ UI_FILE_DIR = files(__package__) / "ui_files"
 
 # Widget utils
 def populate_table(table_widget, rows: int, data_by_row: list):
-    """Populate a table-like pyqt widget with data"""
-
+    """Populate a table-like pyqt widget with data."""
     table_widget.setRowCount(rows)
     for row, data in enumerate(data_by_row):
         for col, item in enumerate(data):
@@ -22,7 +20,7 @@ def populate_table(table_widget, rows: int, data_by_row: list):
     table_widget.resizeColumnsToContents()
 
 def populate_textfield(text_widget, text_by_row: Union[str, list]):
-    """Populate a text viewer or editor with text"""
+    """Populate a text viewer or editor with text."""
     text_widget.clear()
     if isinstance(text_by_row, str):
         text_widget.append(text_by_row)
@@ -32,7 +30,7 @@ def populate_textfield(text_widget, text_by_row: Union[str, list]):
 
 # iBridges/iRODS utils
 def get_irods_item(irods_path: IrodsPath):
-    """Get the item behind an iRODS path"""
+    """Get the item behind an iRODS path."""
     try:
         item = get_collection(irods_path.session, irods_path)
     except ValueError:

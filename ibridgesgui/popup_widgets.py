@@ -1,7 +1,7 @@
 """Pop-up widget definitions."""
+import json
 import os
 import sys
-import json
 
 import irods
 from ibridges import IrodsPath
@@ -9,19 +9,17 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import QDialog, QFileDialog
 from PyQt6.uic import loadUi
 
+from ibridgesgui.config import _read_json, check_irods_config, save_irods_config
 from ibridgesgui.gui_utils import UI_FILE_DIR, populate_textfield
-from ibridgesgui.config import (
-                                _read_json,
-                                save_irods_config,
-                                check_irods_config
-                                )
-from ibridgesgui.ui_files.createCollection import Ui_createCollection
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
+from ibridgesgui.ui_files.createCollection import Ui_createCollection
 
 
 class CreateCollection(QDialog, Ui_createCollection):
-    """Popup window to create a new collection"""
+    """Popup window to create a new collection."""
+
     def __init__(self, parent, logger):
+        """Initialise window."""
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
@@ -36,7 +34,7 @@ class CreateCollection(QDialog, Ui_createCollection):
         self.buttonBox.accepted.connect(self.accept)
 
     def accept(self):
-        """Create"""
+        """Create new collection."""
         if self.collPathLine.text() != "":
             new_coll_path = IrodsPath(self.parent.session, self.parent,
                                     self.collPathLine.text())
@@ -55,8 +53,10 @@ class CreateCollection(QDialog, Ui_createCollection):
                     self.errorLabel.setText(f"Could not create {new_coll_path}, consult the logs.")
 
 class CreateDirectory(QDialog, Ui_createCollection):
-    """Popup window to create a new directory"""
+    """Popup window to create a new directory."""
+
     def __init__(self, parent):
+        """Initialise window."""
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
@@ -69,7 +69,7 @@ class CreateDirectory(QDialog, Ui_createCollection):
         self.buttonBox.accepted.connect(self.accept)
 
     def accept(self):
-        """Create"""
+        """Create folder."""
         if self.collPathLine.text() != "":
             new_dir_path = self.parent + os.sep + self.collPathLine.text()
             try:
@@ -82,8 +82,10 @@ class CreateDirectory(QDialog, Ui_createCollection):
                     self.errorLabel.setText("ERROR: insufficient rights.")
 
 class CheckConfig(QDialog, Ui_configCheck):
-    """Popup window to edit, create and check an environment.json"""
+    """Popup window to edit, create and check an environment.json."""
+
     def __init__(self, logger, env_path):
+        """Initialise window."""
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
@@ -128,7 +130,7 @@ class CheckConfig(QDialog, Ui_configCheck):
             self.errorLabel.setText(f"{repr(err)}")
 
     def create_env(self):
-        """Load standard environment into text field"""
+        """Load standard environment into text field."""
         self.errorLabel.clear()
         self.envbox.setCurrentIndex(0)
         env = {
@@ -166,7 +168,8 @@ class CheckConfig(QDialog, Ui_configCheck):
                 save_irods_config(env_file, json.loads(self.envEdit.toPlainText()))
                 self.errorLabel.setText(f"Configuration saved  as {env_file}")
             except json.decoder.JSONDecodeError:
-                self.errorLabel.setText("Incorrectly formatted. Click 'Check' for more information.")
+                self.errorLabel.setText(
+                        "Incorrectly formatted. Click 'Check' for more information.")
         else:
             self.errorLabel.setText("Choose 'Save as' to save")
 
@@ -176,12 +179,14 @@ class CheckConfig(QDialog, Ui_configCheck):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.AnyFile)
         dialog.setNameFilter("(*.json)")
-        create_file = QFileDialog.getSaveFileName(self, "Save as File", str(self.env_path), "(*.json)")
+        create_file = QFileDialog.getSaveFileName(self, "Save as File",
+                                                  str(self.env_path), "(*.json)")
         if create_file[0] != "":
             try:
                 save_irods_config(create_file[0], json.loads(self.envEdit.toPlainText()))
                 self.errorLabel.setText(f"Configuration saved  as {create_file[0]}")
             except json.decoder.JSONDecodeError:
-                self.errorLabel.setText("Incorrectly formatted. Click 'Check' for more information.")
+                self.errorLabel.setText(
+                        "Incorrectly formatted. Click 'Check' for more information.")
             except TypeError:
                 self.errorLabel.setText("File type needs to be .json")
