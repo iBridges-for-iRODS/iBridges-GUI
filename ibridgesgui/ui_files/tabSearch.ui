@@ -60,108 +60,168 @@ QPushButton#dataDeleteButton
 QPushButton#searchButton; QPushButton#downloadButton
 {
 	color: rgb(54, 54, 54);
-	background-color: rgb(58, 152, 112);
+	background-color: rgb(86, 184, 139);
     
 }</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <property name="spacing">
+    <number>3</number>
+   </property>
    <item>
-    <widget class="QLabel" name="label_6">
-     <property name="text">
-      <string>Search Wildcard is: %</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Object name</string>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Path</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Checksum</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="path_field"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="checksum_field"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Search Wildcard is: %</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="val1"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="val3"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="val2"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="val4"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLineEdit" name="key4"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Value (optional)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLineEdit" name="key3"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLineEdit" name="key2"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLineEdit" name="key1"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label1">
+         <property name="text">
+          <string>Metadata Key</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Collection path</string>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Checksum</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
        </property>
-      </widget>
+      </spacer>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="coll_path_field"/>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QPushButton" name="searchButton">
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Search</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="clearButton">
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>Clear Results</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="downloadButton">
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>Download Selection</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="checksum_field"/>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="obj_name_field"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="2">
-      <widget class="QLineEdit" name="unit_2"/>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="value_1"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="value_3"/>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="value_2"/>
-     </item>
-     <item row="1" column="2">
-      <widget class="QLineEdit" name="unit_1"/>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="label_2">
+     <item>
+      <widget class="QLabel" name="errorLabel">
        <property name="text">
-        <string>Units</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLineEdit" name="key_3"/>
-     </item>
-     <item row="3" column="2">
-      <widget class="QLineEdit" name="unit_3"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLineEdit" name="key_1"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLineEdit" name="key_2"/>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="value_4"/>
-     </item>
-     <item row="4" column="2">
-      <widget class="QLineEdit" name="unit_4"/>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLineEdit" name="key_4"/>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_1">
-       <property name="text">
-        <string>Metadata Key</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Value (optional)</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -181,70 +241,17 @@ QPushButton#searchButton; QPushButton#downloadButton
     </spacer>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
-      <widget class="QPushButton" name="searchButton">
-       <property name="font">
-        <font>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Search</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="downloadButton">
-       <property name="font">
-        <font>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string>Download Selection</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="searchExitButton">
-       <property name="font">
-        <font>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string>Close</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <widget class="QTableWidget" name="searchResTable">
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>250</height>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>300</height>
       </size>
      </property>
      <property name="styleSheet">
@@ -260,7 +267,7 @@ QPushButton#searchButton; QPushButton#downloadButton
       <bool>false</bool>
      </property>
      <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
+      <enum>QAbstractItemView::MultiSelection</enum>
      </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
@@ -294,11 +301,6 @@ QPushButton#searchButton; QPushButton#downloadButton
      </column>
      <column>
       <property name="text">
-       <string>Checksum</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>Created</string>
       </property>
      </column>
@@ -311,30 +313,24 @@ QPushButton#searchButton; QPushButton#downloadButton
    </item>
    <item>
     <widget class="QTabWidget" name="viewTabs">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>200</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>2</number>
      </property>
-     <widget class="QWidget" name="preview">
-      <property name="font">
-       <font>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <attribute name="title">
-       <string>Preview</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QTextBrowser" name="previewBrowser"/>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="metadata">
       <attribute name="title">
        <string>Metadata</string>
@@ -342,12 +338,6 @@ QPushButton#searchButton; QPushButton#downloadButton
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QTableWidget" name="metadataTable">
-         <property name="minimumSize">
-          <size>
-           <width>600</width>
-           <height>300</height>
-          </size>
-         </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
@@ -488,12 +478,6 @@ QPushButton#searchButton; QPushButton#downloadButton
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="QTableWidget" name="aclTable">
-         <property name="minimumSize">
-          <size>
-           <width>600</width>
-           <height>0</height>
-          </size>
-         </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
@@ -730,68 +714,6 @@ QPushButton#searchButton; QPushButton#downloadButton
           </property>
          </column>
         </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="delete_2">
-      <attribute name="title">
-       <string>Delete</string>
-      </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
-       <item>
-        <widget class="QTextBrowser" name="deleteSelectionBrowser">
-         <property name="html">
-          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-hr { height: 1px; border-width: 0; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Summary&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_5">
-         <item>
-          <widget class="QPushButton" name="loadDeleteSelectionButton">
-           <property name="text">
-            <string>Delete</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_15">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Minimum</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>30</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="dataDeleteButton">
-           <property name="font">
-            <font>
-             <pointsize>13</pointsize>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Confirm</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </widget>
