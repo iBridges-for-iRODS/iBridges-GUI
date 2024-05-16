@@ -27,8 +27,23 @@ from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
     """Search view"""
 
-    def __init__(self, session, app_name):
-        """Initialize an iRODS search view."""
+    def __init__(self, session, app_name, browser):
+        """Initialize an iRODS search view.
+        This Tab is linked to the browser tab. When double-clicking one of
+        the results the path will be loaded into the broswer of the browser tab.
+
+        Parameters
+        ----------
+
+        session : ibridges.Session
+            The iRODS session object
+        app_name : str
+            The name of the app and corresponding logger
+        browser : PyQt6.QtWidgets.QWidget
+            The browser widget
+        """
+
+
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
@@ -37,7 +52,8 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         
         self.logger = logging.getLogger(app_name)
         self.session = session
-        
+        self.browser = browser
+
         self.hide_result_elements()
         self.searchButton.clicked.connect(self.search)
         self.clearButton.clicked.connect(self.clear)
@@ -47,79 +63,79 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.keys = [self.key1, self.key2, self.key3, self.key4]
         self.vals = [self.val1, self.val2, self.val3, self.val4]
 
-        self.searchResTable.doubleClicked.connect(self.fill_info)
+        self.searchResTable.doubleClicked.connect(self.send_to_browser)
 
     def hide_result_elements(self):
         """Hide the GUI elemnts that show and manipulate search results."""
         self.searchResTable.hide()
-        self.viewTabs.hide()
         self.downloadButton.hide()
         self.clearButton.hide()
-
+        self.info_label.hide()
         self.searchResTable.setRowCount(0)
-        self.replicaTable.setRowCount(0)
-        self.aclTable.setRowCount(0)
-        self.metadataTable.setRowCount(0)
 
     def show_result_elements(self):
-        self.viewTabs.setCurrentIndex(0)
+        """Show the GUI elemnts that show and manipulate search results."""
         self.searchResTable.show()
-        self.viewTabs.show()
         self.downloadButton.show()
         self.clearButton.show()
+        self.info_label.show()
 
     def clear(self):
+        """Crea search results and hide elements."""
         self.errorLabel.clear()
         self.hide_result_elements()
 
     def search(self):
+        """Validate search parameters and search."""
         self.hide_result_elements()
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
         self.errorLabel.clear()
-        
-        if self._check_keyvals():
-            # search parameters
-            if all([key.text() == "" for key in self.keys]):
-                key_vals = None
-            else:
-                key_vals = dict(zip([key.text() for key in self.keys],
-                                    [val.text() for val in self.vals]))
+
+        # All metadata values need a specific key
+        if any([key.text() == "" and val.text() != "" for key, val in zip(self.keys, self.vals)]):
+            self.errorLabel.setText("There are metadata values without keys. Stop search.")
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            return
             
-            path = self.path_field.text() if self.path_field.text() != "" else None
-            checksum = self.checksum_field.text() if self.checksum_field.text() != "" \
-                                                  else None
+        if all([key.text() == "" for key in self.keys]):
+            key_vals = None
+        else:
+            # Replace empty values with the wild card, turn into search key_vals
+            key_vals = dict(zip([key.text() for key in self.keys],
+                                [ "%" if val.text() == "" else val.text() for  val in self.vals]))
+            del key_vals[''] 
+        path = self.path_field.text() if self.path_field.text() != "" else None
+        checksum = self.checksum_field.text() if self.checksum_field.text() != "" else None
             
-            print(f"path:{path == None}, checksum: {checksum == None}, keyvals: {key_vals}")
-            if key_vals == None and path == None and checksum == None:
-                self.errorLabel.setText("No search critera given.")
-            else:
-                results = search_data(self.session, path=path, checksum=checksum,
-                                      key_vals=key_vals)
-                if len(results) == 0:
-                    self.errorLabel.setText("No objects or collections found.")
-                else: 
-                    self.show_result_elements()
-                    self.load_results(results)
+        if key_vals == None and path == None and checksum == None:
+            self.errorLabel.setText("No search critera given.")
+        else:
+            results = search_data(self.session, path=path, checksum=checksum, key_vals=key_vals)
+            if len(results) == 0:
+                self.errorLabel.setText("No objects or collections found.")
+            else: 
+                self.show_result_elements()
+                self.load_results(results)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
 
     def load_results(self, results):
+        """Load seach results into the table view."""
         table_data = [] # (Path, Name, Size, Checksum, created, modified)
         for result in results:
             if "DATA_NAME" in result:
                 obj = get_dataobject(self.session, result["COLL_NAME"]+"/"+result["DATA_NAME"])
-                table_data.append((result["COLL_NAME"], result["DATA_NAME"],
+                table_data.append(('-d', obj.path, obj.size,
                                   obj.create_time.strftime("%d-%m-%Y"),
                                   obj.modify_time.strftime("%d-%m-%Y")))
             else:
-                coll_path = IrodsPath(self.session, result["COLL_NAME"])
                 coll = get_collection(self.session, result["COLL_NAME"])
-                table_data.append((str(coll_path.parent), coll_path.name, "",
+                table_data.append(('-C', coll.path, "",
                                   coll.create_time.strftime("%d-%m-%Y"),
                                   coll.modify_time.strftime("%d-%m-%Y")))
             populate_table(self.searchResTable, len(table_data), table_data)
 
     def download(self):
-        
+        """Download selected data."""
         info = ""
         
         # Get multiple paths from table
@@ -127,7 +143,6 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         for idx in self.searchResTable.selectedIndexes():
             irods_paths.append(IrodsPath(
                                     self.session, 
-                                    self.searchResTable.item(idx.row(), 0).text(),
                                     self.searchResTable.item(idx.row(), 1).text()))
 
         select_dir = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Direcectory"))
@@ -136,12 +151,13 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         else:
             info = f"Download to: {select_dir}\n"
 
-        data_exists = [(ipath, local_path.joinpath(ipath.name).exists()) for ipath in irods_paths]
+        data_exists = [(ipath, select_dir.joinpath(ipath.name).exists()) for ipath in irods_paths]
         overwrite = False
 
         if any(exists for _, exists in data_exists): 
             buttonReply = QMessageBox.question(self, "Message Box",
-                                               info+"Some data already exists. Overwrite data?")
+                                               info+f"Some data already exists in {select_dir}."+\
+                                               "\nOverwrite data?")
         else:
             buttonReply = QMessageBox.question(self, "Message Box", info)
 
@@ -150,21 +166,18 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             for ipath in irods_paths:
                 if ipath.exists():
                     download(self.session, ipath, select_dir, overwrite=overwrite)
-                    logger.info("Downloading %s to %s, overwrite %s",
+                    self.logger.info("Downloading %s to %s, overwrite %s",
                                 str(ipath), select_dir, overwrite)
                 else:
-                    self.errorLabel.text(f"{str(ipath)} does not exist.")
-                    logger.info("Download failed: %s does nor exist", str(ipath))
+                    self.errorLabel.text(f"Download failed. {str(ipath)} does not exist.")
+                    self.logger.info("Download failed: %s does nor exist", str(ipath))
 
+    def send_to_browser(self):
+        row = self.searchResTable.currentIndex().row()
+        irods_path = IrodsPath(self.session, self.searchResTable.item(row, 1).text())
+        if irods_path.collection_exists():
+            self.browser.inputPath.setText(str(irods_path))
+        else:
+            self.browser.inputPath.setText(str(irods_path.parent))
 
-    def fill_info(self):
-        print("not implemented")
-
-    def _check_keyvals(self):
-        key_vals = zip([key.text() for key in self.keys], [val.text() for val in self.vals])
-        for key, val in key_vals:
-            if key == "" and val != "":
-                self.errorLabel.setText("There are metadata values without key. Stop search.")
-                return False
-
-        return True
+        self.browser.load_browser_table()

@@ -107,12 +107,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def init_browser_tab(self):
         """Create browser."""
-        irods_browser = Browser(self.session, self.app_name)
-        self.tabWidget.addTab(irods_browser, "Browser")
+        self.irods_browser = Browser(self.session, self.app_name)
+        self.tabWidget.addTab(self.irods_browser, "Browser")
 
     def init_search_tab(self):
-        """Create search."""
-        irods_search = Search(self.session, self.app_name)
+        """Create search. Depends on Browser."""
+        irods_search = Search(self.session, self.app_name, self.irods_browser)
         self.tabWidget.addTab(irods_search, "Search") 
 
     def create_env_file(self):
