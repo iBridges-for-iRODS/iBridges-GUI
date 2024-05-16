@@ -3,53 +3,43 @@ import logging
 import sys
 from pathlib import Path
 
-from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtWidgets import QDialog, QMessageBox
 import PyQt6.uic
-from ibridges import IrodsPath, download, get_collection, get_dataobject, upload
-from ibridges.data_operations import obj_replicas
-from ibridges.meta import MetaData
-from ibridges.permissions import Permissions
-from ibridges import search_data
+from ibridges import IrodsPath, download, get_collection, get_dataobject, search_data
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QMessageBox
 
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
-    get_coll_dict,
-    get_downloads_dir,
-    get_irods_item,
     populate_table,
-    populate_textfield,
 )
-
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
 
 class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
-    """Search view"""
+    """Search view."""
 
     def __init__(self, session, app_name, browser):
         """Initialize an iRODS search view.
+
         This Tab is linked to the browser tab. When double-clicking one of
         the results the path will be loaded into the broswer of the browser tab.
 
         Parameters
         ----------
-
         session : ibridges.Session
             The iRODS session object
         app_name : str
             The name of the app and corresponding logger
         browser : PyQt6.QtWidgets.QWidget
             The browser widget
+
         """
-
-
         super().__init__()
         if getattr(sys, "frozen", False):
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi(UI_FILE_DIR / "tabSearch.ui", self)
-        
+
         self.logger = logging.getLogger(app_name)
         self.session = session
         self.browser = browser
@@ -96,24 +86,24 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.errorLabel.setText("There are metadata values without keys. Stop search.")
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
-            
+
         if all([key.text() == "" for key in self.keys]):
             key_vals = None
         else:
             # Replace empty values with the wild card, turn into search key_vals
             key_vals = dict(zip([key.text() for key in self.keys],
                                 [ "%" if val.text() == "" else val.text() for  val in self.vals]))
-            del key_vals[''] 
+            del key_vals['']
         path = self.path_field.text() if self.path_field.text() != "" else None
         checksum = self.checksum_field.text() if self.checksum_field.text() != "" else None
-            
-        if key_vals == None and path == None and checksum == None:
+
+        if key_vals is None and path is None and checksum is None:
             self.errorLabel.setText("No search critera given.")
         else:
             results = search_data(self.session, path=path, checksum=checksum, key_vals=key_vals)
             if len(results) == 0:
                 self.errorLabel.setText("No objects or collections found.")
-            else: 
+            else:
                 self.show_result_elements()
                 self.load_results(results)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
@@ -137,12 +127,12 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
     def download(self):
         """Download selected data."""
         info = ""
-        
+
         # Get multiple paths from table
-        irods_paths = [] 
+        irods_paths = []
         for idx in self.searchResTable.selectedIndexes():
             irods_paths.append(IrodsPath(
-                                    self.session, 
+                                    self.session,
                                     self.searchResTable.item(idx.row(), 1).text()))
 
         select_dir = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Direcectory"))
@@ -154,14 +144,14 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         data_exists = [(ipath, select_dir.joinpath(ipath.name).exists()) for ipath in irods_paths]
         overwrite = False
 
-        if any(exists for _, exists in data_exists): 
-            buttonReply = QMessageBox.question(self, "Message Box",
+        if any(exists for _, exists in data_exists):
+            button_reply = QMessageBox.question(self, "Message Box",
                                                info+f"Some data already exists in {select_dir}."+\
                                                "\nOverwrite data?")
         else:
-            buttonReply = QMessageBox.question(self, "Message Box", info)
+            button_reply = QMessageBox.question(self, "Message Box", info)
 
-        if buttonReply == QMessageBox.StandardButton.Yes:
+        if button_reply == QMessageBox.StandardButton.Yes:
             overwrite = True
             for ipath in irods_paths:
                 if ipath.exists():
@@ -169,15 +159,18 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                     self.logger.info("Downloading %s to %s, overwrite %s",
                                 str(ipath), select_dir, overwrite)
                 else:
-                    self.errorLabel.text(f"Download failed. {str(ipath)} does not exist.")
+                    self.errorLabel.setText(f"Download failed. {str(ipath)} does not exist.")
                     self.logger.info("Download failed: %s does nor exist", str(ipath))
+        self.errorLabel.setText(f"Download finished, check {select_dir}")
 
     def send_to_browser(self):
+        """Set browser inputPath to collection or parent of object."""
         row = self.searchResTable.currentIndex().row()
         irods_path = IrodsPath(self.session, self.searchResTable.item(row, 1).text())
         if irods_path.collection_exists():
             self.browser.inputPath.setText(str(irods_path))
+            self.errorLabel.setText(f"Browser tab switched to {irods_path}")
         else:
             self.browser.inputPath.setText(str(irods_path.parent))
-
+            self.errorLabel.setText(f"Browser tab switched to {irods_path.parent}")
         self.browser.load_browser_table()

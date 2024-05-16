@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1278</width>
-    <height>818</height>
+    <height>761</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,12 +20,7 @@
     background-color: rgb(54, 54, 54);
     border-color: rgb(86, 184, 139);
     selection-background-color: rgb(58, 152, 112);
-}
-
-QTabWidget
-{
-    background-color: rgb(85, 87, 83);
-    font: 14pt
+    font: 16pt;
 }
 
 QTableWidget
@@ -35,34 +30,25 @@ QTableWidget
     border-color: rgb(86, 184, 139);
 }
 
-QLineEdit
-{
-background-color: rgb(85, 87, 83);
-}
-
 QLabel#errorLabel
 {
     color: rgb(217, 174, 23);
 }
 
-QLineEdit#inputPath
+QLineEdit
 {
     background-color: rgb(85, 87, 83);
     border-color: rgb(86, 184, 139);
 }
 
-QPushButton#dataDeleteButton
+QPushButton#searchButton
 {
     background-color: rgb(86, 184, 139);
     color: rgb(46, 52, 54);
 }
 
-QPushButton#searchButton; QPushButton#downloadButton
-{
-    background-color: rgb(86, 184, 139);
-    color: rgb(46, 52, 54);
-    
-}</string>
+
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="spacing">
@@ -226,7 +212,10 @@ QPushButton#searchButton; QPushButton#downloadButton
         <widget class="QPushButton" name="searchButton">
          <property name="font">
           <font>
-           <bold>true</bold>
+           <pointsize>16</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="text">
@@ -238,7 +227,10 @@ QPushButton#searchButton; QPushButton#downloadButton
         <widget class="QPushButton" name="clearButton">
          <property name="font">
           <font>
-           <bold>true</bold>
+           <pointsize>16</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -266,7 +258,10 @@ QPushButton#searchButton; QPushButton#downloadButton
         <widget class="QPushButton" name="downloadButton">
          <property name="font">
           <font>
-           <bold>true</bold>
+           <pointsize>16</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
