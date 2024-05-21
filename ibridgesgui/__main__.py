@@ -13,6 +13,7 @@ from ibridgesgui.config import get_log_level, init_logger, set_log_level
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
+from ibridgesgui.search import Search
 from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 
@@ -38,6 +39,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.app_name = app_name
         self.ui_tabs_lookup = {
             "tabBrowser": self.init_browser_tab,
+            "tabSearch": self.init_search_tab,
                 #'tabUpDownload': self.setupTabUpDownload,
                 #'tabDataBundle': self.setupTabDataBundle,
                 #'tabCreateTicket': self.setupTabCreateTicket,
@@ -105,8 +107,13 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def init_browser_tab(self):
         """Create browser."""
-        irods_browser = Browser(self.session, self.app_name)
-        self.tabWidget.addTab(irods_browser, "Browser")
+        self.irods_browser = Browser(self.session, self.app_name)
+        self.tabWidget.addTab(self.irods_browser, "Browser")
+
+    def init_search_tab(self):
+        """Create search. Depends on Browser."""
+        irods_search = Search(self.session, self.app_name, self.irods_browser)
+        self.tabWidget.addTab(irods_search, "Search") 
 
     def create_env_file(self):
         """Populate drop down menu to create a new environment.json."""
