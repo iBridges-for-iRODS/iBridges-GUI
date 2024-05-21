@@ -5,10 +5,9 @@ from pathlib import Path
 
 import PyQt6.uic
 from ibridges import IrodsPath, download, get_collection, get_dataobject, search_data
+from irods.exception import NetworkException
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
-
-from irods.exception import NetworkException
 
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
@@ -93,7 +92,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             key_vals = None
         else:
             # Replace empty values with the wild card, turn into search key_vals
-            key_vals = {key.text(): "%" if val.text() == "" else val.text() 
+            key_vals = {key.text(): "%" if val.text() == "" else val.text()
                         for key, val in zip(self.keys, self.vals)}
             del key_vals['']
         path = self.path_field.text() if self.path_field.text() != "" else None
@@ -134,8 +133,6 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
     def download(self):
         """Download selected data."""
-        info = ""
-
         # Get multiple paths from table
         irods_paths = []
         for idx in self.searchResTable.selectedIndexes():
