@@ -61,13 +61,13 @@ class DownloadThread(QThread):
                     count+=1
                 except Exception as error:
                     failed+=1
-                    self.logger.info("Download failed: %s; %s", str(irods_path), repr(error))
+                    self.logger.error("Download failed: %s; %s", str(irods_path), repr(error))
                     download_out["error"] = download_out["error"] + \
                                             f"\nDownload failed {str(irods_path)}: {repr(error)}"
             else:
                 failed+=1
                 download_out["error"] = download_out["error"] + \
                                         f"\nDownload failed. {str(irods_path)} does not exist."
-                self.logger.info("Download failed: %s does not exist", str(irods_path))
+                self.logger.error("Download failed: %s does not exist", str(irods_path))
             self.current_progress.emit((self.local_path,len(self.irods_paths), count, failed))
         self.succeeded.emit(download_out)
