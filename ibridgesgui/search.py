@@ -91,8 +91,8 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             key_vals = None
         else:
             # Replace empty values with the wild card, turn into search key_vals
-            key_vals = dict(zip([key.text() for key in self.keys],
-                                [ "%" if val.text() == "" else val.text() for  val in self.vals]))
+            key_vals = {key.text(): "%" if val.text() == "" else val.text() 
+                        for key, val in zip(self.keys, self.vals)}
             del key_vals['']
         path = self.path_field.text() if self.path_field.text() != "" else None
         checksum = self.checksum_field.text() if self.checksum_field.text() != "" else None
