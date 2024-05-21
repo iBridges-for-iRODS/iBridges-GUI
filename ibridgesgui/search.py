@@ -8,6 +8,8 @@ from ibridges import IrodsPath, download, get_collection, get_dataobject, search
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
+from irods.exception import NetworkException
+
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
     populate_table,
@@ -100,7 +102,13 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         if key_vals is None and path is None and checksum is None:
             self.errorLabel.setText("No search critera given.")
         else:
-            results = search_data(self.session, path=path, checksum=checksum, key_vals=key_vals)
+            results = []
+            try:
+                results = search_data(self.session, path=path, checksum=checksum, key_vals=key_vals)
+            except NetworkException:
+                self.errorLabel.setText("Search takes too long. Please provide more parameters.")
+                self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+                return
             if len(results) == 0:
                 self.errorLabel.setText("No objects or collections found.")
             else:
