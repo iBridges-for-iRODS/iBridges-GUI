@@ -160,7 +160,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                                 str(ipath), select_dir, overwrite)
                 else:
                     self.errorLabel.setText(f"Download failed. {str(ipath)} does not exist.")
-                    self.logger.info("Download failed: %s does nor exist", str(ipath))
+                    self.logger.info("Download failed: %s does not exist", str(ipath))
         self.errorLabel.setText(f"Download finished, files put in {select_dir}")
 
     def send_to_browser(self):
