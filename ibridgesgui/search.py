@@ -4,8 +4,7 @@ import sys
 from pathlib import Path
 
 import PyQt6.uic
-from ibridges import IrodsPath, download, get_collection, get_dataobject, search_data
-from irods.exception import NetworkException
+from ibridges import IrodsPath, download, get_collection, get_dataobject
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
@@ -13,6 +12,7 @@ from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
     populate_table,
 )
+from ibridgesgui.threads import SearchThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
 
@@ -44,10 +44,11 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.logger = logging.getLogger(app_name)
         self.session = session
         self.browser = browser
+        self.search_thread = None
 
         self.hide_result_elements()
         self.searchButton.clicked.connect(self.search)
-        self.clearButton.clicked.connect(self.clear)
+        self.clearButton.clicked.connect(self.hide_result_elements)
         self.downloadButton.clicked.connect(self.download)
 
         #group textfields for gathering key, value, unit
@@ -58,6 +59,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
     def hide_result_elements(self):
         """Hide the GUI elemnts that show and manipulate search results."""
+        self.errorLabel.clear()
         self.searchResTable.hide()
         self.downloadButton.hide()
         self.clearButton.hide()
@@ -71,52 +73,28 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.clearButton.show()
         self.info_label.show()
 
-    def clear(self):
-        """Clear search results and hide elements."""
-        self.errorLabel.clear()
-        self.hide_result_elements()
-
     def search(self):
         """Validate search parameters and search."""
         self.hide_result_elements()
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
         self.errorLabel.clear()
 
-        # All metadata values need a specific key
-        if any([key.text() == "" and val.text() != "" for key, val in zip(self.keys, self.vals)]):
-            self.errorLabel.setText("There are metadata values without keys. Stop search.")
+        msg, key_vals, path, checksum = self._validate_search_params()
+        if msg is not None:
+            self.errorLabel.setText(msg)
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
 
-        if all([key.text() == "" for key in self.keys]):
-            key_vals = None
-        else:
-            # Replace empty values with the wild card, turn into search key_vals
-            key_vals = {key.text(): "%" if val.text() == "" else val.text()
-                        for key, val in zip(self.keys, self.vals)}
-            del key_vals['']
-        path = self.path_field.text() if self.path_field.text() != "" else None
-        checksum = self.checksum_field.text() if self.checksum_field.text() != "" else None
-
         if key_vals is None and path is None and checksum is None:
             self.errorLabel.setText("No search critera given.")
-        else:
-            results = []
-            try:
-                results = search_data(self.session, path=path, checksum=checksum, key_vals=key_vals)
-            except NetworkException:
-                self.errorLabel.setText("Search takes too long. Please provide more parameters.")
-                self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
-                return
-            if len(results) == 0:
-                self.errorLabel.setText("No objects or collections found.")
-            else:
-                self.show_result_elements()
-                self.load_results(results)
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            return
+
+        self._start_search(key_vals, path, checksum)
 
     def load_results(self, results):
         """Load seach results into the table view."""
+        self.errorLabel.clear()
         table_data = [] # (Path, Name, Size, Checksum, created, modified)
         for result in results:
             if "DATA_NAME" in result:
@@ -143,8 +121,8 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         select_dir = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory"))
         if select_dir == "":
             return
-        else:
-            info = f"Download to: {select_dir}\n"
+
+        info = f"Download to: {select_dir}\n"
 
         data_exists = [(ipath, select_dir.joinpath(ipath.name).exists()) for ipath in irods_paths]
         overwrite = False
@@ -179,3 +157,42 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.browser.inputPath.setText(str(irods_path.parent))
             self.errorLabel.setText(f"Browser tab switched to {irods_path.parent}")
         self.browser.load_browser_table()
+
+    def _validate_search_params(self) -> tuple[str, dict, str, str]:
+        # All metadata values need a specific key
+        if any(key.text() == "" and val.text() != "" for key, val in zip(self.keys, self.vals)):
+            return "There are metadata values without keys. Stop search.", None, None, None
+        if all(key.text() == "" for key in self.keys):
+            key_vals = None
+        else:
+            # Replace empty values with the wild card, turn into search key_vals
+            key_vals = {key.text(): "%" if val.text() == "" else val.text()
+                        for key, val in zip(self.keys, self.vals)}
+            del key_vals[""]
+
+        path = self.path_field.text() if self.path_field.text() != "" else None
+        checksum = self.checksum_field.text() if self.checksum_field.text() != "" else None
+        return None, key_vals, path, checksum
+
+    def _start_search(self, key_vals, path, checksum):
+        self.searchButton.setEnabled(False)
+        self.errorLabel.setText("Searching ...")
+        self.search_thread = SearchThread(self.session, path, checksum, key_vals)
+        self.search_thread.succeeded.connect(self._fetch_results)
+        self.search_thread.finished.connect(self._finish_search)
+        self.search_thread.start()
+
+    def _finish_search(self):
+        self.searchButton.setEnabled(True)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        del self.search_thread
+
+    def _fetch_results(self, therad_output: dict):
+        if 'error' in therad_output:
+            self.errorLabel.setText(therad_output["error"])
+        elif len(therad_output["results"]) == 0:
+            self.errorLabel.setText("No objects or collections found.")
+        else:
+            self.show_result_elements()
+            self.load_results(therad_output["results"])
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
