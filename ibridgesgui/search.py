@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 import PyQt6.uic
-from ibridges import IrodsPath, download, get_collection, get_dataobject
+from ibridges import IrodsPath, get_collection, get_dataobject
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
@@ -12,7 +12,7 @@ from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
     populate_table,
 )
-from ibridgesgui.threads import SearchThread
+from ibridgesgui.threads import DownloadThread, SearchThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
 
@@ -45,6 +45,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.session = session
         self.browser = browser
         self.search_thread = None
+        self.download_thread = None
 
         self.hide_result_elements()
         self.searchButton.clicked.connect(self.search)
@@ -74,7 +75,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.info_label.show()
 
     def search(self):
-        """Validate search parameters and search."""
+        """Validate search parameters and start search."""
         self.hide_result_elements()
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
         self.errorLabel.clear()
@@ -110,18 +111,19 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             populate_table(self.searchResTable, len(table_data), table_data)
 
     def download(self):
-        """Download selected data."""
-        # Get multiple paths from table
-        irods_paths = []
-        for idx in self.searchResTable.selectedIndexes():
-            irods_paths.append(IrodsPath(
-                                    self.session,
-                                    self.searchResTable.item(idx.row(), 1).text()))
-
-        select_dir = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory"))
-        if select_dir == "":
+        """Determine iRODS paths, select destination and start download."""
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.errorLabel.clear()
+        irods_paths = self._retrieve_selected_paths()
+        if len(irods_paths) == 0:
+            self.errorLabel.setText("No data selected.")
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
-
+        select_dir = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory",
+                                                                     directory=str(Path("~").expanduser())))
+        if str(select_dir) == "" or str(select_dir) == ".":
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            return
         info = f"Download to: {select_dir}\n"
 
         data_exists = [(ipath, select_dir.joinpath(ipath.name).exists()) for ipath in irods_paths]
@@ -136,15 +138,10 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         if button_reply == QMessageBox.StandardButton.Yes:
             overwrite = True
-            for ipath in irods_paths:
-                if ipath.exists():
-                    download(self.session, ipath, select_dir, overwrite=overwrite)
-                    self.logger.info("Downloading %s to %s, overwrite %s",
-                                str(ipath), select_dir, overwrite)
-                else:
-                    self.errorLabel.setText(f"Download failed. {str(ipath)} does not exist.")
-                    self.logger.info("Download failed: %s does not exist", str(ipath))
-        self.errorLabel.setText(f"Download finished, files put in {select_dir}")
+            self._start_download(self.session, self.logger, irods_paths, select_dir, overwrite)
+        else:
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            return
 
     def send_to_browser(self):
         """Set browser inputPath to collection or parent of object."""
@@ -173,6 +170,47 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         path = self.path_field.text() if self.path_field.text() != "" else None
         checksum = self.checksum_field.text() if self.checksum_field.text() != "" else None
         return None, key_vals, path, checksum
+
+    def _retrieve_selected_paths(self) -> list[IrodsPath]:
+        """Retrieve paths from all selected rows in search results table."""
+        irods_paths = []
+        rows = set(idx.row() for idx in self.searchResTable.selectedIndexes())
+        for row in rows:
+            irods_paths.append(IrodsPath(
+                                    self.session,
+                                    self.searchResTable.item(row, 1).text()))
+        return irods_paths
+
+    def _start_download(self, session, logger, irods_paths, folder, overwrite):
+        self.downloadButton.setEnabled(False)
+        self.clearButton.setEnabled(False)
+        self.searchButton.setEnabled(False)
+        self.errorLabel.setText(f"Downloading to {folder} ....")
+        self.download_thread = DownloadThread(session, logger, irods_paths, folder, overwrite)
+        self.download_thread.succeeded.connect(self._download_end)
+        self.download_thread.finished.connect(self._finish_download)
+        self.download_thread.current_progress.connect(self._download_status)
+        self.download_thread.start()
+
+    def _finish_download(self):
+        self.downloadButton.setEnabled(True)
+        self.clearButton.setEnabled(True)
+        self.searchButton.setEnabled(True)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        del self.download_thread
+
+    def _download_status(self, state):
+
+        self.errorLabel.setText(
+            f"Downloading to {state[0]} .... {state[2]} out of {state[1]}, failed {state[3]}.")
+        print(state)
+
+    def _download_end(self, thread_output: dict):
+        if thread_output["error"] == "":
+            self.errorLabel.setText("Download finished.")
+        else:
+            self.errorLabel.setText("Errors occurred during download. Consult the logs.")
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
 
     def _start_search(self, key_vals, path, checksum):
         self.searchButton.setEnabled(False)
