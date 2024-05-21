@@ -71,7 +71,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.info_label.show()
 
     def clear(self):
-        """Crea search results and hide elements."""
+        """Clear search results and hide elements."""
         self.errorLabel.clear()
         self.hide_result_elements()
 
