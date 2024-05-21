@@ -12,7 +12,7 @@ max-module-lines=2000
 #ignored-argument-names=_.*|^ignored_|^unused_|rule_args|callback|rei
 
 # Catching too general exception Exception 
-disable=W0718,fixme
+disable=W0718,fixme,too-many-arguments
 
 # C++ modules of PyQt6 not visible to pylint
 extension-pkg-whitelist=PyQt6
