@@ -22,7 +22,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         """Initialize an iRODS search view.
 
         This tab is linked to the browser tab. When double-clicking one of
-        the results the path will be loaded into the broswer of the browser tab.
+        the results the path will be loaded into the browser of the browser tab.
 
         Parameters
         ----------
