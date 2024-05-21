@@ -21,7 +21,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
     def __init__(self, session, app_name, browser):
         """Initialize an iRODS search view.
 
-        This Tab is linked to the browser tab. When double-clicking one of
+        This tab is linked to the browser tab. When double-clicking one of
         the results the path will be loaded into the broswer of the browser tab.
 
         Parameters
