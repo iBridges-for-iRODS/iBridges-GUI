@@ -62,8 +62,8 @@ class DownloadThread(QThread):
                 except Exception as error:
                     failed+=1
                     self.logger.info("Download failed: %s; %s", str(irods_path), repr(error))
-                download_out["error"] = download_out["error"] + \
-                                        f"\nDownload failed {str(irods_path)}: {repr(error)}"
+                    download_out["error"] = download_out["error"] + \
+                                            f"\nDownload failed {str(irods_path)}: {repr(error)}"
             else:
                 failed+=1
                 download_out["error"] = download_out["error"] + \
