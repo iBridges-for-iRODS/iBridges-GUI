@@ -135,7 +135,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                                     self.session,
                                     self.searchResTable.item(idx.row(), 1).text()))
 
-        select_dir = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Direcectory"))
+        select_dir = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory"))
         if select_dir == "":
             return
         else:
