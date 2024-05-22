@@ -1,10 +1,10 @@
 """Thread classes for length iBridges functions."""
 from pathlib import Path
 
-from irods.exception import NetworkException, CAT_NO_ACCESS_PERMISSION
+from ibridges import download, search_data, sync_data
+from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
 from PyQt6.QtCore import QThread, pyqtSignal
 
-from ibridges import search_data, download, sync_data
 
 class SearchThread(QThread):
     """Start iRODS search in an own thread using the same iRODS session."""
@@ -62,14 +62,14 @@ class DownloadThread(QThread):
                     count+=1
                 except Exception as error:
                     failed+=1
-                    self.logger.error("Download failed: %s; %s", str(irods_path), repr(error))
+                    self.logger.exception("Download failed: %s; %s", str(irods_path), repr(error))
                     download_out["error"] = download_out["error"] + \
                                             f"\nDownload failed {str(irods_path)}: {repr(error)}"
             else:
                 failed+=1
                 download_out["error"] = download_out["error"] + \
                                         f"\nDownload failed. {str(irods_path)} does not exist."
-                self.logger.error("Download failed: %s does not exist", str(irods_path))
+                self.logger.exception("Download failed: %s does not exist", str(irods_path))
             self.current_progress.emit((self.local_path,len(self.irods_paths), count, failed))
         self.succeeded.emit(download_out)
 
@@ -112,5 +112,5 @@ class SyncThread(QThread):
             self.logger.exception("Sync failed: %s --> %s; %s",
                                 str(self.source), str(self.target), repr(error))
             sync_out["error"] = sync_out["error"] + \
-                                    f"\nSync failed: {str(self.source)} --> {str(self.target)}: {repr(error)}"
+                f"\nSync failed: {str(self.source)} --> {str(self.target)}: {repr(error)}"
         self.succeeded.emit(sync_out)

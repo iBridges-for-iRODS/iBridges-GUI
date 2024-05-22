@@ -3,16 +3,16 @@ import logging
 import sys
 from pathlib import Path
 
-import irods.exception
 import PyQt6.uic
 from ibridges import IrodsPath
 from PyQt6 import QtCore, QtGui
 
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.irods_tree_model import IrodsTreeModel
-from ibridgesgui.ui_files.tabSync import Ui_tabSync
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
 from ibridgesgui.threads import SyncThread
+from ibridgesgui.ui_files.tabSync import Ui_tabSync
+
 
 class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
     """Sync view."""
@@ -38,6 +38,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.session = session
         self.sync_thread = None
         self.sync_source = "" #irods or local
+        self.refresh_irods_index = None
         self.local_to_irods_button.setToolTip("Local to iRODS")
         self.local_to_irods_button.clicked.connect(self.local_to_irods)
         self.irods_to_local_button.setToolTip("iRODS to Local")
@@ -114,11 +115,16 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.error_label.setText("Please select a parent directory, not a file.")
 
     def prep_sync(self, dry_run = True):
+        """Prepare and call the sync thread."""
         paths = self._gather_info_for_transfer()
         if paths is None:
             return
-        local_path, irods_path, _, irods_index = paths
+        local_path, irods_path, _, _ = paths
+
         if self.sync_source == "local":
+            if not dry_run:
+                # updating data in iRODS --> save index to update tree
+                _, _, _, self.refresh_irods_index = paths
             self.logger.info("Starting sync from %s to %s.", str(local_path), str(irods_path))
             self.status_browser.append(
                 f"Starting sync from {str(local_path)} to {str(irods_path)}.")
@@ -148,23 +154,23 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         fs_selection = self.local_fs_tree.selectedIndexes()
         if len(fs_selection) == 0:
             self.error_label.setText("Please select a directory.")
-            return
+            return None
         fs_index = fs_selection[0]
         local_path = Path(self.local_fs_model.filePath(fs_index))
         if local_path.is_file():
             self.error_label.setText("Please select a directory, not a file.")
-            return
+            return None
 
         # Retrieve irods path
         irods_selection = self.irods_tree.selectedIndexes()
         if len(irods_selection) == 0:
             self.error_label.setText("Please select a collection.")
-            return
+            return None
         irods_index = irods_selection[0]
         irods_path = self.irods_model.irods_path_from_tree_index(irods_index)
         if irods_path.dataobject_exists():
             self.error_label.setText("Please select a collection, not a data object.")
-            return
+            return None
 
         return local_path, irods_path, fs_index, irods_index
 
@@ -200,6 +206,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         if thread_output["error"] != "":
             self.error_label.setText(thread_output["error"])
             self.sync_source = ""
+            self.refresh_irods_index = None
         elif "result" in thread_output:
             self.error_label.clear()
             self.status_browser.append("Sync preview")
@@ -209,11 +216,14 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             if info == '':
                 info = "Data is already synchronised."
                 self.sync_source = ""
+                self.refresh_irods_index = None
             self.status_browser.append(info)
         else:
             self.error_label.setText("Synchronisation finished successfully.")
             self.sync_source = ""
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        if self.refresh_irods_index is not None:
+            self.irods_model.refresh_subtree(self.refresh_irods_index)
 
         # real sync if necessary
         if self.sync_source != "":

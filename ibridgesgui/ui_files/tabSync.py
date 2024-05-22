@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_tabSync(object):
     def setupUi(self, tabSync):
         tabSync.setObjectName("tabSync")
-        tabSync.resize(1234, 749)
+        tabSync.resize(1234, 721)
         tabSync.setStyleSheet("QWidget\n"
 "{\n"
 "    color: rgb(86, 184, 139);\n"
@@ -156,19 +156,19 @@ class Ui_tabSync(object):
         self.create_coll_button.setObjectName("create_coll_button")
         self.horizontalLayout_15.addWidget(self.create_coll_button)
         self.verticalLayout_16.addLayout(self.horizontalLayout_15)
-        self.irodsFsTreeView = QtWidgets.QTreeView(parent=self.layoutWidget)
+        self.irods_tree = QtWidgets.QTreeView(parent=self.layoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.irodsFsTreeView.sizePolicy().hasHeightForWidth())
-        self.irodsFsTreeView.setSizePolicy(sizePolicy)
-        self.irodsFsTreeView.setStyleSheet("")
-        self.irodsFsTreeView.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.irodsFsTreeView.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.irodsFsTreeView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.irodsFsTreeView.setHeaderHidden(True)
-        self.irodsFsTreeView.setObjectName("irodsFsTreeView")
-        self.verticalLayout_16.addWidget(self.irodsFsTreeView)
+        sizePolicy.setHeightForWidth(self.irods_tree.sizePolicy().hasHeightForWidth())
+        self.irods_tree.setSizePolicy(sizePolicy)
+        self.irods_tree.setStyleSheet("")
+        self.irods_tree.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.irods_tree.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.irods_tree.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.irods_tree.setHeaderHidden(True)
+        self.irods_tree.setObjectName("irods_tree")
+        self.verticalLayout_16.addWidget(self.irods_tree)
         self.verticalLayout_16.setStretch(2, 1)
         self.horizontalLayout_5.addLayout(self.verticalLayout_16)
         self.horizontalLayout_5.setStretch(0, 1)
