@@ -35,9 +35,9 @@ class CreateCollection(QDialog, Ui_createCollection):
 
     def accept(self):
         """Create new collection."""
-        if self.collPathLine.text() != "":
+        if self.coll_path_input.text() != "":
             new_coll_path = IrodsPath(self.parent.session, self.parent,
-                                    self.collPathLine.text())
+                                    self.coll_path_input.text())
             if new_coll_path.exists():
                 self.error_label.setText(f"{new_coll_path} already exists.")
             else:
@@ -47,7 +47,7 @@ class CreateCollection(QDialog, Ui_createCollection):
                     self.done(0)
                 except irods.exception.CAT_NO_ACCESS_PERMISSION:
                     self.error_label.setText(f"No access rights to {new_coll_path.parent}."+\
-                                            f" Cannot create {self.collPathLine.text()}.")
+                                            f" Cannot create {self.coll_path_input.text()}.")
                 except Exception as err:
                     self.logger.exception(f"Could not create {new_coll_path}: {err}")
                     self.error_label.setText(f"Could not create {new_coll_path}, consult the logs.")
@@ -70,8 +70,8 @@ class CreateDirectory(QDialog, Ui_createCollection):
 
     def accept(self):
         """Create folder."""
-        if self.collPathLine.text() != "":
-            new_dir_path = self.parent + os.sep + self.collPathLine.text()
+        if self.coll_path_input.text() != "":
+            new_dir_path = self.parent + os.sep + self.coll_path_input.text()
             try:
                 os.makedirs(new_dir_path)
                 self.done(1)
