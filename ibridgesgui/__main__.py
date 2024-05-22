@@ -14,6 +14,7 @@ from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.search import Search
+from ibridgesgui.sync import Sync
 from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 
@@ -39,8 +40,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.app_name = app_name
         self.ui_tabs_lookup = {
             "tabBrowser": self.init_browser_tab,
+            "tabSync": self.init_sync_tab,
             "tabSearch": self.init_search_tab,
-                #'tabUpDownload': self.setupTabUpDownload,
                 #'tabDataBundle': self.setupTabDataBundle,
                 #'tabCreateTicket': self.setupTabCreateTicket,
                 #'tabELNData': self.setupTabELNData,
@@ -114,8 +115,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     def init_search_tab(self):
         """Create search. Depends on Browser."""
         irods_search = Search(self.session, self.app_name, self.irods_browser)
-        self.tab_widget.addTab(irods_search, "Search") 
+        self.tab_widget.addTab(irods_search, "Search")
 
+    def init_sync_tab(self):
+        """Create sync."""
+        irods_sync = Sync(self.session, self.app_name)
+        self.tab_widget.addTab(irods_sync, "Synchronise Data")
     def create_env_file(self):
         """Populate drop down menu to create a new environment.json."""
         create_widget = CheckConfig(self.logger, self.irods_path)
