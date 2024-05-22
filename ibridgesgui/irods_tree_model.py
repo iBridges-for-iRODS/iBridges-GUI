@@ -66,10 +66,6 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
               ]
         return row
 
-    def _dummy_tree_row(self):
-        row = ["dummy"]
-        return row
-
     def init_tree(self):
         """Draw the first levels of an iRODS filesystem as a tree."""
         self.setRowCount(0)
@@ -84,7 +80,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
 
         # insert a dummy child to get the link to open the collection
         if len(root_coll.subcollections+root_coll.data_objects) > 0:
-            new_node.appendRow(self._dummy_tree_row())
+            new_node.appendRow(None)
 
     def delete_subtree(self, tree_item):
         """Delete subtree.
@@ -122,7 +118,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
             if isinstance(item, irods.collection.iRODSCollection):
                 if len(item.subcollections+item.data_objects) > 0:
                     # insert a dummy child to get the link to open the collection
-                    new_nodes[item.id].appendRow(self._dummy_tree_row())
+                    new_nodes[item.id].appendRow(None)
 
     def refresh_subtree(self, position):
         """Refresh the tree view.
