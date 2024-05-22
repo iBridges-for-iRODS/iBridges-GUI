@@ -49,7 +49,6 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         self.hide_result_elements()
         self.search_button.clicked.connect(self.search)
-        self.enterPressed.connect(self.search)
         self.clear_button.clicked.connect(self.hide_result_elements)
         self.download_button.clicked.connect(self.download)
 
