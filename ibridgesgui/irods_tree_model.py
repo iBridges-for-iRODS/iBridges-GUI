@@ -54,7 +54,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
             datatype = 'C'
         else:
             display.setIcon(icon_provider.icon(
-                            PyQt6.QtWidgets.QFileIconProvider.IconType.Folder))
+                            PyQt6.QtWidgets.QFileIconProvider.IconType.File))
             datatype = 'd'
         row = [
                 display, #display name
@@ -156,7 +156,12 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         """
         tree_item = self.itemFromIndex(model_index) # clicked item
         row = tree_item.row()
+
         parent = tree_item.parent() # contains the data of tree_item
+        if parent is None:
+            parent = self.invisibleRootItem()
+        tree_item_data = [parent.child(row, col).data(0)
+                            for col in range(parent.columnCount())]
         irods_path = [parent.child(row, col).data(0)
                         for col in range(parent.columnCount())][-1]
         return IrodsPath(self.session, irods_path)

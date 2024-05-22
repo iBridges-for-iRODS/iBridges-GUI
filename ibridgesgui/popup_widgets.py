@@ -14,7 +14,6 @@ from ibridgesgui.gui_utils import UI_FILE_DIR, populate_textfield
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
 
-
 class CreateCollection(QDialog, Ui_createCollection):
     """Popup window to create a new collection."""
 
@@ -61,8 +60,8 @@ class CreateDirectory(QDialog, Ui_createCollection):
         if getattr(sys, "frozen", False):
             super().setupUi(self)
         else:
-            loadUi("gui/ui_files/createCollection.ui", self)
-        self.setWindowTitle("Create directory")
+            loadUi(UI_FILE_DIR / "createCollection.ui", self)
+        self.setWindowTitle("Create Directory")
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.parent = parent
         self.label.setText(self.parent + os.sep)
