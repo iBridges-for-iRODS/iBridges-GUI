@@ -23,31 +23,31 @@ class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
             PyQt6.uic.loadUi(UI_FILE_DIR / "tabInfo.ui", self)
         self.session = session
 
-        self.refreshButton.clicked.connect(self.refresh_info)
+        self.refresh_button.clicked.connect(self.refresh_info)
         self.refresh_info()
 
     def refresh_info(self):
         """Find and set the information of the connected iRODS system."""
-        self.rescTable.setRowCount(0)
+        self.resc_table.setRowCount(0)
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
         # irods Zone
-        self.zoneLabel.setText(self.session.zone)
+        self.zone_label.setText(self.session.zone)
         # irods user
-        self.userLabel.setText(self.session.username)
+        self.user_label.setText(self.session.username)
         # irods user type and groups
         user_type, user_groups = self.session.get_user_info()
-        self.typeLabel.setText(user_type)
-        populate_textfield(self.groupsBrowser, user_groups)
+        self.type_label.setText(user_type)
+        populate_textfield(self.groups_browser, user_groups)
         # ibridges log location
-        self.log_loc.setText(str(CONFIG_DIR))
+        self.log_label.setText(str(CONFIG_DIR))
         # default resource
-        self.rescLabel.setText(self.session.default_resc)
+        self.resc_label.setText(self.session.default_resc)
         # irods server and version
-        self.serverLabel.setText(self.session.host)
-        self.versionLabel.setText(
+        self.server_label.setText(self.session.host)
+        self.version_label.setText(
             ".".join((str(num) for num in self.session.server_version)))
         # irods resources
         resc_info = Resources(self.session).root_resources
-        populate_table(self.rescTable, len(resc_info[0]), resc_info)
-        self.rescTable.resizeColumnsToContents()
+        populate_table(self.resc_table, len(resc_info[0]), resc_info)
+        self.resc_table.resizeColumnsToContents()
         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
