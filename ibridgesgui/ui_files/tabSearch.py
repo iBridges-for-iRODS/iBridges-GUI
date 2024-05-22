@@ -122,6 +122,7 @@ class Ui_tabSearch(object):
         font.setBold(False)
         font.setItalic(False)
         self.search_button.setFont(font)
+        self.search_button.setAutoDefault(False)
         self.search_button.setDefault(True)
         self.search_button.setObjectName("search_button")
         self.horizontalLayout_5.addWidget(self.search_button)

@@ -49,6 +49,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         self.hide_result_elements()
         self.search_button.clicked.connect(self.search)
+        self.enterPressed.connect(self.search)
         self.clear_button.clicked.connect(self.hide_result_elements)
         self.download_button.clicked.connect(self.download)
 
@@ -144,14 +145,14 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             return
 
     def send_to_browser(self):
-        """Set browser inputPath to collection or parent of object."""
+        """Set browser path_input to collection or parent of object."""
         row = self.search_table.currentIndex().row()
         irods_path = IrodsPath(self.session, self.search_table.item(row, 1).text())
         if irods_path.collection_exists():
-            self.browser.inputPath.setText(str(irods_path))
+            self.browser.path_input.setText(str(irods_path))
             self.error_label.setText(f"Browser tab switched to {irods_path}")
         else:
-            self.browser.inputPath.setText(str(irods_path.parent))
+            self.browser.path_input.setText(str(irods_path.parent))
             self.error_label.setText(f"Browser tab switched to {irods_path.parent}")
         self.browser.load_browser_table()
 

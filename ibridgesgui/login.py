@@ -71,11 +71,11 @@ class Login(QDialog, Ui_irodsLogin):
         self.error_label.clear()
         env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
         try:
-            if self.cached_pw is True and self.passwordField.text() == "***********":
+            if self.cached_pw is True and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
                 session = Session(irods_env=env_file)
             else:
-                session = Session(irods_env=env_file, password=self.passwordField.text())
+                session = Session(irods_env=env_file, password=self.password_field.text())
                 self.logger.debug("Login with %s and password from prompt.", env_file)
             self.session_dict["session"] = session
             self.logger.info("Logged in as %s to %s; working coll %s",
