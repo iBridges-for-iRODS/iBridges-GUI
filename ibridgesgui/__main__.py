@@ -26,7 +26,7 @@ app = PyQt6.QtWidgets.QApplication(sys.argv)
 class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     """Set up the GUI Main Menu."""
 
-    def __init__(self, parent_widget, app_name):
+    def __init__(self, app_name):
         """Initialise the main window."""
         super().__init__()
         if getattr(sys, "frozen", False):
@@ -49,15 +49,15 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             #'tabExample': self.setupTabExample,
         }
 
-        self.parent_widget = parent_widget
+        #self.parent_widget = parent_widget
         self.session = None
         self.session_dict = {}
-        self.actionConnect.triggered.connect(self.connect)
-        self.actionExit.triggered.connect(self.exit)
-        self.actionCloseSession.triggered.connect(self.disconnect)
-        self.actionAdd_configuration.triggered.connect(self.create_env_file)
-        self.actionCheck_configuration.triggered.connect(self.inspect_env_file)
-        self.tabWidget.setCurrentIndex(0)
+        self.action_connect.triggered.connect(self.connect)
+        self.action_exit.triggered.connect(self.exit)
+        self.action_close_session.triggered.connect(self.disconnect)
+        self.action_add_configuration.triggered.connect(self.create_env_file)
+        self.action_check_configuration.triggered.connect(self.inspect_env_file)
+        self.tab_widget.setCurrentIndex(0)
 
     def disconnect(self):
         """Close iRODS session."""
@@ -66,7 +66,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.logger.info("Disconnecting %s from %s", session.username, session.host)
             self.session_dict["session"].close()
             self.session_dict.clear()
-        self.tabWidget.clear()
+        self.tab_widget.clear()
 
 
     def connect(self):
@@ -90,6 +90,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
             PyQt6.QtWidgets.QMessageBox.StandardButton.No)
         if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
+            self.disconnect()
             sys.exit()
         else:
             pass
@@ -103,17 +104,17 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     def init_info_tab(self):
         """Create info."""
         irods_info = Info(self.session)
-        self.tabWidget.addTab(irods_info, "Info")
+        self.tab_widget.addTab(irods_info, "Info")
 
     def init_browser_tab(self):
         """Create browser."""
         self.irods_browser = Browser(self.session, self.app_name)
-        self.tabWidget.addTab(self.irods_browser, "Browser")
+        self.tab_widget.addTab(self.irods_browser, "Browser")
 
     def init_search_tab(self):
         """Create search. Depends on Browser."""
         irods_search = Search(self.session, self.app_name, self.irods_browser)
-        self.tabWidget.addTab(irods_search, "Search") 
+        self.tab_widget.addTab(irods_search, "Search") 
 
     def create_env_file(self):
         """Populate drop down menu to create a new environment.json."""
@@ -136,7 +137,7 @@ def main():
         set_log_level("debug")
         init_logger(THIS_APPLICATION, "debug")
     main_widget = PyQt6.QtWidgets.QStackedWidget()
-    main_app = MainMenu(main_widget, THIS_APPLICATION)
+    main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
     main_widget.show()
     app.exec()

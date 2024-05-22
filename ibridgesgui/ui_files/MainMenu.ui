@@ -28,11 +28,6 @@
     font: 16pt;
 }
 
-QLabel#globalErrorLabel
-{
-	color: rgb(217, 174, 23);
-}
-
 QTabBar::tab:top:selected {
     background-color: rgb(58, 152, 112);
     color: rgb(54, 54, 54);
@@ -45,7 +40,7 @@ QTabBar::tab:top:selected {
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="tab_widget">
       <property name="minimumSize">
        <size>
         <width>600</width>
@@ -55,23 +50,12 @@ QTabBar::tab:top:selected {
       <property name="font">
        <font>
         <pointsize>16</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
       </property>
       <property name="currentIndex">
        <number>-1</number>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="globalErrorLabel">
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
     </item>
@@ -89,16 +73,14 @@ QTabBar::tab:top:selected {
    <property name="font">
     <font>
      <pointsize>16</pointsize>
-     <weight>50</weight>
      <italic>false</italic>
      <bold>false</bold>
     </font>
    </property>
-   <widget class="QMenu" name="menuMenu">
+   <widget class="QMenu" name="main_menu">
     <property name="font">
      <font>
       <pointsize>16</pointsize>
-      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>
@@ -106,22 +88,22 @@ QTabBar::tab:top:selected {
     <property name="title">
      <string>Connect</string>
     </property>
-    <addaction name="actionConnect"/>
-    <addaction name="actionCloseSession"/>
-    <addaction name="actionExit"/>
+    <addaction name="action_connect"/>
+    <addaction name="action_close_session"/>
+    <addaction name="action_exit"/>
    </widget>
-   <widget class="QMenu" name="menuConfigure">
+   <widget class="QMenu" name="config_menu">
     <property name="title">
      <string>Configure</string>
     </property>
-    <addaction name="actionCheck_configuration"/>
-    <addaction name="actionAdd_configuration"/>
+    <addaction name="action_check_configuration"/>
+    <addaction name="action_add_configuration"/>
    </widget>
-   <addaction name="menuMenu"/>
-   <addaction name="menuConfigure"/>
+   <addaction name="main_menu"/>
+   <addaction name="config_menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionCloseSession">
+  <action name="action_close_session">
    <property name="text">
     <string>Close Connection</string>
    </property>
@@ -129,7 +111,7 @@ QTabBar::tab:top:selected {
     <font/>
    </property>
   </action>
-  <action name="actionExit">
+  <action name="action_exit">
    <property name="text">
     <string>Exit iBridges</string>
    </property>
@@ -153,17 +135,17 @@ QTabBar::tab:top:selected {
     <font/>
    </property>
   </action>
-  <action name="actionConnect">
+  <action name="action_connect">
    <property name="text">
     <string>Connect to iRODS</string>
    </property>
   </action>
-  <action name="actionCheck_configuration">
+  <action name="action_check_configuration">
    <property name="text">
     <string>Check Configuration</string>
    </property>
   </action>
-  <action name="actionAdd_configuration">
+  <action name="action_add_configuration">
    <property name="text">
     <string>Add Configuration</string>
    </property>

@@ -43,14 +43,14 @@ QLabel#client, QLabel#server
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="3" column="2">
-      <widget class="QLabel" name="zoneLabel">
+      <widget class="QLabel" name="zone_label">
        <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item row="4" column="2">
-      <widget class="QLabel" name="userLabel">
+      <widget class="QLabel" name="user_label">
        <property name="text">
         <string/>
        </property>
@@ -70,7 +70,7 @@ QLabel#client, QLabel#server
       </spacer>
      </item>
      <item row="5" column="2">
-      <widget class="QLabel" name="typeLabel">
+      <widget class="QLabel" name="type_label">
        <property name="text">
         <string/>
        </property>
@@ -99,10 +99,9 @@ QLabel#client, QLabel#server
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="refreshButton">
+        <widget class="QPushButton" name="refresh_button">
          <property name="font">
           <font>
-           <weight>2</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -128,7 +127,7 @@ QLabel#client, QLabel#server
       </spacer>
      </item>
      <item row="15" column="0">
-      <widget class="QLabel" name="versionLabel_2">
+      <widget class="QLabel" name="label_13">
        <property name="text">
         <string>Version</string>
        </property>
@@ -148,13 +147,12 @@ QLabel#client, QLabel#server
       </spacer>
      </item>
      <item row="12" column="0">
-      <widget class="QLabel" name="server">
+      <widget class="QLabel" name="label_12">
        <property name="font">
         <font>
          <pointsize>18</pointsize>
-         <weight>75</weight>
          <italic>false</italic>
-         <bold>true</bold>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -189,13 +187,12 @@ QLabel#client, QLabel#server
       </spacer>
      </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="client">
+      <widget class="QLabel" name="label_11">
        <property name="font">
         <font>
          <pointsize>18</pointsize>
-         <weight>75</weight>
          <italic>false</italic>
-         <bold>true</bold>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -238,7 +235,7 @@ QLabel#client, QLabel#server
       </widget>
      </item>
      <item row="8" column="2">
-      <widget class="QLabel" name="rescLabel">
+      <widget class="QLabel" name="resc_label">
        <property name="text">
         <string/>
        </property>
@@ -252,7 +249,7 @@ QLabel#client, QLabel#server
       </widget>
      </item>
      <item row="17" column="2">
-      <widget class="QTableWidget" name="rescTable">
+      <widget class="QTableWidget" name="resc_table">
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
        </property>
@@ -280,7 +277,7 @@ QLabel#client, QLabel#server
       </widget>
      </item>
      <item row="7" column="2">
-      <widget class="QTextBrowser" name="groupsBrowser"/>
+      <widget class="QTextBrowser" name="groups_browser"/>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_3">
@@ -297,14 +294,14 @@ QLabel#client, QLabel#server
       </widget>
      </item>
      <item row="15" column="2">
-      <widget class="QLabel" name="versionLabel">
+      <widget class="QLabel" name="version_label">
        <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item row="9" column="2">
-      <widget class="QLabel" name="log_loc">
+      <widget class="QLabel" name="log_label">
        <property name="text">
         <string/>
        </property>
@@ -318,7 +315,7 @@ QLabel#client, QLabel#server
       </widget>
      </item>
      <item row="14" column="2">
-      <widget class="QLabel" name="serverLabel">
+      <widget class="QLabel" name="server_label">
        <property name="text">
         <string/>
        </property>

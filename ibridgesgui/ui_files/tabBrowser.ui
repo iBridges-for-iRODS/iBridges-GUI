@@ -35,18 +35,18 @@ QTableWidget
     border-color: rgb(86, 184, 139);
 }
 
-QLabel#errorLabel
+QLabel#error_label
 {
     color: rgb(217, 174, 23);
 }
 
-QLineEdit#inputPath
+QLineEdit
 {
     background-color: rgb(85, 87, 83);
     border-color: rgb(86, 184, 139);
 }
 
-QPushButton#dataDeleteButton
+QPushButton#confirm_button
 {
     background-color: rgb(86, 184, 139);
     color: rgb(46, 52, 54);
@@ -85,7 +85,7 @@ QPushButton#dataDeleteButton
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="inputPath">
+      <widget class="QLineEdit" name="path_input">
        <property name="font">
         <font>
          <pointsize>16</pointsize>
@@ -109,7 +109,7 @@ QPushButton#dataDeleteButton
       </widget>
      </item>
      <item row="0" column="2">
-      <widget class="QPushButton" name="refreshButton">
+      <widget class="QPushButton" name="refresh_button">
        <property name="text">
         <string/>
        </property>
@@ -120,7 +120,7 @@ QPushButton#dataDeleteButton
       </widget>
      </item>
      <item row="0" column="3">
-      <widget class="QPushButton" name="parentButton">
+      <widget class="QPushButton" name="parent_button">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -134,7 +134,7 @@ QPushButton#dataDeleteButton
       </widget>
      </item>
      <item row="0" column="4">
-      <widget class="QPushButton" name="homeButton">
+      <widget class="QPushButton" name="home_button">
        <property name="text">
         <string/>
        </property>
@@ -150,7 +150,7 @@ QPushButton#dataDeleteButton
      <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QPushButton" name="createCollButton">
+        <widget class="QPushButton" name="create_coll_button">
          <property name="text">
           <string>Create Collection</string>
          </property>
@@ -170,21 +170,21 @@ QPushButton#dataDeleteButton
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="UploadButton">
+        <widget class="QPushButton" name="upload_file_button">
          <property name="text">
           <string>Upload File</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="folderUploadButton">
+        <widget class="QPushButton" name="upload_dir_button">
          <property name="text">
           <string>Upload Folder</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="DownloadButton">
+        <widget class="QPushButton" name="download_button">
          <property name="text">
           <string>Download</string>
          </property>
@@ -215,7 +215,7 @@ QPushButton#dataDeleteButton
     </layout>
    </item>
    <item>
-    <widget class="QTableWidget" name="browserTable">
+    <widget class="QTableWidget" name="browser_table">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -301,12 +301,12 @@ QPushButton#dataDeleteButton
     </spacer>
    </item>
    <item>
-    <widget class="QTabWidget" name="viewTabs">
+    <widget class="QTabWidget" name="info_tabs">
      <property name="styleSheet">
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="preview">
       <property name="font">
@@ -322,7 +322,7 @@ QPushButton#dataDeleteButton
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QTextBrowser" name="previewBrowser"/>
+        <widget class="QTextBrowser" name="preview_browser"/>
        </item>
       </layout>
      </widget>
@@ -332,7 +332,7 @@ QPushButton#dataDeleteButton
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QTableWidget" name="metadataTable">
+        <widget class="QTableWidget" name="meta_table">
          <property name="minimumSize">
           <size>
            <width>600</width>
@@ -377,7 +377,7 @@ QPushButton#dataDeleteButton
        <item>
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="7" column="2">
-          <widget class="QPushButton" name="metaDeleteButton">
+          <widget class="QPushButton" name="delete_meta_button">
            <property name="font">
             <font>
              <bold>true</bold>
@@ -389,7 +389,7 @@ QPushButton#dataDeleteButton
           </widget>
          </item>
          <item row="6" column="0">
-          <widget class="QLineEdit" name="metaKeyField"/>
+          <widget class="QLineEdit" name="meta_key_field"/>
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_4">
@@ -406,10 +406,10 @@ QPushButton#dataDeleteButton
           </widget>
          </item>
          <item row="6" column="1">
-          <widget class="QLineEdit" name="metaValueField"/>
+          <widget class="QLineEdit" name="meta_value_field"/>
          </item>
          <item row="7" column="1">
-          <widget class="QPushButton" name="metaUpdateButton">
+          <widget class="QPushButton" name="update_meta_button">
            <property name="font">
             <font>
              <bold>true</bold>
@@ -454,10 +454,10 @@ QPushButton#dataDeleteButton
           </widget>
          </item>
          <item row="6" column="2">
-          <widget class="QLineEdit" name="metaUnitsField"/>
+          <widget class="QLineEdit" name="meta_units_field"/>
          </item>
          <item row="7" column="0">
-          <widget class="QPushButton" name="metaAddButton">
+          <widget class="QPushButton" name="add_meta_button">
            <property name="font">
             <font>
              <bold>true</bold>
@@ -478,7 +478,7 @@ QPushButton#dataDeleteButton
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QTableWidget" name="aclTable">
+        <widget class="QTableWidget" name="acl_table">
          <property name="minimumSize">
           <size>
            <width>600</width>
@@ -569,13 +569,13 @@ QPushButton#dataDeleteButton
           </widget>
          </item>
          <item row="6" column="0">
-          <widget class="QLineEdit" name="aclUserField"/>
+          <widget class="QLineEdit" name="acl_user_field"/>
          </item>
          <item row="6" column="1">
-          <widget class="QLineEdit" name="aclZoneField"/>
+          <widget class="QLineEdit" name="acl_zone_field"/>
          </item>
          <item row="6" column="2">
-          <widget class="QComboBox" name="aclBox">
+          <widget class="QComboBox" name="acl_box">
            <item>
             <property name="text">
              <string/>
@@ -614,7 +614,7 @@ QPushButton#dataDeleteButton
           </widget>
          </item>
          <item row="6" column="3">
-          <widget class="QComboBox" name="recurseBox">
+          <widget class="QComboBox" name="recurisive_box">
            <item>
             <property name="text">
              <string>False</string>
@@ -628,7 +628,7 @@ QPushButton#dataDeleteButton
           </widget>
          </item>
          <item row="6" column="4">
-          <widget class="QPushButton" name="aclAddButton">
+          <widget class="QPushButton" name="add_acl_button">
            <property name="font">
             <font>
              <bold>true</bold>
@@ -676,7 +676,7 @@ QPushButton#dataDeleteButton
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QTableWidget" name="replicaTable">
+        <widget class="QTableWidget" name="replica_table">
          <property name="styleSheet">
           <string notr="true"/>
          </property>
@@ -730,7 +730,7 @@ QPushButton#dataDeleteButton
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
-        <widget class="QTextBrowser" name="deleteSelectionBrowser">
+        <widget class="QTextBrowser" name="delete_browser">
          <property name="html">
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -744,7 +744,7 @@ hr { height: 1px; border-width: 0; }
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <widget class="QPushButton" name="loadDeleteSelectionButton">
+          <widget class="QPushButton" name="load_selection_button">
            <property name="text">
             <string>Delete</string>
            </property>
@@ -767,7 +767,7 @@ hr { height: 1px; border-width: 0; }
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="dataDeleteButton">
+          <widget class="QPushButton" name="confirm_button">
            <property name="font">
             <font>
              <pointsize>13</pointsize>
@@ -789,7 +789,7 @@ hr { height: 1px; border-width: 0; }
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="errorLabel">
+    <widget class="QLabel" name="error_label">
      <property name="styleSheet">
       <string notr="true"/>
      </property>

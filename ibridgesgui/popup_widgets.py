@@ -35,22 +35,22 @@ class CreateCollection(QDialog, Ui_createCollection):
 
     def accept(self):
         """Create new collection."""
-        if self.collPathLine.text() != "":
+        if self.coll_path_input.text() != "":
             new_coll_path = IrodsPath(self.parent.session, self.parent,
-                                    self.collPathLine.text())
+                                    self.coll_path_input.text())
             if new_coll_path.exists():
-                self.errorLabel.setText(f"{new_coll_path} already exists.")
+                self.error_label.setText(f"{new_coll_path} already exists.")
             else:
                 try:
                     IrodsPath.create_collection(new_coll_path.session, new_coll_path)
                     self.logger.info(f"Created collection {new_coll_path}")
                     self.done(0)
                 except irods.exception.CAT_NO_ACCESS_PERMISSION:
-                    self.errorLabel.setText(f"No access rights to {new_coll_path.parent}."+\
-                                            f" Cannot create {self.collPathLine.text()}.")
+                    self.error_label.setText(f"No access rights to {new_coll_path.parent}."+\
+                                            f" Cannot create {self.coll_path_input.text()}.")
                 except Exception as err:
                     self.logger.exception(f"Could not create {new_coll_path}: {err}")
-                    self.errorLabel.setText(f"Could not create {new_coll_path}, consult the logs.")
+                    self.error_label.setText(f"Could not create {new_coll_path}, consult the logs.")
 
 class CreateDirectory(QDialog, Ui_createCollection):
     """Popup window to create a new directory."""
@@ -70,16 +70,16 @@ class CreateDirectory(QDialog, Ui_createCollection):
 
     def accept(self):
         """Create folder."""
-        if self.collPathLine.text() != "":
-            new_dir_path = self.parent + os.sep + self.collPathLine.text()
+        if self.coll_path_input.text() != "":
+            new_dir_path = self.parent + os.sep + self.coll_path_input.text()
             try:
                 os.makedirs(new_dir_path)
                 self.done(1)
             except Exception as error:
                 if hasattr(error, "message"):
-                    self.errorLabel.setText(error.message)
+                    self.error_label.setText(error.message)
                 else:
-                    self.errorLabel.setText("ERROR: insufficient rights.")
+                    self.error_label.setText("ERROR: insufficient rights.")
 
 class CheckConfig(QDialog, Ui_configCheck):
     """Popup window to edit, create and check an environment.json."""
@@ -98,11 +98,11 @@ class CheckConfig(QDialog, Ui_configCheck):
         self._init_env_box()
 
         self.envbox.activated.connect(self.load_env)
-        self.createButton.clicked.connect(self.create_env)
-        self.checkButton.clicked.connect(self.check_env)
-        self.saveButton.clicked.connect(self.save_env)
-        self.saveasButton.clicked.connect(self.save_env_as)
-        self.closeButton.clicked.connect(self.close)
+        self.new_button.clicked.connect(self.create_env)
+        self.check_button.clicked.connect(self.check_env)
+        self.save_button.clicked.connect(self.save_env)
+        self.save_as_button.clicked.connect(self.save_env_as)
+        self.close_button.clicked.connect(self.close)
 
 
     def _init_env_box(self):
@@ -116,22 +116,22 @@ class CheckConfig(QDialog, Ui_configCheck):
 
     def load_env(self):
         """Load json into text field."""
-        self.errorLabel.clear()
+        self.error_label.clear()
         env_file = self.env_path.joinpath(self.envbox.currentText())
         try:
             content = json.dumps(_read_json(env_file),
                                 sort_keys=True, indent=4, separators=(",", ": "))
-            populate_textfield(self.envEdit, content)
+            populate_textfield(self.env_field, content)
         except IsADirectoryError:
-            self.errorLabel.setText("Choose and environment or create a new one.")
+            self.error_label.setText("Choose and environment or create a new one.")
         except FileNotFoundError:
-            self.errorLabel.setText(f"File does not exist {env_file}")
+            self.error_label.setText(f"File does not exist {env_file}")
         except Exception as err:
-            self.errorLabel.setText(f"{repr(err)}")
+            self.error_label.setText(f"{repr(err)}")
 
     def create_env(self):
         """Load standard environment into text field."""
-        self.errorLabel.clear()
+        self.error_label.clear()
         self.envbox.setCurrentIndex(0)
         env = {
                 "irods_host": "<THE SERVER NAME OR IP ADDRESS>",
@@ -147,35 +147,35 @@ class CheckConfig(QDialog, Ui_configCheck):
                 "irods_client_server_policy": "CS_NEG_REQUIRE",
                 "irods_client_server_negotiation": "request_server_negotiation"
               }
-        populate_textfield(self.envEdit,
+        populate_textfield(self.env_field,
                            json.dumps(env, sort_keys=True, indent=4, separators=(",", ": ")))
 
     def check_env(self):
         """Check formatting, parameters and connectivity of information in text field."""
-        self.errorLabel.clear()
+        self.error_label.clear()
         try:
-            msg = check_irods_config(json.loads(self.envEdit.toPlainText()))
+            msg = check_irods_config(json.loads(self.env_field.toPlainText()))
         except json.decoder.JSONDecodeError as err:
             msg = "JSON decoding error: "+err.msg
-        self.errorLabel.setText(msg)
+        self.error_label.setText(msg)
 
     def save_env(self):
         """Overwrite file from combobox with information from text field."""
-        self.errorLabel.clear()
+        self.error_label.clear()
         env_file = self.env_path.joinpath(self.envbox.currentText())
         if env_file.exists():
             try:
-                save_irods_config(env_file, json.loads(self.envEdit.toPlainText()))
-                self.errorLabel.setText(f"Configuration saved  as {env_file}")
+                save_irods_config(env_file, json.loads(self.env_field.toPlainText()))
+                self.error_label.setText(f"Configuration saved  as {env_file}")
             except json.decoder.JSONDecodeError:
-                self.errorLabel.setText(
+                self.error_label.setText(
                         "Incorrectly formatted. Click 'Check' for more information.")
         else:
-            self.errorLabel.setText("Choose 'Save as' to save")
+            self.error_label.setText("Choose 'Save as' to save")
 
     def save_env_as(self):
         """Choose file to save text field as json."""
-        self.errorLabel.clear()
+        self.error_label.clear()
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.AnyFile)
         dialog.setNameFilter("(*.json)")
@@ -183,10 +183,10 @@ class CheckConfig(QDialog, Ui_configCheck):
                                                   str(self.env_path), "(*.json)")
         if create_file[0] != "":
             try:
-                save_irods_config(create_file[0], json.loads(self.envEdit.toPlainText()))
-                self.errorLabel.setText(f"Configuration saved  as {create_file[0]}")
+                save_irods_config(create_file[0], json.loads(self.env_field.toPlainText()))
+                self.error_label.setText(f"Configuration saved  as {create_file[0]}")
             except json.decoder.JSONDecodeError:
-                self.errorLabel.setText(
+                self.error_label.setText(
                         "Incorrectly formatted. Click 'Check' for more information.")
             except TypeError:
-                self.errorLabel.setText("File type needs to be .json")
+                self.error_label.setText("File type needs to be .json")
