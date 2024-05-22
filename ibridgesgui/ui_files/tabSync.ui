@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1234</width>
-    <height>749</height>
+    <height>721</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -350,7 +350,7 @@ QLabel#error_label
          </layout>
         </item>
         <item>
-         <widget class="QTreeView" name="irodsFsTreeView">
+         <widget class="QTreeView" name="irods_tree">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
