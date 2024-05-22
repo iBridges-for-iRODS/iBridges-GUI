@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1278</width>
-    <height>761</height>
+    <height>763</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@ QTableWidget
     border-color: rgb(86, 184, 139);
 }
 
-QLabel#errorLabel
+QLabel#error_label
 {
     color: rgb(217, 174, 23);
 }
@@ -41,7 +41,7 @@ QLineEdit
     border-color: rgb(86, 184, 139);
 }
 
-QPushButton#searchButton
+QPushButton#search_button
 {
     background-color: rgb(86, 184, 139);
     color: rgb(46, 52, 54);
@@ -209,11 +209,10 @@ QPushButton#searchButton
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QPushButton" name="searchButton">
+        <widget class="QPushButton" name="search_button">
          <property name="font">
           <font>
            <pointsize>16</pointsize>
-           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -221,14 +220,16 @@ QPushButton#searchButton
          <property name="text">
           <string>Search</string>
          </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="clearButton">
+        <widget class="QPushButton" name="clear_button">
          <property name="font">
           <font>
            <pointsize>16</pointsize>
-           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -255,11 +256,10 @@ QPushButton#searchButton
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="downloadButton">
+        <widget class="QPushButton" name="download_button">
          <property name="font">
           <font>
            <pointsize>16</pointsize>
-           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -291,7 +291,7 @@ QPushButton#searchButton
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="errorLabel">
+      <widget class="QLabel" name="error_label">
        <property name="text">
         <string/>
        </property>
@@ -320,7 +320,7 @@ QPushButton#searchButton
     </spacer>
    </item>
    <item>
-    <widget class="QTableWidget" name="searchResTable">
+    <widget class="QTableWidget" name="search_table">
      <property name="minimumSize">
       <size>
        <width>0</width>

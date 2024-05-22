@@ -48,46 +48,46 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.download_thread = None
 
         self.hide_result_elements()
-        self.searchButton.clicked.connect(self.search)
-        self.clearButton.clicked.connect(self.hide_result_elements)
-        self.downloadButton.clicked.connect(self.download)
+        self.search_button.clicked.connect(self.search)
+        self.clear_button.clicked.connect(self.hide_result_elements)
+        self.download_button.clicked.connect(self.download)
 
         #group textfields for gathering key, value, unit
         self.keys = [self.key1, self.key2, self.key3, self.key4]
         self.vals = [self.val1, self.val2, self.val3, self.val4]
 
-        self.searchResTable.doubleClicked.connect(self.send_to_browser)
+        self.search_table.doubleClicked.connect(self.send_to_browser)
 
     def hide_result_elements(self):
         """Hide the GUI elemnts that show and manipulate search results."""
-        self.errorLabel.clear()
-        self.searchResTable.hide()
-        self.downloadButton.hide()
-        self.clearButton.hide()
+        self.error_label.clear()
+        self.search_table.hide()
+        self.download_button.hide()
+        self.clear_button.hide()
         self.info_label.hide()
-        self.searchResTable.setRowCount(0)
+        self.search_table.setRowCount(0)
 
     def show_result_elements(self):
         """Show the GUI elemnts that show and manipulate search results."""
-        self.searchResTable.show()
-        self.downloadButton.show()
-        self.clearButton.show()
+        self.search_table.show()
+        self.download_button.show()
+        self.clear_button.show()
         self.info_label.show()
 
     def search(self):
         """Validate search parameters and start search."""
         self.hide_result_elements()
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
-        self.errorLabel.clear()
+        self.error_label.clear()
 
         msg, key_vals, path, checksum = self._validate_search_params()
         if msg is not None:
-            self.errorLabel.setText(msg)
+            self.error_label.setText(msg)
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
 
         if key_vals is None and path is None and checksum is None:
-            self.errorLabel.setText("No search critera given.")
+            self.error_label.setText("No search critera given.")
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
 
@@ -95,7 +95,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
     def load_results(self, results):
         """Load seach results into the table view."""
-        self.errorLabel.clear()
+        self.error_label.clear()
         table_data = [] # (Path, Name, Size, Checksum, created, modified)
         for result in results:
             if "DATA_NAME" in result:
@@ -108,15 +108,15 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                 table_data.append(('-C', coll.path, "",
                                   coll.create_time.strftime("%d-%m-%Y"),
                                   coll.modify_time.strftime("%d-%m-%Y")))
-            populate_table(self.searchResTable, len(table_data), table_data)
+            populate_table(self.search_table, len(table_data), table_data)
 
     def download(self):
         """Determine iRODS paths, select destination and start download."""
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
-        self.errorLabel.clear()
+        self.error_label.clear()
         irods_paths = self._retrieve_selected_paths()
         if len(irods_paths) == 0:
-            self.errorLabel.setText("No data selected.")
+            self.error_label.setText("No data selected.")
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
         select_dir = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory",
@@ -145,14 +145,14 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
     def send_to_browser(self):
         """Set browser inputPath to collection or parent of object."""
-        row = self.searchResTable.currentIndex().row()
-        irods_path = IrodsPath(self.session, self.searchResTable.item(row, 1).text())
+        row = self.search_table.currentIndex().row()
+        irods_path = IrodsPath(self.session, self.search_table.item(row, 1).text())
         if irods_path.collection_exists():
             self.browser.inputPath.setText(str(irods_path))
-            self.errorLabel.setText(f"Browser tab switched to {irods_path}")
+            self.error_label.setText(f"Browser tab switched to {irods_path}")
         else:
             self.browser.inputPath.setText(str(irods_path.parent))
-            self.errorLabel.setText(f"Browser tab switched to {irods_path.parent}")
+            self.error_label.setText(f"Browser tab switched to {irods_path.parent}")
         self.browser.load_browser_table()
 
     def _validate_search_params(self) -> tuple[str, dict, str, str]:
@@ -174,18 +174,18 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
     def _retrieve_selected_paths(self) -> list[IrodsPath]:
         """Retrieve paths from all selected rows in search results table."""
         irods_paths = []
-        rows = set(idx.row() for idx in self.searchResTable.selectedIndexes())
+        rows = set(idx.row() for idx in self.search_table.selectedIndexes())
         for row in rows:
             irods_paths.append(IrodsPath(
                                     self.session,
-                                    self.searchResTable.item(row, 1).text()))
+                                    self.search_table.item(row, 1).text()))
         return irods_paths
 
     def _start_download(self, session, logger, irods_paths, folder, overwrite):
-        self.downloadButton.setEnabled(False)
-        self.clearButton.setEnabled(False)
-        self.searchButton.setEnabled(False)
-        self.errorLabel.setText(f"Downloading to {folder} ....")
+        self.download_button.setEnabled(False)
+        self.clear_button.setEnabled(False)
+        self.search_button.setEnabled(False)
+        self.error_label.setText(f"Downloading to {folder} ....")
         self.download_thread = DownloadThread(session, logger, irods_paths, folder, overwrite)
         self.download_thread.succeeded.connect(self._download_end)
         self.download_thread.finished.connect(self._finish_download)
@@ -193,43 +193,43 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.download_thread.start()
 
     def _finish_download(self):
-        self.downloadButton.setEnabled(True)
-        self.clearButton.setEnabled(True)
-        self.searchButton.setEnabled(True)
+        self.download_button.setEnabled(True)
+        self.clear_button.setEnabled(True)
+        self.search_button.setEnabled(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.download_thread
 
     def _download_status(self, state):
 
-        self.errorLabel.setText(
+        self.error_label.setText(
             f"Downloading to {state[0]} .... {state[2]} out of {state[1]}, failed {state[3]}.")
         print(state)
 
     def _download_end(self, thread_output: dict):
         if thread_output["error"] == "":
-            self.errorLabel.setText("Download finished.")
+            self.error_label.setText("Download finished.")
         else:
-            self.errorLabel.setText("Errors occurred during download. Consult the logs.")
+            self.error_label.setText("Errors occurred during download. Consult the logs.")
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
 
     def _start_search(self, key_vals, path, checksum):
-        self.searchButton.setEnabled(False)
-        self.errorLabel.setText("Searching ...")
+        self.search_button.setEnabled(False)
+        self.error_label.setText("Searching ...")
         self.search_thread = SearchThread(self.session, path, checksum, key_vals)
         self.search_thread.succeeded.connect(self._fetch_results)
         self.search_thread.finished.connect(self._finish_search)
         self.search_thread.start()
 
     def _finish_search(self):
-        self.searchButton.setEnabled(True)
+        self.search_button.setEnabled(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.search_thread
 
     def _fetch_results(self, therad_output: dict):
         if 'error' in therad_output:
-            self.errorLabel.setText(therad_output["error"])
+            self.error_label.setText(therad_output["error"])
         elif len(therad_output["results"]) == 0:
-            self.errorLabel.setText("No objects or collections found.")
+            self.error_label.setText("No objects or collections found.")
         else:
             self.show_result_elements()
             self.load_results(therad_output["results"])
