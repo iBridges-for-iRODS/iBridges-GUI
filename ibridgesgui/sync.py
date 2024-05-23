@@ -121,21 +121,27 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             return
         local_path, irods_path, _, _ = paths
 
-        if self.sync_source == "local":
-            if not dry_run:
-                # updating data in iRODS --> save index to update tree
-                _, _, _, self.refresh_irods_index = paths
-            self.logger.info("Starting sync from %s to %s.", str(local_path), str(irods_path))
-            self.status_browser.append(
-                f"Starting sync from {str(local_path)} to {str(irods_path)}.")
-            self._start_sync(self.session, self.logger, local_path, irods_path,
-                                dry_run=dry_run)
+        # User info
+        if dry_run:
+            self.error_label.setText("Calculating difference ...")
+            if self.sync_source == "local":
+                self.logger.info("Calculating difference from %s to %s",
+                                    str(local_path), str(irods_path))
+            else:
+                self.logger.info("Calculating difference from %s to %s",
+                                    str(irods_path), str(local_path))
         else:
-            self.logger.info("Starting sync from %s to %s.", str(local_path), str(irods_path))
-            self.status_browser.append(
-                f"Starting sync from {str(local_path)} to {str(irods_path)}.")
-            self._start_sync(self.session, self.logger, irods_path, local_path,
-                                dry_run=dry_run)
+            self.error_label.setText("Start sync ...")
+            if self.sync_source == "local":
+                self.logger.info("Sync from %s to %s", str(local_path), str(irods_path))
+            else:
+                self.logger.info("Sync from %s to %s", str(irods_path), str(local_path))
+
+        # start sync thread
+        if self.sync_source == "local":
+            self._start_sync(self.session, self.logger, local_path, irods_path, dry_run=dry_run)
+        else:
+            self._start_sync(self.session, self.logger, irods_path, local_path, dry_run=dry_run)
 
     def local_to_irods(self):
         """Start sync from local to irods."""
@@ -209,14 +215,14 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.refresh_irods_index = None
         elif "result" in thread_output:
             self.error_label.clear()
-            self.status_browser.append("Sync preview")
             info = ''
             for key in thread_output["result"]:
                 info += "\n".join([str(i) for i in thread_output["result"][key]])
             if info == '':
-                info = "Data is already synchronised."
+                self.error_label.setText("Data is already synchronised.")
                 self.sync_source = ""
                 self.refresh_irods_index = None
+            self.status_browser.append("Data to synchronise:\n")
             self.status_browser.append(info)
         else:
             self.error_label.setText("Synchronisation finished successfully.")

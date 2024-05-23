@@ -105,7 +105,7 @@ class SyncThread(QThread):
                                 str(self.source), str(self.target), repr(error))
         except CAT_NO_ACCESS_PERMISSION as error:
             sync_out["error"] = \
-                    "There is data in the iRODS collection you are not allowed to access."
+                    "There is data in the iRODS collection which you are not allowed to access."
             self.logger.exception("Sync failed: %s --> %s; %s",
                                 str(self.source), str(self.target), repr(error))
         except Exception as error:
