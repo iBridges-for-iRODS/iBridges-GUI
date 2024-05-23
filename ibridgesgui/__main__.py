@@ -139,8 +139,8 @@ def main():
     if log_level is not None:
         init_logger(THIS_APPLICATION, log_level)
     else:
-        set_log_level("debug")
-        init_logger(THIS_APPLICATION, "debug")
+        set_log_level("error")
+        init_logger(THIS_APPLICATION, "error")
     main_widget = PyQt6.QtWidgets.QStackedWidget()
     main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
