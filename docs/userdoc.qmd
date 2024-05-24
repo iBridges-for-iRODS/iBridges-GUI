@@ -1,0 +1,101 @@
+# iBridges User Documentation
+## Synopsis 
+iBridges is a **GUI to a Data management** platform **based on iRODS**. It exposes iRODS functionality through the graphical interface to the users. We divided the different functions into groups where each function group is represented in an own view in the GUI. 
+
+The views which currently are in use:
+
+- The **Browser** is a tool to browse through iRODS collections and inspect data objects and collections. You can also **edit metadata and permissions**; and you can **delete data** in this view.
+- The **Data Synchronisation** exposes functionality to synchronise local directories with their couterpart collections in iRODS.
+- The **Search** to search for data collections and objects. 
+- The **Info** tab summarises information e.g. the user's role and groups; and storage resources on the iRODS server, their status and their available capacity.
+
+
+## Browsing through your iRODS collections
+
+When you successfully logged into iRODS the first view you will see is the **Browser**. this view has three sections:
+
+1. The navigation section
+2. The listing section
+3. A section to inspect data objects and collections in more detail
+
+
+![](screenshots/browser.png)
+
+### Navigation
+
+- The navigation shows an **editable field**, which contains your current iRODS path. When you just started iBridges-Gui it will point to your `irods_home` setting in the configuration file. 
+You can **navigate to another part of the iRODS collection tree** by editing this field and hitting `<Enter>`.
+
+- The **three buttons** next to the editable navigation field are `Refresh` (circle arrows) to refresh the list below the navigation section , Navigate `one level up` (up arrow) and navigate to your `home` collection (little house).
+
+- The `Create Collecion` button will create a collection in the path shown in the navigation field above.
+
+- The buttons `Upoload File` and `Upload Folder` open a file dialog to sleect data to upload. The destination will be the path shown in the navigation field.
+
+- The `Download` button will download data to your `Downloads` folder. To download data you will need to select an item in the table below.
+
+### Listing
+
+The table below the navigation section shows a table which contains all collections and data objects in the collection in th navigation field.
+
+- Status: `-C` for collections or the status of the data object. If the status of a data object is not `good`, the data is ompromised. Please contact your iRODS administrator to investigate. You cannot use such data!
+- Name: The name of the data object or collection
+- Size: The size in Bytes.
+- Checksum: A hash calculated on dtaa obbjects to verify them, the hash is uniwue for each data object if they conatain the same data . This can be used to verify that data transfers from iRODS to your local were successful.
+- Created and Modified: the timestamps for the creation and last editing of a collection or data object.
+
+*Single Click* on a collection or data object will load its details into the section below.
+
+*Double Click* on a collection to load its path into the navigation field above and navigate there.
+
+### Inspect collections and data objects
+
+The last of the three sections gives more detail about the data.
+*Single Click* on a collection or a data object to load its details.
+
+- `Preview` lists the contents of a collection or the first lines of a text, json or csv file.
+
+- `Metadata` shows the iRODS metadata of the selected item. iRODS metadata is structured as *key*, *value* and *units*. 
+   
+   ![](screenshots/metadata.png)
+	- *Single click* on a metadata item will load its information into the editable fields.
+	
+	- Create a new metadata entry by providing *key*, *value* and *units* in the respective fields and click `add`. here can be several metadata entries with the same key but different values. Try it out!
+	
+	- Set the metadata values and units and keys of all metadata items with the same key as in the `key field` to `value` and `units` by clicking the `Set` button. I.e. you will delete all metadata entries with the key specified in `key` and replace them with the provided information in the three fields.
+
+	- Delete metadata: Load or type the metadata into the thre fields and click `Delete`.
+
+- `Permissions` shows the access rights and levels of the selected item. You can give `read`, `write` or `own` (includes the right to delete data and manipulate their permissions) access from the drop-down menu `Access name`. To withdraw access we use `null`. 
+   
+   ![](screenshots/permissions.png)
+   
+   The label `Owner` at the bottom of the page shows the user who created the selected data object or collection.
+   
+   Collections have a special permissions keyword `inherit` and `noinherit`. Setting the permissions of a collections to `inherit` will transfer the collection's permissions to all newly added members of the collection.
+
+   To change the permissions of a collection and all its current members, set `Recursive` to True.
+
+- `Replicas` shows the on which storage resource data objects are stored. It will be empty when the selected item is a collection.
+   It shows the checksum of each replica and their status. The information is mainly meant for sysadmins. Simply send them this information when the status of a data object is different from `good`.
+   
+   ![](screenshots/replicas.png)
+   
+ - `Delete`: In the browser table click on the collection or data object you want to delete, frist click `Delete`, this will load a preview of the subcollections and data objects in the collection and then `Confirm`. **Note**, the data will be completely removed from iRODS!
+   
+   ![](screenshots/delete.png) 
+
+
+## Search
+
+`Search` provides a mask in which you can type in path information and iRODS metadata information. Click the `Search` button. If there are data objects or collections with these specifications they will be listed. A successful search will also open two more buttons: `Clear` to clear the search results and `Download`.
+
+  ![](screenshots/search.png)
+  
+  **Note that the wild card is `%`**!
+  
+  In the example search we are looking for data in a collection called *my_books* which can be located anywhere in the iRODS tree. This is denoted by `%/` and we specify that we want to retrieve data which carries the metadata key *author* where the value ends with *Carroll*.
+
+  *Single click* on items in the list and click the `Download` button to open a dialog to select the destination for the data and start the download
+  
+  *Double click* on an item in the list to set the `Browser` to its location to further inspect the metadata, permissions etc.

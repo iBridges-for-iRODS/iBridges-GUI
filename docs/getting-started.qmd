@@ -1,0 +1,35 @@
+# Getting started with iBridges-Gui
+
+## Start the program
+
+Please start **iBridges-Gui** by typing `ibridges-gui` on your terminal and hit enter.
+
+## Configuring iBridges-Gui
+
+When you start iBridges you will find in the upper drop-down menu `Connect` and `Configure`.
+
+![](screenshots/start_ibridges.png)
+
+Before we start iBridges for the first time let us check and create a valid configuration file; Click on `Configure -> Add Configuration`.
+
+![](screenshots/add_check_config.png)
+
+If you already stored an `irods_environment.json` in the directory `~/.irods` (Windows `C:\Users\<username>\.irods`) then you can use the drop-down menu (little dowmward arrow) to load the cinfiguration.
+
+If you do not have an iRODS configuration yet, click on the button `New Config`.
+
+You should see now something like:
+![](screenshots/add_new_config.png)
+
+Click the `Check` button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service proivder.
+
+Once the check runs through fine click the `Save` or `Save as` button. This will store the adjusted configuration in the correct directory on you laptop so that we can use it for the login (See Section below).
+
+## Start an iRODS session
+
+To start working with data in iRODS select `Connect -> Connect to iRODS`. This will open the pop-up window
+
+![](screenshots/login.png)
+
+Select the file we edited above from the drop-down menu and provide your password. If you already logged into iRODS with this or another iRODS client your password might still be cached. This is indicated by the `******`. Hit `<Enter>` or press the `Connect` button.
+
