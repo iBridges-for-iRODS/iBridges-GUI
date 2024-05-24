@@ -8,15 +8,11 @@ website:
       - href: index.qmd
         text: Home
       - href: docs/info.qmd
-        text: What is iBridges?
+        text: What is iBridges-Gui?
       - href: docs/getting-started.qmd
         text: Getting started
       - href: docs/userdoc.qmd
         text: Documentation
-      - href: docs/developer.qmd
-        text: Developers
-      - href: docs/roadmap.qmd
-        text: Known issues and roadmap
 
 format:
   html:
