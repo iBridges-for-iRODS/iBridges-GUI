@@ -59,6 +59,10 @@ Start the application by calling `ibridges-gui` on your commandline.
 **J.P. Mc Farland**,
 *University of Groningen, Center for Information Technology*, 2022
 
+## Contributing
+Our development is done on GitHub](https://github.com/chStaiger/iBridges-Gui). We are welcoming contributions by pull requests. You can also ask for new features/ideas in our issue tracker.
+
+
 
 ## License
 GPL v3
