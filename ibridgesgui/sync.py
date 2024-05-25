@@ -202,11 +202,11 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             print(f"Synchronising from {source} to {target} ....")
         
         # check if session comes from env file in ibridges config
-        if is_session_from_config:
+        if is_session_from_config(self.session):
             env_path = Path("~").expanduser().joinpath('.irods', get_last_ienv_path())
         else:
-            text = "No search possible: The ibridges config changed during the session.\n"
-            text = "Please reset or restart the session."
+            text = "No search possible: The ibridges config changed during the session."
+            text += "Please reset or restart the session."
             self.error_label.setText(text)
             return
 

@@ -123,12 +123,16 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     ienv_path = Path('~').expanduser().joinpath('.irods', get_last_ienv_path())
     try:
         env = _read_json(ienv_path)
+        print(env)
     except Exception:
         return False
 
-    if session.host == env["irods_host"] and session.port == env["irods_port"] and \
-       session.zone == env["irods_zone_name"] and session.username == env["irods_user_name"] and \
-       session.home == env["irods_home"] and session.default_resc == env["irods_default_resource"]:
+    if session.host == env.get("irods_host", -1) and \
+       session.port == env.get("irods_port", -1) and \
+       session.zone == env.get("irods_zone_name", -1) and \
+       session.username == env.get("irods_user_name") and \
+       session.home == env.get("irods_home", -1) and \
+       session.default_resc == env.get("irods_default_resource", -1):
            return True
     return False
 

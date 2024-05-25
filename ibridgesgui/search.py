@@ -187,11 +187,11 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.clear_button.setEnabled(False)
         self.search_button.setEnabled(False)
         # check if session comes from env file in ibridges config
-        if is_session_from_config:
+        if is_session_from_config(self.session):
             env_path = Path("~").expanduser().joinpath('.irods', get_last_ienv_path())
         else:
             text = "No download possible: The ibridges config changed during the session."
-            text += "\nPlease reset or restart the session."
+            text += " Please reset or restart the session."
             self.error_label.setText(text)
             return
         self.error_label.setText(f"Downloading to {folder} ....")
@@ -223,11 +223,11 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
     def _start_search(self, key_vals, path, checksum):
         self.search_button.setEnabled(False)
         # check if session comes from env file in ibridges config
-        if is_session_from_config:
+        if is_session_from_config(self.session):
             env_path = Path("~").expanduser().joinpath('.irods', get_last_ienv_path())
         else:
-            text = "No search possible: The ibridges config changed during the session.\n"
-            text = "Please reset or restart the session."
+            text = "No search possible: The ibridges config changed during the session."
+            text += " Please reset or restart the session."
             self.error_label.setText(text)
             return
         self.error_label.setText("Searching ...")
