@@ -112,6 +112,27 @@ def _get_config() -> Union[None, dict]:
         sys.exit(1)
 
 # irods config functions
+
+def is_session_from_config(session: Session) -> Union[Session, None]:
+    """Create a new session from the given session.
+
+    For the QThreads we need an own session to avoid hickups.
+    We will verify that the given session was instantiated by the
+    parameters saved in the ibridges configuration.
+    """
+    ienv_path = Path('~').expanduser().joinpath('.irods', get_last_ienv_path())
+    try:
+        env = _read_json(ienv_path)
+    except Exception:
+        return False
+
+    if session.host == env["irods_host"] and session.port == env["irods_port"] and \
+       session.zone == env["irods_zone_name"] and session.username == env["irods_user_name"] and \
+       session.home == env["irods_home"] and session.default_resc == env["irods_default_resource"]:
+           return True
+    return False
+
+
 def check_irods_config(ienv: Union[Path, dict]) -> str:
     """Check whether an iRODS configuration file is correct.
 

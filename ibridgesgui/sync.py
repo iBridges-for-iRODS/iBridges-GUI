@@ -12,7 +12,9 @@ from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
 from ibridgesgui.threads import SyncThread
 from ibridgesgui.ui_files.tabSync import Ui_tabSync
+from ibridgesgui.config import is_session_from_config, get_last_ienv_path
 
+from ibridges.interactive import interactive_auth
 
 class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
     """Sync view."""
@@ -139,9 +141,9 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
         # start sync thread
         if self.sync_source == "local":
-            self._start_sync(self.session, self.logger, local_path, irods_path, dry_run=dry_run)
+            self._start_sync(self.logger, local_path, irods_path, dry_run=dry_run)
         else:
-            self._start_sync(self.session, self.logger, irods_path, local_path, dry_run=dry_run)
+            self._start_sync(self.logger, irods_path, local_path, dry_run=dry_run)
 
     def local_to_irods(self):
         """Start sync from local to irods."""
@@ -186,18 +188,29 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.create_coll_button.setEnabled(enable)
         self.create_dir_button.setEnabled(enable)
 
-    def _start_sync(self, session, logger, source, target, dry_run):
+    def _start_sync(self, logger, source, target, dry_run):
         self.error_label.clear()
         self.status_browser.clear()
         self._enable_buttons(False)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+
 
         if dry_run:
             self.error_label.setText("Calculating differences ....")
         else:
             self.error_label.setText(f"Synchronising from {source} to {target} ....")
             print(f"Synchronising from {source} to {target} ....")
-        self.sync_thread = SyncThread(session, logger, source, target, dry_run)
+        
+        # check if session comes from env file in ibridges config
+        if is_session_from_config:
+            env_path = Path("~").expanduser().joinpath('.irods', get_last_ienv_path())
+        else:
+            text = "No search possible: The ibridges config changed during the session.\n"
+            text = "Please reset or restart the session."
+            self.error_label.setText(text)
+            return
+
+        self.sync_thread = SyncThread(env_path, logger, source, target, dry_run)
         self.sync_thread.succeeded.connect(self._sync_end)
         self.sync_thread.finished.connect(self._finish_sync)
         self.sync_thread.start()

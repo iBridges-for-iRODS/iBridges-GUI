@@ -7,6 +7,7 @@ import PyQt6.uic
 from ibridges import IrodsPath, get_collection, get_dataobject
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
+from ibridgesgui.config import is_session_from_config, get_last_ienv_path
 
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
@@ -138,7 +139,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         if button_reply == QMessageBox.StandardButton.Yes:
             overwrite = True
-            self._start_download(self.session, self.logger, irods_paths, select_dir, overwrite)
+            self._start_download(self.logger, irods_paths, select_dir, overwrite)
         else:
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
@@ -181,12 +182,20 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                                     self.search_table.item(row, 1).text()))
         return irods_paths
 
-    def _start_download(self, session, logger, irods_paths, folder, overwrite):
+    def _start_download(self, logger, irods_paths, folder, overwrite):
         self.download_button.setEnabled(False)
         self.clear_button.setEnabled(False)
         self.search_button.setEnabled(False)
+        # check if session comes from env file in ibridges config
+        if is_session_from_config:
+            env_path = Path("~").expanduser().joinpath('.irods', get_last_ienv_path())
+        else:
+            text = "No download possible: The ibridges config changed during the session."
+            text += "\nPlease reset or restart the session."
+            self.error_label.setText(text)
+            return
         self.error_label.setText(f"Downloading to {folder} ....")
-        self.download_thread = DownloadThread(session, logger, irods_paths, folder, overwrite)
+        self.download_thread = DownloadThread(env_path, logger, irods_paths, folder, overwrite)
         self.download_thread.succeeded.connect(self._download_end)
         self.download_thread.finished.connect(self._finish_download)
         self.download_thread.current_progress.connect(self._download_status)
@@ -203,7 +212,6 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         self.error_label.setText(
             f"Downloading to {state[0]} .... {state[2]} out of {state[1]}, failed {state[3]}.")
-        print(state)
 
     def _download_end(self, thread_output: dict):
         if thread_output["error"] == "":
@@ -214,8 +222,16 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
     def _start_search(self, key_vals, path, checksum):
         self.search_button.setEnabled(False)
+        # check if session comes from env file in ibridges config
+        if is_session_from_config:
+            env_path = Path("~").expanduser().joinpath('.irods', get_last_ienv_path())
+        else:
+            text = "No search possible: The ibridges config changed during the session.\n"
+            text = "Please reset or restart the session."
+            self.error_label.setText(text)
+            return
         self.error_label.setText("Searching ...")
-        self.search_thread = SearchThread(self.session, path, checksum, key_vals)
+        self.search_thread = SearchThread(self.logger, env_path, path, checksum, key_vals)
         self.search_thread.succeeded.connect(self._fetch_results)
         self.search_thread.finished.connect(self._finish_search)
         self.search_thread.start()
