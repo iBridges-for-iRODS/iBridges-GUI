@@ -195,7 +195,12 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.error_label.setText(text)
             return
         self.error_label.setText(f"Downloading to {folder} ....")
-        self.download_thread = DownloadThread(env_path, logger, irods_paths, folder, overwrite)
+        try:
+            self.download_thread = DownloadThread(env_path, logger, irods_paths, folder, overwrite)
+        except Exception:
+            self.error_label.setText(
+                    "Could not instantiate a new session from{env_path}.Check configuration")
+            return
         self.download_thread.succeeded.connect(self._download_end)
         self.download_thread.finished.connect(self._finish_download)
         self.download_thread.current_progress.connect(self._download_status)
@@ -231,7 +236,12 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.error_label.setText(text)
             return
         self.error_label.setText("Searching ...")
-        self.search_thread = SearchThread(self.logger, env_path, path, checksum, key_vals)
+        try:
+            self.search_thread = SearchThread(self.logger, env_path, path, checksum, key_vals)
+        except Exception:
+            self.error_label.setText(
+                    "Could not instantiate a new session from{env_path}.Check configuration")
+            return
         self.search_thread.succeeded.connect(self._fetch_results)
         self.search_thread.finished.connect(self._finish_search)
         self.search_thread.start()

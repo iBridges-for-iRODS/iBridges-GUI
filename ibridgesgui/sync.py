@@ -209,8 +209,12 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             text += "Please reset or restart the session."
             self.error_label.setText(text)
             return
-
-        self.sync_thread = SyncThread(env_path, logger, source, target, dry_run)
+        try
+            self.sync_thread = SyncThread(env_path, logger, source, target, dry_run)
+        except Exception:
+            self.error_label.setText(
+                    "Could not instantiate a new session from{env_path}.Check configuration")
+            return
         self.sync_thread.succeeded.connect(self._sync_end)
         self.sync_thread.finished.connect(self._finish_sync)
         self.sync_thread.start()
