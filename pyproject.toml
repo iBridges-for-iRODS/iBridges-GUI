@@ -67,7 +67,9 @@ ignore-paths="ui_files,icons"
 [tool.pylint.'BASIC']
 good-names=["e", "f", "m"]
 
-[tool.pylint.'FORMAT']
+[tool.pylint.'VARIABLES']
+extension-pkg-whitelist="PyQt6"
+disable=["W0718", "fixme", "too-many-arguments"]
 max-line-length=100
 max-locals=35
 max-args=10
@@ -76,4 +78,4 @@ max-args=10
 exclude = ["_version.py", "ui_files"]
 line-length = 100
 lint.select = ["D", "E", "F", "W", "I", "N"]
-lint.ignore = ["D203", "D213"]
+lint.ignore = ["D203", "D213", "W0718"]
