@@ -85,6 +85,22 @@ The last of the three sections gives more detail about the data.
    
    ![](screenshots/delete.png) 
 
+## Data Synchronisation
+`Synchronise Data` provides the tools tyo **synchronise a local folder with an iRODS collection**. The synchronisation can work both ways, from local to iRODS (right-pointing arrow button) and from iRODS to local (left-pointing arrow button).
+Before the synchronisation the difference will be calculated and shown in the textfield on the bottom. **Note,** the calculation of differences can take some time.
+
+![](screenshots/sync.png)
+
+### Beta release
+**Note,** the synchronisation only works for collection or directories, not for single files or data objects.
+
+### Beta release: upload large data
+The Upload and Download in the `Browser` view is not meant for large scale uploads. Please use the synchronisation for that.
+
+If you want to upload a large directory to iRODS, create the destination collection with the `Create Collection` button and then synchronise your data from Local to iRODS.
+
+In the case you want to download a large collection from iRODS, create the destination directory on the local file system with the `Create Folder` button and synchronise the data from iRODS to Local.
+
 
 ## Search
 
