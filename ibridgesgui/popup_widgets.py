@@ -166,7 +166,7 @@ class CheckConfig(QDialog, Ui_configCheck):
         """Overwrite file from combobox with information from text field."""
         self.error_label.clear()
         env_file = self.env_path.joinpath(self.envbox.currentText())
-        if env_file.exists():
+        if env_file.is_file():
             try:
                 save_irods_config(env_file, json.loads(self.env_field.toPlainText()))
                 self.error_label.setText(f"Configuration saved  as {env_file}")
