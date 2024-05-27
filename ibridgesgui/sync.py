@@ -178,6 +178,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.error_label.setText("Please select a collection.")
             return None
         irods_index = irods_selection[0]
+        self.refresh_irods_index = irods_index
         irods_path = self.irods_model.irods_path_from_tree_index(irods_index)
         if irods_path.dataobject_exists():
             self.error_label.setText("Please select a collection, not a data object.")
@@ -249,6 +250,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.sync_source = ""
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         if self.refresh_irods_index is not None:
+            print(self.refresh_irods_index)
             self.irods_model.refresh_subtree(self.refresh_irods_index)
 
         # real sync if necessary
