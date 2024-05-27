@@ -64,6 +64,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def disconnect(self):
         """Close iRODS session."""
+        self.error_label.clear()
         if "session" in self.session_dict:
             self.logger.info("Disconnecting %s from %s", self.session.username, self.session.host)
             self.session.close()
@@ -73,15 +74,14 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def connect(self):
         """Create iRODS session."""
-        # Trick to get the session object from the QDialog
         self.error_label.clear()
         if self.session:
-            print(self.session)
             self.error_label.setText("Please close session first.")
             return
         
         login_window = Login(self.session_dict, self.app_name)
         login_window.exec()
+        # Trick to get the session object from the QDialog
         if "session" in self.session_dict:
             self.session = self.session_dict["session"]
             try:
