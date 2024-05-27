@@ -14,39 +14,43 @@ class Ui_irodsLogin(object):
         irodsLogin.setObjectName("irodsLogin")
         irodsLogin.resize(770, 332)
         irodsLogin.setMinimumSize(QtCore.QSize(770, 320))
-        irodsLogin.setStyleSheet("QWidget\n"
-"{\n"
-"    background-color: rgb(54, 54, 54);\n"
-"    color: rgb(86, 184, 139);\n"
-"    border-color: rgb(217, 174, 23);\n"
-"    font: 16pt;\n"
-"}\n"
-"\n"
-"QLineEdit\n"
-"{\n"
-"    background-color: rgb(85, 87, 83);\n"
-"    border-color: rgb(217, 174, 23);\n"
-"    font: 18pt;\n"
-"}\n"
-"\n"
-"QLabel#error_label\n"
-"{\n"
-"    color: rgb(217, 174, 23);\n"
-"     font: 18pt;\n"
-"}\n"
-"\n"
-"QLabel#label_2\n"
-"{\n"
-"    font: 22pt;\n"
-"    \n"
-"}\n"
-"\n"
-"")
+        irodsLogin.setStyleSheet(
+            "QWidget\n"
+            "{\n"
+            "    background-color: rgb(54, 54, 54);\n"
+            "    color: rgb(86, 184, 139);\n"
+            "    border-color: rgb(217, 174, 23);\n"
+            "    font: 16pt;\n"
+            "}\n"
+            "\n"
+            "QLineEdit\n"
+            "{\n"
+            "    background-color: rgb(85, 87, 83);\n"
+            "    border-color: rgb(217, 174, 23);\n"
+            "    font: 18pt;\n"
+            "}\n"
+            "\n"
+            "QLabel#error_label\n"
+            "{\n"
+            "    color: rgb(217, 174, 23);\n"
+            "     font: 18pt;\n"
+            "}\n"
+            "\n"
+            "QLabel#label_2\n"
+            "{\n"
+            "    font: 22pt;\n"
+            "    \n"
+            "}\n"
+            "\n"
+            ""
+        )
         self.gridLayout_2 = QtWidgets.QGridLayout(irodsLogin)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed
+        )
         self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
         self.envbox = QtWidgets.QComboBox(parent=irodsLogin)
         self.envbox.setObjectName("envbox")
@@ -78,9 +82,13 @@ class Ui_irodsLogin(object):
         self.label_1 = QtWidgets.QLabel(parent=irodsLogin)
         self.label_1.setObjectName("label_1")
         self.gridLayout.addWidget(self.label_1, 6, 1, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.gridLayout.addItem(spacerItem1, 2, 0, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         self.gridLayout.addItem(spacerItem2, 2, 1, 1, 1)
         self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -90,7 +98,9 @@ class Ui_irodsLogin(object):
         self.error_label.setText("")
         self.error_label.setObjectName("error_label")
         self.horizontalLayout.addWidget(self.error_label)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem3)
         self.cancel_button = QtWidgets.QPushButton(parent=irodsLogin)
         self.cancel_button.setObjectName("cancel_button")
@@ -106,7 +116,9 @@ class Ui_irodsLogin(object):
         self.connect_button.setObjectName("connect_button")
         self.horizontalLayout.addWidget(self.connect_button)
         self.gridLayout_2.addLayout(self.horizontalLayout, 1, 0, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.gridLayout_2.addItem(spacerItem4, 0, 1, 1, 1)
 
         self.retranslateUi(irodsLogin)

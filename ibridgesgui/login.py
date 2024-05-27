@@ -1,4 +1,5 @@
 """Pop up Widget for Login."""
+
 import logging
 import sys
 from pathlib import Path
@@ -39,12 +40,11 @@ class Login(QDialog, Ui_irodsLogin):
         self.password_field.setEchoMode(QLineEdit.EchoMode.Password)
 
     def _init_envbox(self):
-        env_jsons = [
-            path.name for path in
-            self.irods_config_dir.glob("irods_environment*json")]
+        env_jsons = [path.name for path in self.irods_config_dir.glob("irods_environment*json")]
         if len(env_jsons) == 0:
             self.envError.setText(
-                f"ERROR: no irods_environment*json files found in {self.irods_config_dir}")
+                f"ERROR: no irods_environment*json files found in {self.irods_config_dir}"
+            )
 
         self.envbox.clear()
         self.envbox.addItems(env_jsons)
@@ -55,7 +55,7 @@ class Login(QDialog, Ui_irodsLogin):
             self.envbox.setCurrentIndex(0)
 
     def _init_password(self):
-        #Check if there is a cached password
+        # Check if there is a cached password
         passwd_file = self.irods_config_dir.joinpath(".irodsA")
         if passwd_file.is_file():
             self.password_field.setText("***********")
@@ -78,8 +78,12 @@ class Login(QDialog, Ui_irodsLogin):
                 session = Session(irods_env=env_file, password=self.password_field.text())
                 self.logger.debug("Login with %s and password from prompt.", env_file)
             self.session_dict["session"] = session
-            self.logger.info("Logged in as %s to %s; working coll %s",
-                             session.username, session.host, session.home)
+            self.logger.info(
+                "Logged in as %s to %s; working coll %s",
+                session.username,
+                session.host,
+                session.home,
+            )
             session.write_pam_password()
             set_last_ienv_path(env_file.name)
             self.close()
@@ -88,7 +92,9 @@ class Login(QDialog, Ui_irodsLogin):
         except PasswordError:
             self.error_label.setText("Wrong password!")
         except ConnectionError:
-            self.error_label.setText("Cannot connect to server. Check Internet, host name and port.")
+            self.error_label.setText(
+                "Cannot connect to server. Check Internet, host name and port."
+            )
         except Exception as err:
             log_path = Path("~/.ibridges")
             self.logger.exception("Failed to login: %s", repr(err))

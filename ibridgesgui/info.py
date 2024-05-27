@@ -1,4 +1,5 @@
 """Provide the GUI with iRODS information."""
+
 import sys
 
 import PyQt6
@@ -44,8 +45,7 @@ class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
         self.resc_label.setText(self.session.default_resc)
         # irods server and version
         self.server_label.setText(self.session.host)
-        self.version_label.setText(
-            ".".join((str(num) for num in self.session.server_version)))
+        self.version_label.setText(".".join((str(num) for num in self.session.server_version)))
         # irods resources
         resc_info = Resources(self.session).root_resources
         populate_table(self.resc_table, len(resc_info[0]), resc_info)

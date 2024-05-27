@@ -2,6 +2,9 @@
 # Maximum number of characters on a single line.
 max-line-length=120
 
+[MASTER]
+ignore=ui_files,icons,_version.py
+
 [VARIABLES]
 
 # Maximum number of lines in a module.
@@ -12,7 +15,7 @@ max-module-lines=2000
 #ignored-argument-names=_.*|^ignored_|^unused_|rule_args|callback|rei
 
 # Catching too general exception Exception 
-disable=W0718,fixme,too-many-arguments
+disable=W0718,fixme,too-many-arguments,R0916,R0911
 
 # C++ modules of PyQt6 not visible to pylint
 extension-pkg-whitelist=PyQt6
