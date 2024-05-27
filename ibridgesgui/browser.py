@@ -1,4 +1,5 @@
 """Browser tab."""
+
 import logging
 import sys
 from pathlib import Path
@@ -25,8 +26,7 @@ from ibridgesgui.popup_widgets import CreateCollection
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 
 
-class Browser(PyQt6.QtWidgets.QWidget,
-              Ui_tabBrowser):
+class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
     """Browser view for iRODS session."""
 
     def __init__(self, session, app_name):
@@ -50,15 +50,14 @@ class Browser(PyQt6.QtWidgets.QWidget,
         except irods.exception.CollectionDoesNotExist:
             self.root_coll = get_collection(self.session, f"/{self.session.zone}/home")
         except irods.exception.NetworkException:
-            self.error_label.setText(
-                "iRODS NETWORK ERROR: No Connection, please check network")
+            self.error_label.setText("iRODS NETWORK ERROR: No Connection, please check network")
         except Exception as err:
             self.error_label.setText(
-                    'Cannot set root collection. Set "irods_home" in your environment.json')
+                'Cannot set root collection. Set "irods_home" in your environment.json'
+            )
             self.logger.exception("Failed to set iRODS home: %s", err)
         self.reset_path()
         self.browse()
-
 
     def browse(self):
         """Initialize browser view GUI elements. Define the signals and slots."""
@@ -94,19 +93,16 @@ class Browser(PyQt6.QtWidgets.QWidget,
         self.confirm_button.clicked.connect(self.delete_data)
         self.load_selection_button.clicked.connect(self.load_selection)
 
-
     def reset_path(self):
         """Reset browser table to root path."""
         self.path_input.setText(self.root_coll.path)
         self.load_browser_table()
-
 
     def set_parent(self):
         """Set browser path to parent of current collection and update browser table."""
         current_path = IrodsPath(self.session, self.path_input.text())
         self.path_input.setText(str(current_path.parent))
         self.load_browser_table()
-
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def update_path(self, index):
@@ -121,7 +117,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
     def create_collection(self):
         """Create a new collection in current collection."""
         self.error_label.clear()
-        parent = IrodsPath(self.session, "/"+self.path_input.text().strip("/"))
+        parent = IrodsPath(self.session, "/" + self.path_input.text().strip("/"))
         coll_widget = CreateCollection(parent, self.logger)
         coll_widget.exec()
         self.load_browser_table()
@@ -167,17 +163,19 @@ class Browser(PyQt6.QtWidgets.QWidget,
                         if Path(download_dir).joinpath(item_name).exists() and not overwrite:
                             raise FileExistsError
                         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.BusyCursor))
-                        self.logger.info("Downloading %s to %s, overwrite %s", path, download_dir,
-                                         str(overwrite))
+                        self.logger.info(
+                            "Downloading %s to %s, overwrite %s", path, download_dir, str(overwrite)
+                        )
                         download(self.session, path, download_dir, overwrite=overwrite)
                         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
-                        self.error_label.setText("Data downloaded to: "+str(download_dir))
+                        self.error_label.setText("Data downloaded to: " + str(download_dir))
                 else:
-                    self.error_label.setText(
-                            f"Data {path.parent} does not exist.")
+                    self.error_label.setText(f"Data {path.parent} does not exist.")
             except FileExistsError:
-                self.error_label.setText(f"Data already exists in {download_dir}."+\
-                                        ' Check "overwrite" to overwrite the data.')
+                self.error_label.setText(
+                    f"Data already exists in {download_dir}."
+                    + ' Check "overwrite" to overwrite the data.'
+                )
             except Exception as err:
                 self.logger.exception("Downloading %s failed: %s", path, err)
                 self.error_label.setText(f"Could not download {path}. Consult the logs.")
@@ -191,19 +189,34 @@ class Browser(PyQt6.QtWidgets.QWidget,
             try:
                 coll = get_collection(self.session, obj_path)
 
-                coll_data = [("C-", subcoll.name, "", "",
-                                subcoll.create_time.strftime("%d-%m-%Y"),
-                                subcoll.modify_time.strftime("%d-%m-%Y %H:%m"))
-                                for subcoll in coll.subcollections]
-                obj_data = [(max(repl[4] for repl in obj_replicas(obj)),
-                             obj.name, str(obj.size),
-                             obj.checksum, obj.create_time.strftime("%d-%m-%Y"),
-                             obj.modify_time.strftime("%d-%m-%Y %H:%m"))
-                             for obj in coll.data_objects]
+                coll_data = [
+                    (
+                        "C-",
+                        subcoll.name,
+                        "",
+                        "",
+                        subcoll.create_time.strftime("%d-%m-%Y"),
+                        subcoll.modify_time.strftime("%d-%m-%Y %H:%m"),
+                    )
+                    for subcoll in coll.subcollections
+                ]
+                obj_data = [
+                    (
+                        max(repl[4] for repl in obj_replicas(obj)),
+                        obj.name,
+                        str(obj.size),
+                        obj.checksum,
+                        obj.create_time.strftime("%d-%m-%Y"),
+                        obj.modify_time.strftime("%d-%m-%Y %H:%m"),
+                    )
+                    for obj in coll.data_objects
+                ]
 
-                populate_table(self.browser_table,
-                                len(coll.data_objects)+len(coll.subcollections),
-                                coll_data+obj_data)
+                populate_table(
+                    self.browser_table,
+                    len(coll.data_objects) + len(coll.subcollections),
+                    coll_data + obj_data,
+                )
                 self.browser_table.resizeColumnsToContents()
             except Exception:
                 self.browser_table.setRowCount(0)
@@ -212,7 +225,6 @@ class Browser(PyQt6.QtWidgets.QWidget,
         else:
             self.browser_table.setRowCount(0)
             self.error_label.setText("Collection does not exist.")
-
 
     def fill_info(self):
         """Fill lower tabs with info."""
@@ -232,7 +244,6 @@ class Browser(PyQt6.QtWidgets.QWidget,
         except Exception:
             self.logger.exception("Cannot load info tabs.")
             self.error_label.setText("Cannot load info tabs. Consult the logs.")
-
 
     def set_icat_meta(self):
         """Button metadata set."""
@@ -254,7 +265,6 @@ class Browser(PyQt6.QtWidgets.QWidget,
             self._metadata_edits("delete")
         except Exception as error:
             self.error_label.setText(repr(error))
-
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def edit_metadata(self, index):
@@ -302,8 +312,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
 
         if acc_name in ("inherit", "noinherit"):
             if irods_path.dataobject_exists():
-                self.error_label.setText(
-                    "WARNING: (no)inherit is not applicable to data objects")
+                self.error_label.setText("WARNING: (no)inherit is not applicable to data objects")
                 return
         elif user_name == "":
             self.error_label.setText("Please provide a user.")
@@ -317,11 +326,23 @@ class Browser(PyQt6.QtWidgets.QWidget,
             perm = Permissions(self.session, item)
             perm.set(perm=acc_name, user=user_name, zone=user_zone, recursive=recursive)
             if acc_name == "null":
-                self.logger.info("Delete access (%s, %s, %s, %s) for %s",
-                                 acc_name, user_name, user_zone, str(recursive), item.path)
+                self.logger.info(
+                    "Delete access (%s, %s, %s, %s) for %s",
+                    acc_name,
+                    user_name,
+                    user_zone,
+                    str(recursive),
+                    item.path,
+                )
             else:
-                self.logger.info("Add/change access of %s to (%s, %s, %s, %s)",
-                             item.path, acc_name, user_name, user_zone, str(recursive))
+                self.logger.info(
+                    "Add/change access of %s to (%s, %s, %s, %s)",
+                    item.path,
+                    acc_name,
+                    user_name,
+                    user_zone,
+                    str(recursive),
+                )
             self._fill_acls_tab(irods_path)
         except irods.exception.CAT_INVALID_USER:
             self.error_label.setText(f"Cannot update ACLs. {user_name}#{user_zone} not known.")
@@ -348,7 +369,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
                     content.append(key)
                     if len(data_dict[key]) > 0:
                         for item in data_dict[key]:
-                            content.append("\t"+item)
+                            content.append("\t" + item)
                 content.append("...")
             else:
                 content.append(str(item_path))
@@ -361,11 +382,14 @@ class Browser(PyQt6.QtWidgets.QWidget,
         data = self.delete_browser.toPlainText().split("\n")
         if data[0] != "":
             item = data[0].strip()
-            quit_msg = "Delete all data in \n\n"+item+"\n"
+            quit_msg = "Delete all data in \n\n" + item + "\n"
             reply = PyQt6.QtWidgets.QMessageBox.question(
-                self, "Message", quit_msg,
+                self,
+                "Message",
+                quit_msg,
                 PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.No)
+                PyQt6.QtWidgets.QMessageBox.StandardButton.No,
+            )
             if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
                 try:
                     IrodsPath(self.session, item).remove()
@@ -379,7 +403,7 @@ class Browser(PyQt6.QtWidgets.QWidget,
                     self.logger.exception("FAILED: Delete data %s", item)
                     self.error_label.setText(f"FAILED: Delete data {item}. Consult the logs.")
 
-# Internal functions
+    # Internal functions
     def _clear_info_tabs(self):
         """Clear the tabs view."""
         self.acl_table.setRowCount(0)
@@ -476,12 +500,13 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 try:
                     with obj.open("r") as objfd:
                         content = [objfd.read(1024).decode("utf-8")]
-                    #self.preview_browser.append(preview_string)
+                    # self.preview_browser.append(preview_string)
                 except Exception as error:
-                    content = [f"No Preview for: {irods_path}",
-                              repr(error),
-                              "Storage resource might be down."
-                              ]
+                    content = [
+                        f"No Preview for: {irods_path}",
+                        repr(error),
+                        "Storage resource might be down.",
+                    ]
             else:
                 content = [f"No Preview for: {irods_path}"]
         populate_textfield(self.preview_browser, content)
@@ -505,16 +530,28 @@ class Browser(PyQt6.QtWidgets.QWidget,
                 meta = MetaData(item)
                 if operation == "add":
                     meta.add(new_key, new_val, new_units)
-                    self.logger.info("Add metadata (%s, %s, %s) to %s",
-                                     new_key, new_val, new_units, irods_path)
+                    self.logger.info(
+                        "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
+                    )
                 elif operation == "set":
                     meta.set(new_key, new_val, new_units)
-                    self.logger.info("Set all metadata with key %s to (%s, %s, %s) for %s",
-                                     new_key, new_key, new_val, new_units, irods_path)
+                    self.logger.info(
+                        "Set all metadata with key %s to (%s, %s, %s) for %s",
+                        new_key,
+                        new_key,
+                        new_val,
+                        new_units,
+                        irods_path,
+                    )
                 elif operation == "delete":
                     meta.delete(new_key, new_val, new_units)
-                    self.logger.info("Delete metadata (%s, %s, %s) from %s",
-                                     new_key, new_val, new_units, irods_path)
+                    self.logger.info(
+                        "Delete metadata (%s, %s, %s) from %s",
+                        new_key,
+                        new_val,
+                        new_units,
+                        irods_path,
+                    )
                 self._fill_metadata_tab(irods_path)
 
     def _fs_select(self, path_select):
@@ -551,17 +588,24 @@ class Browser(PyQt6.QtWidgets.QWidget,
         try:
             if parent_path.joinpath(source.name).exists() and not overwrite:
                 raise FileExistsError
-            self.logger.info("Uploading %s to %s, overwrite %s",
-                             source, parent_path, str(overwrite))
+            self.logger.info(
+                "Uploading %s to %s, overwrite %s", source, parent_path, str(overwrite)
+            )
             upload(self.session, source, parent_path, overwrite=overwrite)
             self.load_browser_table()
         except FileExistsError:
-            self.error_label.setText(f'Data already exists in {parent_path}.'+\
-                                    ' Check "overwrite" to overwrite the data.')
+            self.error_label.setText(
+                f"Data already exists in {parent_path}."
+                + ' Check "overwrite" to overwrite the data.'
+            )
         except irods.exception.CAT_NO_ACCESS_PERMISSION:
             self.error_label.setText(f"No permission to upload data to {parent_path}.")
-            self.logger.info("Uploading %s to %s, overwrite %s failed. No permissions.",
-                             source, parent_path, str(overwrite))
+            self.logger.info(
+                "Uploading %s to %s, overwrite %s failed. No permissions.",
+                source,
+                parent_path,
+                str(overwrite),
+            )
         except Exception as err:
             self.logger.exception("Failed to upload %s to %s: %s", source, parent_path, err)
             self.error_label.setText(f"Failed to upload {source}. Consult the logs.")

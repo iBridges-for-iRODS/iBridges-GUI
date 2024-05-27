@@ -14,21 +14,25 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1300, 850)
         MainWindow.setMinimumSize(QtCore.QSize(1300, 850))
-        MainWindow.setStyleSheet(
-            "QWidget\n"
-            "{\n"
-            "    color: rgb(86, 184, 139);\n"
-            "    background-color: rgb(54, 54, 54);\n"
-            "    selection-background-color: rgb(58, 152, 112);\n"
-            "    font: 16pt;\n"
-            "}\n"
-            "\n"
-            "QTabBar::tab:top:selected {\n"
-            "    background-color: rgb(58, 152, 112);\n"
-            "    color: rgb(54, 54, 54);\n"
-            "}\n"
-            ""
-        )
+        MainWindow.setStyleSheet("QWidget\n"
+"{\n"
+"    color: rgb(86, 184, 139);\n"
+"    background-color: rgb(54, 54, 54);\n"
+"    selection-background-color: rgb(58, 152, 112);\n"
+"    font: 16pt;\n"
+"}\n"
+"\n"
+"QTabBar::tab:top:selected {\n"
+"    background-color: rgb(58, 152, 112);\n"
+"    color: rgb(54, 54, 54);\n"
+"}\n"
+"\n"
+"QLabel#error_label\n"
+"{\n"
+"    color: rgb(217, 174, 23);\n"
+"     font: 18pt;\n"
+"}\n"
+"")
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setStyleSheet("")
         self.centralwidget.setObjectName("centralwidget")
@@ -43,6 +47,10 @@ class Ui_MainWindow(object):
         self.tab_widget.setFont(font)
         self.tab_widget.setObjectName("tab_widget")
         self.verticalLayout.addWidget(self.tab_widget)
+        self.error_label = QtWidgets.QLabel(parent=self.centralwidget)
+        self.error_label.setText("")
+        self.error_label.setObjectName("error_label")
+        self.verticalLayout.addWidget(self.error_label)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1300, 24))
@@ -62,9 +70,6 @@ class Ui_MainWindow(object):
         self.config_menu = QtWidgets.QMenu(parent=self.menubar)
         self.config_menu.setObjectName("config_menu")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
         self.action_close_session = QtGui.QAction(parent=MainWindow)
         font = QtGui.QFont()
         self.action_close_session.setFont(font)

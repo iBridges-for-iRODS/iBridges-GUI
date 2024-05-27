@@ -7,7 +7,7 @@ name = "ibridgesgui"
 authors = [
     { name = "Christine Staiger", email = "c.staiger@uu.nl" },
 ]
-description = "Graphical user interface for accessing data and metadata on iRods servers."
+description = "Graphical user interface for accessing data and metadata on iRODS servers."
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = ["irods", "data management", "storage"]
@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GPL-v3 license",
 ]
 
 dependencies = [
@@ -53,18 +53,19 @@ packages = ["ibridgesgui"]
 [tool.setuptools_scm]
 write_to = "ibridgesgui/_version.py"
 
-[[tool.mypy.overrides]]
+[tool.mypy.overrides]
 module = [
     "irods.*",
 ]
+
 ignore_missing_imports = true
 
 [tool.pylint.'MASTER']
- ignore-patterns="_version.py"
+ignore-patterns="_version.py"
+ignore-paths="ui_files,icons"
 
 [tool.pylint.'BASIC']
 good-names=["e", "f", "m"]
-
 
 [tool.pylint.'FORMAT']
 max-line-length=100
@@ -72,7 +73,7 @@ max-locals=35
 max-args=10
 
 [tool.ruff]
-exclude = ["_version.py"]
+exclude = ["_version.py", "ui_files"]
 line-length = 100
-select = ["D", "E", "F", "W", "I", "N"]
-ignore = ["D203", "D213"]
+lint.select = ["D", "E", "F", "W", "I", "N"]
+lint.ignore = ["D203", "D213"]

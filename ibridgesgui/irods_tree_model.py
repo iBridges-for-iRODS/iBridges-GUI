@@ -42,28 +42,26 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         # Empty tree
         self.clear()
 
-    def _tree_row_from_irods_item(self, item, parent_id, level, display_path = False):
+    def _tree_row_from_irods_item(self, item, parent_id, level, display_path=False):
         icon_provider = PyQt6.QtWidgets.QFileIconProvider()
         if display_path:
             display = PyQt6.QtGui.QStandardItem(item.path)
         else:
             display = PyQt6.QtGui.QStandardItem(item.name)
         if isinstance(item, irods.collection.iRODSCollection):
-            display.setIcon(icon_provider.icon(
-                            PyQt6.QtWidgets.QFileIconProvider.IconType.Folder))
-            datatype = 'C'
+            display.setIcon(icon_provider.icon(PyQt6.QtWidgets.QFileIconProvider.IconType.Folder))
+            datatype = "C"
         else:
-            display.setIcon(icon_provider.icon(
-                            PyQt6.QtWidgets.QFileIconProvider.IconType.File))
-            datatype = 'd'
+            display.setIcon(icon_provider.icon(PyQt6.QtWidgets.QFileIconProvider.IconType.File))
+            datatype = "d"
         row = [
-                display, #display name
-                PyQt6.QtGui.QStandardItem(str(level+1)), #item level in the tree
-                PyQt6.QtGui.QStandardItem(str(item.id)), #id in iRODS
-                PyQt6.QtGui.QStandardItem(str(parent_id)), #parent id
-                PyQt6.QtGui.QStandardItem(datatype), #C or d
-                PyQt6.QtGui.QStandardItem(item.path) #absolute irods path
-              ]
+            display,  # display name
+            PyQt6.QtGui.QStandardItem(str(level + 1)),  # item level in the tree
+            PyQt6.QtGui.QStandardItem(str(item.id)),  # id in iRODS
+            PyQt6.QtGui.QStandardItem(str(parent_id)),  # parent id
+            PyQt6.QtGui.QStandardItem(datatype),  # C or d
+            PyQt6.QtGui.QStandardItem(item.path),  # absolute irods path
+        ]
         return row
 
     def init_tree(self):
@@ -79,7 +77,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         new_node = root.child(root.rowCount() - 1)
 
         # insert a dummy child to get the link to open the collection
-        if len(root_coll.subcollections+root_coll.data_objects) > 0:
+        if len(root_coll.subcollections + root_coll.data_objects) > 0:
             new_node.appendRow(None)
 
     def delete_subtree(self, tree_item):
@@ -106,17 +104,17 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
 
         """
         _, level, _, _, _, abs_irods_path = tree_item_data
-        #_tree_row_from_irods_item(self, item, parent_id, level, display_path = False)
+        # _tree_row_from_irods_item(self, item, parent_id, level, display_path = False)
         parent_coll = get_collection(self.session, abs_irods_path)
 
         # we assume that tree_item has no children yet.
         new_nodes = {}
-        for item in parent_coll.subcollections+parent_coll.data_objects:
+        for item in parent_coll.subcollections + parent_coll.data_objects:
             row = self._tree_row_from_irods_item(item, parent_coll.id, int(level))
             tree_item.appendRow(row)
             new_nodes[item.id] = tree_item.child(tree_item.rowCount() - 1)
             if isinstance(item, irods.collection.iRODSCollection):
-                if len(item.subcollections+item.data_objects) > 0:
+                if len(item.subcollections + item.data_objects) > 0:
                     # insert a dummy child to get the link to open the collection
                     new_nodes[item.id].appendRow(None)
 
@@ -130,15 +128,14 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
 
         """
         model_index = position
-        tree_item = self.itemFromIndex(model_index) # clicked item
+        tree_item = self.itemFromIndex(model_index)  # clicked item
         parent = tree_item.parent()
         if parent is None:
             parent = self.invisibleRootItem()
         row = tree_item.row()
 
         # retrieve information of clicked item, the information is stored in its parent
-        tree_item_data = [parent.child(row, col).data(0)
-                            for col in range(parent.columnCount())]
+        tree_item_data = [parent.child(row, col).data(0) for col in range(parent.columnCount())]
         irods_path = IrodsPath(self.session, tree_item_data[-1])
         if irods_path.collection_exists():
             # Delete subtree in irodsFsdata and the tree_view.
@@ -154,14 +151,11 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
             Selected row in tree view
 
         """
-        tree_item = self.itemFromIndex(model_index) # clicked item
+        tree_item = self.itemFromIndex(model_index)  # clicked item
         row = tree_item.row()
 
-        parent = tree_item.parent() # contains the data of tree_item
+        parent = tree_item.parent()  # contains the data of tree_item
         if parent is None:
             parent = self.invisibleRootItem()
-        tree_item_data = [parent.child(row, col).data(0)
-                            for col in range(parent.columnCount())]
-        irods_path = [parent.child(row, col).data(0)
-                        for col in range(parent.columnCount())][-1]
+        irods_path = [parent.child(row, col).data(0) for col in range(parent.columnCount())][-1]
         return IrodsPath(self.session, irods_path)

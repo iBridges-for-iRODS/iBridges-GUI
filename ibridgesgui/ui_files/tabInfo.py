@@ -13,30 +13,32 @@ class Ui_tabInfo(object):
     def setupUi(self, tabInfo):
         tabInfo.setObjectName("tabInfo")
         tabInfo.resize(640, 572)
-        tabInfo.setStyleSheet("QWidget\n"
-"{\n"
-"    color: rgb(86, 184, 139);\n"
-"    background-color: rgb(54, 54, 54);\n"
-"    selection-background-color: rgb(58, 152, 112);\n"
-"    font:16\n"
-"}\n"
-"\n"
-"QTableWidget\n"
-"{\n"
-"    background-color: rgb(85, 87, 83);\n"
-"}\n"
-"\n"
-"QTextBrowser\n"
-"{\n"
-"    background-color: rgb(85, 87, 83);\n"
-"}\n"
-"\n"
-"QLabel#client, QLabel#server\n"
-"{\n"
-"    font-weight: bold;\n"
-"}\n"
-"\n"
-"")
+        tabInfo.setStyleSheet(
+            "QWidget\n"
+            "{\n"
+            "    color: rgb(86, 184, 139);\n"
+            "    background-color: rgb(54, 54, 54);\n"
+            "    selection-background-color: rgb(58, 152, 112);\n"
+            "    font:16\n"
+            "}\n"
+            "\n"
+            "QTableWidget\n"
+            "{\n"
+            "    background-color: rgb(85, 87, 83);\n"
+            "}\n"
+            "\n"
+            "QTextBrowser\n"
+            "{\n"
+            "    background-color: rgb(85, 87, 83);\n"
+            "}\n"
+            "\n"
+            "QLabel#client, QLabel#server\n"
+            "{\n"
+            "    font-weight: bold;\n"
+            "}\n"
+            "\n"
+            ""
+        )
         self.horizontalLayout = QtWidgets.QHBoxLayout(tabInfo)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.gridLayout = QtWidgets.QGridLayout()
@@ -49,7 +51,9 @@ class Ui_tabInfo(object):
         self.user_label.setText("")
         self.user_label.setObjectName("user_label")
         self.gridLayout.addWidget(self.user_label, 4, 2, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         self.gridLayout.addItem(spacerItem, 13, 0, 1, 1)
         self.type_label = QtWidgets.QLabel(parent=tabInfo)
         self.type_label.setText("")
@@ -60,7 +64,9 @@ class Ui_tabInfo(object):
         self.gridLayout.addWidget(self.label_2, 14, 0, 1, 1)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.horizontalLayout_3.addItem(spacerItem1)
         self.refresh_button = QtWidgets.QPushButton(parent=tabInfo)
         font = QtGui.QFont()
@@ -70,12 +76,16 @@ class Ui_tabInfo(object):
         self.refresh_button.setObjectName("refresh_button")
         self.horizontalLayout_3.addWidget(self.refresh_button)
         self.gridLayout.addLayout(self.horizontalLayout_3, 19, 2, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         self.gridLayout.addItem(spacerItem2, 6, 0, 1, 1)
         self.label_13 = QtWidgets.QLabel(parent=tabInfo)
         self.label_13.setObjectName("label_13")
         self.gridLayout.addWidget(self.label_13, 15, 0, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         self.gridLayout.addItem(spacerItem3, 16, 0, 1, 1)
         self.label_12 = QtWidgets.QLabel(parent=tabInfo)
         font = QtGui.QFont()
@@ -85,9 +95,13 @@ class Ui_tabInfo(object):
         self.label_12.setFont(font)
         self.label_12.setObjectName("label_12")
         self.gridLayout.addWidget(self.label_12, 12, 0, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         self.gridLayout.addItem(spacerItem4, 1, 0, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.gridLayout.addItem(spacerItem5, 18, 2, 1, 1)
         self.label_11 = QtWidgets.QLabel(parent=tabInfo)
         font = QtGui.QFont()
@@ -100,7 +114,9 @@ class Ui_tabInfo(object):
         self.label_4 = QtWidgets.QLabel(parent=tabInfo)
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 4, 0, 1, 1)
-        spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem6 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         self.gridLayout.addItem(spacerItem6, 11, 0, 1, 1)
         self.label_5 = QtWidgets.QLabel(parent=tabInfo)
         self.label_5.setObjectName("label_5")
@@ -118,7 +134,9 @@ class Ui_tabInfo(object):
         self.resc_table = QtWidgets.QTableWidget(parent=tabInfo)
         self.resc_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.resc_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
-        self.resc_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.resc_table.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
+        )
         self.resc_table.setObjectName("resc_table")
         self.resc_table.setColumnCount(3)
         self.resc_table.setRowCount(0)
@@ -153,10 +171,14 @@ class Ui_tabInfo(object):
         self.server_label.setText("")
         self.server_label.setObjectName("server_label")
         self.gridLayout.addWidget(self.server_label, 14, 2, 1, 1)
-        spacerItem7 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem7 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         self.gridLayout.addItem(spacerItem7, 10, 0, 1, 1)
         self.horizontalLayout.addLayout(self.gridLayout)
-        spacerItem8 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem8 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem8)
 
         self.retranslateUi(tabInfo)
@@ -171,7 +193,7 @@ class Ui_tabInfo(object):
         self.label_12.setText(_translate("tabInfo", "Server Information"))
         self.label_11.setText(_translate("tabInfo", "Client Information"))
         self.label_4.setText(_translate("tabInfo", "Username"))
-        self.label_5.setText(_translate("tabInfo", "User\'s groups"))
+        self.label_5.setText(_translate("tabInfo", "User's groups"))
         self.label_10.setText(_translate("tabInfo", "Usertype"))
         self.label_8.setText(_translate("tabInfo", "Default resource"))
         item = self.resc_table.horizontalHeaderItem(0)

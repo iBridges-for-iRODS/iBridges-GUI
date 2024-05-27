@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """iBridges GUI startup script."""
+
 import logging
 import sys
 from pathlib import Path
@@ -13,9 +14,9 @@ from ibridgesgui.config import get_log_level, init_logger, set_log_level
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
+from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.search import Search
 from ibridgesgui.sync import Sync
-from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 
 # Global constants
@@ -23,6 +24,7 @@ THIS_APPLICATION = "ibridges-gui"
 
 # Application globals
 app = PyQt6.QtWidgets.QApplication(sys.argv)
+
 
 class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     """Set up the GUI Main Menu."""
@@ -33,7 +35,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         if getattr(sys, "frozen", False):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi(UI_FILE_DIR/"MainMenu.ui", self)
+            PyQt6.uic.loadUi(UI_FILE_DIR / "MainMenu.ui", self)
 
         self.logger = logging.getLogger(app_name)
         self.irods_path = Path("~", ".irods").expanduser()
@@ -42,16 +44,16 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             "tabBrowser": self.init_browser_tab,
             "tabSync": self.init_sync_tab,
             "tabSearch": self.init_search_tab,
-                #'tabDataBundle': self.setupTabDataBundle,
-                #'tabCreateTicket': self.setupTabCreateTicket,
-                #'tabELNData': self.setupTabELNData,
-                #'tabAmberWorkflow': self.setupTabAmberWorkflow,
-            "tabInfo": self.init_info_tab
+            #'tabDataBundle': self.setupTabDataBundle,
+            #'tabCreateTicket': self.setupTabCreateTicket,
+            #'tabELNData': self.setupTabELNData,
+            #'tabAmberWorkflow': self.setupTabAmberWorkflow,
+            "tabInfo": self.init_info_tab,
             #'tabExample': self.setupTabExample,
         }
 
-        #self.parent_widget = parent_widget
         self.session = None
+        self.irods_browser = None
         self.session_dict = {}
         self.action_connect.triggered.connect(self.connect)
         self.action_exit.triggered.connect(self.exit)
@@ -63,16 +65,21 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     def disconnect(self):
         """Close iRODS session."""
         if "session" in self.session_dict:
-            session = self.session_dict["session"]
-            self.logger.info("Disconnecting %s from %s", session.username, session.host)
-            self.session_dict["session"].close()
+            self.logger.info("Disconnecting %s from %s", self.session.username, self.session.host)
+            self.session.close()
+            self.session = None
             self.session_dict.clear()
         self.tab_widget.clear()
-
 
     def connect(self):
         """Create iRODS session."""
         # Trick to get the session object from the QDialog
+        self.error_label.clear()
+        if self.session:
+            print(self.session)
+            self.error_label.setText("Please close session first.")
+            return
+        
         login_window = Login(self.session_dict, self.app_name)
         login_window.exec()
         if "session" in self.session_dict:
@@ -87,9 +94,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Quit program."""
         quit_msg = "Are you sure you want to exit the program?"
         reply = PyQt6.QtWidgets.QMessageBox.question(
-            self, "Message", quit_msg,
+            self,
+            "Message",
+            quit_msg,
             PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
-            PyQt6.QtWidgets.QMessageBox.StandardButton.No)
+            PyQt6.QtWidgets.QMessageBox.StandardButton.No,
+        )
         if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
             self.disconnect()
             sys.exit()
@@ -100,7 +110,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Init tab view."""
         for tab_fun in self.ui_tabs_lookup.values():
             tab_fun()
-            #self.ui_tabs_lookup[tab_name]()
+            # self.ui_tabs_lookup[tab_name]()
 
     def init_info_tab(self):
         """Create info."""
@@ -121,6 +131,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Create sync."""
         irods_sync = Sync(self.session, self.app_name)
         self.tab_widget.addTab(irods_sync, "Synchronise Data")
+
     def create_env_file(self):
         """Populate drop down menu to create a new environment.json."""
         create_widget = CheckConfig(self.logger, self.irods_path)
@@ -130,6 +141,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Init drop down menu to inspect an environment.json."""
         create_widget = CheckConfig(self.logger, self.irods_path)
         create_widget.exec()
+
 
 def main():
     """Call main function."""
@@ -146,6 +158,7 @@ def main():
     main_widget.addWidget(main_app)
     main_widget.show()
     app.exec()
+
 
 if __name__ == "__main__":
     main()

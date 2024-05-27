@@ -1,4 +1,5 @@
 """Sync tab."""
+
 import logging
 import sys
 from pathlib import Path
@@ -7,14 +8,13 @@ import PyQt6.uic
 from ibridges import IrodsPath
 from PyQt6 import QtCore, QtGui
 
+from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
 from ibridgesgui.threads import SyncThread
 from ibridgesgui.ui_files.tabSync import Ui_tabSync
-from ibridgesgui.config import is_session_from_config, get_last_ienv_path
 
-from ibridges.interactive import interactive_auth
 
 class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
     """Sync view."""
@@ -39,7 +39,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.logger = logging.getLogger(app_name)
         self.session = session
         self.sync_thread = None
-        self.sync_source = "" #irods or local
+        self.sync_source = ""  # irods or local
         self.refresh_irods_index = None
         self.local_to_irods_button.setToolTip("Local to iRODS")
         self.local_to_irods_button.clicked.connect(self.local_to_irods)
@@ -55,7 +55,8 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.local_fs_model = QtGui.QFileSystemModel(self.local_fs_tree)
         self.local_fs_tree.setModel(self.local_fs_model)
         home_location = QtCore.QStandardPaths.standardLocations(
-                        QtCore.QStandardPaths.StandardLocation.HomeLocation)[0]
+            QtCore.QStandardPaths.StandardLocation.HomeLocation
+        )[0]
         index = self.local_fs_model.setRootPath(home_location)
         self.local_fs_tree.setCurrentIndex(index)
 
@@ -116,7 +117,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         else:
             self.error_label.setText("Please select a parent directory, not a file.")
 
-    def prep_sync(self, dry_run = True):
+    def prep_sync(self, dry_run=True):
         """Prepare and call the sync thread."""
         paths = self._gather_info_for_transfer()
         if paths is None:
@@ -127,11 +128,13 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         if dry_run:
             self.error_label.setText("Calculating difference ...")
             if self.sync_source == "local":
-                self.logger.info("Calculating difference from %s to %s",
-                                    str(local_path), str(irods_path))
+                self.logger.info(
+                    "Calculating difference from %s to %s", str(local_path), str(irods_path)
+                )
             else:
-                self.logger.info("Calculating difference from %s to %s",
-                                    str(irods_path), str(local_path))
+                self.logger.info(
+                    "Calculating difference from %s to %s", str(irods_path), str(local_path)
+                )
         else:
             self.error_label.setText("Start sync ...")
             if self.sync_source == "local":
@@ -194,26 +197,26 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self._enable_buttons(False)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
 
-
         if dry_run:
             self.error_label.setText("Calculating differences ....")
         else:
             self.error_label.setText(f"Synchronising from {source} to {target} ....")
             print(f"Synchronising from {source} to {target} ....")
-        
+
         # check if session comes from env file in ibridges config
         if is_session_from_config(self.session):
-            env_path = Path("~").expanduser().joinpath('.irods', get_last_ienv_path())
+            env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
         else:
             text = "No search possible: The ibridges config changed during the session."
             text += "Please reset or restart the session."
             self.error_label.setText(text)
             return
-        try
+        try:
             self.sync_thread = SyncThread(env_path, logger, source, target, dry_run)
         except Exception:
             self.error_label.setText(
-                    "Could not instantiate a new session from{env_path}.Check configuration")
+                "Could not instantiate a new session from{env_path}.Check configuration"
+            )
             return
         self.sync_thread.succeeded.connect(self._sync_end)
         self.sync_thread.finished.connect(self._finish_sync)
@@ -232,10 +235,10 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.refresh_irods_index = None
         elif "result" in thread_output:
             self.error_label.clear()
-            info = ''
+            info = ""
             for key in thread_output["result"]:
                 info += "\n".join([str(i) for i in thread_output["result"][key]])
-            if info == '':
+            if info == "":
                 self.error_label.setText("Data is already synchronised.")
                 self.sync_source = ""
                 self.refresh_irods_index = None
@@ -252,8 +255,11 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         if self.sync_source != "":
             msg = "Do you want to synchronise the data?"
             reply = PyQt6.QtWidgets.QMessageBox.question(
-                self, "Message", msg,
+                self,
+                "Message",
+                msg,
                 PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.No)
+                PyQt6.QtWidgets.QMessageBox.StandardButton.No,
+            )
             if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
                 self.prep_sync(dry_run=False)

@@ -1,4 +1,5 @@
 """Setting up logger and configuration files."""
+
 import datetime
 import json
 import logging
@@ -29,6 +30,7 @@ def ensure_log_config_location():
     """Ensure the location for logs and config files."""
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
+
 # logging functions
 def init_logger(app_name: str, log_level: str) -> logging.Logger:
     """Create a logger for the app.
@@ -58,6 +60,7 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
 
     return logger
 
+
 # ibridges config functions
 def get_last_ienv_path() -> Union[None, str]:
     """Retrieve last used environment path from the config file."""
@@ -65,6 +68,7 @@ def get_last_ienv_path() -> Union[None, str]:
     if config is not None:
         return config.get("gui_last_env")
     return None
+
 
 def set_last_ienv_path(ienv_path: Path):
     """Save the last used environment path to the config file.
@@ -79,12 +83,14 @@ def set_last_ienv_path(ienv_path: Path):
         config = {"gui_last_env": ienv_path}
     _save_config(config)
 
+
 def get_log_level() -> Union[None, str]:
     """Retrieve log level from config."""
     config = _get_config()
     if config is not None:
         return config.get("log_level")
     return None
+
 
 def set_log_level(level: str):
     """Save log level to config."""
@@ -95,9 +101,11 @@ def set_log_level(level: str):
         config = {"log_level": level}
     _save_config(config)
 
+
 def _save_config(conf: dict):
     ensure_log_config_location()
     _write_json(CONFIG_FILE, conf)
+
 
 def _get_config() -> Union[None, dict]:
     try:
@@ -111,7 +119,9 @@ def _get_config() -> Union[None, dict]:
         print(f"CANNOT START APP: {CONFIG_FILE} incorrectly formatted.")
         sys.exit(1)
 
+
 # irods config functions
+
 
 def is_session_from_config(session: Session) -> Union[Session, None]:
     """Create a new session from the given session.
@@ -120,20 +130,22 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     We will verify that the given session was instantiated by the
     parameters saved in the ibridges configuration.
     """
-    ienv_path = Path('~').expanduser().joinpath('.irods', get_last_ienv_path())
+    ienv_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
     try:
         env = _read_json(ienv_path)
         print(env)
     except Exception:
         return False
 
-    if session.host == env.get("irods_host", -1) and \
-       session.port == env.get("irods_port", -1) and \
-       session.zone == env.get("irods_zone_name", -1) and \
-       session.username == env.get("irods_user_name") and \
-       session.home == env.get("irods_home", -1) and \
-       session.default_resc == env.get("irods_default_resource", -1):
-           return True
+    if (
+        session.host == env.get("irods_host", -1)
+        and session.port == env.get("irods_port", -1)
+        and session.zone == env.get("irods_zone_name", -1)
+        and session.username == env.get("irods_user_name")
+        and session.home == env.get("irods_home", -1)
+        and session.default_resc == env.get("irods_default_resource", -1)
+    ):
+        return True
     return False
 
 
@@ -190,6 +202,7 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
     # all tests passed
     return "All checks passed successfully."
 
+
 def save_irods_config(env_path: Union[Path, str], conf: dict):
     """Save an irods environment as json in ~/.irods.
 
@@ -204,9 +217,11 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
     else:
         raise ValueError("Filetype needs to be '.json'.")
 
+
 def _read_json(file_path: Path) -> dict:
     with open(file_path, "r", encoding="utf-8") as handle:
         return json.load(handle)
+
 
 def _write_json(file_path: Path, content: dict):
     with open(file_path, "w", encoding="utf-8") as handle:
