@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.4.554">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>What is iBridges</title>
+<title>What is iBridges-Gui</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,7 +68,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="../_styles/styles.css">
+<link rel="stylesheet" href="_styles/styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -89,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="../docs/info.html" aria-current="page"> 
-<span class="menu-text">What is iBridges?</span></a>
+<span class="menu-text">What is iBridges-Gui?</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../docs/getting-started.html"> 
@@ -98,18 +98,6 @@ ul.task-list li input[type="checkbox"] {
   <li class="nav-item">
     <a class="nav-link" href="../docs/userdoc.html"> 
 <span class="menu-text">Documentation</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../docs/commandlineclient.html"> 
-<span class="menu-text">iBridges Cli</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../docs/developer.html"> 
-<span class="menu-text">Developers</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../docs/roadmap.html"> 
-<span class="menu-text">Known issues and roadmap</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -127,10 +115,17 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#current-viewsfeatures" id="toc-current-viewsfeatures" class="nav-link active" data-scroll-target="#current-viewsfeatures">Current views/features</a></li>
+  <li><a href="#current-features" id="toc-current-features" class="nav-link active" data-scroll-target="#current-features">Current features</a></li>
   <li><a href="#supported-irods-versions" id="toc-supported-irods-versions" class="nav-link" data-scroll-target="#supported-irods-versions">Supported iRODS versions</a></li>
   <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
+  <li><a href="#install-and-start-the-application" id="toc-install-and-start-the-application" class="nav-link" data-scroll-target="#install-and-start-the-application">Install and start the application</a>
+  <ul class="collapse">
+  <li><a href="#stable-version" id="toc-stable-version" class="nav-link" data-scroll-target="#stable-version">Stable version</a></li>
+  <li><a href="#development-version" id="toc-development-version" class="nav-link" data-scroll-target="#development-version">Development version</a></li>
+  </ul></li>
   <li><a href="#authors" id="toc-authors" class="nav-link" data-scroll-target="#authors">Authors</a></li>
+  <li><a href="#contributors" id="toc-contributors" class="nav-link" data-scroll-target="#contributors">Contributors</a></li>
+  <li><a href="#contributing" id="toc-contributing" class="nav-link" data-scroll-target="#contributing">Contributing</a></li>
   <li><a href="#license" id="toc-license" class="nav-link" data-scroll-target="#license">License</a></li>
   </ul>
 </nav>
@@ -140,7 +135,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">What is iBridges</h1>
+<h1 class="title">What is iBridges-Gui</h1>
 </div>
 
 
@@ -157,38 +152,61 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>iBridges is a standalone client software <em>desktop application</em>, written in <strong>Python</strong>, to provide users of <em>Windows, Linux and Mac</em> with a <em>graphical user interface</em> to interact with <strong>iRODS</strong> servers. The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing and manipulating data objects, upload/download data, and search through data collections.</p>
-<p>We also provide a command line interface with which data can be uploaded and downloaded.</p>
-<p>The GUI can be extended by users to implement their own data workflows.</p>
-<section id="current-viewsfeatures" class="level3">
-<h3 class="anchored" data-anchor-id="current-viewsfeatures">Current views/features</h3>
+<p><a href="https://github.com/chStaiger/iBridges-Gui">iBridges-Gui</a> is a graphical user interface to the python package <a href="https://github.com/UtrechtUniversity/iBridges">iBridges</a>, it provides users of <em>Windows, Linux and Mac</em> with a <em>graphical user interface</em> to interact with <strong>iRODS</strong> servers. The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing through iRODS collections, upload/download and synchronisation of data, manipulate iRODS metadata and search through data collections.</p>
+<section id="current-features" class="level2">
+<h2 class="anchored" data-anchor-id="current-features">Current features</h2>
 <ul>
-<li><code>tabBrowser</code>: (Default) a main table to browse through collections, metadata and ACL manipulation, data deletion and single file up and downloads,</li>
-<li><code>tabUpDownload</code>: a two-pane upload/download tab</li>
-<li><code>tabELNData</code>: Uploading data and linking it to an Electronical Labnotebook experiment</li>
-<li><code>tabAmberWorkflow</code>: Up ad downloading data to and from Amberscript from iRODS</li>
-<li><code>tabDataBundle</code>: (un)bundle datasets from/to four supported formats (depending on extra iRODS microservices)</li>
-<li><code>tabCreateTicket</code>: create iRODS tickets for anonymous access</li>
-<li><code>tabInfo</code>: (Default) an overview over the iRODS server and client, groups and resources</li>
-<li>The search functionality is available from the drop-down menu <code>Options</code></li>
-<li>Login with ticket: (Experimental)</li>
+<li><code>Configuration</code> checker and editor to easily adjust your iRODS client configuration.</li>
+<li><code>Browser</code>: a main table to browse through collections and inspect data, manilpulate metadata and User Permissions, up and download smaller data and to delete data.</li>
+<li><code>Data Synchronisation</code>: a two-pane view to select local directories and synchronise them with their counterpart collections in iRODS</li>
+<li><code>Search</code>: provide search criteria and list all found data collections and objects in iRODS, also allows for download selected items.</li>
+<li><code>Info</code>: an overview over the iRODS server and iRODS client configuration listing user informatio such as groups and server information such as resources.</li>
 </ul>
 </section>
 <section id="supported-irods-versions" class="level2">
 <h2 class="anchored" data-anchor-id="supported-irods-versions">Supported iRODS versions</h2>
-<p>We test our code on iRODS servers with versions - 4.2.11, 4.2.12 - 4.3.0</p>
+<p>We test our code on iRODS servers with versions - &gt; 4.2.11 - &gt; 4.3.0</p>
 </section>
 <section id="dependencies" class="level2">
 <h2 class="anchored" data-anchor-id="dependencies">Dependencies</h2>
 <ul>
 <li>Python3.9+</li>
-<li>QT v6+</li>
+<li>Python pyQt6</li>
+<li>Python ibridges 0.1.6</li>
 </ul>
+</section>
+<section id="install-and-start-the-application" class="level2">
+<h2 class="anchored" data-anchor-id="install-and-start-the-application">Install and start the application</h2>
+<section id="stable-version" class="level3">
+<h3 class="anchored" data-anchor-id="stable-version">Stable version</h3>
+<pre><code>pip install ibridges
+pip install git+https://github.com/chStaiger/iBridges-Gui.git@main</code></pre>
+</section>
+<section id="development-version" class="level3">
+<h3 class="anchored" data-anchor-id="development-version">Development version</h3>
+<pre><code>pip install ibridges
+pip install git+https://github.com/chStaiger/iBridges-Gui.git@develop</code></pre>
+<p>Start the application by calling <code>ibridges-gui</code> on your commandline.</p>
+</section>
 </section>
 <section id="authors" class="level2">
 <h2 class="anchored" data-anchor-id="authors">Authors</h2>
-<p>Maintainer: Christine Staiger, Tim van Daalen</p>
-<p>Contributors: John McFarland, Maarten Schermer, Simona Stoica, Jos Tersteeg</p>
+<p><strong>Christine Staiger (Maintainer) <a href="https://orcid.org/0000-0002-6754-7647">ORCID</a></strong></p>
+<ul>
+<li><em>Wageningen University &amp; Research</em> 2021 - 2022</li>
+<li><em>Utrecht University</em> 2022</li>
+</ul>
+<p><strong>Tim van Daalen</strong>, <em>Wageningen University &amp; Research</em> 2021</p>
+<p><strong>Maarten Schermer (Maintainer) <a href="https://orcid.org/my-orcid?orcid=0000-0001-6770-3155">ORCID</a></strong>, <em>Utrecht University</em> 2023</p>
+<p><strong>Raoul Schram (Maintainer) <a href="https://orcid.org/my-orcid?orcid=0000-0001-6616-230X">ORCID</a></strong>. <em>Utrecht University</em> 2023</p>
+</section>
+<section id="contributors" class="level2">
+<h2 class="anchored" data-anchor-id="contributors">Contributors</h2>
+<p><strong>J.P. Mc Farland</strong>, <em>University of Groningen, Center for Information Technology</em>, 2022</p>
+</section>
+<section id="contributing" class="level2">
+<h2 class="anchored" data-anchor-id="contributing">Contributing</h2>
+<p>Our development is done on GitHub](https://github.com/chStaiger/iBridges-Gui). We are welcoming contributions by pull requests. You can also ask for new features/ideas in our issue tracker.</p>
 </section>
 <section id="license" class="level2">
 <h2 class="anchored" data-anchor-id="license">License</h2>
