@@ -178,6 +178,10 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return '"irods_host" is missing in environment.'
     if "irods_port" not in env:
         return '"irods_port" is missing in environment.'
+    if "irods_home" not in env:
+        return 'Please set an "irods_home".'
+    if "irods_default_resource" not in env:
+        return 'Please set an "irods_default_resource".'
     if not isinstance(env["irods_port"], int):
         return '"irods_port" needs to be an integer, remove quotes.'
     if not Session.network_check(env["irods_host"], env["irods_port"]):
