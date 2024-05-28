@@ -1,5 +1,12 @@
 # Getting started with iBridges-Gui
 
+## Install iBridges-gui
+
+```
+pip install ibridges==0.1.6
+pip install pip install git+https://github.com/chStaiger/iBridges-Gui.git@main
+```
+
 ## Start the program
 
 Please start **iBridges-Gui** by typing `ibridges-gui` on your terminal and hit enter.
