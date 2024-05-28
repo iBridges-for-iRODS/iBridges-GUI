@@ -33,7 +33,7 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 
   ```bash
   pip install ibridges
-  pip install git+https://github.com/chStaiger/iBridges-Gui.git@develop
+  pip install git+https://github.com/chStaiger/iBridges-Gui.git@main
   ```
 - Locally from code (for developers)
 
