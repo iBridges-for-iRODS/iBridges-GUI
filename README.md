@@ -1,5 +1,8 @@
 # iBridges
 
+[![Python package](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml)
+[![Quarto Publish](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml)
+
 <p align="center">
   <p align="center">
     <a href="https://chstaiger.github.io/iBridges-Gui/"><strong> Documentation »</strong></a> .

@@ -1,0 +1,68 @@
+---
+title: "What is iBridges-Gui"
+---
+
+[iBridges-Gui](https://github.com/chStaiger/iBridges-Gui) is a graphical user interface to the python package [iBridges](https://github.com/UtrechtUniversity/iBridges), it provides users of *Windows, Linux and Mac* with a *graphical user interface* to interact with **iRODS** servers. 
+The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing through iRODS collections, upload/download and synchronisation of data, manipulate iRODS metadata and search through data collections. 
+
+## Current features
+
+- `Configuration` checker and editor to easily adjust your iRODS client configuration.
+- `Browser`: a main table to browse through collections and inspect data, manilpulate metadata and User Permissions, up and download smaller data and to delete data.
+- `Data Synchronisation`: a two-pane view to select local directories and synchronise them with their counterpart collections in iRODS
+- `Search`: provide search criteria and list all found data collections and objects in iRODS, also allows for download selected items.
+-  `Info`: an overview over the iRODS server and iRODS client configuration listing user informatio such as groups and server information such as resources.
+
+## Supported iRODS versions
+We test our code on iRODS servers with versions
+- > 4.2.11
+- > 4.3.0
+
+## Dependencies
+- Python3.9+
+- Python pyQt6
+- Python ibridges 0.1.6
+
+## Install and start the application
+
+### Stable version
+
+```
+pip install ibridges
+pip install git+https://github.com/chStaiger/iBridges-Gui.git@main
+```
+
+### Development version
+
+```
+pip install ibridges
+pip install git+https://github.com/chStaiger/iBridges-Gui.git@develop
+```
+
+Start the application by calling `ibridges-gui` on your commandline.
+
+## Authors
+**Christine Staiger (Maintainer) [ORCID](https://orcid.org/0000-0002-6754-7647)**
+
+- *Wageningen University & Research* 2021 - 2022
+- *Utrecht University* 2022
+
+**Tim van Daalen**, *Wageningen University & Research* 2021
+
+**Maarten Schermer (Maintainer) [ORCID](https://orcid.org/my-orcid?orcid=0000-0001-6770-3155)**, *Utrecht University* 2023
+
+**Raoul Schram (Maintainer) [ORCID](https://orcid.org/my-orcid?orcid=0000-0001-6616-230X)**. 
+*Utrecht University* 2023
+
+## Contributors
+
+**J.P. Mc Farland**,
+*University of Groningen, Center for Information Technology*, 2022
+
+## Contributing
+Our development is done on GitHub](https://github.com/chStaiger/iBridges-Gui). We are welcoming contributions by pull requests. You can also ask for new features/ideas in our issue tracker.
+
+
+
+## License
+GPL v3
