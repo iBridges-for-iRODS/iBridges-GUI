@@ -1,0 +1,21 @@
+project:
+  type: website
+  output-dir: ./_html
+
+website:
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: docs/info.qmd
+        text: What is iBridges-Gui?
+      - href: docs/getting-started.qmd
+        text: Getting started
+      - href: docs/userdoc.qmd
+        text: Documentation
+
+format:
+  html:
+    theme: yeti
+    css: _styles/styles.css
+    toc: true
