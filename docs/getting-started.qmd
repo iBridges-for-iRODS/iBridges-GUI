@@ -22,7 +22,7 @@ Before we start iBridges for the first time let us check and create a valid conf
 
 ![](screenshots/add_check_config.png){width=50% fig-align="center"}
 
-If you already stored an `irods_environment.json` in the directory `~/.irods` (Windows `C:\Users\<username>\.irods`) then you can use the drop-down menu (little dowmward arrow) to load the cinfiguration.
+If you already stored an `irods_environment.json` in the directory `~/.irods` (Windows `C:\Users\<username>\.irods`) then you can use the drop-down menu (little downward arrow) to load the configuration.
 
 If you do not have an iRODS configuration yet, click on the button `New Config`.
 
@@ -30,7 +30,7 @@ You should see now something like:
 
 ![](screenshots/add_new_config.png){width=50% fig-align="center"}
 
-Click the `Check` button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service proivder.
+Click the `Check` button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service provider.
 
 Once the check runs through fine click the `Save` or `Save as` button. This will store the adjusted configuration in the correct directory on you laptop so that we can use it for the login (See Section below).
 

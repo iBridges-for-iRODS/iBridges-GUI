@@ -8,10 +8,10 @@ The tool is agnostic to any rules/policies in the server. The out-of-the-box iBr
 ## Current features
 
 - `Configuration` checker and editor to easily adjust your iRODS client configuration.
-- `Browser`: a main table to browse through collections and inspect data, manilpulate metadata and User Permissions, up and download smaller data and to delete data.
+- `Browser`: a main table to browse through collections and inspect data, manipulate metadata and User Permissions, up and download smaller data and to delete data.
 - `Data Synchronisation`: a two-pane view to select local directories and synchronise them with their counterpart collections in iRODS
 - `Search`: provide search criteria and list all found data collections and objects in iRODS, also allows for download selected items.
--  `Info`: an overview over the iRODS server and iRODS client configuration listing user informatio such as groups and server information such as resources.
+-  `Info`: an overview over the iRODS server and iRODS client configuration listing user information such as groups and server information such as resources.
 
 ## Supported iRODS versions
 We test our code on iRODS servers with versions
