@@ -5,7 +5,7 @@ iBridges is a **GUI to a Data management** platform **based on iRODS**. It expos
 The views which currently are in use:
 
 - The **Browser** is a tool to browse through iRODS collections and inspect data objects and collections. You can also **edit metadata and permissions**; and you can **delete data** in this view.
-- The **Data Synchronisation** exposes functionality to synchronise local directories with their couterpart collections in iRODS.
+- The **Data Synchronisation** exposes functionality to synchronise local directories with their counterpart collections in iRODS.
 - The **Search** to search for data collections and objects. 
 - The **Info** tab summarises information e.g. the user's role and groups; and storage resources on the iRODS server, their status and their available capacity.
 
@@ -28,20 +28,20 @@ You can **navigate to another part of the iRODS collection tree** by editing thi
 
 - The **three buttons** next to the editable navigation field are `Refresh` (circle arrows) to refresh the list below the navigation section , Navigate `one level up` (up arrow) and navigate to your `home` collection (little house).
 
-- The `Create Collecion` button will create a collection in the path shown in the navigation field above.
+- The `Create Collection` button will create a collection in the path shown in the navigation field above.
 
-- The buttons `Upoload File` and `Upload Folder` open a file dialog to sleect data to upload. The destination will be the path shown in the navigation field.
+- The buttons `Upload File` and `Upload Folder` open a file dialog to select data to upload. The destination will be the path shown in the navigation field.
 
 - The `Download` button will download data to your `Downloads` folder. To download data you will need to select an item in the table below.
 
 ### Listing
 
-The table below the navigation section shows a table which contains all collections and data objects in the collection in th navigation field.
+The table below the navigation section shows a table which contains all collections and data objects in the collection in the navigation field.
 
-- Status: `-C` for collections or the status of the data object. If the status of a data object is not `good`, the data is ompromised. Please contact your iRODS administrator to investigate. You cannot use such data!
+- Status: `-C` for collections or the status of the data object. If the status of a data object is not `good`, the data is compromised. Please contact your iRODS administrator to investigate. You cannot use such data!
 - Name: The name of the data object or collection
 - Size: The size in Bytes.
-- Checksum: A hash calculated on dtaa obbjects to verify them, the hash is uniwue for each data object if they conatain the same data . This can be used to verify that data transfers from iRODS to your local were successful.
+- Checksum: A hash calculated on data objects to verify them, the hash is unique for each data object if they contain the same data . This can be used to verify that data transfers from iRODS to your local were successful.
 - Created and Modified: the timestamps for the creation and last editing of a collection or data object.
 
 *Single Click* on a collection or data object will load its details into the section below.
