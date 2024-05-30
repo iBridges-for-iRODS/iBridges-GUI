@@ -15,7 +15,7 @@
 
 The git repository contains a generic *iRODS* graphical user interface.  The iRODS functionality is based on [ibridges](https://github.com/UtrechtUniversity/iBridges) and works with any *iRODS* instance.  
 
-
+![](docs/screenshots/metadata.png)
   
 ## Highlights
 
