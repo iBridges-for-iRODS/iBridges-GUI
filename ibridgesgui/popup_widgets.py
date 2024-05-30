@@ -139,6 +139,7 @@ class CheckConfig(QDialog, Ui_configCheck):
             "irods_host": "<THE SERVER NAME OR IP ADDRESS>",
             "irods_port": 1247,
             "irods_home": "<A DEFAULT LOCATION ON THE IRODS SERVER AS YOUR HOME>",
+            "irods_default_resource": "<A DEFAULT IRODS RESOURCE NAME>",
             "irods_user_name": "<YOUR IRODS USERNAME>",
             "irods_zone_name": "<THE IRODS ZONE NAME>",
             "irods_authentication_scheme": "pam",
