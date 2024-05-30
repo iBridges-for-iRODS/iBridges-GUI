@@ -10,7 +10,11 @@ from pathlib import Path
 from typing import Union
 
 from ibridges.session import Session
-from irods.exception import CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED, NetworkException
+from irods.exception import (
+        CAT_INVALID_AUTHENTICATION, CAT_INVALID_USER,
+        PAM_AUTH_PASSWORD_FAILED, NetworkException
+        )
+from irods.connection import PlainTextPAMPasswordError
 from irods.session import iRODSSession
 
 LOG_LEVEL = {
@@ -122,7 +126,6 @@ def _get_config() -> Union[None, dict]:
 
 # irods config functions
 
-
 def is_session_from_config(session: Session) -> Union[Session, None]:
     """Create a new session from the given session.
 
@@ -170,7 +173,8 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         except FileNotFoundError:
             return f"{ienv} not found."
         except JSONDecodeError as err:
-            return f"{ienv} not well formatted.\n{err.msg}"
+            print(repr(err))
+            return f"{ienv} not well formatted.\n {err.msg} at position {err.pos}."
     else:
         env = ienv
     # check host and port and connectivity
@@ -199,10 +203,20 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
     except AttributeError as err:
         return repr(err)
 
+    except PlainTextPAMPasswordError:
+        return f'Value of "irods_client_server_negotiation" needs to be'+\
+                '"request_server_negotiation".'
+    except CAT_INVALID_AUTHENTICATION:
+        return f'Wrong "irods_authentication_scheme".'
+    except ValueError as err:
+        if "scheme" in err.args[0]:
+            return f'Value of "irods_authentication_scheme" not recognised.'
+        else:
+            return f"{err.args}"
+    
     # password incorrect but rest is fine
-    except (ValueError, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
-        return "All checks passed successfully."
-
+    except (CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
+         return "All checks passed successfully."
     # all tests passed
     return "All checks passed successfully."
 

@@ -160,7 +160,7 @@ class CheckConfig(QDialog, Ui_configCheck):
         try:
             msg = check_irods_config(json.loads(self.env_field.toPlainText()))
         except json.decoder.JSONDecodeError as err:
-            msg = "JSON decoding error: " + err.msg
+            msg = f"JSON decoding error: {err.msg} at position {err.pos}."
         self.error_label.setText(msg)
 
     def save_env(self):
