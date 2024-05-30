@@ -9,8 +9,8 @@ import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
-from ibridges import IrodsPath, download, get_collection, get_dataobject, upload
-from ibridges.data_operations import obj_replicas
+from ibridges import IrodsPath, download, upload
+from ibridges.util import obj_replicas
 from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
 
@@ -42,16 +42,16 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.info_tabs.setCurrentIndex(0)
         # iRODS default home
         if self.session.home is not None:
-            root_path = self.session.home
+            root_path = IrodsPath(self.session).absolute()
         else:
-            root_path = f"/{self.session.zone}/home/{self.session.username}"
-        try:
-            self.root_coll = get_collection(self.session, root_path)
-        except irods.exception.CollectionDoesNotExist:
-            self.root_coll = get_collection(self.session, f"/{self.session.zone}/home")
-        except irods.exception.NetworkException:
-            self.error_label.setText("iRODS NETWORK ERROR: No Connection, please check network")
-        except Exception as err:
+            root_path = IrodsPath(self.session, 
+                                  f"/{self.session.zone}/home/{self.session.username}")
+
+        if root_path.collection_exists():
+            self.root_coll = IrodsPath(self.session, root_path).collection
+        elif IrodsPath(self.session, f"/{self.session.zone}/home").collection_exists():
+            self.root_coll = IrodsPath(self.session, f"/{self.session.zone}/home").collection
+        else:
             self.error_label.setText(
                 'Cannot set root collection. Set "irods_home" in your environment.json'
             )
@@ -187,7 +187,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         obj_path = IrodsPath(self.session, self.path_input.text())
         if obj_path.collection_exists():
             try:
-                coll = get_collection(self.session, obj_path)
+                coll = obj_path.collection
 
                 coll_data = [
                     (
@@ -422,7 +422,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         """
         self.replica_table.setRowCount(0)
         if irods_path.dataobject_exists():
-            obj = get_dataobject(self.session, irods_path)
+            obj = irods_path.dataobject
             populate_table(self.replica_table, len(obj_replicas(obj)), obj_replicas(obj))
             self.replica_table.setRowCount(len(obj.replicas))
         self.replica_table.resizeColumnsToContents()
@@ -442,10 +442,10 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_box.setCurrentText("")
         obj = None
         if irods_path.collection_exists():
-            obj = get_collection(self.session, irods_path)
+            obj = irods_path.collection
             inheritance = f"{obj.inheritance}"
         elif irods_path.dataobject_exists():
-            obj = get_dataobject(self.session, irods_path)
+            obj = irods_path.dataobject
             inheritance = ""
         if obj is not None:
             acls = Permissions(self.session, obj)
@@ -468,9 +468,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_units_field.clear()
         item = None
         if irods_path.collection_exists():
-            item = get_collection(self.session, irods_path)
+            item = irods_path.collection
         elif irods_path.dataobject_exists():
-            item = get_dataobject(self.session, irods_path)
+            item = irods_path.dataobject
         if item is not None:
             meta = MetaData(item)
             populate_table(self.meta_table, len(list(meta)), meta)
@@ -486,14 +486,14 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
         """
         if irods_path.collection_exists():
-            obj = get_collection(self.session, irods_path)
+            obj = irods_path.collection
             content = ["Collections:", "-----------------"]
             content.extend([sc.name for sc in obj.subcollections])
             content.extend(["\n", "DataObjects:", "-----------------"])
             content.extend([do.name for do in obj.data_objects])
         elif irods_path.dataobject_exists():
             file_type = ""
-            obj = get_dataobject(self.session, irods_path)
+            obj = irods_path.dataobject
             if "." in irods_path.parts[-1]:
                 file_type = irods_path.parts[-1].split(".")[1]
             if file_type in ["txt", "json", "csv"]:

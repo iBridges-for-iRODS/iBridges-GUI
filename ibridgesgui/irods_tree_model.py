@@ -11,7 +11,7 @@ import PyQt6
 import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
-from ibridges import IrodsPath, get_collection
+from ibridges import IrodsPath
 
 
 class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
@@ -70,7 +70,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         root = self.invisibleRootItem()
 
         # Start the tree, add the highest level to the invisible root
-        root_coll = get_collection(self.session, self.irods_root_path)
+        root_coll = IrodsPath(self.session, self.irods_root_path).collection
         root_row = self._tree_row_from_irods_item(root_coll, -1, -1, True)
         root.appendRow(root_row)
 
@@ -105,7 +105,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         """
         _, level, _, _, _, abs_irods_path = tree_item_data
         # _tree_row_from_irods_item(self, item, parent_id, level, display_path = False)
-        parent_coll = get_collection(self.session, abs_irods_path)
+        parent_coll = IrodsPath(self.session, abs_irods_path).collection
 
         # we assume that tree_item has no children yet.
         new_nodes = {}
