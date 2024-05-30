@@ -6,7 +6,6 @@ from typing import Union
 
 import irods
 import PyQt6
-from ibridges import get_collection, get_dataobject
 from ibridges.path import IrodsPath
 
 UI_FILE_DIR = files(__package__) / "ui_files"
@@ -35,10 +34,10 @@ def populate_textfield(text_widget, text_by_row: Union[str, list]):
 # iBridges/iRODS utils
 def get_irods_item(irods_path: IrodsPath):
     """Get the item behind an iRODS path."""
-    try:
-        item = get_collection(irods_path.session, irods_path)
-    except ValueError:
-        item = get_dataobject(irods_path.session, irods_path)
+    if irods_path.collection_exists():
+        item = irods_path.collection
+    else:
+        item = irods_path.dataobject
     return item
 
 
