@@ -213,12 +213,11 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
     except ValueError as err:
         if "scheme" in err.args[0]:
             return 'Value of "irods_authentication_scheme" not recognised.'
-        else:
-            return f"{err.args}"
+        return f"{err.args}"
 
     # password incorrect but rest is fine
     except (CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
-         return "All checks passed successfully."
+        return "All checks passed successfully."
     # all tests passed
     return "All checks passed successfully."
 
