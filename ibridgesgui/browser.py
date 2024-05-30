@@ -10,9 +10,9 @@ import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
 from ibridges import IrodsPath, download, upload
-from ibridges.util import obj_replicas
 from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
+from ibridges.util import obj_replicas
 
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
@@ -44,7 +44,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         if self.session.home is not None:
             root_path = IrodsPath(self.session).absolute()
         else:
-            root_path = IrodsPath(self.session, 
+            root_path = IrodsPath(self.session,
                                   f"/{self.session.zone}/home/{self.session.username}")
 
         if root_path.collection_exists():
@@ -55,7 +55,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             self.error_label.setText(
                 'Cannot set root collection. Set "irods_home" in your environment.json'
             )
-            self.logger.exception("Failed to set iRODS home: %s", err)
         self.reset_path()
         self.browse()
 
