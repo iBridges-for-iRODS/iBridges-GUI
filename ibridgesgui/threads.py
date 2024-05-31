@@ -46,13 +46,26 @@ class SearchThread(QThread):
 
 
 class TransferDataThread(QThread):
-    """Upload data from local to iRODS."""
+    """Transfer data between local and iRODS."""
 
     succeeded = pyqtSignal(dict)
     current_progress = pyqtSignal(str)
 
     def __init__(self, ienv_path: Path, logger, diffs: dict, overwrite: bool):
-        """Pass parameters."""
+        """Pass parameters.
+
+        ienv_path : Path
+            path to the irods_environment.json to create a new session.
+        logger : logging.Logger
+            Logger
+        diffs : dict
+            A dict object containing four keys:
+            'create_dir' : Create local directories when sync from iRODS to local
+            'create_collection' : Create collections when sync from local to iRODS
+            'upload' : Tuple(local path, iRODS path) when sync from local to iRODS
+            'download' : Tuple(iRODS path, local path) when sync from iRODS to local
+
+        """
         super().__init__()
 
         self.logger = logger
