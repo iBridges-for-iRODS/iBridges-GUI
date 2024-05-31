@@ -44,8 +44,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         if self.session.home is not None:
             root_path = IrodsPath(self.session).absolute()
         else:
-            root_path = IrodsPath(self.session,
-                                  f"/{self.session.zone}/home/{self.session.username}")
+            root_path = IrodsPath(
+                self.session, f"/{self.session.zone}/home/{self.session.username}"
+            )
 
         if root_path.collection_exists():
             self.root_coll = IrodsPath(self.session, root_path).collection

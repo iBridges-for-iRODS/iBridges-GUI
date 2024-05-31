@@ -37,13 +37,13 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
         self.logger = logging.getLogger(app_name)
         self.session = session
-        
+
         # globals for starting diff and sync
         self.sync_diff_thread = None
-        self.sync_thread = None
+        self.sync_data_thread = None
         self.sync_source = ""  # irods or local
         self.refresh_irods_index = None
-        self.diffs = None # output of dry_run
+        self.diffs = None  # output of dry_run
 
         # widget memeber and their functionlity
         self.local_to_irods_button.setToolTip("Local to iRODS")
@@ -124,8 +124,8 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         else:
             self.error_label.setText("Please select a parent directory, not a file.")
 
-    def sync_diff(self, dry_run=True):
-        """Prepare and call the sync thread."""
+    def sync_diff(self):
+        """Prepare and call the sync thread to calculate diffs."""
         paths = self._gather_info_for_transfer()
         if paths is None:
             return
@@ -136,7 +136,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         if self.sync_source == "local":
             self.logger.info(
                 "Calculating difference from %s to %s", str(local_path), str(irods_path)
-                )
+            )
         else:
             self.logger.info(
                 "Calculating difference from %s to %s", str(irods_path), str(local_path)
@@ -193,8 +193,6 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.create_dir_button.setEnabled(enable)
 
     def _start_data_sync(self):
-        #print(self.diffs)
-        #print(self.sync_source)
         self._enable_buttons(False)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText("Synchronising data ....")
@@ -203,22 +201,20 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         if env_path is None:
             return
         try:
-            if self.sync_source == "local":
-                self.sync_data_thread = TransferDataThread(env_path, self.logger,
-                                                       self.diffs, dry_run=False)
-            else:
-                self.sync_data_thread = TransferDataThread(env_path, self.logger,
-                                                       self.diffs, dry_run=False)
+            self.sync_data_thread = TransferDataThread(
+                env_path, self.logger, self.diffs, overwrite=True
+            )
         except Exception:
             self.error_label.setText(
-                     "Could not instantiate a new session from{env_path}.Check configuration.")
-            raise
+                "Could not instantiate a new session from{env_path}.Check configuration."
+            )
             return
-        
+
+        self.sync_data_thread.current_progress.connect(self._sync_data_status)
         self.sync_data_thread.succeeded.connect(self._sync_data_end)
         self.sync_data_thread.finished.connect(self._finish_sync_data)
         self.sync_data_thread.start()
-        
+
     def _start_sync_diff(self, source, target):
         self.sync_button.hide()
         self.error_label.clear()
@@ -236,7 +232,8 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.sync_diff_thread = SyncThread(env_path, self.logger, source, target, dry_run=True)
         except Exception:
             self.error_label.setText(
-                    "Could not instantiate a new session from{env_path}.Check configuration.")
+                "Could not instantiate a new session from{env_path}.Check configuration."
+            )
             return
         self.sync_diff_thread.succeeded.connect(self._sync_diff_end)
         self.sync_diff_thread.finished.connect(self._finish_sync_diff)
@@ -248,19 +245,26 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         if self.sync_diff_thread:
             del self.sync_diff_thread
 
-
     def _finish_sync_data(self):
         self._enable_buttons(True)
         self.sync_button.hide()
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         if self.sync_data_thread:
-            del self_sync_data.thread
+            del self.sync_data_thread
 
-    def _sync_data_end(self):
+    def _sync_data_end(self, thread_output: dict):
+        if thread_output["error"] != "":
+            self.error_label.setText(thread_output["error"])
+            self.sync_source = ""
+            self.refresh_irods_index = None
+            return
+        self.error_label.clear()
+        if self.refresh_irods_index is not None:
+            self.irods_model.refresh_subtree(self.refresh_irods_index)
         self.error_label.setText("Data synchronisation complete.")
 
     def _sync_data_status(self, state):
-        self.error_label.setText(self.str(status))
+        self.error_label.setText(state)
 
     def _sync_diff_end(self, thread_output: dict):
         if thread_output["error"] != "":
@@ -268,9 +272,9 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.sync_source = ""
             self.refresh_irods_index = None
             return
-        
+
         self.error_label.clear()
-        table_data = thread_output["result"]["upload"]+thread_output["result"]["download"]
+        table_data = thread_output["result"]["upload"] + thread_output["result"]["download"]
 
         populate_table(self.diff_table, len(table_data), table_data)
         if len(table_data) == 0:

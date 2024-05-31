@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ibridges import IrodsPath, Session, download, search_data, sync
+from ibridges import IrodsPath, Session, download, search_data, sync, upload
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
 from PyQt6.QtCore import QThread, pyqtSignal
 
@@ -26,6 +26,7 @@ class SearchThread(QThread):
     def _delete_session(self):
         del self.thread_session
         try:
+            _ = self.thread_session
             self.logger.error("Search thread: Thread session still exists.")
         except (NameError, AttributeError):
             self.logger.debug("Search thread: Thread session successfully deleted.")
@@ -43,17 +44,17 @@ class SearchThread(QThread):
             search_out["error"] = "Search takes too long. Please provide more parameters."
         self.succeeded.emit(search_out)
 
+
 class TransferDataThread(QThread):
     """Upload data from local to iRODS."""
 
-    transfer_out = {}
-    transfer_out["error"] = ""
     succeeded = pyqtSignal(dict)
-    current_progress = pyqtSignal(tuple)
+    current_progress = pyqtSignal(str)
 
-    def init(self, ienv_path: Path, logger, diffs: dict, overwrite: bool):
+    def __init__(self, ienv_path: Path, logger, diffs: dict, overwrite: bool):
         """Pass parameters."""
         super().__init__()
+
         self.logger = logger
         self.thread_session = Session(irods_env=ienv_path)
         self.logger.debug("Transfer data thread: Created new session.")
@@ -63,47 +64,111 @@ class TransferDataThread(QThread):
     def _delete_session(self):
         try:
             del self.thread_session
+            _ = self.thread_session
             self.logger.error("Transfer data thread: Thread session still exists.")
         except (NameError, AttributeError):
             self.logger.debug("Transfer data thread: Thread session successfully deleted.")
 
     def run(self):
         """Run the thread."""
-        coll_count = 1
-        coll_failed = 0
-        count = 1
-        failed = 0
-        for coll in diff['create_collection']:
-            try:    
-                IrodsPath(session, coll).create_collection()
-                coll_count+=1
+        obj_count = 1
+        obj_failed = 0
+        file_count = 1
+        file_failed = 0
+        transfer_out = {}
+        transfer_out["error"] = ""
+
+        for coll in self.diffs["create_collection"]:
+            try:
+                IrodsPath.create_collection(self.thread_session, coll)
                 self.logger.info("Transfer data thread: Created collection %s", coll)
             except Exception as error:
-                coll_failed += 1
-                self.logger.exception("Transfer data thread: Could not create  %s; %s",
-                                      coll, repr(error))
+                self.logger.exception(
+                    "Transfer data thread: Could not create  %s; %s", coll, repr(error)
+                )
                 transfer_out["error"] = (
-                        transfer_out["error"]
-                        + f"\nTransfer failed Cannot create {str(irods_path)}: {repr(error)}"
-                        )
-            self.current_progress.emit(coll_count, coll_failed, 0, 0)
+                    transfer_out["error"] + f"\nTransfer failed Cannot create {coll}: {repr(error)}"
+                )
 
-        for local_path, irods_path in diff['upload']:
+        for folder in self.diffs["create_dir"]:
             try:
-                upload(session, local_path, irods_path, resc_name = self.diff['resc_name'],
-                        overwrite=self.overwrite, options = self.diff['options'])
-                count+=1
-                self.logger.info("Transfer data thread: Transfer %s -->  %s, overwrite %s",
-                                 local_path, irods_path, self.overwrite)
+                Path(folder).mkdir(parents=True, exist_ok=True)
+                self.logger.info("Transfer data thread: Created folder %s", folder)
             except Exception as error:
-                failed+=1
-                self.logger.exception("Transfer data thread: Could not transfer  %s --> %s; %s",
-                                      local_path, irods_path, repr(error))
+                self.logger.exception(
+                    "Transfer data thread: Could not create  %s; %s", folder, repr(error)
+                )
                 transfer_out["error"] = (
-                         transfer_out["error"]
-                         + f"\nTransfer failed Cannot create {str(irods_path)}: {repr(error)}"
-                         )
-            self.current_progress.emit(coll_count, coll_failed, count, failed)
+                    transfer_out["error"]
+                    + f"\nTransfer failed Cannot create {folder}: {repr(error)}"
+                )
+
+        for local_path, irods_path in self.diffs["upload"]:
+            try:
+                upload(
+                    self.thread_session,
+                    local_path,
+                    irods_path,
+                    resc_name=self.diffs["resc_name"],
+                    overwrite=self.overwrite,
+                    options=self.diffs["options"],
+                )
+                obj_count += 1
+                self.logger.info(
+                    "Transfer data thread: Transfer %s -->  %s, overwrite %s",
+                    local_path,
+                    irods_path,
+                    self.overwrite,
+                )
+            except Exception as error:
+                obj_failed += 1
+                self.logger.exception(
+                    "Transfer data thread: Could not transfer  %s --> %s; %s",
+                    local_path,
+                    irods_path,
+                    repr(error),
+                )
+                transfer_out["error"] = (
+                    transfer_out["error"]
+                    + f"\nTransfer failed, cannot upload {str(local_path)}: {repr(error)}"
+                )
+            emit_string = f"{obj_count} of {len(self.diffs['upload'])} files"
+            emit_string += f" transferred, failed: {obj_failed}."
+            self.current_progress.emit(emit_string)
+
+        for irods_path, local_path in self.diffs["download"]:
+            try:
+                download(
+                    self.thread_session,
+                    irods_path,
+                    local_path,
+                    resc_name=self.diffs["resc_name"],
+                    overwrite=self.overwrite,
+                    options=self.diffs["options"],
+                )
+                file_count += 1
+                self.logger.info(
+                    "Transfer data thread: Transfer %s -->  %s, overwrite %s",
+                    irods_path,
+                    local_path,
+                    self.overwrite,
+                )
+            except Exception as error:
+                file_failed += 1
+                self.logger.exception(
+                    "Transfer data thread: Could not transfer  %s --> %s; %s",
+                    irods_path,
+                    local_path,
+                    repr(error),
+                )
+                transfer_out["error"] = (
+                    transfer_out["error"]
+                    + f"\nTransfer failed, cannot download {str(irods_path)}: {repr(error)}"
+                )
+            emit_string = f"{file_count} of {len(self.diffs['download'])} data objects"
+            emit_string += f" transferred, failed: {file_failed}."
+            self.current_progress.emit(emit_string)
+
         self._delete_session()
         self.succeeded.emit(transfer_out)
 
@@ -125,8 +190,9 @@ class DownloadThread(QThread):
         self.overwrite = overwrite
 
     def _delete_session(self):
+        del self.thread_session
         try:
-            del self.thread_session
+            _ = self.thread_session
             self.logger.error("Download thread: Thread session still exists.")
         except (NameError, AttributeError):
             self.logger.debug("Download thread: Thread session successfully deleted.")
@@ -186,6 +252,7 @@ class SyncThread(QThread):
     def _delete_session(self):
         del self.thread_session
         try:
+            _ = self.thread_session
             self.logger.error("Sync thread: Thread session still exists.")
         except (NameError, AttributeError):
             self.logger.debug("Sync thread: Thread session successfully deleted.")

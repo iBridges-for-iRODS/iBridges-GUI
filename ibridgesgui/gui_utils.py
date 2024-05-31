@@ -64,14 +64,14 @@ def get_coll_dict(root_coll: irods.collection.iRODSCollection) -> dict:
 
 
 def prep_session_for_copy(session, error_label) -> pathlib.Path:
-    """Either returns a save path to create a new session from or sets message in error label."""
+    """Either return a save path to create a new session from or sets message in error label."""
     if is_session_from_config(session):
         return pathlib.Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
-    else:
-        text = "No search possible: The ibridges config changed during the session."
-        text += "Please reset or restart the session."
-        self.error_label.setText(text)
-        return None
+    
+    text = "The ibridges config changed during the session."
+    text += "Please reset or restart the session."
+    error_label.setText(text)
+    return None
 
 
 # OS utils

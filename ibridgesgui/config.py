@@ -128,6 +128,7 @@ def _get_config() -> Union[None, dict]:
 
 # irods config functions
 
+
 def is_session_from_config(session: Session) -> Union[Session, None]:
     """Create a new session from the given session.
 
@@ -205,8 +206,10 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return repr(err)
 
     except PlainTextPAMPasswordError:
-        return 'Value of "irods_client_server_negotiation" needs to be'+\
-                '"request_server_negotiation".'
+        return (
+            'Value of "irods_client_server_negotiation" needs to be'
+            + '"request_server_negotiation".'
+        )
     except CAT_INVALID_AUTHENTICATION:
         return 'Wrong "irods_authentication_scheme".'
     except ValueError as err:
