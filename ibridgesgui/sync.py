@@ -9,7 +9,7 @@ from ibridges import IrodsPath
 from PyQt6 import QtCore, QtGui
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.gui_utils import UI_FILE_DIR, populate_table
 from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
 from ibridgesgui.threads import SyncThread
@@ -47,6 +47,8 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.irods_to_local_button.clicked.connect(self.irods_to_local)
         self.create_coll_button.clicked.connect(self.create_collection)
         self.create_dir_button.clicked.connect(self.create_dir)
+        self.sync_button.hide()
+        self.sync_button.clicked.connect(self.data_sync)
         self._init_local_fs_tree()
         self._init_irods_tree()
 
@@ -117,6 +119,10 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         else:
             self.error_label.setText("Please select a parent directory, not a file.")
 
+    def data_sync(self):
+        """Function for `Synchronise button`."""
+        self.prep_sync(dry_run=False)
+
     def prep_sync(self, dry_run=True):
         """Prepare and call the sync thread."""
         paths = self._gather_info_for_transfer()
@@ -160,7 +166,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
     def _gather_info_for_transfer(self):
         self.error_label.clear()
-        self.status_browser.clear()
+        self.diff_table.setRowCount(0)
         # Retrieve local fs path
         fs_selection = self.local_fs_tree.selectedIndexes()
         if len(fs_selection) == 0:
@@ -193,8 +199,9 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.create_dir_button.setEnabled(enable)
 
     def _start_sync(self, logger, source, target, dry_run):
+        self.sync_button.hide()
         self.error_label.clear()
-        self.status_browser.clear()
+        self.diff_table.setRowCount(0)
         self._enable_buttons(False)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
 
@@ -235,16 +242,12 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.refresh_irods_index = None
         elif "result" in thread_output:
             self.error_label.clear()
-            info = ""
-            for key in thread_output["result"]:
-                if thread_output["result"][key]:
-                    info += "\n".join([str(i) for i in thread_output["result"][key]])
-            if info == "":
+            table_data = thread_output["result"]["upload"]+thread_output["result"]["download"]
+            populate_table(self.diff_table, len(table_data), table_data)
+            if len(table_data) == 0:
                 self.error_label.setText("Data is already synchronised.")
                 self.sync_source = ""
                 self.refresh_irods_index = None
-            self.status_browser.append("Data to synchronise:\n")
-            self.status_browser.append(info)
         else:
             self.error_label.setText("Synchronisation finished successfully.")
             self.sync_source = ""
@@ -254,13 +257,4 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
         # real sync if necessary
         if self.sync_source != "":
-            msg = "Do you want to synchronise the data?"
-            reply = PyQt6.QtWidgets.QMessageBox.question(
-                self,
-                "Message",
-                msg,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.No,
-            )
-            if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-                self.prep_sync(dry_run=False)
+            self.sync_button.show()
