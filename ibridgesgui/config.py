@@ -138,7 +138,6 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     ienv_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
     try:
         env = _read_json(ienv_path)
-        print(env)
     except Exception:
         return False
 

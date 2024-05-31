@@ -8,6 +8,8 @@ import irods
 import PyQt6
 from ibridges.path import IrodsPath
 
+from ibridgesgui.config import get_last_ienv_path, is_session_from_config
+
 UI_FILE_DIR = files(__package__) / "ui_files"
 
 
@@ -59,6 +61,17 @@ def get_coll_dict(root_coll: irods.collection.iRODSCollection) -> dict:
         this_coll.path: [data_obj.name for data_obj in data_objs]
         for this_coll, _, data_objs in root_coll.walk()
     }
+
+
+def prep_session_for_copy(session, error_label) -> pathlib.Path:
+    """Either returns a save path to create a new session from or sets message in error label."""
+    if is_session_from_config(session):
+        return pathlib.Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
+    else:
+        text = "No search possible: The ibridges config changed during the session."
+        text += "Please reset or restart the session."
+        self.error_label.setText(text)
+        return None
 
 
 # OS utils
