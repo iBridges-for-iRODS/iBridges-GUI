@@ -77,8 +77,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         new_node = root.child(root.rowCount() - 1)
 
         # insert a dummy child to get the link to open the collection
-        if len(root_coll.subcollections + root_coll.data_objects) > 0:
-            new_node.appendRow(None)
+        new_node.appendRow(None)
 
     def delete_subtree(self, tree_item):
         """Delete subtree.
@@ -104,7 +103,6 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
 
         """
         _, level, _, _, _, abs_irods_path = tree_item_data
-        # _tree_row_from_irods_item(self, item, parent_id, level, display_path = False)
         parent_coll = IrodsPath(self.session, abs_irods_path).collection
 
         # we assume that tree_item has no children yet.
@@ -114,9 +112,8 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
             tree_item.appendRow(row)
             new_nodes[item.id] = tree_item.child(tree_item.rowCount() - 1)
             if isinstance(item, irods.collection.iRODSCollection):
-                if len(item.subcollections + item.data_objects) > 0:
-                    # insert a dummy child to get the link to open the collection
-                    new_nodes[item.id].appendRow(None)
+                # insert a dummy child to get the link to open the collection
+                new_nodes[item.id].appendRow(None)
 
     def refresh_subtree(self, position):
         """Refresh the tree view.
