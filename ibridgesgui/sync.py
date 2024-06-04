@@ -206,7 +206,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             )
         except Exception:
             self.error_label.setText(
-                "Could not instantiate a new session from{env_path}.Check configuration."
+                "Could not instantiate a new session from{env_path}. Check configuration."
             )
             return
 
