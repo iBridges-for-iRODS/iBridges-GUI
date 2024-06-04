@@ -73,7 +73,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.local_fs_tree.setColumnHidden(3, True)
 
     def _init_irods_tree(self):
-        root = self.irods_root(IrodsPath(self.session, "~"))
+        root = self.irods_root()
         self.irods_model = IrodsTreeModel(self.irods_tree, root)
         self.irods_tree.setModel(self.irods_model)
         self.irods_tree.expanded.connect(self.irods_model.refresh_subtree)
@@ -86,11 +86,11 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.irods_tree.setColumnHidden(4, True)
         self.irods_tree.setColumnHidden(5, True)
 
-    def irods_root(self, irods_path):
+    def irods_root(self):
         """Retrieve lowest visible level in the iRODS tree for the user."""
-        lowest = IrodsPath(irods_path.session, irods_path.absolute())
+        lowest = IrodsPath(self.session).absolute()
         while lowest.parent.exists():
-            lowest = IrodsPath(irods_path.session, lowest.parent)
+            lowest = lowest.parent
         return lowest
 
     def create_collection(self):

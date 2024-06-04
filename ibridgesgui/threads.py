@@ -84,9 +84,9 @@ class TransferDataThread(QThread):
 
     def run(self):
         """Run the thread."""
-        obj_count = 1
+        obj_count = 0
         obj_failed = 0
-        file_count = 1
+        file_count = 0
         file_failed = 0
         transfer_out = {}
         transfer_out["error"] = ""
