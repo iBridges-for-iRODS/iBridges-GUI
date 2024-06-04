@@ -24,12 +24,11 @@ class SearchThread(QThread):
         self.key_vals = key_vals
 
     def _delete_session(self):
-        del self.thread_session
-        try:
-            _ = self.thread_session
-            self.logger.error("Search thread: Thread session still exists.")
-        except (NameError, AttributeError):
+        self.thread_session.close()
+        if self.thread_session.irods_session is None:
             self.logger.debug("Search thread: Thread session successfully deleted.")
+        else:
+            self.logger.debug("Search thread: Thread session still exists.")
 
     def run(self):
         """Run the thread."""
@@ -75,12 +74,11 @@ class TransferDataThread(QThread):
         self.overwrite = overwrite
 
     def _delete_session(self):
-        try:
-            del self.thread_session
-            _ = self.thread_session
-            self.logger.error("Transfer data thread: Thread session still exists.")
-        except (NameError, AttributeError):
+        self.thread_session.close()
+        if self.thread_session.irods_session is None:
             self.logger.debug("Transfer data thread: Thread session successfully deleted.")
+        else:
+            self.logger.debug("Transfer data thread: Thread session still exists.")
 
     def run(self):
         """Run the thread."""
@@ -203,12 +201,11 @@ class DownloadThread(QThread):
         self.overwrite = overwrite
 
     def _delete_session(self):
-        del self.thread_session
-        try:
-            _ = self.thread_session
-            self.logger.error("Download thread: Thread session still exists.")
-        except (NameError, AttributeError):
+        self.thread_session.close()
+        if self.thread_session.irods_session is None:
             self.logger.debug("Download thread: Thread session successfully deleted.")
+        else:
+            self.logger.debug("Download thread: Thread session still exists.")
 
     def run(self):
         """Run the thread."""
@@ -263,12 +260,11 @@ class SyncThread(QThread):
         self.dry_run = dry_run
 
     def _delete_session(self):
-        del self.thread_session
-        try:
-            _ = self.thread_session
-            self.logger.error("Sync thread: Thread session still exists.")
-        except (NameError, AttributeError):
+        self.thread_session.close()
+        if self.thread_session.irods_session is None:
             self.logger.debug("Sync thread: Thread session successfully deleted.")
+        else:
+            self.logger.debug("Sync thread: Thread session still exists.")
 
     def run(self):
         """Run the thread."""
