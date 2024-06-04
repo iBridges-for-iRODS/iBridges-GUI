@@ -81,7 +81,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
     def irods_root(self, irods_path):
         """Retrieve lowest visible level in the iRODS tree for the user."""
-        lowest = IrodsPath(irods_path.session, irods_path.absolute_path())
+        lowest = IrodsPath(irods_path.session, irods_path.absolute())
         while lowest.parent.exists():
             lowest = IrodsPath(irods_path.session, lowest.parent)
         return lowest
@@ -216,8 +216,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.sync_thread = SyncThread(env_path, logger, source, target, dry_run)
         except Exception:
             self.error_label.setText(
-                "Could not instantiate a new session from{env_path}.Check configuration"
-            )
+                "Could not instantiate a new session from{env_path}.Check configuration.")
             return
         self.sync_thread.succeeded.connect(self._sync_end)
         self.sync_thread.finished.connect(self._finish_sync)
@@ -238,7 +237,8 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.error_label.clear()
             info = ""
             for key in thread_output["result"]:
-                info += "\n".join([str(i) for i in thread_output["result"][key]])
+                if thread_output["result"][key]:
+                    info += "\n".join([str(i) for i in thread_output["result"][key]])
             if info == "":
                 self.error_label.setText("Data is already synchronised.")
                 self.sync_source = ""

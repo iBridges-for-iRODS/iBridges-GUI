@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ibridges import Session, download, search_data, sync_data
+from ibridges import Session, download, search_data, sync
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
 from PyQt6.QtCore import QThread, pyqtSignal
 
@@ -135,7 +135,7 @@ class SyncThread(QThread):
         sync_out["error"] = ""
 
         try:
-            result = sync_data(
+            result = sync(
                 self.thread_session,
                 self.source,
                 self.target,

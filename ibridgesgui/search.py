@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 import PyQt6.uic
-from ibridges import IrodsPath, get_collection, get_dataobject
+from ibridges import IrodsPath
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
@@ -101,7 +101,8 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         table_data = []  # (Path, Name, Size, Checksum, created, modified)
         for result in results:
             if "DATA_NAME" in result:
-                obj = get_dataobject(self.session, result["COLL_NAME"] + "/" + result["DATA_NAME"])
+                obj = IrodsPath(self.session,
+                                result["COLL_NAME"] + "/" + result["DATA_NAME"]).dataobject
                 table_data.append(
                     (
                         "-d",
@@ -112,7 +113,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                     )
                 )
             else:
-                coll = get_collection(self.session, result["COLL_NAME"])
+                coll = IrodsPath(self.session, result["COLL_NAME"]).collection
                 table_data.append(
                     (
                         "-C",
