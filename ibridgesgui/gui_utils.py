@@ -8,6 +8,8 @@ import irods
 import PyQt6
 from ibridges.path import IrodsPath
 
+from ibridgesgui.config import get_last_ienv_path, is_session_from_config
+
 UI_FILE_DIR = files(__package__) / "ui_files"
 
 
@@ -61,6 +63,17 @@ def get_coll_dict(root_coll: irods.collection.iRODSCollection) -> dict:
     }
 
 
+def prep_session_for_copy(session, error_label) -> pathlib.Path:
+    """Either return a save path to create a new session from or sets message in error label."""
+    if is_session_from_config(session):
+        return pathlib.Path.home().joinpath(".irods", get_last_ienv_path())
+
+    text = "The ibridges config changed during the session."
+    text += "Please reset or restart the session."
+    error_label.setText(text)
+    return None
+
+
 # OS utils
 def get_downloads_dir() -> pathlib.Path:
     """Find the platform-dependent 'Downloads' directory.
@@ -72,9 +85,9 @@ def get_downloads_dir() -> pathlib.Path:
 
     """
     # Linux and Mac Download folders
-    if pathlib.Path("~", "Downloads").expanduser().is_dir():
-        return pathlib.Path("~", "Downloads").expanduser()
+    if pathlib.Path.home().joinpath("Downloads").is_dir():
+        return pathlib.Path.home().joinpath("Downloads")
 
     # Try to create Downloads
-    pathlib.Path("~", "Downloads").expanduser().mkdir(parents=True)
-    return pathlib.Path("~", "Downloads").expanduser()
+    pathlib.Path.home().joinpath("Downloads").mkdir(parents=True)
+    return pathlib.Path.home().joinpath("Downloads")

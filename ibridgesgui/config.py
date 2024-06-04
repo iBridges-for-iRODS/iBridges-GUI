@@ -138,7 +138,6 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     ienv_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
     try:
         env = _read_json(ienv_path)
-        print(env)
     except Exception:
         return False
 
@@ -206,8 +205,11 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return repr(err)
 
     except PlainTextPAMPasswordError:
-        return 'Value of "irods_client_server_negotiation" needs to be'+\
-                '"request_server_negotiation".'
+        return (
+            'Value of "irods_client_server_negotiation" needs to be'
+            + ' "request_server_negotiation".'
+        )
+
     except CAT_INVALID_AUTHENTICATION:
         return 'Wrong "irods_authentication_scheme".'
     except ValueError as err:

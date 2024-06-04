@@ -103,6 +103,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             if "DATA_NAME" in result:
                 obj = IrodsPath(self.session,
                                 result["COLL_NAME"] + "/" + result["DATA_NAME"]).dataobject
+
                 table_data.append(
                     (
                         "-d",
