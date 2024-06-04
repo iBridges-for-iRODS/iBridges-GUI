@@ -234,6 +234,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.error_label.setText(
                 "Could not instantiate a new session from{env_path}.Check configuration."
             )
+
             return
         self.sync_diff_thread.succeeded.connect(self._sync_diff_end)
         self.sync_diff_thread.finished.connect(self._finish_sync_diff)
@@ -259,6 +260,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.refresh_irods_index = None
             return
         self.error_label.clear()
+
         if self.refresh_irods_index is not None:
             self.irods_model.refresh_subtree(self.refresh_irods_index)
         self.error_label.setText("Data synchronisation complete.")
