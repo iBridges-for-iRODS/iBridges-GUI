@@ -185,65 +185,6 @@ class TransferDataThread(QThread):
         self.succeeded.emit(transfer_out)
 
 
-class DownloadThread(QThread):
-    """Download from iRODS to local FS."""
-
-    succeeded = pyqtSignal(dict)
-    current_progress = pyqtSignal(tuple)
-
-    def __init__(self, ienv_path, logger, irods_paths: list, local_path: Path, overwrite: bool):
-        """Pass download parameters."""
-        super().__init__()
-        self.logger = logger
-        self.thread_session = Session(irods_env=ienv_path)
-        self.logger.debug("Download thread: Created new session.")
-        self.irods_paths = irods_paths
-        self.local_path = local_path
-        self.overwrite = overwrite
-
-    def _delete_session(self):
-        self.thread_session.close()
-        if self.thread_session.irods_session is None:
-            self.logger.debug("Download thread: Thread session successfully deleted.")
-        else:
-            self.logger.debug("Download thread: Thread session still exists.")
-
-    def run(self):
-        """Run the thread."""
-        download_out = {}
-        download_out["error"] = ""
-        count = 1
-        failed = 0
-
-        for irods_path in self.irods_paths:
-            if irods_path.exists():
-                try:
-                    download(self.thread_session, irods_path, self.local_path, self.overwrite)
-                    self.logger.info(
-                        "Downloading %s to %s, overwrite %s",
-                        str(irods_path),
-                        self.local_path,
-                        self.overwrite,
-                    )
-                    count += 1
-                except Exception as error:
-                    failed += 1
-                    self.logger.exception("Download failed: %s; %s", str(irods_path), repr(error))
-                    download_out["error"] = (
-                        download_out["error"]
-                        + f"\nDownload failed {str(irods_path)}: {repr(error)}"
-                    )
-            else:
-                failed += 1
-                download_out["error"] = (
-                    download_out["error"] + f"\nDownload failed. {str(irods_path)} does not exist."
-                )
-                self.logger.exception("Download failed: %s does not exist", str(irods_path))
-            self.current_progress.emit((self.local_path, len(self.irods_paths), count, failed))
-        self._delete_session()
-        self.succeeded.emit(download_out)
-
-
 class SyncThread(QThread):
     """Sync between iRODS and local FS."""
 

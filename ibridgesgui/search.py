@@ -5,17 +5,13 @@ import sys
 from pathlib import Path
 
 import PyQt6.uic
-from ibridges import IrodsPath, download
+from ibridges import IrodsPath
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import (
-    UI_FILE_DIR,
-    populate_table,
-    combine_diffs
-)
-from ibridgesgui.threads import TransferDataThread, SearchThread
+from ibridgesgui.gui_utils import UI_FILE_DIR, combine_diffs, populate_table
+from ibridgesgui.threads import SearchThread, TransferDataThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
 
@@ -102,8 +98,9 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         table_data = []  # (Path, Name, Size, Checksum, created, modified)
         for result in results:
             if "DATA_NAME" in result:
-                obj = IrodsPath(self.session,
-                                result["COLL_NAME"] + "/" + result["DATA_NAME"]).dataobject
+                obj = IrodsPath(
+                    self.session, result["COLL_NAME"] + "/" + result["DATA_NAME"]
+                ).dataobject
 
                 table_data.append(
                     (
@@ -221,13 +218,13 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         self.error_label.setText(f"Downloading to {folder} ....")
         try:
-            self.download_thread = TransferDataThread(env_path, self.logger,
-                                                      diffs, overwrite=True)
+            self.download_thread = TransferDataThread(
+                env_path, self.logger, diffs, overwrite=overwrite
+            )
         except Exception:
             self.error_label.setText(
                 "Could not instantiate a new session from{env_path}.Check configuration"
             )
-            raise
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
         self.download_thread.succeeded.connect(self._download_end)

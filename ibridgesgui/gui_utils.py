@@ -73,9 +73,17 @@ def prep_session_for_copy(session, error_label) -> pathlib.Path:
     error_label.setText(text)
     return None
 
+
 def combine_diffs(session, sources: list, destination: Union[IrodsPath, pathlib.Path]) -> dict:
-    diffs = {"create_dir": set(), "create_collection": set(),
-             "upload": [], "download": [], "resc_name": "", "options": None}
+    """Combine the diffs of several upload or download dry-runs."""
+    diffs = {
+        "create_dir": set(),
+        "create_collection": set(),
+        "upload": [],
+        "download": [],
+        "resc_name": "",
+        "options": None,
+    }
     if isinstance(destination, pathlib.Path):
         for ipath in sources:
             diff = download(session, ipath, destination, dry_run=True, overwrite=True)
