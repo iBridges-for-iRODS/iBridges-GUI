@@ -107,8 +107,8 @@ class Rename(QDialog, Ui_renameItem):
 
     def accept(self):
         """Create new collection."""
-        if item_path_input.text() != "":
-            new_path = IrodsPath(self.item_path_input.text())
+        if self.item_path_input.text() != "":
+            new_path = IrodsPath(self.irods_path.session, self.item_path_input.text())
             if new_path.exists():
                 self.error_label.setText(f"{new_path} already exists.")
             else:
