@@ -22,7 +22,7 @@ from ibridgesgui.gui_utils import (
     populate_table,
     populate_textfield,
 )
-from ibridgesgui.popup_widgets import CreateCollection
+from ibridgesgui.popup_widgets import CreateCollection, Rename
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 
 
@@ -76,6 +76,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.upload_dir_button.clicked.connect(self.folder_upload)
         self.download_button.clicked.connect(self.download)
         self.create_coll_button.clicked.connect(self.create_collection)
+        self.rename_button.clicked.connect(self.rename_item)
 
         # Browser table behaviour
         self.browser_table.doubleClicked.connect(self.update_path)
@@ -105,7 +106,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.path_input.setText(str(current_path.parent))
         self.load_browser_table()
 
-    # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def update_path(self, index):
         """Take path from path_input and loads browser table."""
         self.error_label.clear()
@@ -122,6 +122,16 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         coll_widget = CreateCollection(parent, self.logger)
         coll_widget.exec()
         self.load_browser_table()
+
+    def rename_item(self):
+        """Rename/move a collection or data object."""
+        self.error_label.clear()
+        if self.browser_table.currentRow() == -1:
+            self.error_label.setText("Please select a row from the table first!")
+            return
+        item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
+        irods_path = IrodsPath(self.session, "/" + self.path_input.text().strip("/"))
+        rename_widget = Rename(irods_path, self.logger)
 
     def folder_upload(self):
         """Select a folder and upload."""

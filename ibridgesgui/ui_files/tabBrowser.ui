@@ -76,6 +76,7 @@ QPushButton#confirm_button
        <property name="font">
         <font>
          <pointsize>16</pointsize>
+         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -157,6 +158,13 @@ QPushButton#confirm_button
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="rename_button">
+         <property name="text">
+          <string>Rename/Move</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -230,6 +238,15 @@ QPushButton#confirm_button
      </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="tabKeyNavigation">
+      <bool>false</bool>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="dragDropOverwriteMode">
+      <bool>false</bool>
      </property>
      <property name="alternatingRowColors">
       <bool>false</bool>
@@ -311,6 +328,7 @@ QPushButton#confirm_button
      <widget class="QWidget" name="preview">
       <property name="font">
        <font>
+        <weight>50</weight>
         <bold>false</bold>
        </font>
       </property>
@@ -380,6 +398,7 @@ QPushButton#confirm_button
           <widget class="QPushButton" name="delete_meta_button">
            <property name="font">
             <font>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -412,6 +431,7 @@ QPushButton#confirm_button
           <widget class="QPushButton" name="update_meta_button">
            <property name="font">
             <font>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -438,6 +458,7 @@ QPushButton#confirm_button
            <property name="font">
             <font>
              <pointsize>20</pointsize>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -460,6 +481,7 @@ QPushButton#confirm_button
           <widget class="QPushButton" name="add_meta_button">
            <property name="font">
             <font>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -532,6 +554,7 @@ QPushButton#confirm_button
            <property name="font">
             <font>
              <pointsize>20</pointsize>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -631,6 +654,7 @@ QPushButton#confirm_button
           <widget class="QPushButton" name="add_acl_button">
            <property name="font">
             <font>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -733,9 +757,8 @@ QPushButton#confirm_button
         <widget class="QTextBrowser" name="delete_browser">
          <property name="html">
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-hr { height: 1px; border-width: 0; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Summary&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -771,6 +794,7 @@ hr { height: 1px; border-width: 0; }
            <property name="font">
             <font>
              <pointsize>13</pointsize>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>

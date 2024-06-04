@@ -14,6 +14,7 @@ from ibridgesgui.config import _read_json, check_irods_config, save_irods_config
 from ibridgesgui.gui_utils import UI_FILE_DIR, populate_textfield
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
+from ibridgesgui.ui_files.renameItem import Ui_renameItem
 
 
 class CreateCollection(QDialog, Ui_createCollection):
@@ -83,6 +84,45 @@ class CreateDirectory(QDialog, Ui_createCollection):
                     self.error_label.setText(error.message)
                 else:
                     self.error_label.setText("ERROR: insufficient rights.")
+
+
+class Rename(QDialog, Ui_renameItem):
+    """Popup window to rename and move a collection or data object."""
+
+    def __init__(self, irods_path: IrodsPath, logger):
+        """Initialise window."""
+        super().__init__()
+        if getattr(sys, "frozen", False):
+            super().setupUi(self)
+        else:
+            loadUi(UI_FILE_DIR / "renameItem.ui", self)
+
+        self.logger = logger
+        self.setWindowTitle("Create iRODS collection")
+        self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.irods_path = irods_path
+        self.item_path_label.setText(str(irods_path))
+        self.item_path_input.setText(str(irods_path))
+        self.buttonBox.accepted.connect(self.accept)
+
+    def accept(self):
+        """Create new collection."""
+        if item_path_input.text() != "":
+            new_path = IrodsPath(self.item_path_input.text())
+            if new_path.exists():
+                self.error_label.setText(f"{new_path} already exists.")
+            else:
+                try:
+                    new_irods_path = self.irods_path.rename(new_path)
+                    self.logger.info(f"Rename/Move {self.irods_path} --> {new_irods_path}")
+                    self.done(0)
+                except irods.exception.CAT_NO_ACCESS_PERMISSION:
+                    self.error_label.setText(
+                        f"No access rights to {new_path}."
+                    )
+                except Exception as err:
+                    self.logger.exception(f"Could not create {new_path}: {err}")
+                    self.error_label.setText(f"Could not create {new_path}, consult the logs.")
 
 
 class CheckConfig(QDialog, Ui_configCheck):
