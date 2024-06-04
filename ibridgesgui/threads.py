@@ -102,6 +102,7 @@ class TransferDataThread(QThread):
                 )
 
         for folder in self.diffs["create_dir"]:
+            print(f"create {folder}")
             try:
                 Path(folder).mkdir(parents=True, exist_ok=True)
                 self.logger.info("Transfer data thread: Created folder %s", folder)
