@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1234</width>
-    <height>721</height>
+    <height>749</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,7 +47,7 @@ QLabel#error_label
      <height>771</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_11" stretch="0,0,0,0,0,0">
+   <layout class="QVBoxLayout" name="verticalLayout_11" stretch="0,0,0,0,0,0,0">
     <property name="sizeConstraint">
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
@@ -72,6 +72,7 @@ QLabel#error_label
           <property name="font">
            <font>
             <pointsize>13</pointsize>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -311,6 +312,7 @@ QLabel#error_label
           <property name="font">
            <font>
             <pointsize>13</pointsize>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -454,6 +456,22 @@ QLabel#error_label
        <string>Synchronise</string>
       </property>
      </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>100</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>
