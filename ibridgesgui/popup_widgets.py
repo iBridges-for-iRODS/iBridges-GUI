@@ -117,9 +117,7 @@ class Rename(QDialog, Ui_renameItem):
                     self.logger.info(f"Rename/Move {self.irods_path} --> {new_irods_path}")
                     self.done(0)
                 except irods.exception.CAT_NO_ACCESS_PERMISSION:
-                    self.error_label.setText(
-                        f"No access rights to {new_path}."
-                    )
+                    self.error_label.setText(f"No access rights to {new_path}.")
                 except Exception as err:
                     self.logger.exception(f"Could not create {new_path}: {err}")
                     self.error_label.setText(f"Could not create {new_path}, consult the logs.")

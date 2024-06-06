@@ -128,6 +128,7 @@ def _get_config() -> Union[None, dict]:
 
 # irods config functions
 
+
 def is_session_from_config(session: Session) -> Union[Session, None]:
     """Create a new session from the given session.
 

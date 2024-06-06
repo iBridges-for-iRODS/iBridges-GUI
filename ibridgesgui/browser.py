@@ -44,7 +44,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         if self.session.home is not None:
             root_path = IrodsPath(self.session).absolute()
         else:
-
             root_path = IrodsPath(
                 self.session, f"/{self.session.zone}/home/{self.session.username}"
             )
@@ -130,8 +129,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             self.error_label.setText("Please select a row from the table first!")
             return
         item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
-        irods_path = IrodsPath(self.session,
-                        "/" + self.path_input.text().strip("/")).joinpath(item_name)
+        irods_path = IrodsPath(self.session, "/" + self.path_input.text().strip("/")).joinpath(
+            item_name
+        )
         rename_widget = Rename(irods_path, self.logger)
         rename_widget.exec()
         self.load_browser_table()

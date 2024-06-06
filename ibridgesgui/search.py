@@ -101,8 +101,9 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         table_data = []  # (Path, Name, Size, Checksum, created, modified)
         for result in results:
             if "DATA_NAME" in result:
-                obj = IrodsPath(self.session,
-                                result["COLL_NAME"] + "/" + result["DATA_NAME"]).dataobject
+                obj = IrodsPath(
+                    self.session, result["COLL_NAME"] + "/" + result["DATA_NAME"]
+                ).dataobject
 
                 table_data.append(
                     (
