@@ -6,7 +6,7 @@ from typing import Union
 
 import irods
 import PyQt6
-from ibridges.path import IrodsPath
+from ibridges import IrodsPath, download
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
@@ -78,6 +78,26 @@ def prep_session_for_copy(session, error_label) -> pathlib.Path:
     text += "Please reset or restart the session."
     error_label.setText(text)
     return None
+
+
+def combine_diffs(session, sources: list, destination: Union[IrodsPath, pathlib.Path]) -> dict:
+    """Combine the diffs of several upload or download dry-runs."""
+    combined_diffs = {
+        "create_dir": set(),
+        "create_collection": set(),
+        "upload": [],
+        "download": [],
+        "resc_name": "",
+        "options": None,
+    }
+    if isinstance(destination, pathlib.Path):
+        for ipath in sources:
+            diff = download(session, ipath, destination, dry_run=True, overwrite=True)
+            combined_diffs["download"].extend(diff["download"])
+            combined_diffs["create_dir"] = combined_diffs["create_dir"].union(diff["create_dir"])
+    elif isinstance(destination, IrodsPath):
+        print("not implemented yet")
+    return combined_diffs
 
 
 # OS utils
