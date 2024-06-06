@@ -1,7 +1,6 @@
 """Handy and reusable functions for the GUI."""
 
 import pathlib
-from importlib.resources import files
 from typing import Union
 
 import irods
