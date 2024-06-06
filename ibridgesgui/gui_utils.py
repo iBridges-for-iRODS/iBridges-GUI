@@ -10,6 +10,12 @@ from ibridges.path import IrodsPath
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
+    
+
 UI_FILE_DIR = files(__package__) / "ui_files"
 
 
