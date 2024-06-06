@@ -14,7 +14,7 @@ try:
     from importlib.resources import files
 except ImportError:
     from importlib_resources import files
-    
+
 
 UI_FILE_DIR = files(__package__) / "ui_files"
 
