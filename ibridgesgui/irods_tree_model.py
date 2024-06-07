@@ -11,7 +11,7 @@ import PyQt6
 import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
-from ibridges import IrodsPath, get_collection
+from ibridges import IrodsPath
 
 
 class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
@@ -70,15 +70,14 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         root = self.invisibleRootItem()
 
         # Start the tree, add the highest level to the invisible root
-        root_coll = get_collection(self.session, self.irods_root_path)
+        root_coll = IrodsPath(self.session, self.irods_root_path).collection
         root_row = self._tree_row_from_irods_item(root_coll, -1, -1, True)
         root.appendRow(root_row)
 
         new_node = root.child(root.rowCount() - 1)
 
         # insert a dummy child to get the link to open the collection
-        if len(root_coll.subcollections + root_coll.data_objects) > 0:
-            new_node.appendRow(None)
+        new_node.appendRow(None)
 
     def delete_subtree(self, tree_item):
         """Delete subtree.
@@ -104,8 +103,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
 
         """
         _, level, _, _, _, abs_irods_path = tree_item_data
-        # _tree_row_from_irods_item(self, item, parent_id, level, display_path = False)
-        parent_coll = get_collection(self.session, abs_irods_path)
+        parent_coll = IrodsPath(self.session, abs_irods_path).collection
 
         # we assume that tree_item has no children yet.
         new_nodes = {}
@@ -114,9 +112,8 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
             tree_item.appendRow(row)
             new_nodes[item.id] = tree_item.child(tree_item.rowCount() - 1)
             if isinstance(item, irods.collection.iRODSCollection):
-                if len(item.subcollections + item.data_objects) > 0:
-                    # insert a dummy child to get the link to open the collection
-                    new_nodes[item.id].appendRow(None)
+                # insert a dummy child to get the link to open the collection
+                new_nodes[item.id].appendRow(None)
 
     def refresh_subtree(self, position):
         """Refresh the tree view.

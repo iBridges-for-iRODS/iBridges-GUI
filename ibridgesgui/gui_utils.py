@@ -1,13 +1,19 @@
 """Handy and reusable functions for the GUI."""
 
 import pathlib
-from importlib.resources import files
 from typing import Union
 
 import irods
 import PyQt6
-from ibridges import get_collection, get_dataobject
-from ibridges.path import IrodsPath
+from ibridges import IrodsPath, download
+
+from ibridgesgui.config import get_last_ienv_path, is_session_from_config
+
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
+
 
 UI_FILE_DIR = files(__package__) / "ui_files"
 
@@ -35,10 +41,10 @@ def populate_textfield(text_widget, text_by_row: Union[str, list]):
 # iBridges/iRODS utils
 def get_irods_item(irods_path: IrodsPath):
     """Get the item behind an iRODS path."""
-    try:
-        item = get_collection(irods_path.session, irods_path)
-    except ValueError:
-        item = get_dataobject(irods_path.session, irods_path)
+    if irods_path.collection_exists():
+        item = irods_path.collection
+    else:
+        item = irods_path.dataobject
     return item
 
 
@@ -62,6 +68,37 @@ def get_coll_dict(root_coll: irods.collection.iRODSCollection) -> dict:
     }
 
 
+def prep_session_for_copy(session, error_label) -> pathlib.Path:
+    """Either return a save path to create a new session from or sets message in error label."""
+    if is_session_from_config(session):
+        return pathlib.Path.home().joinpath(".irods", get_last_ienv_path())
+
+    text = "The ibridges config changed during the session."
+    text += "Please reset or restart the session."
+    error_label.setText(text)
+    return None
+
+
+def combine_diffs(session, sources: list, destination: Union[IrodsPath, pathlib.Path]) -> dict:
+    """Combine the diffs of several upload or download dry-runs."""
+    combined_diffs = {
+        "create_dir": set(),
+        "create_collection": set(),
+        "upload": [],
+        "download": [],
+        "resc_name": "",
+        "options": None,
+    }
+    if isinstance(destination, pathlib.Path):
+        for ipath in sources:
+            diff = download(session, ipath, destination, dry_run=True, overwrite=True)
+            combined_diffs["download"].extend(diff["download"])
+            combined_diffs["create_dir"] = combined_diffs["create_dir"].union(diff["create_dir"])
+    elif isinstance(destination, IrodsPath):
+        print("not implemented yet")
+    return combined_diffs
+
+
 # OS utils
 def get_downloads_dir() -> pathlib.Path:
     """Find the platform-dependent 'Downloads' directory.
@@ -73,9 +110,9 @@ def get_downloads_dir() -> pathlib.Path:
 
     """
     # Linux and Mac Download folders
-    if pathlib.Path("~", "Downloads").expanduser().is_dir():
-        return pathlib.Path("~", "Downloads").expanduser()
+    if pathlib.Path.home().joinpath("Downloads").is_dir():
+        return pathlib.Path.home().joinpath("Downloads")
 
     # Try to create Downloads
-    pathlib.Path("~", "Downloads").expanduser().mkdir(parents=True)
-    return pathlib.Path("~", "Downloads").expanduser()
+    pathlib.Path.home().joinpath("Downloads").mkdir(parents=True)
+    return pathlib.Path.home().joinpath("Downloads")

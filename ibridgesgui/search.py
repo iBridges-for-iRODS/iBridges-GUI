@@ -5,16 +5,13 @@ import sys
 from pathlib import Path
 
 import PyQt6.uic
-from ibridges import IrodsPath, get_collection, get_dataobject
+from ibridges import IrodsPath
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import (
-    UI_FILE_DIR,
-    populate_table,
-)
-from ibridgesgui.threads import DownloadThread, SearchThread
+from ibridgesgui.gui_utils import UI_FILE_DIR, combine_diffs, populate_table
+from ibridgesgui.threads import SearchThread, TransferDataThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
 
@@ -101,7 +98,8 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         table_data = []  # (Path, Name, Size, Checksum, created, modified)
         for result in results:
             if "DATA_NAME" in result:
-                obj = get_dataobject(self.session, result["COLL_NAME"] + "/" + result["DATA_NAME"])
+                obj = IrodsPath(self.session, result["COLL_NAME"], result["DATA_NAME"]).dataobject
+
                 table_data.append(
                     (
                         "-d",
@@ -112,7 +110,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                     )
                 )
             else:
-                coll = get_collection(self.session, result["COLL_NAME"])
+                coll = IrodsPath(self.session, result["COLL_NAME"]).collection
                 table_data.append(
                     (
                         "-C",
@@ -157,7 +155,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         if button_reply == QMessageBox.StandardButton.Yes:
             overwrite = True
-            self._start_download(self.logger, irods_paths, select_dir, overwrite)
+            self._start_download(irods_paths, select_dir, overwrite)
         else:
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
@@ -200,7 +198,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             irods_paths.append(IrodsPath(self.session, self.search_table.item(row, 1).text()))
         return irods_paths
 
-    def _start_download(self, logger, irods_paths, folder, overwrite):
+    def _start_download(self, irods_paths, folder, overwrite):
         self.download_button.setEnabled(False)
         self.clear_button.setEnabled(False)
         self.search_button.setEnabled(False)
@@ -212,13 +210,20 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             text += " Please reset or restart the session."
             self.error_label.setText(text)
             return
+
+        # get diff dictionary
+        diffs = combine_diffs(self.session, irods_paths, folder)
+
         self.error_label.setText(f"Downloading to {folder} ....")
         try:
-            self.download_thread = DownloadThread(env_path, logger, irods_paths, folder, overwrite)
+            self.download_thread = TransferDataThread(
+                env_path, self.logger, diffs, overwrite=overwrite
+            )
         except Exception:
             self.error_label.setText(
                 "Could not instantiate a new session from{env_path}.Check configuration"
             )
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
         self.download_thread.succeeded.connect(self._download_end)
         self.download_thread.finished.connect(self._finish_download)
@@ -233,9 +238,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         del self.download_thread
 
     def _download_status(self, state):
-        self.error_label.setText(
-            f"Downloading to {state[0]} .... {state[2]} out of {state[1]}, failed {state[3]}."
-        )
+        self.error_label.setText(state)
 
     def _download_end(self, thread_output: dict):
         if thread_output["error"] == "":

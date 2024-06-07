@@ -50,12 +50,13 @@ QLabel#error_label
       <property name="minimumSize">
        <size>
         <width>600</width>
-        <height>300</height>
+        <height>500</height>
        </size>
       </property>
       <property name="font">
        <font>
         <pointsize>16</pointsize>
+        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -86,6 +87,7 @@ QLabel#error_label
    <property name="font">
     <font>
      <pointsize>16</pointsize>
+     <weight>50</weight>
      <italic>false</italic>
      <bold>false</bold>
     </font>
@@ -94,6 +96,7 @@ QLabel#error_label
     <property name="font">
      <font>
       <pointsize>16</pointsize>
+      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>

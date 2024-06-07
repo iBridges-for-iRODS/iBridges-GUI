@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ibridges import Session, download, search_data, sync_data
+from ibridges import IrodsPath, Session, download, search_data, sync, upload
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
 from PyQt6.QtCore import QThread, pyqtSignal
 
@@ -24,12 +24,11 @@ class SearchThread(QThread):
         self.key_vals = key_vals
 
     def _delete_session(self):
-        del self.thread_session
-        try:
-            print(self.thread_session)
-            self.logger.error("Search thread: Thread session still exists.")
-        except (NameError, AttributeError):
+        self.thread_session.close()
+        if self.thread_session.irods_session is None:
             self.logger.debug("Search thread: Thread session successfully deleted.")
+        else:
+            self.logger.debug("Search thread: Thread session still exists.")
 
     def run(self):
         """Run the thread."""
@@ -45,64 +44,145 @@ class SearchThread(QThread):
         self.succeeded.emit(search_out)
 
 
-class DownloadThread(QThread):
-    """Download from iRODS to local FS."""
+class TransferDataThread(QThread):
+    """Transfer data between local and iRODS."""
 
     succeeded = pyqtSignal(dict)
-    current_progress = pyqtSignal(tuple)
+    current_progress = pyqtSignal(str)
 
-    def __init__(self, ienv_path, logger, irods_paths: list, local_path: Path, overwrite: bool):
-        """Pass download parameters."""
+    def __init__(self, ienv_path: Path, logger, diffs: dict, overwrite: bool):
+        """Pass parameters.
+
+        ienv_path : Path
+            path to the irods_environment.json to create a new session.
+        logger : logging.Logger
+            Logger
+        diffs : dict
+            A dict object containing four keys:
+            'create_dir' : Create local directories when sync from iRODS to local
+            'create_collection' : Create collections when sync from local to iRODS
+            'upload' : Tuple(local path, iRODS path) when sync from local to iRODS
+            'download' : Tuple(iRODS path, local path) when sync from iRODS to local
+
+        """
         super().__init__()
+
         self.logger = logger
         self.thread_session = Session(irods_env=ienv_path)
-        self.logger.debug("Download thread: Created new session.")
-        self.irods_paths = irods_paths
-        self.local_path = local_path
+        self.logger.debug("Transfer data thread: Created new session.")
+        self.diffs = diffs
         self.overwrite = overwrite
 
     def _delete_session(self):
-        del self.thread_session
-        try:
-            print(self.thread_session)
-            self.logger.error("Download thread: Thread session still exists.")
-        except (NameError, AttributeError):
-            self.logger.debug("Download thread: Thread session successfully deleted.")
+        self.thread_session.close()
+        if self.thread_session.irods_session is None:
+            self.logger.debug("Transfer data thread: Thread session successfully deleted.")
+        else:
+            self.logger.debug("Transfer data thread: Thread session still exists.")
 
     def run(self):
         """Run the thread."""
-        download_out = {}
-        download_out["error"] = ""
-        count = 1
-        failed = 0
+        obj_count = 0
+        obj_failed = 0
+        file_count = 0
+        file_failed = 0
+        transfer_out = {}
+        transfer_out["error"] = ""
 
-        for irods_path in self.irods_paths:
-            if irods_path.exists():
-                try:
-                    download(self.thread_session, irods_path, self.local_path, self.overwrite)
-                    self.logger.info(
-                        "Downloading %s to %s, overwrite %s",
-                        str(irods_path),
-                        self.local_path,
-                        self.overwrite,
-                    )
-                    count += 1
-                except Exception as error:
-                    failed += 1
-                    self.logger.exception("Download failed: %s; %s", str(irods_path), repr(error))
-                    download_out["error"] = (
-                        download_out["error"]
-                        + f"\nDownload failed {str(irods_path)}: {repr(error)}"
-                    )
-            else:
-                failed += 1
-                download_out["error"] = (
-                    download_out["error"] + f"\nDownload failed. {str(irods_path)} does not exist."
+        for coll in self.diffs["create_collection"]:
+            try:
+                IrodsPath.create_collection(self.thread_session, coll)
+                self.logger.info("Transfer data thread: Created collection %s", coll)
+            except Exception as error:
+                self.logger.exception(
+                    "Transfer data thread: Could not create  %s; %s", coll, repr(error)
                 )
-                self.logger.exception("Download failed: %s does not exist", str(irods_path))
-            self.current_progress.emit((self.local_path, len(self.irods_paths), count, failed))
+                transfer_out["error"] = (
+                    transfer_out["error"] + f"\nTransfer failed Cannot create {coll}: {repr(error)}"
+                )
+
+        for folder in self.diffs["create_dir"]:
+            print(f"create {folder}")
+            try:
+                Path(folder).mkdir(parents=True, exist_ok=True)
+                self.logger.info("Transfer data thread: Created folder %s", folder)
+            except Exception as error:
+                self.logger.exception(
+                    "Transfer data thread: Could not create  %s; %s", folder, repr(error)
+                )
+                transfer_out["error"] = (
+                    transfer_out["error"]
+                    + f"\nTransfer failed Cannot create {folder}: {repr(error)}"
+                )
+
+        for local_path, irods_path in self.diffs["upload"]:
+            try:
+                upload(
+                    self.thread_session,
+                    local_path,
+                    irods_path,
+                    resc_name=self.diffs["resc_name"],
+                    overwrite=self.overwrite,
+                    options=self.diffs["options"],
+                )
+                obj_count += 1
+                self.logger.info(
+                    "Transfer data thread: Transfer %s -->  %s, overwrite %s",
+                    local_path,
+                    irods_path,
+                    self.overwrite,
+                )
+            except Exception as error:
+                obj_failed += 1
+                self.logger.exception(
+                    "Transfer data thread: Could not transfer  %s --> %s; %s",
+                    local_path,
+                    irods_path,
+                    repr(error),
+                )
+                transfer_out["error"] = (
+                    transfer_out["error"]
+                    + f"\nTransfer failed, cannot upload {str(local_path)}: {repr(error)}"
+                )
+            emit_string = f"{obj_count} of {len(self.diffs['upload'])} files"
+            emit_string += f" transferred, failed: {obj_failed}."
+            self.current_progress.emit(emit_string)
+
+        for irods_path, local_path in self.diffs["download"]:
+            try:
+                download(
+                    self.thread_session,
+                    irods_path,
+                    local_path,
+                    resc_name=self.diffs["resc_name"],
+                    overwrite=self.overwrite,
+                    options=self.diffs["options"],
+                )
+                file_count += 1
+                self.logger.info(
+                    "Transfer data thread: Transfer %s -->  %s, overwrite %s",
+                    irods_path,
+                    local_path,
+                    self.overwrite,
+                )
+            except Exception as error:
+                file_failed += 1
+                self.logger.exception(
+                    "Transfer data thread: Could not transfer  %s --> %s; %s",
+                    irods_path,
+                    local_path,
+                    repr(error),
+                )
+                transfer_out["error"] = (
+                    transfer_out["error"]
+                    + f"\nTransfer failed, cannot download {str(irods_path)}: {repr(error)}"
+                )
+            emit_string = f"{file_count} of {len(self.diffs['download'])} data objects"
+            emit_string += f" transferred, failed: {file_failed}."
+            self.current_progress.emit(emit_string)
+
         self._delete_session()
-        self.succeeded.emit(download_out)
+        self.succeeded.emit(transfer_out)
 
 
 class SyncThread(QThread):
@@ -122,12 +202,11 @@ class SyncThread(QThread):
         self.dry_run = dry_run
 
     def _delete_session(self):
-        del self.thread_session
-        try:
-            print(self.thread_session)
-            self.logger.error("Sync thread: Thread session still exists.")
-        except (NameError, AttributeError):
+        self.thread_session.close()
+        if self.thread_session.irods_session is None:
             self.logger.debug("Sync thread: Thread session successfully deleted.")
+        else:
+            self.logger.debug("Sync thread: Thread session still exists.")
 
     def run(self):
         """Run the thread."""
@@ -135,7 +214,7 @@ class SyncThread(QThread):
         sync_out["error"] = ""
 
         try:
-            result = sync_data(
+            result = sync(
                 self.thread_session,
                 self.source,
                 self.target,

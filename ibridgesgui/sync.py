@@ -8,11 +8,10 @@ import PyQt6.uic
 from ibridges import IrodsPath
 from PyQt6 import QtCore, QtGui
 
-from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.gui_utils import UI_FILE_DIR, populate_table, prep_session_for_copy
 from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
-from ibridgesgui.threads import SyncThread
+from ibridgesgui.threads import SyncThread, TransferDataThread
 from ibridgesgui.ui_files.tabSync import Ui_tabSync
 
 
@@ -38,15 +37,23 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
         self.logger = logging.getLogger(app_name)
         self.session = session
-        self.sync_thread = None
+
+        # globals for starting diff and sync
+        self.sync_diff_thread = None
+        self.sync_data_thread = None
         self.sync_source = ""  # irods or local
         self.refresh_irods_index = None
+        self.diffs = None  # output of dry_run
+
+        # widget memeber and their functionlity
         self.local_to_irods_button.setToolTip("Local to iRODS")
         self.local_to_irods_button.clicked.connect(self.local_to_irods)
         self.irods_to_local_button.setToolTip("iRODS to Local")
         self.irods_to_local_button.clicked.connect(self.irods_to_local)
         self.create_coll_button.clicked.connect(self.create_collection)
         self.create_dir_button.clicked.connect(self.create_dir)
+        self.sync_button.hide()
+        self.sync_button.clicked.connect(self._start_data_sync)
         self._init_local_fs_tree()
         self._init_irods_tree()
 
@@ -66,7 +73,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.local_fs_tree.setColumnHidden(3, True)
 
     def _init_irods_tree(self):
-        root = self.irods_root(IrodsPath(self.session, "~"))
+        root = self.irods_root()
         self.irods_model = IrodsTreeModel(self.irods_tree, root)
         self.irods_tree.setModel(self.irods_model)
         self.irods_tree.expanded.connect(self.irods_model.refresh_subtree)
@@ -79,11 +86,11 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.irods_tree.setColumnHidden(4, True)
         self.irods_tree.setColumnHidden(5, True)
 
-    def irods_root(self, irods_path):
+    def irods_root(self):
         """Retrieve lowest visible level in the iRODS tree for the user."""
-        lowest = IrodsPath(irods_path.session, irods_path.absolute_path())
+        lowest = IrodsPath(self.session).absolute()
         while lowest.parent.exists():
-            lowest = IrodsPath(irods_path.session, lowest.parent)
+            lowest = lowest.parent
         return lowest
 
     def create_collection(self):
@@ -117,50 +124,43 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         else:
             self.error_label.setText("Please select a parent directory, not a file.")
 
-    def prep_sync(self, dry_run=True):
-        """Prepare and call the sync thread."""
+    def sync_diff(self):
+        """Prepare and call the sync thread to calculate diffs."""
         paths = self._gather_info_for_transfer()
         if paths is None:
             return
         local_path, irods_path, _, _ = paths
 
         # User info
-        if dry_run:
-            self.error_label.setText("Calculating difference ...")
-            if self.sync_source == "local":
-                self.logger.info(
-                    "Calculating difference from %s to %s", str(local_path), str(irods_path)
-                )
-            else:
-                self.logger.info(
-                    "Calculating difference from %s to %s", str(irods_path), str(local_path)
-                )
+        self.error_label.setText("Calculating difference ...")
+        if self.sync_source == "local":
+            self.logger.info(
+                "Calculating difference from %s to %s", str(local_path), str(irods_path)
+            )
         else:
-            self.error_label.setText("Start sync ...")
-            if self.sync_source == "local":
-                self.logger.info("Sync from %s to %s", str(local_path), str(irods_path))
-            else:
-                self.logger.info("Sync from %s to %s", str(irods_path), str(local_path))
+            self.logger.info(
+                "Calculating difference from %s to %s", str(irods_path), str(local_path)
+            )
 
         # start sync thread
         if self.sync_source == "local":
-            self._start_sync(self.logger, local_path, irods_path, dry_run=dry_run)
+            self._start_sync_diff(local_path, irods_path)
         else:
-            self._start_sync(self.logger, irods_path, local_path, dry_run=dry_run)
+            self._start_sync_diff(irods_path, local_path)
 
     def local_to_irods(self):
         """Start sync from local to irods."""
         self.sync_source = "local"
-        self.prep_sync()
+        self.sync_diff()
 
     def irods_to_local(self):
         """Start sync from irods to local."""
         self.sync_source = "irods"
-        self.prep_sync()
+        self.sync_diff()
 
     def _gather_info_for_transfer(self):
         self.error_label.clear()
-        self.status_browser.clear()
+        self.diff_table.setRowCount(0)
         # Retrieve local fs path
         fs_selection = self.local_fs_tree.selectedIndexes()
         if len(fs_selection) == 0:
@@ -192,75 +192,98 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.create_coll_button.setEnabled(enable)
         self.create_dir_button.setEnabled(enable)
 
-    def _start_sync(self, logger, source, target, dry_run):
+    def _start_data_sync(self):
+        self._enable_buttons(False)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.error_label.setText("Synchronising data ....")
+
+        env_path = prep_session_for_copy(self.session, self.error_label)
+        if env_path is None:
+            return
+        try:
+            self.sync_data_thread = TransferDataThread(
+                env_path, self.logger, self.diffs, overwrite=True
+            )
+        except Exception:
+            self.error_label.setText(
+                "Could not instantiate a new session from{env_path}. Check configuration."
+            )
+            return
+
+        self.sync_data_thread.current_progress.connect(self._sync_data_status)
+        self.sync_data_thread.succeeded.connect(self._sync_data_end)
+        self.sync_data_thread.finished.connect(self._finish_sync_data)
+        self.sync_data_thread.start()
+
+    def _start_sync_diff(self, source, target):
+        self.sync_button.hide()
         self.error_label.clear()
-        self.status_browser.clear()
+        self.diff_table.setRowCount(0)
         self._enable_buttons(False)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
 
-        if dry_run:
-            self.error_label.setText("Calculating differences ....")
-        else:
-            self.error_label.setText(f"Synchronising from {source} to {target} ....")
-            print(f"Synchronising from {source} to {target} ....")
+        self.error_label.setText("Calculating differences ....")
 
         # check if session comes from env file in ibridges config
-        if is_session_from_config(self.session):
-            env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
-        else:
-            text = "No search possible: The ibridges config changed during the session."
-            text += "Please reset or restart the session."
-            self.error_label.setText(text)
+        env_path = prep_session_for_copy(self.session, self.error_label)
+        if env_path is None:
             return
         try:
-            self.sync_thread = SyncThread(env_path, logger, source, target, dry_run)
+            self.sync_diff_thread = SyncThread(env_path, self.logger, source, target, dry_run=True)
         except Exception:
             self.error_label.setText(
-                "Could not instantiate a new session from{env_path}.Check configuration"
+                "Could not instantiate a new session from{env_path}.Check configuration."
             )
-            return
-        self.sync_thread.succeeded.connect(self._sync_end)
-        self.sync_thread.finished.connect(self._finish_sync)
-        self.sync_thread.start()
 
-    def _finish_sync(self):
+            return
+        self.sync_diff_thread.succeeded.connect(self._sync_diff_end)
+        self.sync_diff_thread.finished.connect(self._finish_sync_diff)
+        self.sync_diff_thread.start()
+
+    def _finish_sync_diff(self):
         self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
-        if self.sync_thread:
-            del self.sync_thread
+        if self.sync_diff_thread:
+            del self.sync_diff_thread
 
-    def _sync_end(self, thread_output: dict):
+    def _finish_sync_data(self):
+        self._enable_buttons(True)
+        self.sync_button.hide()
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        if self.sync_data_thread:
+            del self.sync_data_thread
+
+    def _sync_data_end(self, thread_output: dict):
         if thread_output["error"] != "":
             self.error_label.setText(thread_output["error"])
             self.sync_source = ""
             self.refresh_irods_index = None
-        elif "result" in thread_output:
-            self.error_label.clear()
-            info = ""
-            for key in thread_output["result"]:
-                info += "\n".join([str(i) for i in thread_output["result"][key]])
-            if info == "":
-                self.error_label.setText("Data is already synchronised.")
-                self.sync_source = ""
-                self.refresh_irods_index = None
-            self.status_browser.append("Data to synchronise:\n")
-            self.status_browser.append(info)
-        else:
-            self.error_label.setText("Synchronisation finished successfully.")
-            self.sync_source = ""
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            return
+        self.error_label.clear()
+
         if self.refresh_irods_index is not None:
             self.irods_model.refresh_subtree(self.refresh_irods_index)
+        self.error_label.setText("Data synchronisation complete.")
 
-        # real sync if necessary
-        if self.sync_source != "":
-            msg = "Do you want to synchronise the data?"
-            reply = PyQt6.QtWidgets.QMessageBox.question(
-                self,
-                "Message",
-                msg,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.No,
-            )
-            if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-                self.prep_sync(dry_run=False)
+    def _sync_data_status(self, state):
+        self.error_label.setText(state)
+
+    def _sync_diff_end(self, thread_output: dict):
+        if thread_output["error"] != "":
+            self.error_label.setText(thread_output["error"])
+            self.sync_source = ""
+            self.refresh_irods_index = None
+            return
+
+        self.error_label.clear()
+        table_data = thread_output["result"]["upload"] + thread_output["result"]["download"]
+
+        populate_table(self.diff_table, len(table_data), table_data)
+        if len(table_data) == 0:
+            self.error_label.setText("Data is already synchronised.")
+            self.sync_source = ""
+            self.refresh_irods_index = None
+        else:
+            self.diffs = thread_output["result"]
+            self.sync_button.show()
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
