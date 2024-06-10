@@ -19,12 +19,13 @@
     background-color: rgb(211,211,211);
     color: rgb(88, 88, 90);
     selection-background-color: rgb(21, 165, 137);
-    selection-color: rgb(245, 244, 244)
+    selection-color: rgb(245, 244, 244);
+    font: 16pt
 }
 
 QLabel#error_label
 {
-    color: rgb(252, 152, 3);
+    color: rgb(220, 130, 30);
 }
 
 QLineEdit, QTextEdit, QTableWidget
@@ -74,7 +75,8 @@ QTabWidget#info_tabs
        <property name="font">
         <font>
          <pointsize>16</pointsize>
-         <bold>true</bold>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -87,6 +89,8 @@ QTabWidget#info_tabs
        <property name="font">
         <font>
          <pointsize>16</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -283,7 +287,7 @@ QTabWidget#info_tabs
      </column>
      <column>
       <property name="text">
-       <string>Checksum</string>
+       <string>Checksum/Fingerprint</string>
       </property>
      </column>
      <column>
@@ -320,11 +324,13 @@ QTabWidget#info_tabs
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="preview">
       <property name="font">
        <font>
+        <pointsize>16</pointsize>
+        <italic>false</italic>
         <bold>false</bold>
        </font>
       </property>
@@ -394,7 +400,9 @@ QTabWidget#info_tabs
           <widget class="QPushButton" name="delete_meta_button">
            <property name="font">
             <font>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -426,7 +434,9 @@ QTabWidget#info_tabs
           <widget class="QPushButton" name="update_meta_button">
            <property name="font">
             <font>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -451,8 +461,9 @@ QTabWidget#info_tabs
           <widget class="QLabel" name="label_3">
            <property name="font">
             <font>
-             <pointsize>20</pointsize>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -474,7 +485,9 @@ QTabWidget#info_tabs
           <widget class="QPushButton" name="add_meta_button">
            <property name="font">
             <font>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -545,8 +558,9 @@ QTabWidget#info_tabs
           <widget class="QLabel" name="label_11">
            <property name="font">
             <font>
-             <pointsize>20</pointsize>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -645,7 +659,9 @@ QTabWidget#info_tabs
           <widget class="QPushButton" name="add_acl_button">
            <property name="font">
             <font>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -750,8 +766,8 @@ QTabWidget#info_tabs
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:16pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:13pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -784,8 +800,9 @@ hr { height: 1px; border-width: 0; }
           <widget class="QPushButton" name="confirm_button">
            <property name="font">
             <font>
-             <pointsize>13</pointsize>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">

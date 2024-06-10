@@ -22,20 +22,20 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-    background-color: rgb(245, 244, 244);
+    background-color: rgb(211,211,211);
     color: rgb(88, 88, 90);
     selection-background-color: rgb(21, 165, 137);
     selection-color: rgb(245, 244, 244)
 }
 
-QLabel
-{
-  background-color: rgb(211,211,211);
-}
-
 QLabel#error_label
 {
-    color: rgb(252, 152, 3);
+    color: rgb(220, 130, 30);
+}
+
+QLineEdit, QTextEdit, QTableWidget
+{
+   background-color:  rgb(245, 244, 244)
 }
 
 QPushButton
@@ -45,10 +45,6 @@ QPushButton
 }
 
 
-QTextEdit, QTableWidget, QCheckBox, QLineEdit
-{
-     background-color: rgb(245, 244, 244)
-}
 </string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
@@ -76,7 +72,7 @@ QTextEdit, QTableWidget, QCheckBox, QLineEdit
      <item row="6" column="2" colspan="2">
       <widget class="QLineEdit" name="password_field">
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(85, 87, 83);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string/>
@@ -110,10 +106,10 @@ QTextEdit, QTableWidget, QCheckBox, QLineEdit
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="irods_label">
        <property name="font">
         <font>
-         <pointsize>22</pointsize>
+         <pointsize>16</pointsize>
          <italic>false</italic>
          <bold>false</bold>
          <underline>false</underline>
@@ -189,6 +185,11 @@ QTextEdit, QTableWidget, QCheckBox, QLineEdit
      </item>
      <item>
       <widget class="QPushButton" name="cancel_button">
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Cancel</string>
        </property>

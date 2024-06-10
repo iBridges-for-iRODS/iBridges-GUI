@@ -18,12 +18,13 @@ class Ui_tabBrowser(object):
 "    background-color: rgb(211,211,211);\n"
 "    color: rgb(88, 88, 90);\n"
 "    selection-background-color: rgb(21, 165, 137);\n"
-"    selection-color: rgb(245, 244, 244)\n"
+"    selection-color: rgb(245, 244, 244);\n"
+"    font: 16pt\n"
 "}\n"
 "\n"
 "QLabel#error_label\n"
 "{\n"
-"    color: rgb(252, 152, 3);\n"
+"    color: rgb(220, 130, 30);\n"
 "}\n"
 "\n"
 "QLineEdit, QTextEdit, QTableWidget\n"
@@ -57,13 +58,16 @@ class Ui_tabBrowser(object):
         self.label_2 = QtWidgets.QLabel(parent=tabBrowser)
         font = QtGui.QFont()
         font.setPointSize(16)
-        font.setBold(True)
+        font.setBold(False)
+        font.setItalic(False)
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
         self.path_input = QtWidgets.QLineEdit(parent=tabBrowser)
         font = QtGui.QFont()
         font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.path_input.setFont(font)
         self.path_input.setStyleSheet("")
         self.path_input.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
@@ -158,7 +162,9 @@ class Ui_tabBrowser(object):
         self.info_tabs.setObjectName("info_tabs")
         self.preview = QtWidgets.QWidget()
         font = QtGui.QFont()
+        font.setPointSize(16)
         font.setBold(False)
+        font.setItalic(False)
         self.preview.setFont(font)
         self.preview.setAutoFillBackground(False)
         self.preview.setObjectName("preview")
@@ -193,7 +199,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.delete_meta_button = QtWidgets.QPushButton(parent=self.metadata)
         font = QtGui.QFont()
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.delete_meta_button.setFont(font)
         self.delete_meta_button.setObjectName("delete_meta_button")
         self.gridLayout_2.addWidget(self.delete_meta_button, 7, 2, 1, 1)
@@ -211,7 +219,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_2.addWidget(self.meta_value_field, 6, 1, 1, 1)
         self.update_meta_button = QtWidgets.QPushButton(parent=self.metadata)
         font = QtGui.QFont()
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.update_meta_button.setFont(font)
         self.update_meta_button.setObjectName("update_meta_button")
         self.gridLayout_2.addWidget(self.update_meta_button, 7, 1, 1, 1)
@@ -219,8 +229,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_2.addItem(spacerItem4, 9, 0, 1, 1)
         self.label_3 = QtWidgets.QLabel(parent=self.metadata)
         font = QtGui.QFont()
-        font.setPointSize(20)
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
         self.gridLayout_2.addWidget(self.label_3, 0, 0, 1, 1)
@@ -232,7 +243,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_2.addWidget(self.meta_units_field, 6, 2, 1, 1)
         self.add_meta_button = QtWidgets.QPushButton(parent=self.metadata)
         font = QtGui.QFont()
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.add_meta_button.setFont(font)
         self.add_meta_button.setObjectName("add_meta_button")
         self.gridLayout_2.addWidget(self.add_meta_button, 7, 0, 1, 1)
@@ -265,8 +278,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.label_11 = QtWidgets.QLabel(parent=self.accession)
         font = QtGui.QFont()
-        font.setPointSize(20)
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.label_11.setFont(font)
         self.label_11.setObjectName("label_11")
         self.gridLayout_4.addWidget(self.label_11, 0, 0, 1, 1)
@@ -306,7 +320,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_4.addWidget(self.recurisive_box, 6, 3, 1, 1)
         self.add_acl_button = QtWidgets.QPushButton(parent=self.accession)
         font = QtGui.QFont()
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.add_acl_button.setFont(font)
         self.add_acl_button.setObjectName("add_acl_button")
         self.gridLayout_4.addWidget(self.add_acl_button, 6, 4, 1, 1)
@@ -362,8 +378,9 @@ class Ui_tabBrowser(object):
         self.verticalLayout_5.addItem(spacerItem6)
         self.confirm_button = QtWidgets.QPushButton(parent=self.delete_2)
         font = QtGui.QFont()
-        font.setPointSize(13)
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.confirm_button.setFont(font)
         self.confirm_button.setStyleSheet("")
         self.confirm_button.setObjectName("confirm_button")
@@ -378,7 +395,7 @@ class Ui_tabBrowser(object):
         self.verticalLayout.addWidget(self.error_label)
 
         self.retranslateUi(tabBrowser)
-        self.info_tabs.setCurrentIndex(1)
+        self.info_tabs.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(tabBrowser)
 
     def retranslateUi(self, tabBrowser):
@@ -398,7 +415,7 @@ class Ui_tabBrowser(object):
         item = self.browser_table.horizontalHeaderItem(2)
         item.setText(_translate("tabBrowser", "Size [bytes]"))
         item = self.browser_table.horizontalHeaderItem(3)
-        item.setText(_translate("tabBrowser", "Checksum"))
+        item.setText(_translate("tabBrowser", "Checksum/Fingerprint"))
         item = self.browser_table.horizontalHeaderItem(4)
         item.setText(_translate("tabBrowser", "Created"))
         item = self.browser_table.horizontalHeaderItem(5)
@@ -460,8 +477,8 @@ class Ui_tabBrowser(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "hr { height: 1px; border-width: 0; }\n"
-"</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+"</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:16pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:13pt;\"><br /></p></body></html>"))
         self.load_selection_button.setText(_translate("tabBrowser", "Delete"))
         self.confirm_button.setText(_translate("tabBrowser", "Confirm"))
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.delete_2), _translate("tabBrowser", "Delete"))

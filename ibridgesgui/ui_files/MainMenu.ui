@@ -25,7 +25,9 @@
     background-color: rgb(211,211,211);
     color: rgb(88, 88, 90);
     selection-background-color: rgb(21, 165, 137);
-    selection-color: rgb(245, 244, 244)
+    selection-color: rgb(245, 244, 244);
+    
+	font: 16pt
 }
 
 QLabel
@@ -35,7 +37,7 @@ QLabel
 
 QLabel#error_label
 {
-    color: rgb(252, 152, 3);
+   color: rgb(220, 130, 30);
 }
 
 QTabBar::tab:top:selected {

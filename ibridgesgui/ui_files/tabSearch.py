@@ -13,43 +13,42 @@ class Ui_tabSearch(object):
     def setupUi(self, tabSearch):
         tabSearch.setObjectName("tabSearch")
         tabSearch.resize(1278, 763)
-        tabSearch.setStyleSheet(
-            "QWidget\n"
-            "{\n"
-            "    color: rgb(86, 184, 139);\n"
-            "    background-color: rgb(54, 54, 54);\n"
-            "    border-color: rgb(86, 184, 139);\n"
-            "    selection-background-color: rgb(58, 152, 112);\n"
-            "    font: 16pt;\n"
-            "}\n"
-            "\n"
-            "QTableWidget\n"
-            "{\n"
-            "    background-color: rgb(85, 87, 83);\n"
-            "    selection-background-color: rgb(58, 152, 112);\n"
-            "    border-color: rgb(86, 184, 139);\n"
-            "}\n"
-            "\n"
-            "QLabel#error_label\n"
-            "{\n"
-            "    color: rgb(217, 174, 23);\n"
-            "}\n"
-            "\n"
-            "QLineEdit\n"
-            "{\n"
-            "    background-color: rgb(85, 87, 83);\n"
-            "    border-color: rgb(86, 184, 139);\n"
-            "}\n"
-            "\n"
-            "QPushButton#search_button\n"
-            "{\n"
-            "    background-color: rgb(86, 184, 139);\n"
-            "    color: rgb(46, 52, 54);\n"
-            "}\n"
-            "\n"
-            "\n"
-            ""
-        )
+        tabSearch.setStyleSheet("QWidget\n"
+"{\n"
+"    background-color: rgb(211,211,211);\n"
+"    color: rgb(88, 88, 90);\n"
+"    selection-background-color: rgb(21, 165, 137);\n"
+"    selection-color: rgb(245, 244, 244);\n"
+"    font: 16pt\n"
+"}\n"
+"\n"
+"QLabel#error_label\n"
+"{\n"
+"    color: rgb(220, 130, 30);\n"
+"}\n"
+"\n"
+"QLineEdit, QTextEdit, QTableWidget\n"
+"{\n"
+"   background-color:  rgb(245, 244, 244)\n"
+"}\n"
+"\n"
+"QPushButton\n"
+"{\n"
+"    background-color: rgb(21, 165, 137);\n"
+"    color: rgb(245, 244, 244);\n"
+"}\n"
+"\n"
+"QPushButton#home_button, QPushButton#parent_button, QPushButton#refresh_button\n"
+"{\n"
+"    background-color: rgb(245, 244, 244);\n"
+"}\n"
+"\n"
+"QTabWidget#info_tabs\n"
+"{\n"
+"     background-color: background-color: rgb(211,211,211);\n"
+"}\n"
+"\n"
+"")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(tabSearch)
         self.verticalLayout_3.setSpacing(3)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
@@ -57,9 +56,7 @@ class Ui_tabSearch(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.gridLayout_2 = QtWidgets.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
-        spacerItem = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
-        )
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.gridLayout_2.addItem(spacerItem, 0, 0, 1, 1)
         self.checksum_field = QtWidgets.QLineEdit(parent=tabSearch)
         self.checksum_field.setObjectName("checksum_field")
@@ -76,9 +73,7 @@ class Ui_tabSearch(object):
         self.label_6 = QtWidgets.QLabel(parent=tabSearch)
         self.label_6.setObjectName("label_6")
         self.gridLayout_2.addWidget(self.label_6, 0, 2, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum
-        )
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
         self.gridLayout_2.addItem(spacerItem1, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)
         self.gridLayout = QtWidgets.QGridLayout()
@@ -89,9 +84,7 @@ class Ui_tabSearch(object):
         self.key4 = QtWidgets.QLineEdit(parent=tabSearch)
         self.key4.setObjectName("key4")
         self.gridLayout.addWidget(self.key4, 6, 0, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed
-        )
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
         self.gridLayout.addItem(spacerItem2, 2, 0, 1, 1)
         self.val1 = QtWidgets.QLineEdit(parent=tabSearch)
         self.val1.setObjectName("val1")
@@ -99,9 +92,7 @@ class Ui_tabSearch(object):
         self.key2 = QtWidgets.QLineEdit(parent=tabSearch)
         self.key2.setObjectName("key2")
         self.gridLayout.addWidget(self.key2, 4, 0, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed
-        )
+        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
         self.gridLayout.addItem(spacerItem3, 0, 0, 1, 1)
         self.val4 = QtWidgets.QLineEdit(parent=tabSearch)
         self.val4.setObjectName("val4")
@@ -121,9 +112,7 @@ class Ui_tabSearch(object):
         self.val2 = QtWidgets.QLineEdit(parent=tabSearch)
         self.val2.setObjectName("val2")
         self.gridLayout.addWidget(self.val2, 4, 1, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed
-        )
+        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
         self.gridLayout.addItem(spacerItem4, 7, 0, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
@@ -147,9 +136,7 @@ class Ui_tabSearch(object):
         self.clear_button.setStyleSheet("")
         self.clear_button.setObjectName("clear_button")
         self.horizontalLayout_5.addWidget(self.clear_button)
-        spacerItem5 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
-        )
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem5)
         self.download_button = QtWidgets.QPushButton(parent=tabSearch)
         font = QtGui.QFont()
@@ -161,9 +148,7 @@ class Ui_tabSearch(object):
         self.download_button.setObjectName("download_button")
         self.horizontalLayout_5.addWidget(self.download_button)
         self.verticalLayout.addLayout(self.horizontalLayout_5)
-        spacerItem6 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed
-        )
+        spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
         self.verticalLayout.addItem(spacerItem6)
         self.error_label = QtWidgets.QLabel(parent=tabSearch)
         self.error_label.setText("")
@@ -173,23 +158,17 @@ class Ui_tabSearch(object):
         self.info_label = QtWidgets.QLabel(parent=tabSearch)
         self.info_label.setObjectName("info_label")
         self.verticalLayout_3.addWidget(self.info_label)
-        spacerItem7 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
-        )
+        spacerItem7 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.verticalLayout_3.addItem(spacerItem7)
         self.search_table = QtWidgets.QTableWidget(parent=tabSearch)
         self.search_table.setMinimumSize(QtCore.QSize(0, 200))
         self.search_table.setMaximumSize(QtCore.QSize(16777215, 500))
         self.search_table.setStyleSheet("")
-        self.search_table.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
-        )
+        self.search_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.search_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.search_table.setAlternatingRowColors(False)
         self.search_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
-        self.search_table.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
-        )
+        self.search_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.search_table.setObjectName("search_table")
         self.search_table.setColumnCount(5)
         self.search_table.setRowCount(0)

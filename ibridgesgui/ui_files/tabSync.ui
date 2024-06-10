@@ -16,20 +16,20 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-    background-color: rgb(245, 244, 244);
+    background-color: rgb(211,211,211);
     color: rgb(88, 88, 90);
     selection-background-color: rgb(21, 165, 137);
     selection-color: rgb(245, 244, 244)
 }
 
-QLabel
-{
-  background-color: rgb(211,211,211);
-}
-
 QLabel#error_label
 {
-    color: rgb(252, 152, 3);
+    color: rgb(220, 130, 30);
+}
+
+QLineEdit, QTextEdit, QTableWidget
+{
+   background-color:  rgb(245, 244, 244)
 }
 
 QPushButton
@@ -38,10 +38,21 @@ QPushButton
     color: rgb(245, 244, 244);
 }
 
-QTextEdit, QTableWidget, QCheckBox
+QPushButton#local_to_irods_button, QPushButton#irods_to_local_button
 {
-     background-color: rgb(245, 244, 244)
+    background-color: rgb(211,211,211);
 }
+
+QPushButton#home_button, QPushButton#parent_button, QPushButton#refresh_button
+{
+    background-color: rgb(245, 244, 244);
+}
+
+QTabWidget#info_tabs
+{
+     background-color: background-color: rgb(211,211,211);
+}
+
 </string>
   </property>
   <widget class="QWidget" name="layoutWidget">
