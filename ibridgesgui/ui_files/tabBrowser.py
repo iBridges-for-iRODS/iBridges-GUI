@@ -15,41 +15,39 @@ class Ui_tabBrowser(object):
         tabBrowser.resize(1278, 818)
         tabBrowser.setStyleSheet("QWidget\n"
 "{\n"
-"    color: rgb(86, 184, 139);\n"
-"    background-color: rgb(54, 54, 54);\n"
-"    border-color: rgb(86, 184, 139);\n"
-"    selection-background-color: rgb(58, 152, 112);\n"
-"}\n"
-"\n"
-"QTabWidget\n"
-"{\n"
-"    background-color: rgb(85, 87, 83);\n"
-"    font: 14pt\n"
-"}\n"
-"\n"
-"QTableWidget\n"
-"{\n"
-"    background-color: rgb(85, 87, 83);\n"
-"    selection-background-color: rgb(58, 152, 112);\n"
-"    border-color: rgb(86, 184, 139);\n"
+"    background-color: rgb(211,211,211);\n"
+"    color: rgb(88, 88, 90);\n"
+"    selection-background-color: rgb(21, 165, 137);\n"
+"    selection-color: rgb(245, 244, 244)\n"
 "}\n"
 "\n"
 "QLabel#error_label\n"
 "{\n"
-"    color: rgb(217, 174, 23);\n"
+"    color: rgb(252, 152, 3);\n"
 "}\n"
 "\n"
-"QLineEdit\n"
+"QLineEdit, QTextEdit, QTableWidget\n"
 "{\n"
-"    background-color: rgb(85, 87, 83);\n"
-"    border-color: rgb(86, 184, 139);\n"
+"   background-color:  rgb(245, 244, 244)\n"
 "}\n"
 "\n"
-"QPushButton#confirm_button\n"
+"QPushButton\n"
 "{\n"
-"    background-color: rgb(86, 184, 139);\n"
-"    color: rgb(46, 52, 54);\n"
-"}")
+"    background-color: rgb(21, 165, 137);\n"
+"    color: rgb(245, 244, 244);\n"
+"}\n"
+"\n"
+"QPushButton#home_button, QPushButton#parent_button, QPushButton#refresh_button\n"
+"{\n"
+"    background-color: rgb(245, 244, 244);\n"
+"}\n"
+"\n"
+"QTabWidget#info_tabs\n"
+"{\n"
+"     background-color: background-color: rgb(211,211,211);\n"
+"}\n"
+"\n"
+"")
         self.verticalLayout = QtWidgets.QVBoxLayout(tabBrowser)
         self.verticalLayout.setObjectName("verticalLayout")
         spacerItem = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
@@ -380,7 +378,7 @@ class Ui_tabBrowser(object):
         self.verticalLayout.addWidget(self.error_label)
 
         self.retranslateUi(tabBrowser)
-        self.info_tabs.setCurrentIndex(0)
+        self.info_tabs.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(tabBrowser)
 
     def retranslateUi(self, tabBrowser):
@@ -463,7 +461,7 @@ class Ui_tabBrowser(object):
 "p, li { white-space: pre-wrap; }\n"
 "hr { height: 1px; border-width: 0; }\n"
 "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Summary</p></body></html>"))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.load_selection_button.setText(_translate("tabBrowser", "Delete"))
         self.confirm_button.setText(_translate("tabBrowser", "Confirm"))
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.delete_2), _translate("tabBrowser", "Delete"))

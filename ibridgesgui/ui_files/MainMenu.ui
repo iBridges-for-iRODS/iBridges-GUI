@@ -22,22 +22,27 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-	color: rgb(86, 184, 139);
-	background-color: rgb(54, 54, 54);
-	selection-background-color: rgb(58, 152, 112);
-    font: 16pt;
+    background-color: rgb(211,211,211);
+    color: rgb(88, 88, 90);
+    selection-background-color: rgb(21, 165, 137);
+    selection-color: rgb(245, 244, 244)
 }
 
-QTabBar::tab:top:selected {
-    background-color: rgb(58, 152, 112);
-    color: rgb(54, 54, 54);
+QLabel
+{
+  background-color: rgb(211,211,211);
 }
 
 QLabel#error_label
 {
-	color: rgb(217, 174, 23);
-     font: 18pt;
+    color: rgb(252, 152, 3);
 }
+
+QTabBar::tab:top:selected {
+    background-color: rgb(21, 165, 137);
+    color: rgb(88, 88, 90);
+}
+
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -56,7 +61,6 @@ QLabel#error_label
       <property name="font">
        <font>
         <pointsize>16</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -87,7 +91,6 @@ QLabel#error_label
    <property name="font">
     <font>
      <pointsize>16</pointsize>
-     <weight>50</weight>
      <italic>false</italic>
      <bold>false</bold>
     </font>
@@ -96,7 +99,6 @@ QLabel#error_label
     <property name="font">
      <font>
       <pointsize>16</pointsize>
-      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>

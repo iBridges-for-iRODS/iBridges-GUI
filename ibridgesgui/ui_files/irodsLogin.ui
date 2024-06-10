@@ -22,31 +22,33 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-	background-color: rgb(54, 54, 54);
-	color: rgb(86, 184, 139);
-    border-color: rgb(217, 174, 23);
-    font: 16pt;
+    background-color: rgb(245, 244, 244);
+    color: rgb(88, 88, 90);
+    selection-background-color: rgb(21, 165, 137);
+    selection-color: rgb(245, 244, 244)
 }
 
-QLineEdit
+QLabel
 {
-	background-color: rgb(85, 87, 83);
-	border-color: rgb(217, 174, 23);
-	font: 18pt;
+  background-color: rgb(211,211,211);
 }
 
 QLabel#error_label
 {
-	color: rgb(217, 174, 23);
-     font: 18pt;
+    color: rgb(252, 152, 3);
 }
 
-QLabel#label_2
+QPushButton
 {
-    font: 22pt;
-    
+	background-color: rgb(21, 165, 137);
+    color: rgb(245, 244, 244);
 }
 
+
+QTextEdit, QTableWidget, QCheckBox, QLineEdit
+{
+     background-color: rgb(245, 244, 244)
+}
 </string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
