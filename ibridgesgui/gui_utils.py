@@ -21,7 +21,9 @@ UI_FILE_DIR = files(__package__) / "ui_files"
 # Widget utils
 def populate_table(table_widget, rows: int, data_by_row: list):
     """Populate a table-like pyqt widget with data."""
+    table_widget.setRowCount(0)
     table_widget.setRowCount(rows)
+
     for row, data in enumerate(data_by_row):
         for col, item in enumerate(data):
             table_widget.setItem(row, col, PyQt6.QtWidgets.QTableWidgetItem(str(item)))
