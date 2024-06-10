@@ -88,7 +88,7 @@ class TransferDataThread(QThread):
         file_failed = 0
         transfer_out = {}
         transfer_out["error"] = ""
-        
+
         emit_string = "Create collections."
         for coll in self.diffs["create_collection"]:
             try:
