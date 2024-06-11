@@ -16,7 +16,7 @@ except ImportError:
 
 
 UI_FILE_DIR = files(__package__) / "ui_files"
-
+LOGO_DIR = files(__package__) / "icons"
 
 # Widget utils
 def populate_table(table_widget, rows: int, data_by_row: list):

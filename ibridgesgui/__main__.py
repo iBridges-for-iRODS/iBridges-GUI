@@ -6,12 +6,14 @@ import sys
 from pathlib import Path
 
 import PyQt6.QtWidgets
+import PyQt6.QtGui
 import PyQt6.uic
 import setproctitle
 
 from ibridgesgui.browser import Browser
+from ibridgesgui.welcome import Welcome 
 from ibridgesgui.config import get_log_level, init_logger, set_log_level
-from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.gui_utils import UI_FILE_DIR, LOGO_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.popup_widgets import CheckConfig
@@ -38,18 +40,15 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             PyQt6.uic.loadUi(UI_FILE_DIR / "MainMenu.ui", self)
 
         self.logger = logging.getLogger(app_name)
+        
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
+        self.welcome_tab()
         self.ui_tabs_lookup = {
             "tabBrowser": self.init_browser_tab,
             "tabSync": self.init_sync_tab,
             "tabSearch": self.init_search_tab,
-            #'tabDataBundle': self.setupTabDataBundle,
-            #'tabCreateTicket': self.setupTabCreateTicket,
-            #'tabELNData': self.setupTabELNData,
-            #'tabAmberWorkflow': self.setupTabAmberWorkflow,
             "tabInfo": self.init_info_tab,
-            #'tabExample': self.setupTabExample,
         }
 
         self.session = None
@@ -111,6 +110,11 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         for tab_fun in self.ui_tabs_lookup.values():
             tab_fun()
             # self.ui_tabs_lookup[tab_name]()
+
+    def welcome_tab(self):
+        """Create first tab."""
+        welcome = Welcome()
+        self.tab_widget.addTab(welcome, "iBridges")
 
     def init_info_tab(self):
         """Create info."""
