@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../icons/logo.png</normaloff>../icons/logo.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QWidget
 {
@@ -47,6 +51,12 @@ QTabBar::tab:top:selected {
 
 </string>
   </property>
+  <property name="iconSize">
+   <size>
+    <width>400</width>
+    <height>400</height>
+   </size>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
     <string notr="true"/>
@@ -69,6 +79,9 @@ QTabBar::tab:top:selected {
       </property>
       <property name="currentIndex">
        <number>-1</number>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
       </property>
      </widget>
     </item>

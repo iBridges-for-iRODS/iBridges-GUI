@@ -28,6 +28,11 @@
     selection-color: rgb(245, 244, 244)
 }
 
+QLabel#irods_label
+{
+   color: rgb(21, 165, 137)
+}
+
 QLabel#error_label
 {
     color: rgb(220, 130, 30);
@@ -111,7 +116,7 @@ QPushButton
         <font>
          <pointsize>16</pointsize>
          <italic>false</italic>
-         <bold>false</bold>
+         <bold>true</bold>
          <underline>false</underline>
         </font>
        </property>

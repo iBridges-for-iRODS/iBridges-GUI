@@ -5,21 +5,21 @@ import logging
 import sys
 from pathlib import Path
 
-import PyQt6.QtWidgets
 import PyQt6.QtGui
+import PyQt6.QtWidgets
 import PyQt6.uic
 import setproctitle
 
 from ibridgesgui.browser import Browser
-from ibridgesgui.welcome import Welcome 
 from ibridgesgui.config import get_log_level, init_logger, set_log_level
-from ibridgesgui.gui_utils import UI_FILE_DIR, LOGO_DIR
+from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.search import Search
 from ibridgesgui.sync import Sync
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
+from ibridgesgui.welcome import Welcome
 
 # Global constants
 THIS_APPLICATION = "ibridges-gui"
@@ -40,7 +40,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             PyQt6.uic.loadUi(UI_FILE_DIR / "MainMenu.ui", self)
 
         self.logger = logging.getLogger(app_name)
-        
+
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
