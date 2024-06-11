@@ -70,6 +70,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.session = None
             self.session_dict.clear()
         self.tab_widget.clear()
+        self.welcome_tab()
 
     def connect(self):
         """Create iRODS session."""
