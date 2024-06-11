@@ -27,7 +27,7 @@ QLabel#error_label
     color: rgb(220, 130, 30);
 }
 
-QLineEdit, QTextEdit, QTableWidget
+QLineEdit, QTextEdit, QTableWidget, QTreeView
 {
    background-color:  rgb(245, 244, 244)
 }
