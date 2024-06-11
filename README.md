@@ -1,7 +1,4 @@
-# iBridges
-
-[![Python package](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml)
-[![Quarto Publish](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml)
+# iBridges <img src="ibridgesgui/icons/logo.png" width="150" align="right">  
 
 <p align="center">
   <p align="center">
@@ -10,6 +7,9 @@
     .
   </p>
 </p>
+
+[![Python package](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml)
+[![Quarto Publish](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml)
 
 ## About
 
