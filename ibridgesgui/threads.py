@@ -89,6 +89,7 @@ class TransferDataThread(QThread):
         transfer_out = {}
         transfer_out["error"] = ""
 
+        emit_string = "Create collections."
         for coll in self.diffs["create_collection"]:
             try:
                 IrodsPath.create_collection(self.thread_session, coll)
@@ -101,6 +102,7 @@ class TransferDataThread(QThread):
                     transfer_out["error"] + f"\nTransfer failed Cannot create {coll}: {repr(error)}"
                 )
 
+        emit_string = "Create folders."
         for folder in self.diffs["create_dir"]:
             print(f"create {folder}")
             try:

@@ -16,27 +16,44 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-	color: rgb(86, 184, 139);
-	background-color: rgb(54, 54, 54);
-	selection-background-color: rgb(58, 152, 112);
-}
-
-QGroupBox
-{
-	background-color: rgb(85, 87, 83);
-}
-
-QTreeView,QTableWidget
-{
-    background-color: rgb(85, 87, 83);
-    selection-background-color: rgb(58, 152, 112);
-    border-color: rgb(86, 184, 139);
+    background-color: rgb(211,211,211);
+    color: rgb(88, 88, 90);
+    selection-background-color: rgb(21, 165, 137);
+    selection-color: rgb(245, 244, 244)
 }
 
 QLabel#error_label
 {
-	color: rgb(217, 174, 23);
-}</string>
+    color: rgb(220, 130, 30);
+}
+
+QLineEdit, QTextEdit, QTableWidget, QTreeView
+{
+   background-color:  rgb(245, 244, 244)
+}
+
+QPushButton
+{
+	background-color: rgb(21, 165, 137);
+    color: rgb(245, 244, 244);
+}
+
+QPushButton#local_to_irods_button, QPushButton#irods_to_local_button
+{
+    background-color: rgb(211,211,211);
+}
+
+QPushButton#home_button, QPushButton#parent_button, QPushButton#refresh_button
+{
+    background-color: rgb(245, 244, 244);
+}
+
+QTabWidget#info_tabs
+{
+     background-color: background-color: rgb(211,211,211);
+}
+
+</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -72,7 +89,6 @@ QLabel#error_label
           <property name="font">
            <font>
             <pointsize>13</pointsize>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -312,7 +328,6 @@ QLabel#error_label
           <property name="font">
            <font>
             <pointsize>13</pointsize>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>

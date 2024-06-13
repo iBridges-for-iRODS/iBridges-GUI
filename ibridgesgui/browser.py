@@ -231,7 +231,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                     len(coll.data_objects) + len(coll.subcollections),
                     coll_data + obj_data,
                 )
-                self.browser_table.resizeColumnsToContents()
             except Exception:
                 self.browser_table.setRowCount(0)
                 self.logger.exception("Cannot load browser.")
@@ -523,6 +522,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                     ]
             else:
                 content = [f"No Preview for: {irods_path}"]
+        else:
+            content = [f"No Preview for: {irods_path}"]
         populate_textfield(self.preview_browser, content)
 
     def _get_item_path(self, row):
