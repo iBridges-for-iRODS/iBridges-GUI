@@ -276,7 +276,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             return
 
         self.error_label.clear()
-        table_data = [(ipath, lpath, ipath.size) 
+        table_data = [(ipath, lpath, ipath.size)
                       for ipath, lpath in thread_output["result"]["download"]] + \
                      [(lpath, ipath, lpath.stat().st_size)
                       for lpath, ipath in thread_output["result"]["upload"]]
