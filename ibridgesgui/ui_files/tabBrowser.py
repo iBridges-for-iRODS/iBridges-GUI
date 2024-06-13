@@ -13,63 +13,61 @@ class Ui_tabBrowser(object):
     def setupUi(self, tabBrowser):
         tabBrowser.setObjectName("tabBrowser")
         tabBrowser.resize(1278, 818)
-        tabBrowser.setStyleSheet(
-            "QWidget\n"
-            "{\n"
-            "    color: rgb(86, 184, 139);\n"
-            "    background-color: rgb(54, 54, 54);\n"
-            "    border-color: rgb(86, 184, 139);\n"
-            "    selection-background-color: rgb(58, 152, 112);\n"
-            "}\n"
-            "\n"
-            "QTabWidget\n"
-            "{\n"
-            "    background-color: rgb(85, 87, 83);\n"
-            "    font: 14pt\n"
-            "}\n"
-            "\n"
-            "QTableWidget\n"
-            "{\n"
-            "    background-color: rgb(85, 87, 83);\n"
-            "    selection-background-color: rgb(58, 152, 112);\n"
-            "    border-color: rgb(86, 184, 139);\n"
-            "}\n"
-            "\n"
-            "QLabel#error_label\n"
-            "{\n"
-            "    color: rgb(217, 174, 23);\n"
-            "}\n"
-            "\n"
-            "QLineEdit\n"
-            "{\n"
-            "    background-color: rgb(85, 87, 83);\n"
-            "    border-color: rgb(86, 184, 139);\n"
-            "}\n"
-            "\n"
-            "QPushButton#confirm_button\n"
-            "{\n"
-            "    background-color: rgb(86, 184, 139);\n"
-            "    color: rgb(46, 52, 54);\n"
-            "}"
-        )
+        tabBrowser.setStyleSheet("QWidget\n"
+"{\n"
+"    background-color: rgb(211,211,211);\n"
+"    color: rgb(88, 88, 90);\n"
+"    selection-background-color: rgb(21, 165, 137);\n"
+"    selection-color: rgb(245, 244, 244);\n"
+"    font: 16pt\n"
+"}\n"
+"\n"
+"QLabel#error_label\n"
+"{\n"
+"    color: rgb(220, 130, 30);\n"
+"}\n"
+"\n"
+"QLineEdit, QTextEdit, QTableWidget\n"
+"{\n"
+"   background-color:  rgb(245, 244, 244)\n"
+"}\n"
+"\n"
+"QPushButton\n"
+"{\n"
+"    background-color: rgb(21, 165, 137);\n"
+"    color: rgb(245, 244, 244);\n"
+"}\n"
+"\n"
+"QPushButton#home_button, QPushButton#parent_button, QPushButton#refresh_button\n"
+"{\n"
+"    background-color: rgb(245, 244, 244);\n"
+"}\n"
+"\n"
+"QTabWidget#info_tabs\n"
+"{\n"
+"     background-color: background-color: rgb(211,211,211);\n"
+"}\n"
+"\n"
+"")
         self.verticalLayout = QtWidgets.QVBoxLayout(tabBrowser)
         self.verticalLayout.setObjectName("verticalLayout")
-        spacerItem = QtWidgets.QSpacerItem(
-            20, 10, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
-        )
+        spacerItem = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         self.verticalLayout.addItem(spacerItem)
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
         self.label_2 = QtWidgets.QLabel(parent=tabBrowser)
         font = QtGui.QFont()
         font.setPointSize(16)
-        font.setBold(True)
+        font.setBold(False)
+        font.setItalic(False)
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
         self.path_input = QtWidgets.QLineEdit(parent=tabBrowser)
         font = QtGui.QFont()
         font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.path_input.setFont(font)
         self.path_input.setStyleSheet("")
         self.path_input.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
@@ -80,11 +78,7 @@ class Ui_tabBrowser(object):
         self.refresh_button = QtWidgets.QPushButton(parent=tabBrowser)
         self.refresh_button.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(
-            QtGui.QPixmap("ibridgesgui/ui_files/../icons/refresh.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
-        )
+        icon.addPixmap(QtGui.QPixmap("ibridgesgui/ui_files/../icons/refresh.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.refresh_button.setIcon(icon)
         self.refresh_button.setObjectName("refresh_button")
         self.gridLayout.addWidget(self.refresh_button, 0, 2, 1, 1)
@@ -92,22 +86,14 @@ class Ui_tabBrowser(object):
         self.parent_button.setEnabled(True)
         self.parent_button.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(
-            QtGui.QPixmap("ibridgesgui/ui_files/../icons/arrow-up.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
-        )
+        icon1.addPixmap(QtGui.QPixmap("ibridgesgui/ui_files/../icons/arrow-up.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.parent_button.setIcon(icon1)
         self.parent_button.setObjectName("parent_button")
         self.gridLayout.addWidget(self.parent_button, 0, 3, 1, 1)
         self.home_button = QtWidgets.QPushButton(parent=tabBrowser)
         self.home_button.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(
-            QtGui.QPixmap("ibridgesgui/ui_files/../icons/home.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
-        )
+        icon2.addPixmap(QtGui.QPixmap("ibridgesgui/ui_files/../icons/home.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.home_button.setIcon(icon2)
         self.home_button.setObjectName("home_button")
         self.gridLayout.addWidget(self.home_button, 0, 4, 1, 1)
@@ -119,9 +105,10 @@ class Ui_tabBrowser(object):
         self.create_coll_button = QtWidgets.QPushButton(parent=tabBrowser)
         self.create_coll_button.setObjectName("create_coll_button")
         self.horizontalLayout_5.addWidget(self.create_coll_button)
-        spacerItem1 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
-        )
+        self.rename_button = QtWidgets.QPushButton(parent=tabBrowser)
+        self.rename_button.setObjectName("rename_button")
+        self.horizontalLayout_5.addWidget(self.rename_button)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem1)
         self.upload_file_button = QtWidgets.QPushButton(parent=tabBrowser)
         self.upload_file_button.setObjectName("upload_file_button")
@@ -135,26 +122,21 @@ class Ui_tabBrowser(object):
         self.overwrite = QtWidgets.QCheckBox(parent=tabBrowser)
         self.overwrite.setObjectName("overwrite")
         self.horizontalLayout_5.addWidget(self.overwrite)
-        spacerItem2 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
-        )
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem2)
         self.gridLayout.addLayout(self.horizontalLayout_5, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.browser_table = QtWidgets.QTableWidget(parent=tabBrowser)
         self.browser_table.setMinimumSize(QtCore.QSize(0, 250))
         self.browser_table.setStyleSheet("")
-        self.browser_table.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
-        )
+        self.browser_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.browser_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.browser_table.setTabKeyNavigation(False)
+        self.browser_table.setProperty("showDropIndicator", False)
+        self.browser_table.setDragDropOverwriteMode(False)
         self.browser_table.setAlternatingRowColors(False)
-        self.browser_table.setSelectionMode(
-            QtWidgets.QAbstractItemView.SelectionMode.SingleSelection
-        )
-        self.browser_table.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
-        )
+        self.browser_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.browser_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.browser_table.setObjectName("browser_table")
         self.browser_table.setColumnCount(6)
         self.browser_table.setRowCount(0)
@@ -173,16 +155,16 @@ class Ui_tabBrowser(object):
         self.browser_table.setHorizontalHeaderItem(5, item)
         self.browser_table.horizontalHeader().setStretchLastSection(True)
         self.verticalLayout.addWidget(self.browser_table)
-        spacerItem3 = QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
-        )
+        spacerItem3 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         self.verticalLayout.addItem(spacerItem3)
         self.info_tabs = QtWidgets.QTabWidget(parent=tabBrowser)
         self.info_tabs.setStyleSheet("")
         self.info_tabs.setObjectName("info_tabs")
         self.preview = QtWidgets.QWidget()
         font = QtGui.QFont()
+        font.setPointSize(16)
         font.setBold(False)
+        font.setItalic(False)
         self.preview.setFont(font)
         self.preview.setAutoFillBackground(False)
         self.preview.setObjectName("preview")
@@ -199,14 +181,10 @@ class Ui_tabBrowser(object):
         self.meta_table = QtWidgets.QTableWidget(parent=self.metadata)
         self.meta_table.setMinimumSize(QtCore.QSize(600, 300))
         self.meta_table.setStyleSheet("")
-        self.meta_table.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
-        )
+        self.meta_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.meta_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.meta_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.meta_table.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
-        )
+        self.meta_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.meta_table.setObjectName("meta_table")
         self.meta_table.setColumnCount(3)
         self.meta_table.setRowCount(0)
@@ -221,7 +199,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.delete_meta_button = QtWidgets.QPushButton(parent=self.metadata)
         font = QtGui.QFont()
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.delete_meta_button.setFont(font)
         self.delete_meta_button.setObjectName("delete_meta_button")
         self.gridLayout_2.addWidget(self.delete_meta_button, 7, 2, 1, 1)
@@ -239,18 +219,19 @@ class Ui_tabBrowser(object):
         self.gridLayout_2.addWidget(self.meta_value_field, 6, 1, 1, 1)
         self.update_meta_button = QtWidgets.QPushButton(parent=self.metadata)
         font = QtGui.QFont()
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.update_meta_button.setFont(font)
         self.update_meta_button.setObjectName("update_meta_button")
         self.gridLayout_2.addWidget(self.update_meta_button, 7, 1, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
-        )
+        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.gridLayout_2.addItem(spacerItem4, 9, 0, 1, 1)
         self.label_3 = QtWidgets.QLabel(parent=self.metadata)
         font = QtGui.QFont()
-        font.setPointSize(20)
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
         self.gridLayout_2.addWidget(self.label_3, 0, 0, 1, 1)
@@ -262,7 +243,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_2.addWidget(self.meta_units_field, 6, 2, 1, 1)
         self.add_meta_button = QtWidgets.QPushButton(parent=self.metadata)
         font = QtGui.QFont()
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.add_meta_button.setFont(font)
         self.add_meta_button.setObjectName("add_meta_button")
         self.gridLayout_2.addWidget(self.add_meta_button, 7, 0, 1, 1)
@@ -275,14 +258,10 @@ class Ui_tabBrowser(object):
         self.acl_table = QtWidgets.QTableWidget(parent=self.accession)
         self.acl_table.setMinimumSize(QtCore.QSize(600, 0))
         self.acl_table.setStyleSheet("")
-        self.acl_table.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
-        )
+        self.acl_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.acl_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.acl_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.acl_table.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
-        )
+        self.acl_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.acl_table.setObjectName("acl_table")
         self.acl_table.setColumnCount(4)
         self.acl_table.setRowCount(0)
@@ -299,8 +278,9 @@ class Ui_tabBrowser(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.label_11 = QtWidgets.QLabel(parent=self.accession)
         font = QtGui.QFont()
-        font.setPointSize(20)
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.label_11.setFont(font)
         self.label_11.setObjectName("label_11")
         self.gridLayout_4.addWidget(self.label_11, 0, 0, 1, 1)
@@ -340,13 +320,13 @@ class Ui_tabBrowser(object):
         self.gridLayout_4.addWidget(self.recurisive_box, 6, 3, 1, 1)
         self.add_acl_button = QtWidgets.QPushButton(parent=self.accession)
         font = QtGui.QFont()
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.add_acl_button.setFont(font)
         self.add_acl_button.setObjectName("add_acl_button")
         self.gridLayout_4.addWidget(self.add_acl_button, 6, 4, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding
-        )
+        spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.gridLayout_4.addItem(spacerItem5, 8, 0, 1, 1)
         self.owner = QtWidgets.QLabel(parent=self.accession)
         self.owner.setObjectName("owner")
@@ -363,16 +343,10 @@ class Ui_tabBrowser(object):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.replica_table = QtWidgets.QTableWidget(parent=self.replicas)
         self.replica_table.setStyleSheet("")
-        self.replica_table.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
-        )
+        self.replica_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.replica_table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.replica_table.setSelectionMode(
-            QtWidgets.QAbstractItemView.SelectionMode.SingleSelection
-        )
-        self.replica_table.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
-        )
+        self.replica_table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.replica_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.replica_table.setObjectName("replica_table")
         self.replica_table.setColumnCount(5)
         self.replica_table.setRowCount(0)
@@ -400,14 +374,13 @@ class Ui_tabBrowser(object):
         self.load_selection_button = QtWidgets.QPushButton(parent=self.delete_2)
         self.load_selection_button.setObjectName("load_selection_button")
         self.verticalLayout_5.addWidget(self.load_selection_button)
-        spacerItem6 = QtWidgets.QSpacerItem(
-            20, 30, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
-        )
+        spacerItem6 = QtWidgets.QSpacerItem(20, 30, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         self.verticalLayout_5.addItem(spacerItem6)
         self.confirm_button = QtWidgets.QPushButton(parent=self.delete_2)
         font = QtGui.QFont()
-        font.setPointSize(13)
-        font.setBold(True)
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
         self.confirm_button.setFont(font)
         self.confirm_button.setStyleSheet("")
         self.confirm_button.setObjectName("confirm_button")
@@ -422,7 +395,7 @@ class Ui_tabBrowser(object):
         self.verticalLayout.addWidget(self.error_label)
 
         self.retranslateUi(tabBrowser)
-        self.info_tabs.setCurrentIndex(0)
+        self.info_tabs.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(tabBrowser)
 
     def retranslateUi(self, tabBrowser):
@@ -431,24 +404,23 @@ class Ui_tabBrowser(object):
         self.label_2.setText(_translate("tabBrowser", "iRODS path: "))
         self.path_input.setText(_translate("tabBrowser", "/zoneName/home/user"))
         self.create_coll_button.setText(_translate("tabBrowser", "Create Collection"))
+        self.rename_button.setText(_translate("tabBrowser", "Rename/Move"))
         self.upload_file_button.setText(_translate("tabBrowser", "Upload File"))
         self.upload_dir_button.setText(_translate("tabBrowser", "Upload Folder"))
         self.download_button.setText(_translate("tabBrowser", "Download"))
         self.overwrite.setText(_translate("tabBrowser", "Overwrite"))
-        self.browser_table.setSortingEnabled(True)
+        self.browser_table.setSortingEnabled(False)
         item = self.browser_table.horizontalHeaderItem(1)
         item.setText(_translate("tabBrowser", "Name"))
         item = self.browser_table.horizontalHeaderItem(2)
         item.setText(_translate("tabBrowser", "Size [bytes]"))
         item = self.browser_table.horizontalHeaderItem(3)
-        item.setText(_translate("tabBrowser", "Checksum"))
+        item.setText(_translate("tabBrowser", "Checksum/Fingerprint"))
         item = self.browser_table.horizontalHeaderItem(4)
         item.setText(_translate("tabBrowser", "Created"))
         item = self.browser_table.horizontalHeaderItem(5)
         item.setText(_translate("tabBrowser", "Modified"))
-        self.info_tabs.setTabText(
-            self.info_tabs.indexOf(self.preview), _translate("tabBrowser", "Preview")
-        )
+        self.info_tabs.setTabText(self.info_tabs.indexOf(self.preview), _translate("tabBrowser", "Preview"))
         self.meta_table.setSortingEnabled(True)
         item = self.meta_table.horizontalHeaderItem(0)
         item.setText(_translate("tabBrowser", "Key"))
@@ -463,9 +435,7 @@ class Ui_tabBrowser(object):
         self.label_3.setText(_translate("tabBrowser", "Edit"))
         self.label_6.setText(_translate("tabBrowser", "Value"))
         self.add_meta_button.setText(_translate("tabBrowser", "Add"))
-        self.info_tabs.setTabText(
-            self.info_tabs.indexOf(self.metadata), _translate("tabBrowser", "Metadata")
-        )
+        self.info_tabs.setTabText(self.info_tabs.indexOf(self.metadata), _translate("tabBrowser", "Metadata"))
         self.acl_table.setSortingEnabled(True)
         item = self.acl_table.horizontalHeaderItem(0)
         item.setText(_translate("tabBrowser", "User"))
@@ -490,9 +460,7 @@ class Ui_tabBrowser(object):
         self.recurisive_box.setItemText(1, _translate("tabBrowser", "True"))
         self.add_acl_button.setText(_translate("tabBrowser", "Add/Update"))
         self.owner.setText(_translate("tabBrowser", "Owner: "))
-        self.info_tabs.setTabText(
-            self.info_tabs.indexOf(self.accession), _translate("tabBrowser", "Permissions")
-        )
+        self.info_tabs.setTabText(self.info_tabs.indexOf(self.accession), _translate("tabBrowser", "Permissions"))
         self.replica_table.setSortingEnabled(True)
         item = self.replica_table.horizontalHeaderItem(0)
         item.setText(_translate("tabBrowser", "Replica"))
@@ -504,22 +472,13 @@ class Ui_tabBrowser(object):
         item.setText(_translate("tabBrowser", "Size [bytes]"))
         item = self.replica_table.horizontalHeaderItem(4)
         item.setText(_translate("tabBrowser", "Status"))
-        self.info_tabs.setTabText(
-            self.info_tabs.indexOf(self.replicas), _translate("tabBrowser", "Replicas")
-        )
-        self.delete_browser.setHtml(
-            _translate(
-                "tabBrowser",
-                '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n'
-                '<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">\n'
-                "p, li { white-space: pre-wrap; }\n"
-                "hr { height: 1px; border-width: 0; }\n"
-                "</style></head><body style=\" font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
-                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Summary</p></body></html>',
-            )
-        )
+        self.info_tabs.setTabText(self.info_tabs.indexOf(self.replicas), _translate("tabBrowser", "Replicas"))
+        self.delete_browser.setHtml(_translate("tabBrowser", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"hr { height: 1px; border-width: 0; }\n"
+"</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:16pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:13pt;\"><br /></p></body></html>"))
         self.load_selection_button.setText(_translate("tabBrowser", "Delete"))
         self.confirm_button.setText(_translate("tabBrowser", "Confirm"))
-        self.info_tabs.setTabText(
-            self.info_tabs.indexOf(self.delete_2), _translate("tabBrowser", "Delete")
-        )
+        self.info_tabs.setTabText(self.info_tabs.indexOf(self.delete_2), _translate("tabBrowser", "Delete"))

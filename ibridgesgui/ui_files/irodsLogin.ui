@@ -22,30 +22,33 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-	background-color: rgb(54, 54, 54);
-	color: rgb(86, 184, 139);
-    border-color: rgb(217, 174, 23);
-    font: 16pt;
+    background-color: rgb(211,211,211);
+    color: rgb(88, 88, 90);
+    selection-background-color: rgb(21, 165, 137);
+    selection-color: rgb(245, 244, 244)
 }
 
-QLineEdit
+QLabel#irods_label
 {
-	background-color: rgb(85, 87, 83);
-	border-color: rgb(217, 174, 23);
-	font: 18pt;
+   color: rgb(21, 165, 137)
 }
 
 QLabel#error_label
 {
-	color: rgb(217, 174, 23);
-     font: 18pt;
+    color: rgb(220, 130, 30);
 }
 
-QLabel#label_2
+QLineEdit, QTextEdit, QTableWidget
 {
-    font: 22pt;
-    
+   background-color:  rgb(245, 244, 244)
 }
+
+QPushButton
+{
+	background-color: rgb(21, 165, 137);
+    color: rgb(245, 244, 244);
+}
+
 
 </string>
   </property>
@@ -74,7 +77,7 @@ QLabel#label_2
      <item row="6" column="2" colspan="2">
       <widget class="QLineEdit" name="password_field">
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(85, 87, 83);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string/>
@@ -108,12 +111,12 @@ QLabel#label_2
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="irods_label">
        <property name="font">
         <font>
-         <pointsize>22</pointsize>
+         <pointsize>16</pointsize>
          <italic>false</italic>
-         <bold>false</bold>
+         <bold>true</bold>
          <underline>false</underline>
         </font>
        </property>
@@ -187,6 +190,11 @@ QLabel#label_2
      </item>
      <item>
       <widget class="QPushButton" name="cancel_button">
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Cancel</string>
        </property>

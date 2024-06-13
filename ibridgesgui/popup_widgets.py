@@ -79,6 +79,8 @@ class CreateDirectory(QDialog, Ui_createCollection):
             try:
                 os.makedirs(new_dir_path)
                 self.done(1)
+            except FileExistsError:
+                self.error_label.setText("ERROR: Folder already exists.")
             except Exception as error:
                 if hasattr(error, "message"):
                     self.error_label.setText(error.message)

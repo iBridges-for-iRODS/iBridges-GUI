@@ -19,26 +19,43 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../icons/logo.png</normaloff>../icons/logo.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-	color: rgb(86, 184, 139);
-	background-color: rgb(54, 54, 54);
-	selection-background-color: rgb(58, 152, 112);
-    font: 16pt;
+    background-color: rgb(211,211,211);
+    color: rgb(88, 88, 90);
+    selection-background-color: rgb(21, 165, 137);
+    selection-color: rgb(245, 244, 244);
+    
+	font: 16pt
 }
 
-QTabBar::tab:top:selected {
-    background-color: rgb(58, 152, 112);
-    color: rgb(54, 54, 54);
+QLabel
+{
+  background-color: rgb(211,211,211);
 }
 
 QLabel#error_label
 {
-	color: rgb(217, 174, 23);
-     font: 18pt;
+   color: rgb(220, 130, 30);
 }
+
+QTabBar::tab:top:selected {
+    background-color: rgb(21, 165, 137);
+    color: rgb(88, 88, 90);
+}
+
 </string>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>400</width>
+    <height>400</height>
+   </size>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
@@ -56,13 +73,15 @@ QLabel#error_label
       <property name="font">
        <font>
         <pointsize>16</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
       </property>
       <property name="currentIndex">
        <number>-1</number>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -87,7 +106,6 @@ QLabel#error_label
    <property name="font">
     <font>
      <pointsize>16</pointsize>
-     <weight>50</weight>
      <italic>false</italic>
      <bold>false</bold>
     </font>
@@ -96,7 +114,6 @@ QLabel#error_label
     <property name="font">
      <font>
       <pointsize>16</pointsize>
-      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>

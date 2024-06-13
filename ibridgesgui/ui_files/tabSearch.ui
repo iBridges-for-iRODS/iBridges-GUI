@@ -16,37 +16,38 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-    color: rgb(86, 184, 139);
-    background-color: rgb(54, 54, 54);
-    border-color: rgb(86, 184, 139);
-    selection-background-color: rgb(58, 152, 112);
-    font: 16pt;
-}
-
-QTableWidget
-{
-    background-color: rgb(85, 87, 83);
-    selection-background-color: rgb(58, 152, 112);
-    border-color: rgb(86, 184, 139);
+    background-color: rgb(211,211,211);
+    color: rgb(88, 88, 90);
+    selection-background-color: rgb(21, 165, 137);
+    selection-color: rgb(245, 244, 244);
+    font: 16pt
 }
 
 QLabel#error_label
 {
-    color: rgb(217, 174, 23);
+    color: rgb(220, 130, 30);
 }
 
-QLineEdit
+QLineEdit, QTextEdit, QTableWidget
 {
-    background-color: rgb(85, 87, 83);
-    border-color: rgb(86, 184, 139);
+   background-color:  rgb(245, 244, 244)
 }
 
-QPushButton#search_button
+QPushButton
 {
-    background-color: rgb(86, 184, 139);
-    color: rgb(46, 52, 54);
+	background-color: rgb(21, 165, 137);
+    color: rgb(245, 244, 244);
 }
 
+QPushButton#home_button, QPushButton#parent_button, QPushButton#refresh_button
+{
+    background-color: rgb(245, 244, 244);
+}
+
+QTabWidget#info_tabs
+{
+     background-color: background-color: rgb(211,211,211);
+}
 
 </string>
   </property>

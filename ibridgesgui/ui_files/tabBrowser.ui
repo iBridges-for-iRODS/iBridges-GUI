@@ -16,41 +16,40 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-    color: rgb(86, 184, 139);
-    background-color: rgb(54, 54, 54);
-    border-color: rgb(86, 184, 139);
-    selection-background-color: rgb(58, 152, 112);
-}
-
-QTabWidget
-{
-    background-color: rgb(85, 87, 83);
-    font: 14pt
-}
-
-QTableWidget
-{
-    background-color: rgb(85, 87, 83);
-    selection-background-color: rgb(58, 152, 112);
-    border-color: rgb(86, 184, 139);
+    background-color: rgb(211,211,211);
+    color: rgb(88, 88, 90);
+    selection-background-color: rgb(21, 165, 137);
+    selection-color: rgb(245, 244, 244);
+    font: 16pt
 }
 
 QLabel#error_label
 {
-    color: rgb(217, 174, 23);
+    color: rgb(220, 130, 30);
 }
 
-QLineEdit
+QLineEdit, QTextEdit, QTableWidget
 {
-    background-color: rgb(85, 87, 83);
-    border-color: rgb(86, 184, 139);
+   background-color:  rgb(245, 244, 244)
 }
 
-QPushButton#confirm_button
+QPushButton
 {
-    background-color: rgb(86, 184, 139);
-    color: rgb(46, 52, 54);
-}</string>
+	background-color: rgb(21, 165, 137);
+    color: rgb(245, 244, 244);
+}
+
+QPushButton#home_button, QPushButton#parent_button, QPushButton#refresh_button
+{
+    background-color: rgb(245, 244, 244);
+}
+
+QTabWidget#info_tabs
+{
+     background-color: background-color: rgb(211,211,211);
+}
+
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -76,8 +75,8 @@ QPushButton#confirm_button
        <property name="font">
         <font>
          <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -90,6 +89,8 @@ QPushButton#confirm_button
        <property name="font">
         <font>
          <pointsize>16</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -258,7 +259,7 @@ QPushButton#confirm_button
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <property name="sortingEnabled">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <attribute name="horizontalHeaderStretchLastSection">
       <bool>true</bool>
@@ -286,7 +287,7 @@ QPushButton#confirm_button
      </column>
      <column>
       <property name="text">
-       <string>Checksum</string>
+       <string>Checksum/Fingerprint</string>
       </property>
      </column>
      <column>
@@ -323,12 +324,13 @@ QPushButton#confirm_button
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="preview">
       <property name="font">
        <font>
-        <weight>50</weight>
+        <pointsize>16</pointsize>
+        <italic>false</italic>
         <bold>false</bold>
        </font>
       </property>
@@ -398,8 +400,9 @@ QPushButton#confirm_button
           <widget class="QPushButton" name="delete_meta_button">
            <property name="font">
             <font>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -431,8 +434,9 @@ QPushButton#confirm_button
           <widget class="QPushButton" name="update_meta_button">
            <property name="font">
             <font>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -457,9 +461,9 @@ QPushButton#confirm_button
           <widget class="QLabel" name="label_3">
            <property name="font">
             <font>
-             <pointsize>20</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -481,8 +485,9 @@ QPushButton#confirm_button
           <widget class="QPushButton" name="add_meta_button">
            <property name="font">
             <font>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -553,9 +558,9 @@ QPushButton#confirm_button
           <widget class="QLabel" name="label_11">
            <property name="font">
             <font>
-             <pointsize>20</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -654,8 +659,9 @@ QPushButton#confirm_button
           <widget class="QPushButton" name="add_acl_button">
            <property name="font">
             <font>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -757,10 +763,11 @@ QPushButton#confirm_button
         <widget class="QTextBrowser" name="delete_browser">
          <property name="html">
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Summary&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+hr { height: 1px; border-width: 0; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:16pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:13pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -793,9 +800,9 @@ p, li { white-space: pre-wrap; }
           <widget class="QPushButton" name="confirm_button">
            <property name="font">
             <font>
-             <pointsize>13</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>16</pointsize>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
            <property name="styleSheet">
