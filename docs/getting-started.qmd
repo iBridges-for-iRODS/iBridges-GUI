@@ -20,7 +20,7 @@ When you start iBridges you will find in the upper drop-down menu `Connect` and 
 
 Before we start iBridges for the first time let us check and create a valid configuration file; Click on `Configure -> Add Configuration`.
 
-![](screenshots/add_check_config.png){width=50% fig-align="center"}
+![](screenshots/add_check_config.png){width=75% fig-align="center"}
 
 If you already stored an `irods_environment.json` in the directory `~/.irods` (Windows `C:\Users\<username>\.irods`) then you can use the drop-down menu (little downward arrow) to load the configuration.
 
@@ -28,7 +28,7 @@ If you do not have an iRODS configuration yet, click on the button `New Config`.
 
 You should see now something like:
 
-![](screenshots/add_new_config.png){width=50% fig-align="center"}
+![](screenshots/add_new_config.png){width=75% fig-align="center"}
 
 Click the `Check` button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service provider.
 
@@ -38,7 +38,7 @@ Once the check runs through fine click the `Save` or `Save as` button. This will
 
 To start working with data in iRODS select `Connect -> Connect to iRODS`. This will open the pop-up window
 
-![](screenshots/login.png){width=50% fig-align="center"}
+![](screenshots/login.png){width=75% fig-align="center"}
 
 Select the file we edited above from the drop-down menu and provide your password. If you already logged into iRODS with this or another iRODS client your password might still be cached. This is indicated by the `******`. Hit `<Enter>` or press the `Connect` button.
 

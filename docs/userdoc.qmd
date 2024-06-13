@@ -110,7 +110,7 @@ In the case you want to download a large collection from iRODS, create the desti
   
   **Note that the wild card is `%`**!
   
-  In the example search we are looking for data in a collection called *my_books* which can be located anywhere in the iRODS tree. This is denoted by `%/` and we specify that we want to retrieve data which carries the metadata key *author* where the value ends with *Carroll*.
+  In the example search we are looking for data in a collection called *my_books* which can be located anywhere in the iRODS tree. This is denoted by `%` and we specify that we want to retrieve data which carries the metadata key *author* where the value ends with *Carroll*.
 
   *Single click* on items in the list and click the `Download` button to open a dialog to select the destination for the data and start the download
   
