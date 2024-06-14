@@ -70,6 +70,7 @@ class Login(QDialog, Ui_irodsLogin):
         """Connect to iRODS server with gathered info."""
         self.error_label.clear()
         env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
+        self.logger.debug("Login function. %s, %s", self.cached_pw, self.password_field.text())
         try:
             if self.cached_pw is True and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
@@ -89,12 +90,15 @@ class Login(QDialog, Ui_irodsLogin):
             self.close()
         except LoginError:
             self.error_label.setText("irods_environment.json not setup correctly.")
+            self.logger.error("irods_environment.json not setup correctly.")
         except PasswordError:
             self.error_label.setText("Wrong password!")
+            self.logger.error("Wrong password provided.")
         except ConnectionError:
             self.error_label.setText(
                 "Cannot connect to server. Check Internet, host name and port."
             )
+            self.logger.exception("Network error.")
         except Exception as err:
             log_path = Path("~/.ibridges")
             self.logger.exception("Failed to login: %s", repr(err))

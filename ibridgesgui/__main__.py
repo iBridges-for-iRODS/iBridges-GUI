@@ -78,10 +78,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         if self.session:
             self.error_label.setText("Please close session first.")
             return
-
+        
+        self.logger.debug("Call Login window")
         login_window = Login(self.session_dict, self.app_name)
         login_window.exec()
         # Trick to get the session object from the QDialog
+
         if "session" in self.session_dict:
             self.session = self.session_dict["session"]
             try:
@@ -89,6 +91,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             except:
                 self.session = None
                 raise
+        else:
+            self.logger.exception("No session created. %s", self.session_dict)
 
     def exit(self):
         """Quit program."""
