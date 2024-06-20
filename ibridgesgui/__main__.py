@@ -15,6 +15,7 @@ from ibridgesgui.config import get_log_level, init_logger, set_log_level
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
+from ibridgesgui.logging import Logging
 from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.search import Search
 from ibridgesgui.sync import Sync
@@ -49,6 +50,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             "tabSync": self.init_sync_tab,
             "tabSearch": self.init_search_tab,
             "tabInfo": self.init_info_tab,
+            "tabLog": self.init_log_tab
         }
 
         self.session = None
@@ -121,6 +123,11 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Create info."""
         irods_info = Info(self.session)
         self.tab_widget.addTab(irods_info, "Info")
+
+    def init_log_tab(self):
+        """Create log tab."""
+        ibridges_log = Logging(self.logger)
+        self.tab_widget.addTab(ibridges_log, "Logs")
 
     def init_browser_tab(self):
         """Create browser."""

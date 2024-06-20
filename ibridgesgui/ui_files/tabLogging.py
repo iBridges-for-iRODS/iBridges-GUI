@@ -10,10 +10,10 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_tabLogging(object):
-    def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(400, 272)
-        Dialog.setStyleSheet("QWidget\n"
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(400, 272)
+        Form.setStyleSheet("QWidget\n"
 "{\n"
 "    background-color: rgb(211,211,211);\n"
 "    color: rgb(88, 88, 90);\n"
@@ -31,19 +31,19 @@ class Ui_tabLogging(object):
 "     background-color: rgb(245, 244, 244)\n"
 "}\n"
 "")
-        self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
+        self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.log_label = QtWidgets.QLabel(parent=Dialog)
+        self.log_label = QtWidgets.QLabel(parent=Form)
         self.log_label.setObjectName("log_label")
         self.verticalLayout.addWidget(self.log_label)
-        self.logging = QtWidgets.QTextBrowser(parent=Dialog)
+        self.logging = QtWidgets.QTextBrowser(parent=Form)
         self.logging.setObjectName("logging")
         self.verticalLayout.addWidget(self.logging)
 
-        self.retranslateUi(Dialog)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
 
-    def retranslateUi(self, Dialog):
+    def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.log_label.setText(_translate("Dialog", "Log file"))
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.log_label.setText(_translate("Form", "Log file"))
