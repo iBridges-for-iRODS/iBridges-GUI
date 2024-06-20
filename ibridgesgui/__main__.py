@@ -14,8 +14,8 @@ from ibridgesgui.browser import Browser
 from ibridgesgui.config import get_log_level, init_logger, set_log_level
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
-from ibridgesgui.login import Login
 from ibridgesgui.logging import Logging
+from ibridgesgui.login import Login
 from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.search import Search
 from ibridgesgui.sync import Sync

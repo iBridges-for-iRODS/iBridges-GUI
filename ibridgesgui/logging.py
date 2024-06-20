@@ -1,6 +1,9 @@
-import PyQt6
-import sys
+"""Logging tab."""
+
 import logging
+import sys
+
+import PyQt6
 
 from ibridgesgui.config import CONFIG_DIR
 from ibridgesgui.gui_utils import UI_FILE_DIR
@@ -8,38 +11,23 @@ from ibridgesgui.ui_files.tabLogging import Ui_tabLogging
 
 
 class QPlainTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
-    """A (hopefully) thread safe log handler.
+    """A log handler."""
 
-    """
-    appendPlainText = PyQt6.QtCore.pyqtSignal(str)
+    append_plain_text = PyQt6.QtCore.pyqtSignal(str)
 
     def __init__(self, widget: PyQt6.QtWidgets.QTextBrowser):
-
-        """Initialize the log handler
-
-        Parameters
-        ----------
-        widget : PyQt6.QtWidgets.QPlainTextEdit
-
-        """
-
+        """Initialize the log handler."""
         super().__init__()
         PyQt6.QtCore.QObject.__init__(self)
         self.widget = widget
         self.widget.setReadOnly(True)
-        self.appendPlainText.connect(self.widget.append)
+        self.append_plain_text.connect(self.widget.append)
 
     def emit(self, record: logging.LogRecord):
-        """Pass `record` to all connected slots.
-
-        Parameters
-        ----------
-        record : logging.LogRecord
-
-        """
+        """Pass `record` to all connected slots."""
         #msg = self.format(record)
         msg = record.getMessage()
-        self.appendPlainText.emit(msg)
+        self.append_plain_text.emit(msg)
 
 
 
