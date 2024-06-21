@@ -39,6 +39,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         self.tree_view = tree_view
         self.session = irods_root_path.session
         self.irods_root_path = irods_root_path
+        print(f"iRODS Tree: constructor {self.irods_root_path}")
         # Empty tree
         self.clear()
 
@@ -62,6 +63,8 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
             PyQt6.QtGui.QStandardItem(datatype),  # C or d
             PyQt6.QtGui.QStandardItem(item.path),  # absolute irods path
         ]
+        print(f"iRODS Tree: Insert row data: \n\t display: {display} \n\t item.path: {item.path}")
+        print(f"\t \t tree level: {str(level + 1)}, datatype {datatype}, item.path {item.path}")
         return row
 
     def init_tree(self):
@@ -71,6 +74,7 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
 
         # Start the tree, add the highest level to the invisible root
         root_coll = IrodsPath(self.session, self.irods_root_path).collection
+        print(f"iRODS Tree init_tree: root_coll.path {root_coll.path}")
         root_row = self._tree_row_from_irods_item(root_coll, -1, -1, True)
         root.appendRow(root_row)
 
@@ -102,12 +106,16 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
             [display_name, level, id, parent_id, 'C/d', absolute iRODS Path]
 
         """
+        print(f"iRODS Tree add subtree: tree_item_data {tree_item_data}")
         _, level, _, _, _, abs_irods_path = tree_item_data
         parent_coll = IrodsPath(self.session, abs_irods_path).collection
+        print(f"iRODS Tree add subtree: parent_coll")
 
+        subcolls = parent_coll.subcollections
+        dataobjs = parent_coll.data_objects
         # we assume that tree_item has no children yet.
         new_nodes = {}
-        for item in parent_coll.subcollections + parent_coll.data_objects:
+        for item in subcolls + dataobjs:
             row = self._tree_row_from_irods_item(item, parent_coll.id, int(level))
             tree_item.appendRow(row)
             new_nodes[item.id] = tree_item.child(tree_item.rowCount() - 1)
