@@ -109,10 +109,11 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         print(f"iRODS Tree add subtree: tree_item_data {tree_item_data}")
         _, level, _, _, _, abs_irods_path = tree_item_data
         parent_coll = IrodsPath(self.session, abs_irods_path).collection
-        print(f"iRODS Tree add subtree: parent_coll")
+        print(f"iRODS Tree add subtree: parent_coll {parent_coll}")
 
         subcolls = parent_coll.subcollections
         dataobjs = parent_coll.data_objects
+        print(subcolls+dataobjs)
         # we assume that tree_item has no children yet.
         new_nodes = {}
         for item in subcolls + dataobjs:
