@@ -30,11 +30,18 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 - Safe default options when working with your data.
 
 ## Installation
-- As python package
+- The python package 
 
   ```bash
   pip install ibridgesgui
   ```
+  
+- A specific branch of the git repository (testers, developers)
+
+  ```bash
+  pip install pip install git+https://github.com/chStaiger/iBridges-Gui.git@branch-name
+  ```
+  
 - Locally from code (for developers)
 
   ```bash
