@@ -89,7 +89,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
     def irods_root(self):
         """Retrieve lowest visible level in the iRODS tree for the user."""
         lowest = IrodsPath(self.session).absolute()
-        while lowest.parent.exists():
+        while lowest.parent.exists() and str(lowest) != "/":
             lowest = lowest.parent
         return lowest
 

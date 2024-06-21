@@ -70,7 +70,6 @@ class Login(QDialog, Ui_irodsLogin):
         """Connect to iRODS server with gathered info."""
         self.error_label.clear()
         env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
-        self.logger.debug("Login function. %s, %s", self.cached_pw, self.password_field.text())
         try:
             if self.cached_pw is True and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
