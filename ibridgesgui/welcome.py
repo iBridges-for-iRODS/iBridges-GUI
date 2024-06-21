@@ -1,4 +1,5 @@
 """Welcome tab."""
+
 import sys
 
 import PyQt6.QtCore
@@ -37,6 +38,6 @@ class Welcome(PyQt6.QtWidgets.QWidget, Ui_Welcome):
         self.grid.addWidget(self.tag, 2, 1)
         self.setLayout(self.grid)
 
-        self.setGeometry(150,150,300,300)
+        self.setGeometry(150, 150, 300, 300)
 
         self.show()

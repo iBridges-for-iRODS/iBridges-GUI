@@ -276,10 +276,12 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             return
 
         self.error_label.clear()
-        table_data = [(ipath, lpath, ipath.size)
-                      for ipath, lpath in thread_output["result"]["download"]] + \
-                     [(lpath, ipath, lpath.stat().st_size)
-                      for lpath, ipath in thread_output["result"]["upload"]]
+        table_data = [
+            (ipath, lpath, ipath.size) for ipath, lpath in thread_output["result"]["download"]
+        ] + [
+            (lpath, ipath, lpath.stat().st_size)
+            for lpath, ipath in thread_output["result"]["upload"]
+        ]
         populate_table(self.diff_table, len(table_data), table_data)
         if len(table_data) == 0:
             self.error_label.setText("Data is already synchronised.")
