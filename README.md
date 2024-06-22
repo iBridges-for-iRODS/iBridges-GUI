@@ -39,7 +39,7 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 - A specific branch of the git repository (testers, developers)
 
   ```bash
-  pip install pip install git+https://github.com/chStaiger/iBridges-Gui.git@branch-name
+  pip install git+https://github.com/chStaiger/iBridges-Gui.git@branch-name
   ```
   
 - Locally from code (for developers)
