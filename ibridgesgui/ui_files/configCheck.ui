@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1034</width>
-    <height>429</height>
+    <height>373</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,6 +56,15 @@ QTabWidget#info_tabs
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QComboBox" name="envbox"/>
+     </item>
+     <item>
+      <widget class="QComboBox" name="template_box">
+       <item>
+        <property name="text">
+         <string>Server Templates</string>
+        </property>
+       </item>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="new_button">

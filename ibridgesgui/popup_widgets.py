@@ -6,6 +6,7 @@ import sys
 
 import irods
 from ibridges import IrodsPath
+from ibridges.util import get_environment_providers, find_environment_provider
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QDialog, QFileDialog
 from PyQt6.uic import loadUi
@@ -140,8 +141,10 @@ class CheckConfig(QDialog, Ui_configCheck):
         self.env_path = env_path
         self.setWindowTitle("Create, edit and inspect iRODS environment")
         self._init_env_box()
+        self._init_template_box()
 
         self.envbox.activated.connect(self.load_env)
+        self.template_box.activated.connect(self.load_template)
         self.new_button.clicked.connect(self.create_env)
         self.check_button.clicked.connect(self.check_env)
         self.save_button.clicked.connect(self.save_env)
@@ -154,6 +157,29 @@ class CheckConfig(QDialog, Ui_configCheck):
         if len(env_jsons) != 0:
             self.envbox.addItems(env_jsons)
             self.envbox.setCurrentIndex(0)
+
+    def _init_template_box(self):
+        self.template_box.clear()
+        providers = get_environment_providers()
+
+        if len(providers) == 0:
+            self.template_box.hide()
+            return
+
+        templates = [key+":    "+descr for p in providers
+                                     for key, descr in p.descriptions.items()]
+        if len(templates) > 0:
+            self.template_box.addItems(templates)
+            self.template_box.setCurrentIndex(0)
+
+    def load_template(self):
+        """Load environment template into text field."""
+        self.error_label.clear()
+        template = self.template_box.currentText()
+        key = template.split(":    ")[0]
+        env_json = find_environment_provider(get_environment_providers(), key).\
+                                             environment_json(key, "USERNAME").split("\n")
+        populate_textfield(self.env_field, env_json)
 
     def load_env(self):
         """Load json into text field."""
