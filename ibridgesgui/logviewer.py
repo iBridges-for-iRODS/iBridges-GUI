@@ -11,9 +11,12 @@ from ibridgesgui.ui_files.tabLogging import Ui_tabLogging
 
 
 class QTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
+    """Logging in a Qt text browser."""
+
     append_plain_text = PyQt6.QtCore.pyqtSignal(str)
 
     def __init__(self, text_browser):
+        """Initialise."""
         super().__init__()
         PyQt6.QtCore.QObject.__init__(self)
         self.widget = text_browser
@@ -21,6 +24,7 @@ class QTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
         self.append_plain_text.connect(self.widget.insertPlainText)
 
     def emit(self, record):
+        """Emit when new logging accurs."""
         msg = self.format(record)+"\n"
         self.append_plain_text.emit(msg)
 
@@ -44,4 +48,3 @@ class Logging(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
             '%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s'))
         self.logger.addHandler(self.log_text)
         self.logger.setLevel(logging.DEBUG)
-

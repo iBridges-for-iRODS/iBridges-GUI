@@ -12,10 +12,9 @@ import setproctitle
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import get_log_level, init_logger, set_log_level
-from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.info import Info
-from ibridgesgui.log_tab import Logging
 from ibridgesgui.login import Login
+from ibridgesgui.logviewer import LogViewer
 from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.search import Search
 from ibridgesgui.sync import Sync
@@ -37,7 +36,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__()
         super().setupUi(self)
 
-        app.aboutToQuit.connect(self.closeEvent)
+        app.aboutToQuit.connect(self.close_event)
 
         self.logger = logging.getLogger(app_name)
 
@@ -108,7 +107,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             pass
 
-    def closeEvent(self):
+    def close_event(self):
+        """Close program properly if main window is closed."""
         self.exit()
 
     def setup_tabs(self):
@@ -129,7 +129,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def init_log_tab(self):
         """Create log tab."""
-        ibridges_log = Logging(self.logger)
+        ibridges_log = LogViewer(self.logger)
         self.tab_widget.addTab(ibridges_log, "Logs")
 
     def init_browser_tab(self):
