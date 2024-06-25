@@ -29,7 +29,7 @@ class QTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
         self.append_plain_text.emit(msg)
 
 
-class Logging(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
+class LogViewer(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
     """Set iBridges logging in GUI."""
 
     def __init__(self, logger):
