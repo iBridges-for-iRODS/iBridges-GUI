@@ -6,7 +6,7 @@ import sys
 
 import irods
 from ibridges import IrodsPath
-from ibridges.util import get_environment_providers, find_environment_provider
+from ibridges.util import find_environment_provider, get_environment_providers
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QDialog, QFileDialog
 from PyQt6.uic import loadUi
@@ -180,6 +180,7 @@ class CheckConfig(QDialog, Ui_configCheck):
         env_json = find_environment_provider(get_environment_providers(), key).\
                                              environment_json(key, "USERNAME").split("\n")
         populate_textfield(self.env_field, env_json)
+        self.error_label.setText("Please fill in your user name.")
 
     def load_env(self):
         """Load json into text field."""
