@@ -89,12 +89,15 @@ class Login(QDialog, Ui_irodsLogin):
             self.close()
         except LoginError:
             self.error_label.setText("irods_environment.json not setup correctly.")
+            self.logger.error("irods_environment.json not setup correctly.")
         except PasswordError:
             self.error_label.setText("Wrong password!")
+            self.logger.error("Wrong password provided.")
         except ConnectionError:
             self.error_label.setText(
                 "Cannot connect to server. Check Internet, host name and port."
             )
+            self.logger.exception("Network error.")
         except Exception as err:
             log_path = Path("~/.ibridges")
             self.logger.exception("Failed to login: %s", repr(err))
