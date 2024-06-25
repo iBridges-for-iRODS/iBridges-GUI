@@ -109,7 +109,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def close_event(self):
         """Close program properly if main window is closed."""
-        self.exit()
+        self.disconnect()
+        sys.exit()
 
     def setup_tabs(self):
         """Init tab view."""
