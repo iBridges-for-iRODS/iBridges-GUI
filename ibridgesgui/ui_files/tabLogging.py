@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_tabLogging(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(400, 272)
+        Form.resize(400, 244)
         Form.setStyleSheet("QWidget\n"
 "{\n"
 "    background-color: rgb(211,211,211);\n"
@@ -36,9 +36,9 @@ class Ui_tabLogging(object):
         self.log_label = QtWidgets.QLabel(parent=Form)
         self.log_label.setObjectName("log_label")
         self.verticalLayout.addWidget(self.log_label)
-        self.logging = QtWidgets.QTextBrowser(parent=Form)
-        self.logging.setObjectName("logging")
-        self.verticalLayout.addWidget(self.logging)
+        self.log_browser = QtWidgets.QTextBrowser(parent=Form)
+        self.log_browser.setObjectName("log_browser")
+        self.verticalLayout.addWidget(self.log_browser)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
