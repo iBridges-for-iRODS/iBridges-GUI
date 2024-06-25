@@ -35,10 +35,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, app_name):
         """Initialise the main window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
-            super().setupUi(self)
-        else:
-            PyQt6.uic.loadUi(UI_FILE_DIR / "MainMenu.ui", self)
+        super().setupUi(self)
 
         self.logger = logging.getLogger(app_name)
 
@@ -62,6 +59,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_add_configuration.triggered.connect(self.create_env_file)
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
         self.tab_widget.setCurrentIndex(0)
+
 
     def disconnect(self):
         """Close iRODS session."""
@@ -91,6 +89,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             except:
                 self.session = None
                 raise
+        print(self.logger.handlers)
 
     def exit(self):
         """Quit program."""
@@ -107,6 +106,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             sys.exit()
         else:
             pass
+
 
     def setup_tabs(self):
         """Init tab view."""
@@ -163,8 +163,8 @@ def main():
     if log_level is not None:
         init_logger(THIS_APPLICATION, log_level)
     else:
-        set_log_level("error")
-        init_logger(THIS_APPLICATION, "error")
+        set_log_level("debug")
+        init_logger(THIS_APPLICATION, "debug")
     main_widget = PyQt6.QtWidgets.QStackedWidget()
     main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
