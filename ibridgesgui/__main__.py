@@ -37,6 +37,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__()
         super().setupUi(self)
 
+        app.aboutToQuit.connect(self.closeEvent)
+
         self.logger = logging.getLogger(app_name)
 
         self.irods_path = Path("~", ".irods").expanduser()
@@ -89,7 +91,6 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             except:
                 self.session = None
                 raise
-        print(self.logger.handlers)
 
     def exit(self):
         """Quit program."""
@@ -107,6 +108,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             pass
 
+    def closeEvent(self):
+        self.exit()
 
     def setup_tabs(self):
         """Init tab view."""

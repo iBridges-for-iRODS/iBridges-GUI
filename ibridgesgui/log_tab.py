@@ -45,7 +45,3 @@ class Logging(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
         self.logger.addHandler(self.log_text)
         self.logger.setLevel(logging.DEBUG)
 
-    def closeEvent(self):
-        print("close logging tab")
-        self.logger.removeHandler(self.log_text)
-
