@@ -4,8 +4,7 @@
 ## Install iBridges-gui
 
 ```
-pip install ibridges==0.1.6
-pip install pip install git+https://github.com/chStaiger/iBridges-Gui.git@main
+pip install ibridgesgui
 ```
 
 ## Start the program

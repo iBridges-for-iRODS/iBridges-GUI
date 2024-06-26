@@ -105,9 +105,12 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         _, level, _, _, _, abs_irods_path = tree_item_data
         parent_coll = IrodsPath(self.session, abs_irods_path).collection
 
+        # the irods root also contains the irods root as subcollection
+        subcolls = [c for c in parent_coll.subcollections if c.path != "/"]
+        dataobjs = parent_coll.data_objects
         # we assume that tree_item has no children yet.
         new_nodes = {}
-        for item in parent_coll.subcollections + parent_coll.data_objects:
+        for item in subcolls + dataobjs:
             row = self._tree_row_from_irods_item(item, parent_coll.id, int(level))
             tree_item.appendRow(row)
             new_nodes[item.id] = tree_item.child(tree_item.rowCount() - 1)
