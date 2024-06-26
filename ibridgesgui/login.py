@@ -5,7 +5,9 @@ import sys
 from pathlib import Path
 
 from ibridges import IrodsPath, Session
+from ibridges.resources import Resources
 from ibridges.session import LoginError, PasswordError
+from irods.exception import ResourceDoesNotExist
 from PyQt6.QtWidgets import QDialog, QLineEdit
 from PyQt6.uic import loadUi
 
@@ -105,6 +107,17 @@ class Login(QDialog, Ui_irodsLogin):
         if not IrodsPath(session).collection_exists():
             self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
             self.logger.error("irods_home does not exist.")
-        else:
-            self.session_dict["session"] = session
-            self.close()
+        #check existance of default resource
+        try:
+            resc = Resources(session).get_resource(session.default_resc)
+            if resc.parent is None:
+                self.session_dict["session"] = session
+                self.close()
+            else:
+                self.error_label.setText(f'"default_resource": "{session.default_resc}" not valid.')
+        except ResourceDoesNotExist:
+            self.error_label.setText(
+                f'"default_resource": "{session.default_resc}" does not exist.')
+            self.logger.error("Default resource does not exist.")
+        except AttributeError:
+            self.error_label.setText(f'"default_resource": "{session.default_resc}" not valid.')
