@@ -104,15 +104,19 @@ class Login(QDialog, Ui_irodsLogin):
             self.error_label.setText(f"Login failed, consult the log file(s) in {log_path}")
 
         #check irods_home
+        fail_home = True
         if not IrodsPath(session).collection_exists():
             self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
             self.logger.error("irods_home does not exist.")
+        else:
+            fail_home = False
+
         #check existance of default resource
+        fail_resc = True
         try:
             resc = Resources(session).get_resource(session.default_resc)
             if resc.parent is None:
-                self.session_dict["session"] = session
-                self.close()
+                fail_resc = False
             else:
                 self.error_label.setText(f'"default_resource": "{session.default_resc}" not valid.')
         except ResourceDoesNotExist:
@@ -121,3 +125,7 @@ class Login(QDialog, Ui_irodsLogin):
             self.logger.error("Default resource does not exist.")
         except AttributeError:
             self.error_label.setText(f'"default_resource": "{session.default_resc}" not valid.')
+
+        if not fail_resc and not fail_home:
+            self.session_dict["session"] = session
+            self.close()
