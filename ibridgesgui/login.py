@@ -86,6 +86,7 @@ class Login(QDialog, Ui_irodsLogin):
                 session.home,
             )
             session.write_pam_password()
+            self.session_dict["session"] = session
             set_last_ienv_path(env_file.name)
         except LoginError:
             self.error_label.setText("irods_environment.json not setup correctly.")
@@ -105,7 +106,7 @@ class Login(QDialog, Ui_irodsLogin):
 
         #check irods_home
         fail_home = True
-        if not IrodsPath(session).collection_exists():
+        if not IrodsPath(self.session_dict["session"]).collection_exists():
             self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
             self.logger.error("irods_home does not exist.")
         else:
@@ -114,7 +115,7 @@ class Login(QDialog, Ui_irodsLogin):
         #check existance of default resource
         fail_resc = True
         try:
-            resc = Resources(session).get_resource(session.default_resc)
+            resc = Resources(self.session_dict["session"]).get_resource(session.default_resc)
             if resc.parent is None:
                 fail_resc = False
             else:
@@ -126,6 +127,7 @@ class Login(QDialog, Ui_irodsLogin):
         except AttributeError:
             self.error_label.setText(f'"default_resource": "{session.default_resc}" not valid.')
 
-        if not fail_resc and not fail_home:
-            self.session_dict["session"] = session
+        if fail_resc or fail_home:
+            del self.session_dict["session"]
+        else:
             self.close()
