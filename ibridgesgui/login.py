@@ -77,7 +77,6 @@ class Login(QDialog, Ui_irodsLogin):
             else:
                 session = Session(irods_env=env_file, password=self.password_field.text())
                 self.logger.debug("Login with %s and password from prompt.", env_file)
-            self.session_dict["session"] = session
             self.logger.info(
                 "Logged in as %s to %s; working coll %s",
                 session.username,
@@ -107,4 +106,5 @@ class Login(QDialog, Ui_irodsLogin):
             self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
             self.logger.error("irods_home does not exist.")
         else:
+            self.session_dict["session"] = session
             self.close()
