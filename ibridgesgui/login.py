@@ -104,7 +104,7 @@ class Login(QDialog, Ui_irodsLogin):
 
         #check irods_home
         if not IrodsPath(session).collection_exists():
-            self.error_label.setText(f'"irods_home": "{session.home}" does not exist.")
+            self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
             self.logger.error("irods_home does not exist.")
         else:
             self.close()
