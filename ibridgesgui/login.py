@@ -4,7 +4,7 @@ import logging
 import sys
 from pathlib import Path
 
-from ibridges import Session
+from ibridges import Session, IrodsPath
 from ibridges.session import LoginError, PasswordError
 from PyQt6.QtWidgets import QDialog, QLineEdit
 from PyQt6.uic import loadUi
