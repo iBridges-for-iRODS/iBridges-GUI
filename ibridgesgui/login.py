@@ -86,7 +86,6 @@ class Login(QDialog, Ui_irodsLogin):
             )
             session.write_pam_password()
             set_last_ienv_path(env_file.name)
-            self.close()
         except LoginError:
             self.error_label.setText("irods_environment.json not setup correctly.")
             self.logger.error("irods_environment.json not setup correctly.")
@@ -102,3 +101,10 @@ class Login(QDialog, Ui_irodsLogin):
             log_path = Path("~/.ibridges")
             self.logger.exception("Failed to login: %s", repr(err))
             self.error_label.setText(f"Login failed, consult the log file(s) in {log_path}")
+
+        #check irods_home
+        if not IrodsPath(session).collection_exists():
+            self.error_label.setText(f'"irods_home": "{session.home}" does not exist.")
+            self.logger.error("irods_home does not exist.")
+        else:
+            self.close()
