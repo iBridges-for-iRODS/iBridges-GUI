@@ -53,6 +53,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         elif IrodsPath(self.session, f"/{self.session.zone}/home").collection_exists():
             self.root_coll = IrodsPath(self.session, f"/{self.session.zone}/home").collection
         else:
+            self.root_coll = IrodsPath(self.session, f"/{self.session.zone}/home/{self.session.username}").collection
             self.error_label.setText(
                 'Cannot set root collection. Set "irods_home" in your environment.json'
             )
