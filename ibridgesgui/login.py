@@ -105,8 +105,8 @@ class Login(QDialog, Ui_irodsLogin):
                 self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
             elif not self._check_resource(session):
                 self.error_label.setText(
-                        f'"irods_default_resource": "{session.default_resc}" not writeable.')
-
+                    f'"irods_default_resource": "{session.default_resc}" not writeable.'
+                )
 
         except LoginError:
             self.error_label.setText("irods_environment.json not setup correctly.")
@@ -119,7 +119,7 @@ class Login(QDialog, Ui_irodsLogin):
                 "Cannot connect to server. Check Internet, host name and port."
             )
             self.logger.exception("Network error.")
-        except ResourceDoesNotExist as err:
+        except ResourceDoesNotExist:
             self.error_label.setText('"irods_default_resource" does not exist.')
             self.logger.exception("Default resource does not exist.")
         except Exception as err:
