@@ -142,13 +142,11 @@ class CheckConfig(QDialog, Ui_configCheck):
         self.setWindowTitle("Create, edit and inspect iRODS environment")
 
         providers = get_environment_providers()
-        self.templates = dict(
-            [
-                (f"Template - {key} ({descr})", key)
-                for p in providers
-                for key, descr in p.descriptions.items()
-            ]
-        )
+        self.templates = {
+            f"Template - {key} ({descr})": key
+            for p in providers
+            for key, descr in p.descriptions.items()
+        }
         self._init_env_box()
 
         self.envbox.activated.connect(self.load)
