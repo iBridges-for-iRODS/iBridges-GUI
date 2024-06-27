@@ -13,25 +13,39 @@ Please start **iBridges-Gui** by typing `ibridges-gui` on your terminal and hit 
 
 ## Configuring iBridges-Gui
 
+To connect to the server you need a configuration file, a so-called `irods_environment.json`. 
+You can create one for yourself using templates, editing default settings we provide for you or simply create such a file.
+
+### Installing iRODS server templates
+We have created a plugin system to automatically create the environment file for you. 
+Please follow the [documentation](https://ibridges.readthedocs.io/en/latest/cli.html) how to set it up.
+
+### Creating an iRODS configuration file
+
 When you start iBridges you will find in the upper drop-down menu `Connect` and `Configure`.
 
 ![](screenshots/start_ibridges.png){width=50% fig-align="center"}
 
-Before we start iBridges for the first time let us check and create a valid configuration file; Click on `Configure -> Add Configuration`.
+Let us check or create a valid configuration file; Click on `Configure -> Add Configuration`.
 
 ![](screenshots/add_check_config.png){width=75% fig-align="center"}
 
-If you already stored an `irods_environment.json` in the directory `~/.irods` (Windows `C:\Users\<username>\.irods`) then you can use the drop-down menu (little downward arrow) to load the configuration.
+#### Existing configuration files
+In the drop-down menu you will find previously created iRODS environments, they start with `irods_environment` and end with `.json`. Select the one you want to check.
 
-If you do not have an iRODS configuration yet, click on the button `New Config`.
+#### Creating a configuration from a template
+If you do not have an iRODS configuration yet, and you installed a plugin (see above) you can select a configuration template from the drop-down menu.
+You will have to add your username and save as `irods_environment.json`.
 
+#### Creating a new configuration
+To create a new environment click on the button `New Config`.
 You should see now something like:
 
 ![](screenshots/add_new_config.png){width=75% fig-align="center"}
 
 Click the `Check` button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service provider.
 
-Once the check runs through fine click the `Save` or `Save as` button. This will store the adjusted configuration in the correct directory on you laptop so that we can use it for the login (See Section below).
+Once the check runs through fine click the `Save` or `Save as` button. This will store the adjusted configuration in the correct directory on your laptop so that we can use it for the login (See Section below).
 
 ## Start an iRODS session
 

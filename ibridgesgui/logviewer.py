@@ -25,7 +25,7 @@ class QTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
 
     def emit(self, record):
         """Emit when new logging accurs."""
-        msg = self.format(record)+"\n"
+        msg = self.format(record) + "\n"
         self.append_plain_text.emit(msg)
 
 
@@ -44,7 +44,7 @@ class LogViewer(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
         self.log_label.setText(str(CONFIG_DIR))
         self.log_text = QTextEditLogger(self.log_browser)
         self.log_text.setFormatter(
-        logging.Formatter(
-            '%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s'))
+            logging.Formatter("%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s")
+        )
         self.logger.addHandler(self.log_text)
         self.logger.setLevel(logging.DEBUG)
