@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Union
 
 from ibridges.session import Session
+from irods.auth.pam import PamLoginException
 from irods.connection import PlainTextPAMPasswordError
 from irods.exception import (
     CAT_INVALID_AUTHENTICATION,
@@ -204,6 +205,12 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return repr(err)
     except AttributeError as err:
         return repr(err)
+    except PamLoginException as err:
+        # irods4.3+ specific
+        return f'Adjust "irods_authentication_scheme" {err.args}'
+    except ModuleNotFoundError as err:
+        # irods4.3+ uses string in authenticationscheme as class
+        return f'"irods_authentication_scheme": "{err.name}" does not exist'
 
     except PlainTextPAMPasswordError:
         return (

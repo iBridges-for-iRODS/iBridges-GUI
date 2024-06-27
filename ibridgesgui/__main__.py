@@ -48,7 +48,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
             "tabSync": self.init_sync_tab,
             "tabSearch": self.init_search_tab,
             "tabInfo": self.init_info_tab,
-            "tabLog": self.init_log_tab
+            "tabLog": self.init_log_tab,
         }
 
         self.session = None
@@ -60,7 +60,6 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_add_configuration.triggered.connect(self.create_env_file)
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
         self.tab_widget.setCurrentIndex(0)
-
 
     def disconnect(self):
         """Close iRODS session."""

@@ -58,15 +58,6 @@ QTabWidget#info_tabs
       <widget class="QComboBox" name="envbox"/>
      </item>
      <item>
-      <widget class="QComboBox" name="template_box">
-       <item>
-        <property name="text">
-         <string>Server Templates</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="new_button">
        <property name="text">
         <string>New Config</string>
