@@ -68,6 +68,17 @@ class Login(QDialog, Ui_irodsLogin):
         """Abort login."""
         self.done(0)
 
+    def _check_home(self, session):
+        if not IrodsPath(session).collection_exists():
+            return False
+        return True
+
+    def _check_resource(self, session):
+        resc = Resources(session).get_resource(session.default_resc)
+        if resc.parent is not None:
+            return False
+        return True
+
     def login_function(self):
         """Connect to iRODS server with gathered info."""
         self.error_label.clear()
@@ -86,8 +97,17 @@ class Login(QDialog, Ui_irodsLogin):
                 session.home,
             )
             session.write_pam_password()
-            self.session_dict["session"] = session
-            set_last_ienv_path(env_file.name)
+            if self._check_home(session) and self._check_resource(session):
+                self.session_dict["session"] = session
+                set_last_ienv_path(env_file.name)
+                self.close()
+            elif not self._check_home(session):
+                self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
+            elif not self._check_resource(session):
+                self.error_label.setText(
+                        f'"irods_default_resource": "{session.default_resc}" not writeable.')
+
+
         except LoginError:
             self.error_label.setText("irods_environment.json not setup correctly.")
             self.logger.error("irods_environment.json not setup correctly.")
@@ -99,35 +119,10 @@ class Login(QDialog, Ui_irodsLogin):
                 "Cannot connect to server. Check Internet, host name and port."
             )
             self.logger.exception("Network error.")
+        except ResourceDoesNotExist as err:
+            self.error_label.setText('"irods_default_resource" does not exist.')
+            self.logger.exception("Default resource does not exist.")
         except Exception as err:
             log_path = Path("~/.ibridges")
             self.logger.exception("Failed to login: %s", repr(err))
             self.error_label.setText(f"Login failed, consult the log file(s) in {log_path}")
-
-        #check irods_home
-        fail_home = True
-        if not IrodsPath(self.session_dict["session"]).collection_exists():
-            self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
-            self.logger.error("irods_home does not exist.")
-        else:
-            fail_home = False
-
-        #check existance of default resource
-        fail_resc = True
-        try:
-            resc = Resources(self.session_dict["session"]).get_resource(session.default_resc)
-            if resc.parent is None:
-                fail_resc = False
-            else:
-                self.error_label.setText(f'"default_resource": "{session.default_resc}" not valid.')
-        except ResourceDoesNotExist:
-            self.error_label.setText(
-                f'"default_resource": "{session.default_resc}" does not exist.')
-            self.logger.error("Default resource does not exist.")
-        except AttributeError:
-            self.error_label.setText(f'"default_resource": "{session.default_resc}" not valid.')
-
-        if fail_resc or fail_home:
-            del self.session_dict["session"]
-        else:
-            self.close()
