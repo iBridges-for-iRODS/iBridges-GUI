@@ -140,11 +140,18 @@ class CheckConfig(QDialog, Ui_configCheck):
         self.logger = logger
         self.env_path = env_path
         self.setWindowTitle("Create, edit and inspect iRODS environment")
-        self._init_env_box()
-        self._init_template_box()
 
-        self.envbox.activated.connect(self.load_env)
-        self.template_box.activated.connect(self.load_template)
+        providers = get_environment_providers()
+        self.templates = dict(
+            [
+                (f"Template - {key} ({descr})", key)
+                for p in providers
+                for key, descr in p.descriptions.items()
+            ]
+        )
+        self._init_env_box()
+
+        self.envbox.activated.connect(self.load)
         self.new_button.clicked.connect(self.create_env)
         self.check_button.clicked.connect(self.check_env)
         self.save_button.clicked.connect(self.save_env)
@@ -156,36 +163,30 @@ class CheckConfig(QDialog, Ui_configCheck):
         env_jsons = [""] + [path.name for path in self.env_path.glob("irods_environment*json")]
         if len(env_jsons) != 0:
             self.envbox.addItems(env_jsons)
-            self.envbox.setCurrentIndex(0)
+        self.envbox.addItems(self.templates.keys())
+        self.envbox.setCurrentIndex(0)
 
-    def _init_template_box(self):
-        self.template_box.clear()
-        providers = get_environment_providers()
+    def load(self):
+        """Decide whether load template or irods env."""
+        selected = self.envbox.currentText()
+        if selected.startswith("Template - "):
+            self.load_template(self.templates[selected])
+        else:
+            self.load_env(self.env_path.joinpath(selected))
 
-        if len(providers) == 0:
-            self.template_box.hide()
-            return
-
-        templates = [key+":    "+descr for p in providers
-                                     for key, descr in p.descriptions.items()]
-        if len(templates) > 0:
-            self.template_box.addItems(templates)
-            self.template_box.setCurrentIndex(0)
-
-    def load_template(self):
+    def load_template(self, template_key):
         """Load environment template into text field."""
         self.error_label.clear()
-        template = self.template_box.currentText()
-        key = template.split(":    ")[0]
-        env_json = find_environment_provider(get_environment_providers(), key).\
-                                             environment_json(key, "USERNAME").split("\n")
+        provider = find_environment_provider(get_environment_providers(), template_key)
+        env_json = provider.environment_json(
+            template_key, *[q.upper() for q in provider.questions]
+        ).split("\n")
         populate_textfield(self.env_field, env_json)
         self.error_label.setText("Please fill in your user name.")
 
-    def load_env(self):
+    def load_env(self, env_file):
         """Load json into text field."""
         self.error_label.clear()
-        env_file = self.env_path.joinpath(self.envbox.currentText())
         try:
             content = json.dumps(
                 _read_json(env_file), sort_keys=True, indent=4, separators=(",", ": ")
