@@ -22,7 +22,7 @@ classifiers = [
 
 dependencies = [
     "PyQt6>=6.4.2",
-    "ibridges>=0.2.3",
+    "ibridges>=1.0.0",
     "setproctitle==1.3.3",
     "importlib-resources;python_version<='3.10'",
 ]

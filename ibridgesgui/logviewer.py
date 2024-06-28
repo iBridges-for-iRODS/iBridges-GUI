@@ -10,23 +10,23 @@ from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.ui_files.tabLogging import Ui_tabLogging
 
 
-class QTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
-    """Logging in a Qt text browser."""
+class QPlainTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
+    """A thread safe log handler."""
 
     append_plain_text = PyQt6.QtCore.pyqtSignal(str)
 
-    def __init__(self, text_browser):
-        """Initialise."""
+    def __init__(self, widget: PyQt6.QtWidgets.QPlainTextEdit):
+        """Initialize the log handler."""
         super().__init__()
         PyQt6.QtCore.QObject.__init__(self)
-        self.widget = text_browser
+        self.widget = widget
         self.widget.setReadOnly(True)
         self.append_plain_text.connect(self.widget.insertPlainText)
 
-    def emit(self, record):
-        """Emit when new logging accurs."""
-        msg = self.format(record) + "\n"
-        self.append_plain_text.emit(msg)
+    def emit(self, record: logging.LogRecord):
+        """Pass `record` to all connected slots."""
+        msg = self.format(record)+"\n"
+        self.append_plainText.emit(msg)
 
 
 class LogViewer(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
@@ -42,7 +42,7 @@ class LogViewer(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
 
         self.logger = logger
         self.log_label.setText(str(CONFIG_DIR))
-        self.log_text = QTextEditLogger(self.log_browser)
+        self.log_text = QPlainTextEditLogger(self.log_browser)
         self.log_text.setFormatter(
             logging.Formatter("%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s")
         )
