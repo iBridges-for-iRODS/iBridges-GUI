@@ -11,7 +11,7 @@ import PyQt6.uic
 import setproctitle
 
 from ibridgesgui.browser import Browser
-from ibridgesgui.config import get_log_level, init_logger, set_log_level
+from ibridgesgui.config import ensure_irods_location, get_log_level, init_logger, set_log_level
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
@@ -171,6 +171,7 @@ def main():
     else:
         set_log_level("debug")
         init_logger(THIS_APPLICATION, "debug")
+    ensure_irods_location()
     main_widget = PyQt6.QtWidgets.QStackedWidget()
     main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
