@@ -38,6 +38,11 @@ def ensure_log_config_location():
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def ensure_irods_location():
+    """Ensure that .irods exists in user's home."""
+    irods_loc = Path("~/.irods").expanduser()
+    irods_loc.mkdir(exist_ok=True)
+
 # logging functions
 def init_logger(app_name: str, log_level: str) -> logging.Logger:
     """Create a logger for the app.
