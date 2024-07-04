@@ -10,6 +10,8 @@
 
 [![Python package](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml)
 [![Quarto Publish](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12583957.svg)](https://doi.org/10.5281/zenodo.12583957)
+
 
 ## About
 
