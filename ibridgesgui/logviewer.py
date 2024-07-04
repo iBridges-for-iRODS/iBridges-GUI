@@ -26,7 +26,7 @@ class QPlainTextEditLogger(logging.Handler, PyQt6.QtCore.QObject):
     def emit(self, record: logging.LogRecord):
         """Pass `record` to all connected slots."""
         msg = self.format(record)+"\n"
-        self.append_plainText.emit(msg)
+        self.append_plain_text.emit(msg)
 
 
 class LogViewer(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
