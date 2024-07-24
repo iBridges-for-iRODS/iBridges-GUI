@@ -259,6 +259,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
     def fill_info_tab_content(self):
         """Fill lower tabs with info."""
+        if self._nothing_selected_error():
+            return
         tab_name = self.info_tabs.currentWidget().objectName()
         irods_path = self._get_item_path(self.browser_table.currentRow())
         if (
@@ -335,9 +337,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
     def update_permission(self):
         """Send acls to iRODS server."""
-        self.error_label.clear()
-        if self.browser_table.currentRow() == -1:
-            self.error_label.setText("Please select a row from the table first!")
+        if self._nothing_selected_error():
             return
         irods_path = self._get_item_path(self.browser_table.currentRow())
         user_name = self.acl_user_field.text()
@@ -346,7 +346,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
         if acc_name in ("inherit", "noinherit"):
             if irods_path.dataobject_exists():
-                self.error_label.setText("WARNING: (no)inherit is not applicable to data objects")
+                self.error_label.setText("WARNING: (no)inherit is not applicable to data objects.")
                 return
         elif user_name == "":
             self.error_label.setText("Please provide a user.")
@@ -356,33 +356,26 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             return
         recursive = self.recurisive_box.currentText() == "True"
         try:
-            item = get_irods_item(irods_path)
-            perm = Permissions(self.session, item)
+            perm = Permissions(self.session, get_irods_item(irods_path))
             perm.set(perm=acc_name, user=user_name, zone=user_zone, recursive=recursive)
             if acc_name == "null":
                 self.logger.info(
                     "Delete access (%s, %s, %s, %s) for %s",
-                    acc_name,
-                    user_name,
-                    user_zone,
-                    str(recursive),
-                    item.path,
+                    acc_name, user_name, user_zone, str(recursive), str(irods_path)
                 )
             else:
                 self.logger.info(
                     "Add/change access of %s to (%s, %s, %s, %s)",
-                    item.path,
-                    acc_name,
-                    user_name,
-                    user_zone,
-                    str(recursive),
+                    str(irods_path), acc_name, user_name, user_zone, str(recursive)
                 )
             self._fill_acls_tab(irods_path)
         except irods.exception.CAT_INVALID_USER:
             self.error_label.setText(f"Cannot update ACLs. {user_name}#{user_zone} not known.")
-        except Exception:
-            self.logger.exception("Cannot update ACLs.")
-            self.error_label.setText("Cannot update ACLs. Consult the logs.")
+        except irods.exception.MSI_OPERATION_NOT_ALLOWED:
+            self.error_label.setText("iRODS server does not allow to edit permissions.")
+        except Exception as err:
+            self.logger.exception("Permissions error for %s", str(irods_path))
+            self.error_label.setText(f"Error edit permissions of {str(irods_path)}: {repr(err)}")
 
     # Internal functions
     def _clear_info_tabs(self):
@@ -513,42 +506,33 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
     def _metadata_edits(self, operation):
         self.error_label.clear()
-        if self.browser_table.currentRow() == -1:
-            self.error_label.setText("Please select an object first!")
-        else:
+        if self._nothing_selected_error():
+            return
+
+        irods_path = self._get_item_path(self.browser_table.currentRow())
+        new_key = self.meta_key_field.text()
+        new_val = self.meta_value_field.text()
+        new_units = self.meta_units_field.text()
+        if new_key != "" and new_val != "":
             irods_path = self._get_item_path(self.browser_table.currentRow())
-            new_key = self.meta_key_field.text()
-            new_val = self.meta_value_field.text()
-            new_units = self.meta_units_field.text()
-            if new_key != "" and new_val != "":
-                irods_path = self._get_item_path(self.browser_table.currentRow())
-                item = get_irods_item(irods_path)
-                meta = MetaData(item)
-                if operation == "add":
-                    meta.add(new_key, new_val, new_units)
-                    self.logger.info(
-                        "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
-                    )
-                elif operation == "set":
-                    meta.set(new_key, new_val, new_units)
-                    self.logger.info(
-                        "Set all metadata with key %s to (%s, %s, %s) for %s",
-                        new_key,
-                        new_key,
-                        new_val,
-                        new_units,
-                        irods_path,
-                    )
-                elif operation == "delete":
-                    meta.delete(new_key, new_val, new_units)
-                    self.logger.info(
-                        "Delete metadata (%s, %s, %s) from %s",
-                        new_key,
-                        new_val,
-                        new_units,
-                        irods_path,
-                    )
-                self._fill_metadata_tab(irods_path)
+            if operation == "add":
+                irods_path.meta.add(new_key, new_val, new_units)
+                self.logger.info(
+                    "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
+                )
+            elif operation == "set":
+                irods_path.meta.set(new_key, new_val, new_units)
+                self.logger.info(
+                    "Set all metadata with key %s to (%s, %s, %s) for %s",
+                    new_key, new_key, new_val, new_units, irods_path
+                )
+            elif operation == "delete":
+                irods_path.meta.delete(new_key, new_val, new_units)
+                self.logger.info(
+                    "Delete metadata (%s, %s, %s) from %s",
+                    new_key, new_val, new_units, irods_path
+                )
+            self._fill_metadata_tab(irods_path)
 
     def _fs_select(self, path_select):
         """Retrieve the path (file or folder) from a QFileDialog.
