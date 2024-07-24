@@ -16,7 +16,6 @@ from ibridges.util import obj_replicas
 
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
-    get_coll_dict,
     get_downloads_dir,
     get_irods_item,
     populate_table,
@@ -53,11 +52,11 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         # Couple main navigation elements to their functions
         self.input_path.returnPressed.connect(self.refresh_browser)
         self.refresh_button.clicked.connect(self.refresh_browser)
-        self.refresh_button.setToolTip("Refresh")
+        self.refresh_button.setToolTip("Refresh browser.")
         self.home_button.clicked.connect(self.set_input_path_to_home)
-        self.home_button.setToolTip("Home")
+        self.home_button.setToolTip("Go to home.")
         self.parent_button.clicked.connect(self.set_input_path_to_parent)
-        self.parent_button.setToolTip("Parent Coll")
+        self.parent_button.setToolTip("Go one coll up.")
 
         # Main manipulation buttons Upload/Download, Create collection
         self.upload_file_button.clicked.connect(self.file_upload)
@@ -65,6 +64,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.download_button.clicked.connect(self.download)
         self.create_coll_button.clicked.connect(self.create_collection)
         self.rename_button.clicked.connect(self.rename_item)
+        self.delete_button.clicked.connect(self.delete_data)
 
         # Browser table behaviour
         self.browser_table.doubleClicked.connect(self.load_path)
@@ -79,10 +79,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.update_meta_button.clicked.connect(self.set_icat_meta)
         self.delete_meta_button.clicked.connect(self.delete_icat_meta)
         # Manilpulate ACLs
-        self.acl_table.clicked.connect(self.edit_acl)
-        self.add_acl_button.clicked.connect(self.update_icat_acl)
-        # Delete Data
-        self.delete_button.clicked.connect(self.delete_data)
+        self.acl_table.clicked.connect(self.edit_permission)
+        self.add_acl_button.clicked.connect(self.update_permission)
 
     def update_input_path(self, irods_path):
         """Set the input path to a niew path and loads the table."""
@@ -107,7 +105,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         irods_path = IrodsPath(self.session, self.input_path.text())
         self.update_input_path(irods_path)
 
-    def load_path(self, index):
+    def load_path(self):
         """Take path from input_path and loads browser table."""
         irods_path = self._get_item_path(self.browser_table.currentRow())
         if irods_path.collection_exists():
@@ -121,21 +119,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         coll_widget.exec()
         self.update_input_path(clean_cur_path)
 
-    def _nothing_selected_error(self):
-        self.error_label.clear()
-        if self.browser_table.currentRow() == -1:
-            self.error_label.setText("Please select an item from the table.")
-            return True
-
-    def _update_last_selected_row(self, row):
-        self.last_selected_row = self.current_selected_row
-        self.current_selected_row = self.browser_table.currentRow()
-        # fill currently selected tab with info
-        self.fill_info_tab_content()
-
     def rename_item(self):
         """Rename/move a collection or data object."""
-        if self._nothing_selected():
+        if self._nothing_selected_error():
             return
         item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
         current_collection = IrodsPath(self.session, "/" + self.input_path.text().strip("/"))
@@ -199,6 +185,33 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             except Exception as err:
                 self.logger.exception("Downloading %s failed: %s", path, err)
                 self.error_label.setText(f"Could not download {path}. Consult the logs.")
+
+    def delete_data(self):
+        """Delete selected data in the delete_browser."""
+        if self._nothing_selected_error():
+            return
+
+        if self.browser_table.item(self.browser_table.currentRow(), 1) is not None:
+            item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
+            irods_path = IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
+            quit_msg = f"Are you sure you want to delete {str(irods_path)}?"
+            reply = PyQt6.QtWidgets.QMessageBox.critical(
+                self,
+                "Message",
+                quit_msg,
+                PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
+                PyQt6.QtWidgets.QMessageBox.StandardButton.No,
+            )
+            if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
+                try:
+                    irods_path.remove()
+                    self.logger.info("Delete data %s", str(irods_path))
+                    self.refresh_browser()
+                except (irods.exception.CAT_NO_ACCESS_PERMISSION, PermissionError):
+                    self.error_label.setText(f"No permissions to delete {str(irods_path)}")
+                except Exception:
+                    self.logger.exception("FAILED: Delete data %s", irods_path)
+                    self.error_label.setText(f"FAILED: Delete data {irods_path}. Consult the logs.")
 
     def load_browser_table(self):
         """Load main browser table."""
@@ -306,7 +319,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_units_field.setText(units)
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
-    def edit_acl(self, index):
+    def edit_permission(self, index):
         """Load selected acl into editing fields."""
         self.error_label.clear()
         self.acl_user_field.clear()
@@ -320,7 +333,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_zone_field.setText(user_zone)
         self.acl_box.setCurrentText(acc_name)
 
-    def update_icat_acl(self):
+    def update_permission(self):
         """Send acls to iRODS server."""
         self.error_label.clear()
         if self.browser_table.currentRow() == -1:
@@ -371,59 +384,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             self.logger.exception("Cannot update ACLs.")
             self.error_label.setText("Cannot update ACLs. Consult the logs.")
 
-    def load_selection(self):
-        """Load selection from main table into delete tab."""
-        self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
-        self.delete_browser.clear()
-        row = self.browser_table.currentRow()
-        if row == -1:
-            self.error_label.setText("Please select a row from the table first.")
-            self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
-            return
-        content = []
-        item_path = self._get_item_path(row)
-        if item_path.exists():
-            item = get_irods_item(item_path)
-            if item_path.collection_exists():
-                data_dict = get_coll_dict(item)
-                for key in list(data_dict.keys())[:20]:
-                    content.append(key)
-                    if len(data_dict[key]) > 0:
-                        for item in data_dict[key]:
-                            content.append("\t" + item)
-                content.append("...")
-            else:
-                content.append(str(item_path))
-            populate_textfield(self.delete_browser, content)
-        self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
-
-    def delete_data(self):
-        """Delete all data in the delete_browser."""
-        self.error_label.clear()
-        data = self.delete_browser.toPlainText().split("\n")
-        if data[0] != "":
-            item = data[0].strip()
-            quit_msg = "Delete all data in \n\n" + item + "\n"
-            reply = PyQt6.QtWidgets.QMessageBox.question(
-                self,
-                "Message",
-                quit_msg,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.No,
-            )
-            if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-                try:
-                    IrodsPath(self.session, item).remove()
-                    self.logger.info("Delete data %s", item)
-                    self.delete_browser.clear()
-                    self.load_browser_table()
-                    self.error_label.clear()
-                except (irods.exception.CAT_NO_ACCESS_PERMISSION, PermissionError):
-                    self.error_label.setText(f"No permissions to delete {item}")
-                except Exception:
-                    self.logger.exception("FAILED: Delete data %s", item)
-                    self.error_label.setText(f"FAILED: Delete data {item}. Consult the logs.")
-
     # Internal functions
     def _clear_info_tabs(self):
         """Clear the tabs view."""
@@ -431,6 +391,23 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_table.setRowCount(0)
         self.replica_table.setRowCount(0)
         self.preview_browser.clear()
+
+    def _get_item_path(self, row):
+        item_name = self.browser_table.item(row, 1).text()
+        return IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
+
+    def _nothing_selected_error(self):
+        self.error_label.clear()
+        if self.browser_table.currentRow() == -1:
+            self.error_label.setText("Please select an item from the table.")
+            return True
+        return False
+
+    def _update_last_selected_row(self):
+        self.last_selected_row = self.current_selected_row
+        self.current_selected_row = self.browser_table.currentRow()
+        # fill currently selected tab with info
+        self.fill_info_tab_content()
 
     def _fill_replicas_tab(self, irods_path):
         """Populate the table in the Replicas tab.
@@ -533,10 +510,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             content = [f"No Preview for: {irods_path}"]
         populate_textfield(self.preview_browser, content)
         self.preview_browser.verticalScrollBar().setValue(0)
-
-    def _get_item_path(self, row):
-        item_name = self.browser_table.item(row, 1).text()
-        return IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
 
     def _metadata_edits(self, operation):
         self.error_label.clear()
