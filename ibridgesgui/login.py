@@ -11,7 +11,13 @@ from irods.exception import ResourceDoesNotExist
 from PyQt6.QtWidgets import QDialog, QLineEdit
 from PyQt6.uic import loadUi
 
-from ibridgesgui.config import get_last_ienv_path, set_last_ienv_path
+from ibridgesgui.config import (
+    IRODSA,
+    get_last_ienv_path,
+    get_prev_settings,
+    save_current_settings,
+    set_last_ienv_path,
+)
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
 
@@ -32,6 +38,7 @@ class Login(QDialog, Ui_irodsLogin):
 
         self.session_dict = session_dict
         self._init_envbox()
+        self.prev_settings = get_prev_settings()
         self.cached_pw = self._init_password()
         self._load_gui()
         self.setWindowTitle("Connect to iRODS server")
@@ -40,6 +47,7 @@ class Login(QDialog, Ui_irodsLogin):
         self.connect_button.clicked.connect(self.login_function)
         self.cancel_button.clicked.connect(self.close)
         self.password_field.setEchoMode(QLineEdit.EchoMode.Password)
+        self.envbox.currentTextChanged.connect(self._init_password)
 
     def _init_envbox(self):
         env_jsons = [path.name for path in self.irods_config_dir.glob("irods_environment*json")]
@@ -57,11 +65,12 @@ class Login(QDialog, Ui_irodsLogin):
             self.envbox.setCurrentIndex(0)
 
     def _init_password(self):
-        # Check if there is a cached password
-        passwd_file = self.irods_config_dir.joinpath(".irodsA")
-        if passwd_file.is_file():
+        # Check if there is a cached password in the ibridges_gui config file
+        env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
+        if str(env_file) in self.prev_settings:
             self.password_field.setText("***********")
             return True
+        self.password_field.clear()
         return False
 
     def close(self):
@@ -86,6 +95,9 @@ class Login(QDialog, Ui_irodsLogin):
         try:
             if self.cached_pw is True and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
+                with open(IRODSA, "w",  encoding="utf-8") as f:
+                    f.write(self.prev_settings[str(env_file)])
+
                 session = Session(irods_env=env_file)
             else:
                 session = Session(irods_env=env_file, password=self.password_field.text())
@@ -97,6 +109,7 @@ class Login(QDialog, Ui_irodsLogin):
                 session.home,
             )
             session.write_pam_password()
+            save_current_settings(env_file)
             if self._check_home(session) and self._check_resource(session):
                 self.session_dict["session"] = session
                 set_last_ienv_path(env_file.name)
