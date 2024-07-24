@@ -90,7 +90,7 @@ class TransferDataThread(QThread):
         transfer_out["error"] = ""
 
         emit_string = "Create collections."
-        for coll in self.diffs["create_collection"]:
+        for coll in self.diffs.create_collection:
             try:
                 IrodsPath.create_collection(self.thread_session, coll)
                 self.logger.info("Transfer data thread: Created collection %s", coll)
@@ -103,7 +103,7 @@ class TransferDataThread(QThread):
                 )
 
         emit_string = "Create folders."
-        for folder in self.diffs["create_dir"]:
+        for folder in self.diffs.create_dir:
             print(f"create {folder}")
             try:
                 Path(folder).mkdir(parents=True, exist_ok=True)
@@ -117,15 +117,15 @@ class TransferDataThread(QThread):
                     + f"\nTransfer failed Cannot create {folder}: {repr(error)}"
                 )
 
-        for local_path, irods_path in self.diffs["upload"]:
+        for local_path, irods_path in self.diffs.upload:
             try:
                 upload(
                     self.thread_session,
                     local_path,
                     irods_path,
-                    resc_name=self.diffs["resc_name"],
+                    resc_name=self.diffs.resc_name,
                     overwrite=self.overwrite,
-                    options=self.diffs["options"],
+                    options=self.diffs.options,
                 )
                 obj_count += 1
                 self.logger.info(
@@ -146,19 +146,19 @@ class TransferDataThread(QThread):
                     transfer_out["error"]
                     + f"\nTransfer failed, cannot upload {str(local_path)}: {repr(error)}"
                 )
-            emit_string = f"{obj_count} of {len(self.diffs['upload'])} files"
+            emit_string = f"{obj_count} of {len(self.diffs.upload)} files"
             emit_string += f" transferred, failed: {obj_failed}."
             self.current_progress.emit(emit_string)
 
-        for irods_path, local_path in self.diffs["download"]:
+        for irods_path, local_path in self.diffs.download:
             try:
                 download(
                     self.thread_session,
                     irods_path,
                     local_path,
-                    resc_name=self.diffs["resc_name"],
+                    resc_name=self.diffs.resc_name,
                     overwrite=self.overwrite,
-                    options=self.diffs["options"],
+                    options=self.diffs.options,
                 )
                 file_count += 1
                 self.logger.info(
@@ -179,7 +179,7 @@ class TransferDataThread(QThread):
                     transfer_out["error"]
                     + f"\nTransfer failed, cannot download {str(irods_path)}: {repr(error)}"
                 )
-            emit_string = f"{file_count} of {len(self.diffs['download'])} data objects"
+            emit_string = f"{file_count} of {len(self.diffs.download)} data objects"
             emit_string += f" transferred, failed: {file_failed}."
             self.current_progress.emit(emit_string)
 
