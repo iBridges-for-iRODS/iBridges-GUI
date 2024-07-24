@@ -72,7 +72,10 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
         # Browser table behaviour
         self.browser_table.doubleClicked.connect(self.update_path)
-        self.browser_table.clicked.connect(self.fill_info)
+        self.browser_table.clicked.connect(self.fill_info_tab_content)
+
+        # Load info tabs when requested
+        self.info_tabs.currentChanged.connect(self.fill_info_tab_content)
 
         # Bottom tab view buttons
         # Metadata
@@ -232,24 +235,30 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             self.browser_table.setRowCount(0)
             self.error_label.setText("Collection does not exist.")
 
-    def fill_info(self):
-        """Fill lower tabs with info."""
-        self.error_label.clear()
-        self._clear_info_tabs()
-        self.delete_browser.clear()
-        self.meta_table.setRowCount(0)
-        self.acl_table.setRowCount(0)
-        self.replica_table.setRowCount(0)
+    def fill_info_tab_content(self):
+        """Fill the info of the selected lower tab."""
+        if self.browser_table.currentRow() == -1:
+            self.error_label.setText("Please select an item from the table.")
+            return
+
         irods_path = self._get_item_path(self.browser_table.currentRow())
-        self._clear_info_tabs()
+        if irods_path is None:
+            self.error_label.setText("Please select an item in the table.")
+        self.error_label.clear()
+        self.delete_browser.clear()
+        tab_name = self.info_tabs.currentWidget().objectName()
         try:
-            self._fill_preview_tab(irods_path)
-            self._fill_metadata_tab(irods_path)
-            self._fill_acls_tab(irods_path)
-            self._fill_replicas_tab(irods_path)
-        except Exception:
-            self.logger.exception("Cannot load info tabs.")
-            self.error_label.setText("Cannot load info tabs. Consult the logs.")
+            if tab_name == "metadata":
+                self._fill_metadata_tab(irods_path)
+            elif tab_name == "permissions":
+                self._fill_acls_tab(irods_path)
+            elif tab_name == "replicas":
+                self._fill_replicas_tab(irods_path)
+            elif tab_name == "preview":
+                self._fill_preview_tab(irods_path)
+        except Exception as err:
+            self.logger.exception("Error loading %s of %s .", tab_name, irods_path)
+            self.error_label.setText(f"Error loading {tab_name} of {irods_path}: {repr(err)}")
 
     def set_icat_meta(self):
         """Button metadata set."""
@@ -274,7 +283,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
     def edit_metadata(self, index):
-        """Load selected metadata into edit fields."""
+        """Load selected metadata info edit fields."""
         self.error_label.clear()
         self.meta_key_field.clear()
         self.meta_value_field.clear()
@@ -506,7 +515,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                 try:
                     with obj.open("r") as objfd:
                         content = [objfd.read(1024).decode("utf-8")]
-                    # self.preview_browser.append(preview_string)
                 except Exception as error:
                     content = [
                         f"No Preview for: {irods_path}",
@@ -518,6 +526,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         else:
             content = [f"No Preview for: {irods_path}"]
         populate_textfield(self.preview_browser, content)
+        self.preview_browser.verticalScrollBar().setValue(0)
 
     def _get_item_path(self, row):
         item_name = self.browser_table.item(row, 1).text()
