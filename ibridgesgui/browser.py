@@ -39,31 +39,26 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
         self.logger = logging.getLogger(app_name)
         self.session = session
-        self.info_tabs.setCurrentIndex(0)
-        # iRODS default home
-        if self.session.home is not None:
-            root_path = IrodsPath(self.session).absolute()
-        else:
-            root_path = IrodsPath(
-                self.session, f"/{self.session.zone}/home/{self.session.username}"
-            )
+        self.home_coll = IrodsPath(self.session)
+        self.last_selected_row = -1
+        self.init_browser()
 
-        self.root_coll = IrodsPath(self.session, root_path).collection
-        self.reset_path()
-        self.browse()
-
-    def browse(self):
+    def init_browser(self):
         """Initialize browser view GUI elements. Define the signals and slots."""
-        # Main navigation elements
-        self.path_input.returnPressed.connect(self.load_browser_table)
+        
+        # First tim the browser is loaded set path to home
+        self.set_input_path_to_home()
+
+        # Couple main navigation elements to their functions
+        self.input_path.returnPressed.connect(self.load_browser_table)
         self.refresh_button.clicked.connect(self.load_browser_table)
         self.refresh_button.setToolTip("Refresh")
-        self.home_button.clicked.connect(self.reset_path)
+        self.home_button.clicked.connect(self.set_input_path_to_home)
         self.home_button.setToolTip("Home")
-        self.parent_button.clicked.connect(self.set_parent)
+        self.parent_button.clicked.connect(self.set_input_path_to_parent)
         self.parent_button.setToolTip("Parent Coll")
 
-        # Main manipulation buttons Upload/Download create collection
+        # Main manipulation buttons Upload/Download, Create collection
         self.upload_file_button.clicked.connect(self.file_upload)
         self.upload_dir_button.clicked.connect(self.folder_upload)
         self.download_button.clicked.connect(self.download)
@@ -71,63 +66,65 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.rename_button.clicked.connect(self.rename_item)
 
         # Browser table behaviour
-        self.browser_table.doubleClicked.connect(self.update_path)
-        self.browser_table.clicked.connect(self.fill_info)
+        self.browser_table.doubleClicked.connect(self.load_path)
 
         # Bottom tab view buttons
-        # Metadata
+        # Manipulate Metadata
         self.meta_table.clicked.connect(self.edit_metadata)
         self.add_meta_button.clicked.connect(self.add_icat_meta)
         self.update_meta_button.clicked.connect(self.set_icat_meta)
         self.delete_meta_button.clicked.connect(self.delete_icat_meta)
-        # ACLs
+        # Manilpulate ACLs
         self.acl_table.clicked.connect(self.edit_acl)
         self.add_acl_button.clicked.connect(self.update_icat_acl)
-        # Delete
-        self.confirm_button.clicked.connect(self.delete_data)
-        self.load_selection_button.clicked.connect(self.load_selection)
+        # Delete Data
+        self.delete_button.clicked.connect(self.delete_data)
 
-    def reset_path(self):
-        """Reset browser table to root path."""
-        self.path_input.setText(self.root_coll.path)
+    def update_input_path(self, irods_path):
+        """Sets the input path to a niew path and loads the table."""
+        self.input_path.setText(str(irods_path))
+        self.last_selected_row = -1
         self.load_browser_table()
 
-    def set_parent(self):
+    def set_input_path_to_home(self):
+        """Reset browser table to home."""
+        self.update_input_path(self.home_coll)
+
+    def set_input_path_to_parent(self):
         """Set browser path to parent of current collection and update browser table."""
-        current_path = IrodsPath(self.session, self.path_input.text())
-        self.path_input.setText(str(current_path.parent))
-        self.load_browser_table()
+        parent_path = IrodsPath(self.session, self.input_path.text()).parent
+        self.update_input_path(parent_path)
 
-    def update_path(self, index):
-        """Take path from path_input and loads browser table."""
-        self.error_label.clear()
-        row = index.row()
-        irods_path = self._get_item_path(row)
+    def load_path(self, index):
+        """Take path from input_path and loads browser table."""
+        irods_path = self._get_item_path(self.browser_table.currentRow())
         if irods_path.collection_exists():
-            self.path_input.setText(str(irods_path))
-            self.load_browser_table()
+            self.update_input_path(irods_path)
 
     def create_collection(self):
         """Create a new collection in current collection."""
         self.error_label.clear()
-        parent = IrodsPath(self.session, "/" + self.path_input.text().strip("/"))
-        coll_widget = CreateCollection(parent, self.logger)
+        clean_cur_path = IrodsPath(self.session, "/" + self.input_path.text().strip("/"))
+        coll_widget = CreateCollection(clean_cur_path, self.logger)
         coll_widget.exec()
-        self.load_browser_table()
+        self.update_input_path(clean_cur_path)
+
+    def _nothing_selected_error(self):
+        self.error_label.clear()
+        if self.browser_table.currentRow() == -1:
+            self.error_label.setText("Please select an item from the table.")
+            return True
 
     def rename_item(self):
         """Rename/move a collection or data object."""
-        self.error_label.clear()
-        if self.browser_table.currentRow() == -1:
-            self.error_label.setText("Please select a row from the table first!")
+        if self._nothing_selected():
             return
         item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
-        irods_path = IrodsPath(self.session, "/" + self.path_input.text().strip("/")).joinpath(
-            item_name
-        )
+        current_collection = IrodsPath(self.session, "/" + self.input_path.text().strip("/"))
+        irods_path = current_collection.joinpath(item_name)
         rename_widget = Rename(irods_path, self.logger)
         rename_widget.exec()
-        self.load_browser_table()
+        self.update_input_path(current_collection)
 
     def folder_upload(self):
         """Select a folder and upload."""
@@ -147,14 +144,12 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
     def download(self):
         """Download collection or data object."""
-        self.error_label.clear()
-        if self.browser_table.currentRow() == -1:
-            self.error_label.setText("Please select a row from the table first!")
+        if self._nothing_selected_error():
             return
 
         if self.browser_table.item(self.browser_table.currentRow(), 1) is not None:
             item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
-            path = IrodsPath(self.session, "/", *self.path_input.text().split("/"), item_name)
+            path = IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
             overwrite = self.overwrite.isChecked()
             download_dir = get_downloads_dir()
             if overwrite:
@@ -191,7 +186,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         """Load main browser table."""
         self.error_label.clear()
         self._clear_info_tabs()
-        obj_path = IrodsPath(self.session, self.path_input.text())
+        obj_path = IrodsPath(self.session, self.input_path.text())
         if obj_path.collection_exists():
             try:
                 coll = obj_path.collection
@@ -521,7 +516,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
     def _get_item_path(self, row):
         item_name = self.browser_table.item(row, 1).text()
-        return IrodsPath(self.session, "/", *self.path_input.text().split("/"), item_name)
+        return IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
 
     def _metadata_edits(self, operation):
         self.error_label.clear()
@@ -582,16 +577,16 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                 write = "All data will be updated."
             else:
                 write = "Only new data will be added."
-            info = f"Upload data:\n{path}\n\nto\n{self.path_input.text()}\n\n{write}"
+            info = f"Upload data:\n{path}\n\nto\n{self.input_path.text()}\n\n{write}"
             reply = PyQt6.QtWidgets.QMessageBox.question(self, "", info)
             if reply == yes_button:
                 return Path(path)
         return None
 
     def _upload(self, source):
-        """Upload data to path in path_input."""
+        """Upload data to path in input_path."""
         overwrite = self.overwrite.isChecked()
-        parent_path = IrodsPath(self.session, "/", *self.path_input.text().split("/"))
+        parent_path = IrodsPath(self.session, "/", *self.input_path.text().split("/"))
 
         try:
             if parent_path.joinpath(source.name).exists() and not overwrite:
