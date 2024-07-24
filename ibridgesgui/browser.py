@@ -51,8 +51,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.set_input_path_to_home()
 
         # Couple main navigation elements to their functions
-        self.input_path.returnPressed.connect(self.load_browser_table)
-        self.refresh_button.clicked.connect(self.load_browser_table)
+        self.input_path.returnPressed.connect(self.refresh_browser)
+        self.refresh_button.clicked.connect(self.refresh_browser)
         self.refresh_button.setToolTip("Refresh")
         self.home_button.clicked.connect(self.set_input_path_to_home)
         self.home_button.setToolTip("Home")
@@ -101,6 +101,11 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         """Set browser path to parent of current collection and update browser table."""
         parent_path = IrodsPath(self.session, self.input_path.text()).parent
         self.update_input_path(parent_path)
+
+    def refresh_browser(self):
+        """Reload table and reset the caching for the info tabs."""
+        irods_path = IrodsPath(self.session, self.input_path.text())
+        self.update_input_path(irods_path)
 
     def load_path(self, index):
         """Take path from input_path and loads browser table."""
@@ -201,6 +206,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self._clear_info_tabs()
         irods_path = IrodsPath(self.session, self.input_path.text())
         if irods_path.collection_exists():
+            try:
                 coll_data = [
                     (
                         "C-",
