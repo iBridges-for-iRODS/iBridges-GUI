@@ -41,11 +41,12 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.session = session
         self.home_coll = IrodsPath(self.session)
         self.last_selected_row = -1
+        self.current_selected_row = -1
+        self.updated_info_tabs = []
         self.init_browser()
 
     def init_browser(self):
         """Initialize browser view GUI elements. Define the signals and slots."""
-        
         # First tim the browser is loaded set path to home
         self.set_input_path_to_home()
 
@@ -66,9 +67,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.rename_button.clicked.connect(self.rename_item)
 
         # Browser table behaviour
-        self.browser_table.doubleClicked.connect(self.update_path)
-        self.browser_table.clicked.connect(self.fill_info_tab_content)
-
+        self.browser_table.doubleClicked.connect(self.load_path)
+        self.browser_table.clicked.connect(self._update_last_selected_row)
         # Load info tabs when requested
         self.info_tabs.currentChanged.connect(self.fill_info_tab_content)
 
@@ -85,9 +85,12 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.delete_button.clicked.connect(self.delete_data)
 
     def update_input_path(self, irods_path):
-        """Sets the input path to a niew path and loads the table."""
+        """Set the input path to a niew path and loads the table."""
         self.input_path.setText(str(irods_path))
+        # reset the params to load info tabs
         self.last_selected_row = -1
+        self.current_selected_row = -1
+        self.updated_info_tabs = []
         self.load_browser_table()
 
     def set_input_path_to_home(self):
@@ -118,6 +121,12 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         if self.browser_table.currentRow() == -1:
             self.error_label.setText("Please select an item from the table.")
             return True
+
+    def _update_last_selected_row(self, row):
+        self.last_selected_row = self.current_selected_row
+        self.current_selected_row = self.browser_table.currentRow()
+        # fill currently selected tab with info
+        self.fill_info_tab_content()
 
     def rename_item(self):
         """Rename/move a collection or data object."""
@@ -190,11 +199,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         """Load main browser table."""
         self.error_label.clear()
         self._clear_info_tabs()
-        obj_path = IrodsPath(self.session, self.input_path.text())
-        if obj_path.collection_exists():
+        irods_path = IrodsPath(self.session, self.input_path.text())
+        if irods_path.collection_exists():
             try:
-                coll = obj_path.collection
-
                 coll_data = [
                     (
                         "C-",
@@ -204,7 +211,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                         subcoll.create_time.strftime("%d-%m-%Y"),
                         subcoll.modify_time.strftime("%d-%m-%Y %H:%m"),
                     )
-                    for subcoll in coll.subcollections
+                    for subcoll in irods_path.collection.subcollections
                 ]
                 obj_data = [
                     (
@@ -215,46 +222,44 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                         obj.create_time.strftime("%d-%m-%Y"),
                         obj.modify_time.strftime("%d-%m-%Y %H:%m"),
                     )
-                    for obj in coll.data_objects
+                    for obj in irods_path.collection.data_objects
                 ]
 
                 populate_table(
                     self.browser_table,
-                    len(coll.data_objects) + len(coll.subcollections),
+                    len(irods_path.collection.data_objects)
+                    + len(irods_path.collection.subcollections),
                     coll_data + obj_data,
                 )
-            except Exception:
+            except Exception as err:
                 self.browser_table.setRowCount(0)
                 self.logger.exception("Cannot load browser.")
-                self.error_label.setText("Cannot load browser table. Consult the logs.")
+                self.error_label.setText(f"Cannot load browser table for {str(irods_path)}: {err}")
         else:
             self.browser_table.setRowCount(0)
-            self.error_label.setText("Collection does not exist.")
+            self.error_label.setText(f"Collection does not exist: {str(irods_path)}.")
 
     def fill_info_tab_content(self):
-        """Fill the info of the selected lower tab."""
-        if self.browser_table.currentRow() == -1:
-            self.error_label.setText("Please select an item from the table.")
-            return
-
-        irods_path = self._get_item_path(self.browser_table.currentRow())
-        if irods_path is None:
-            self.error_label.setText("Please select an item in the table.")
-        self.error_label.clear()
-        self.delete_browser.clear()
+        """Fill lower tabs with info."""
         tab_name = self.info_tabs.currentWidget().objectName()
-        try:
-            if tab_name == "metadata":
-                self._fill_metadata_tab(irods_path)
-            elif tab_name == "permissions":
-                self._fill_acls_tab(irods_path)
-            elif tab_name == "replicas":
-                self._fill_replicas_tab(irods_path)
-            elif tab_name == "preview":
-                self._fill_preview_tab(irods_path)
-        except Exception as err:
-            self.logger.exception("Error loading %s of %s .", tab_name, irods_path)
-            self.error_label.setText(f"Error loading {tab_name} of {irods_path}: {repr(err)}")
+        irods_path = self._get_item_path(self.browser_table.currentRow())
+        if (
+            self.last_selected_row != self.browser_table.currentRow()
+            and tab_name not in self.updated_info_tabs
+        ):
+            try:
+                if tab_name == "metadata":
+                    self._fill_metadata_tab(irods_path)
+                elif tab_name == "permissions":
+                    self._fill_acls_tab(irods_path)
+                elif tab_name == "replicas":
+                    self._fill_replicas_tab(irods_path)
+                elif tab_name == "preview":
+                    self._fill_preview_tab(irods_path)
+                self.updated_info_tabs.append(tab_name)
+            except Exception as err:
+                self.logger.exception("Error loading %s of %s .", tab_name, irods_path)
+                self.error_label.setText(f"Error loading {tab_name} of {irods_path}: {repr(err)}")
 
     def set_icat_meta(self):
         """Button metadata set."""

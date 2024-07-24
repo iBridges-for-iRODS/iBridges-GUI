@@ -499,7 +499,7 @@ QTabWidget#info_tabs
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="accession">
+     <widget class="QWidget" name="permissions">
       <attribute name="title">
        <string>Permissions</string>
       </attribute>
