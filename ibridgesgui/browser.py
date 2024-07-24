@@ -201,7 +201,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self._clear_info_tabs()
         irods_path = IrodsPath(self.session, self.input_path.text())
         if irods_path.collection_exists():
-            try:
                 coll_data = [
                     (
                         "C-",
