@@ -148,7 +148,7 @@ QTabWidget#info_tabs
    <item row="19" column="0">
     <widget class="QLabel" name="error_label">
      <property name="text">
-      <string>error_label</string>
+      <string/>
      </property>
     </widget>
    </item>

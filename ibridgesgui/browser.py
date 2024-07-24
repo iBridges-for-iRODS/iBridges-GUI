@@ -154,25 +154,18 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         if self.browser_table.item(self.browser_table.currentRow(), 1) is not None:
             item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
             path = IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
-            overwrite = self.overwrite.isChecked()
             download_dir = get_downloads_dir()
-            if overwrite:
-                write = "All data will be updated."
-            else:
-                write = "Only new data will be added."
-            info = f"Download data:\n{path}\n\nto\n\n{download_dir}\n\n{write}"
+            info = f"Download data:\n{path}\n\nto\n\n{download_dir}"
 
             try:
                 if path.exists():
                     button_reply = PyQt6.QtWidgets.QMessageBox.question(self, "", info)
                     if button_reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-                        if Path(download_dir).joinpath(item_name).exists() and not overwrite:
-                            raise FileExistsError
                         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.BusyCursor))
                         self.logger.info(
-                            "Downloading %s to %s, overwrite %s", path, download_dir, str(overwrite)
+                            "Downloading %s to %s", path, download_dir
                         )
-                        download(self.session, path, download_dir, overwrite=overwrite)
+                        download(self.session, path, download_dir, overwrite=True)
                         self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
                         self.error_label.setText("Data downloaded to: " + str(download_dir))
                 else:
@@ -550,11 +543,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             path = path_select
 
         if path != "":
-            if self.overwrite.isChecked():
-                write = "All data will be updated."
-            else:
-                write = "Only new data will be added."
-            info = f"Upload data:\n{path}\n\nto\n{self.input_path.text()}\n\n{write}"
+            info = f"Upload data:\n{path}\n\nto\n{self.input_path.text()}"
             reply = PyQt6.QtWidgets.QMessageBox.question(self, "", info)
             if reply == yes_button:
                 return Path(path)
@@ -562,16 +551,13 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
     def _upload(self, source):
         """Upload data to path in input_path."""
-        overwrite = self.overwrite.isChecked()
         parent_path = IrodsPath(self.session, "/", *self.input_path.text().split("/"))
 
         try:
-            if parent_path.joinpath(source.name).exists() and not overwrite:
-                raise FileExistsError
             self.logger.info(
-                "Uploading %s to %s, overwrite %s", source, parent_path, str(overwrite)
+                "Uploading %s to %s", source, parent_path
             )
-            upload(self.session, source, parent_path, overwrite=overwrite)
+            upload(self.session, source, parent_path, overwrite=True)
             self.load_browser_table()
         except FileExistsError:
             self.error_label.setText(
@@ -581,10 +567,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         except irods.exception.CAT_NO_ACCESS_PERMISSION:
             self.error_label.setText(f"No permission to upload data to {parent_path}.")
             self.logger.info(
-                "Uploading %s to %s, overwrite %s failed. No permissions.",
+                "Uploading %s to %s, failed. No permissions.",
                 source,
                 parent_path,
-                str(overwrite),
             )
         except Exception as err:
             self.logger.exception("Failed to upload %s to %s: %s", source, parent_path, err)
