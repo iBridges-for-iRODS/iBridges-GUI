@@ -49,22 +49,30 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         # First tim the browser is loaded set path to home
         self.set_input_path_to_home()
 
+        self.input_path.setToolTip("Navigate to path. Hit ENTER.")
+
         # Couple main navigation elements to their functions
         self.input_path.returnPressed.connect(self.refresh_browser)
         self.refresh_button.clicked.connect(self.refresh_browser)
-        self.refresh_button.setToolTip("Refresh browser.")
+        self.refresh_button.setToolTip("Refresh table.")
         self.home_button.clicked.connect(self.set_input_path_to_home)
         self.home_button.setToolTip("Go to home.")
         self.parent_button.clicked.connect(self.set_input_path_to_parent)
-        self.parent_button.setToolTip("Go one coll up.")
+        self.parent_button.setToolTip("Go one collection up.")
 
         # Main manipulation buttons Upload/Download, Create collection
         self.upload_file_button.clicked.connect(self.file_upload)
+        self.upload_file_button.setToolTip("Add local file to table.")
         self.upload_dir_button.clicked.connect(self.folder_upload)
+        self.upload_dir_button.setToolTip("Add local folder to table.")
         self.download_button.clicked.connect(self.download)
+        self.download_button.setToolTip("Download item from table.")
         self.create_coll_button.clicked.connect(self.create_collection)
+        self.create_coll_button.setToolTip("Add a new empty collection to table.")
         self.rename_button.clicked.connect(self.rename_item)
+        self.rename_button.setToolTip("Change the name or the path of item in the table.")
         self.delete_button.clicked.connect(self.delete_data)
+        self.delete_button.setToolTip("Delete an item permamnently.")
 
         # Browser table behaviour
         self.browser_table.doubleClicked.connect(self.load_path)
@@ -76,8 +84,11 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         # Manipulate Metadata
         self.meta_table.clicked.connect(self.edit_metadata)
         self.add_meta_button.clicked.connect(self.add_icat_meta)
+        self.add_meta_button.setToolTip("Add new metadata item.")
         self.update_meta_button.clicked.connect(self.set_icat_meta)
+        self.update_meta_button.setToolTip("Set all entries with the same key to the new values.")
         self.delete_meta_button.clicked.connect(self.delete_icat_meta)
+        self.delete_meta_button.setToolTip("Delete the metadata item.")
         # Manilpulate ACLs
         self.acl_table.clicked.connect(self.edit_permission)
         self.add_acl_button.clicked.connect(self.update_permission)
@@ -258,7 +269,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         irods_path = self._get_item_path(self.browser_table.currentRow())
         if (
             self.last_selected_row != self.browser_table.currentRow()
-            and tab_name not in self.updated_info_tabs
+            or tab_name not in self.updated_info_tabs
         ):
             try:
                 if tab_name == "metadata":
@@ -337,7 +348,13 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         user_zone = self.acl_zone_field.text()
         acc_name = self.acl_box.currentText()
 
-        if acc_name in ("inherit", "noinherit"):
+        perm_lables_to_acl = {
+                "Items in collection inherit permissions.": "inherit",
+                "Remove inhertiance.": "noinherit",
+                "delete": "null"
+                }
+
+        if perm_lables_to_acl.get(acc_name, acc_name) in ("inherit", "noinherit"):
             if irods_path.dataobject_exists():
                 self.error_label.setText("WARNING: (no)inherit is not applicable to data objects.")
                 return
@@ -350,19 +367,22 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         recursive = self.recurisive_box.currentText() == "True"
         try:
             perm = Permissions(self.session, get_irods_item(irods_path))
-            perm.set(perm=acc_name, user=user_name, zone=user_zone, recursive=recursive)
-            if acc_name == "null":
+            perm.set(perm=perm_lables_to_acl.get(acc_name, acc_name),
+                     user=user_name, zone=user_zone, recursive=recursive)
+            if perm_lables_to_acl.get(acc_name, acc_name) == "null":
                 self.logger.info(
                     "Delete access (%s, %s, %s, %s) for %s",
-                    acc_name, user_name, user_zone, str(recursive), str(irods_path)
+                    perm_lables_to_acl.get(acc_name, acc_name),
+                    user_name, user_zone, str(recursive), str(irods_path)
                 )
             else:
                 self.logger.info(
                     "Add/change access of %s to (%s, %s, %s, %s)",
-                    str(irods_path), acc_name, user_name, user_zone, str(recursive)
+                    str(irods_path), perm_lables_to_acl.get(acc_name, acc_name),
+                    user_name, user_zone, str(recursive)
                 )
             self._fill_acls_tab(irods_path)
-        except irods.exception.CAT_INVALID_USER:
+        except (irods.exception.CAT_INVALID_USER, irods.exception.SYS_NOT_ALLOWED):
             self.error_label.setText(f"Cannot update ACLs. {user_name}#{user_zone} not known.")
         except irods.exception.MSI_OPERATION_NOT_ALLOWED:
             self.error_label.setText("iRODS server does not allow to edit permissions.")
@@ -423,13 +443,23 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_table.setRowCount(0)
         self.acl_user_field.clear()
         self.acl_zone_field.clear()
-        self.acl_box.setCurrentText("")
+        self.acl_box.setEnabled(True)
+        self.recursive_box.setEnabled(False)
+        self.acl_box.clear()
         obj = None
+        obj_acl_box_items = ["read", "write", "own", "delete"]
+        coll_acl_box_items = obj_acl_box_items + ["Items in collection inherit permissions.",
+                                                  "Remove inhertance."]
+
         if irods_path.collection_exists():
             obj = irods_path.collection
             inheritance = f"{obj.inheritance}"
+            self.recursive_box.setEnabled(True)
+            [self.acl_box.addItem(item) for item in coll_acl_box_items]
         elif irods_path.dataobject_exists():
+            [self.acl_box.addItem(item) for item in obj_acl_box_items]
             obj = irods_path.dataobject
+            self.recursive_box.setEnabled(False)
             inheritance = ""
         if obj is not None:
             acls = Permissions(self.session, obj)
