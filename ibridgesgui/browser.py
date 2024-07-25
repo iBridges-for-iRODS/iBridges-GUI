@@ -397,6 +397,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_table.setRowCount(0)
         self.replica_table.setRowCount(0)
         self.preview_browser.clear()
+        self.no_meta_label.clear()
 
     def _get_item_path(self, row):
         item_name = self.browser_table.item(row, 1).text()
@@ -480,6 +481,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_key_field.clear()
         self.meta_value_field.clear()
         self.meta_units_field.clear()
+        self.no_meta_label.clear()
         item = None
         if irods_path.collection_exists():
             item = irods_path.collection
@@ -488,6 +490,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         if item is not None:
             meta = MetaData(item)
             populate_table(self.meta_table, len(list(meta)), meta)
+        if len(list(meta)) == 0:
+            self.no_meta_label.setText(f"Metadata for {str(irods_path)} is empty.")
         self.meta_table.resizeColumnsToContents()
 
     def _fill_preview_tab(self, irods_path):
