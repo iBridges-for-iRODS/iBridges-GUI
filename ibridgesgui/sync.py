@@ -278,7 +278,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.error_label.clear()
 
         table_data = [
-            (source, dest, source.size if isinstance(source, IrodsPath) else source.stat().st_size) 
+            (source, dest, source.size if isinstance(source, IrodsPath) else source.stat().st_size)
             for source, dest in thread_output["result"].upload + thread_output["result"].download
         ]
         populate_table(self.diff_table, len(table_data), table_data)
