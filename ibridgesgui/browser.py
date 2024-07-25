@@ -455,9 +455,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             obj = irods_path.collection
             inheritance = f"{obj.inheritance}"
             self.recursive_box.setEnabled(True)
-            [self.acl_box.addItem(item) for item in coll_acl_box_items]
+            _ = [self.acl_box.addItem(item) for item in coll_acl_box_items]
         elif irods_path.dataobject_exists():
-            [self.acl_box.addItem(item) for item in obj_acl_box_items]
+            _ = [self.acl_box.addItem(item) for item in obj_acl_box_items]
             obj = irods_path.dataobject
             self.recursive_box.setEnabled(False)
             inheritance = ""
