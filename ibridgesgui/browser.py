@@ -349,7 +349,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         acc_name = self.acl_box.currentText()
 
         perm_lables_to_acl = {
-                "Items in collection inherit permissions.": "inherit",
+                "Newly added items to collection will inherit permissions": "inherit",
                 "Remove inhertiance.": "noinherit",
                 "delete": "null"
                 }
@@ -448,8 +448,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_box.clear()
         obj = None
         obj_acl_box_items = ["read", "write", "own", "delete"]
-        coll_acl_box_items = obj_acl_box_items + ["Items in collection inherit permissions.",
-                                                  "Remove inhertance."]
+        coll_acl_box_items = obj_acl_box_items + [
+                "Newly added items to collection will inherit permissions", "Remove inhertance."]
 
         if irods_path.collection_exists():
             obj = irods_path.collection
