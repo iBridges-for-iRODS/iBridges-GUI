@@ -370,7 +370,7 @@ class Ui_tabBrowser(object):
         self.verticalLayout.addWidget(self.error_label)
 
         self.retranslateUi(tabBrowser)
-        self.info_tabs.setCurrentIndex(2)
+        self.info_tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(tabBrowser)
 
     def retranslateUi(self, tabBrowser):
