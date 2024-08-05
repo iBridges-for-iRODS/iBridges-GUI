@@ -16,14 +16,12 @@ from ibridges.util import obj_replicas
 
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
-    get_downloads_dir,
     get_irods_item,
     populate_table,
     populate_textfield,
 )
-from ibridgesgui.popup_widgets import CreateCollection, Rename
+from ibridgesgui.popup_widgets import CreateCollection, Rename, DownloadData
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
-
 
 class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
     """Browser view for iRODS session."""
@@ -61,11 +59,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.parent_button.setToolTip("Go one collection up.")
 
         # Main manipulation buttons Upload/Download, Create collection
-        self.upload_file_button.clicked.connect(self.file_upload)
-        self.upload_file_button.setToolTip("Add local file to table.")
-        self.upload_dir_button.clicked.connect(self.folder_upload)
-        self.upload_dir_button.setToolTip("Add local folder to table.")
-        self.download_button.clicked.connect(self.download)
+        self.upload_button.clicked.connect(self._upload)
+        self.upload_button.setToolTip("Upload data.")
+        self.download_button.clicked.connect(self.download_data)
         self.download_button.setToolTip("Download item from table.")
         self.create_coll_button.clicked.connect(self.create_collection)
         self.create_coll_button.setToolTip("Add a new empty collection to table.")
@@ -157,7 +153,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         if path is not None:
             self._upload(path)
 
-    def download(self):
+    def download_data(self):
         """Download collection or data object."""
         if self._nothing_selected_error():
             return
@@ -165,30 +161,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         if self.browser_table.item(self.browser_table.currentRow(), 1) is not None:
             item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
             path = IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
-            download_dir = get_downloads_dir()
-            info = f"Download data:\n{path}\n\nto\n\n{download_dir}"
-
-            try:
-                if path.exists():
-                    button_reply = PyQt6.QtWidgets.QMessageBox.question(self, "", info)
-                    if button_reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
-                        self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.BusyCursor))
-                        self.logger.info(
-                            "Downloading %s to %s", path, download_dir
-                        )
-                        download(self.session, path, download_dir, overwrite=True)
-                        self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
-                        self.error_label.setText("Data downloaded to: " + str(download_dir))
-                else:
-                    self.error_label.setText(f"Data {path.parent} does not exist.")
-            except FileExistsError:
-                self.error_label.setText(
-                    f"Data already exists in {download_dir}."
-                    + ' Check "overwrite" to overwrite the data.'
-                )
-            except Exception as err:
-                self.logger.exception("Downloading %s failed: %s", path, err)
-                self.error_label.setText(f"Could not download {path}. Consult the logs.")
+            download_dialog = DownloadData(self.logger, self.session, path)
+            download_dialog.exec()
 
     def delete_data(self):
         """Delete selected data in the delete_browser."""

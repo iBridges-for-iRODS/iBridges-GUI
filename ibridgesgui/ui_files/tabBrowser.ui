@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1278</width>
-    <height>818</height>
+    <height>843</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -179,16 +179,9 @@ QTabWidget#info_tabs
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="upload_file_button">
+        <widget class="QPushButton" name="upload_button">
          <property name="text">
-          <string>Upload File</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="upload_dir_button">
-         <property name="text">
-          <string>Upload Folder</string>
+          <string>Upload</string>
          </property>
         </widget>
        </item>

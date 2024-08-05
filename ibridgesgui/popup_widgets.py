@@ -5,17 +5,22 @@ import os
 import sys
 
 import irods
-from ibridges import IrodsPath
+
+from pathlib import Path
+
+from ibridges import IrodsPath, download
 from ibridges.util import find_environment_provider, get_environment_providers
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QDialog, QFileDialog
 from PyQt6.uic import loadUi
 
-from ibridgesgui.config import _read_json, check_irods_config, save_irods_config
+from ibridgesgui.config import _read_json, get_last_ienv_path, check_irods_config, save_irods_config
 from ibridgesgui.gui_utils import UI_FILE_DIR, populate_textfield
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
 from ibridgesgui.ui_files.renameItem import Ui_renameItem
+from ibridgesgui.ui_files.downloadData import Ui_downloadData
+from ibridgesgui.threads import TransferDataThread
 
 
 class CreateCollection(QDialog, Ui_createCollection):
@@ -263,3 +268,110 @@ class CheckConfig(QDialog, Ui_configCheck):
                 )
             except TypeError:
                 self.error_label.setText("File type needs to be .json")
+
+class DownloadData(QDialog, Ui_createCollection):
+    """Popup window to dowload data from browser."""
+
+    def __init__(self, logger, session, irods_path):
+        """Initialise window."""
+        super().__init__()
+        if getattr(sys, "frozen", False):
+            super().setupUi(self)
+        else:
+            loadUi(UI_FILE_DIR / "downloadData.ui", self)
+       
+        self.setWindowFlag(QtCore.Qt.WindowType.WindowMinimizeButtonHint)
+        
+        self.run = True
+        self.logger = logger
+        self.session = session
+        self.irods_path = irods_path
+        self.source_browser.append(self.irods_path_tree())
+
+        self.meta_path = None
+        self.folder_button.clicked.connect(self.select_folder)
+        self.download_button.clicked.connect(self._get_download_params)
+
+    def irods_path_tree(self):
+        """Expand the irods_path if it is a collection."""
+        if self.irods_path.collection_exists():
+            return "\n".join(
+                    [coll.name for coll in self.irods_path.collection.subcollections]\
+                    + [obj.name for obj in self.irods_path.collection.data_objects ])
+
+        return str(self.irods_path)
+            
+
+    def select_folder(self):
+        select_dir = Path(
+                QFileDialog.getExistingDirectory(
+                    self, "Select Directory", directory=str(Path("~").expanduser())
+                )
+        )
+        if str(select_dir) == "" or str(select_dir) == ".":
+            return
+        self.destination_label.setText(str(select_dir))
+    
+    def _get_download_params(self):
+        """Retrieve and check all parameters for the dpwnload."""
+        local_path = Path(self.destination_label.text())
+        print(local_path)
+        if local_path is None or str(local_path) == ".":
+            self.error_label.setText("Select a download folder.")
+            return
+
+        if not local_path.is_dir():
+            self.error_label.setText(
+                    f"Dowload folder {local_path} dows not exist or is not a folder.")
+            return
+
+        if self.metadata.isChecked():
+            self.meta_path = local_path / "ibridges_metadata.json"
+
+        self._start_download(local_path)
+                        
+    def _enable_buttons(self, enable):
+        self.download_button.setEnabled(enable)
+        self.folder_button.setEnabled(enable)
+        self.overwrite.setEnabled(enable)
+        self.metadata.setEnabled(enable)
+
+    def _start_download(self, local_path):
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self._enable_buttons(False)
+        self.error_label.setText(f"Downloading to {local_path} ....")
+        env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
+        ops = download(self.session, self.irods_path, local_path,
+                       overwrite = self.overwrite.isChecked(),
+                       metadata = self.meta_path, dry_run=True)
+        try:
+            self.download_thread = TransferDataThread(env_path, self.logger, ops,
+                                                      overwrite=self.overwrite.isChecked())
+        except Exception as err:
+            self.error_label.setText(
+                    f"Could not instantiate a new session from {env_path}: {repr(err)}."
+            )
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self._enable_buttons(True)
+            return
+
+        self.download_thread.succeeded.connect(self._download_end)
+        self.download_thread.finished.connect(self._finish_download)
+        self.download_thread.current_progress.connect(self._download_status)
+        self.download_thread.start()
+
+    def _finish_download(self):
+        self._enable_buttons(True)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        del self.download_thread
+
+    def _download_status(self, state):
+        self.error_label.setText(state)
+
+    def _download_end(self, thread_output: dict):
+        if thread_output["error"] == "":
+            self.error_label.setText("Download finished.")
+        else:
+            self.error_label.setText("Errors occurred during download. Consult the logs.")
+        self._enable_buttons(True)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
