@@ -44,7 +44,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
 
     def init_browser(self):
         """Initialize browser view GUI elements. Define the signals and slots."""
-        # First tim the browser is loaded set path to home
+        # First time the browser is loaded set path to home
         self.set_input_path_to_home()
 
         self.input_path.setToolTip("Navigate to path. Hit ENTER.")
