@@ -1,17 +1,17 @@
-"""Pop-up widget definitions."""
+"""Popup widgets for upload, download, create dir/coll, rename, check config."""
 
 import json
 import os
 import sys
-
 import irods
 
 from pathlib import Path
+from datetime import datetime
 
 from ibridges import IrodsPath, download
 from ibridges.util import find_environment_provider, get_environment_providers
 from PyQt6 import QtCore, QtGui
-from PyQt6.QtWidgets import QDialog, QFileDialog
+from PyQt6.QtWidgets import QDialog, QFileDialog, QWidget
 from PyQt6.uic import loadUi
 
 from ibridgesgui.config import _read_json, get_last_ienv_path, check_irods_config, save_irods_config
@@ -33,7 +33,7 @@ class CreateCollection(QDialog, Ui_createCollection):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "createCollection.ui", self)
-
+        
         self.logger = logger
         self.setWindowTitle("Create iRODS collection")
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
@@ -269,7 +269,8 @@ class CheckConfig(QDialog, Ui_configCheck):
             except TypeError:
                 self.error_label.setText("File type needs to be .json")
 
-class DownloadData(QDialog, Ui_createCollection):
+
+class DownloadData(QDialog, Ui_downloadData):
     """Popup window to dowload data from browser."""
 
     def __init__(self, logger, session, irods_path):
@@ -279,18 +280,27 @@ class DownloadData(QDialog, Ui_createCollection):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "downloadData.ui", self)
-       
-        self.setWindowFlag(QtCore.Qt.WindowType.WindowMinimizeButtonHint)
-        
-        self.run = True
+
+        self.active_download = False
         self.logger = logger
         self.session = session
         self.irods_path = irods_path
         self.source_browser.append(self.irods_path_tree())
+        self.stop_button.hide() # Button to stop download, not implemented yet.
+        self.timestamp = datetime.now().strftime("%m%d%Y-%H%M")
+        self.metadata.setText(
+                f"ibridges_metadata_{self.irods_path.name}_{self.timestamp}.json")
 
         self.meta_path = None
         self.folder_button.clicked.connect(self.select_folder)
         self.download_button.clicked.connect(self._get_download_params)
+
+    def closeEvent(self, evnt):
+        """Override clse when download is in process"""
+        print("Called closeEvent()")
+        if self.active_download:
+            evnt.ignore()
+
 
     def irods_path_tree(self):
         """Expand the irods_path if it is a collection."""
@@ -303,6 +313,7 @@ class DownloadData(QDialog, Ui_createCollection):
             
 
     def select_folder(self):
+        """Select the download destination."""
         select_dir = Path(
                 QFileDialog.getExistingDirectory(
                     self, "Select Directory", directory=str(Path("~").expanduser())
@@ -326,7 +337,7 @@ class DownloadData(QDialog, Ui_createCollection):
             return
 
         if self.metadata.isChecked():
-            self.meta_path = local_path / "ibridges_metadata.json"
+            self.meta_path = local_path / f"ibridges_metadata_{self.irods_path.name}_{self.timestamp}.json"
 
         self._start_download(local_path)
                         
@@ -337,6 +348,7 @@ class DownloadData(QDialog, Ui_createCollection):
         self.metadata.setEnabled(enable)
 
     def _start_download(self, local_path):
+        self.active_download = True
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
         self._enable_buttons(False)
         self.error_label.setText(f"Downloading to {local_path} ....")
@@ -369,6 +381,7 @@ class DownloadData(QDialog, Ui_createCollection):
         self.error_label.setText(state)
 
     def _download_end(self, thread_output: dict):
+        self.active_download = False
         if thread_output["error"] == "":
             self.error_label.setText("Download finished.")
         else:

@@ -157,7 +157,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         """Download collection or data object."""
         if self._nothing_selected_error():
             return
-
         if self.browser_table.item(self.browser_table.currentRow(), 1) is not None:
             item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
             path = IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)

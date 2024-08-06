@@ -147,12 +147,12 @@ QTabWidget#info_tabs
      <item>
       <widget class="QPushButton" name="upload_button">
        <property name="text">
-        <string>Start</string>
+        <string>Upload</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="stopButton">
+      <widget class="QPushButton" name="stop_button">
        <property name="text">
         <string>Stop</string>
        </property>
