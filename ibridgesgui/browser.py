@@ -417,7 +417,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         obj = None
         obj_acl_box_items = ["read", "write", "own", "delete"]
         coll_acl_box_items = obj_acl_box_items + [
-                "Newly added items to collection will inherit permissions", "Remove inhertance."]
+                "Newly added items to collection will inherit permissions", "Remove inheritance."]
 
         if irods_path.collection_exists():
             obj = irods_path.collection
