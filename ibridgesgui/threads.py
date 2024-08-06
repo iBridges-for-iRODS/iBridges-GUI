@@ -58,13 +58,10 @@ class TransferDataThread(QThread):
             path to the irods_environment.json to create a new session.
         logger : logging.Logger
             Logger
-        ops : Opertions
-            An object containing four attributes:
-            'create_dir' : Create local directories when sync from iRODS to local
-            'create_collection' : Create collections when sync from local to iRODS
-            'upload' : Tuple(local path, iRODS path) when sync from local to iRODS
-            'download' : Tuple(iRODS path, local path) when sync from iRODS to local
-
+        ops : ibridges.Opertions
+            Defines the data and metadata operations to perform. This thread currently uses:
+            create_dir, create_collection, upload, download and execute_meta_download
+            Please refer to the iBridges documentation: https://ibridges.readthedocs.io/
         """
         super().__init__()
 
