@@ -424,7 +424,7 @@ class DownloadData(QDialog, Ui_downloadData):
         self.source_browser.append(self.irods_path_tree())
         self.timestamp = datetime.now().strftime("%m%d%Y-%H%M")
         self.metadata.setText(
-                f"ibridges_metadata_{self.irods_path.name}_{self.timestamp}.json")
+            f"Store metadata as\nibridges_metadata_{self.irods_path.name}_{self.timestamp}.json")
 
         self.meta_path = None
         self.folder_button.clicked.connect(self.select_folder)
