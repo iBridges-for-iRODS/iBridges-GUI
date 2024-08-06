@@ -145,7 +145,9 @@ def save_current_settings(env_path_name: Path):
 def get_prev_settings():
     """Extract the settings from the configuration."""
     config = _get_config()
-    return config.get("settings", {"settings":{}})
+    if config is None:
+        return {}
+    return config.get("settings", {})
 
 # irods config functions
 
