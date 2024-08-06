@@ -8,18 +8,19 @@ import irods
 from pathlib import Path
 from datetime import datetime
 
-from ibridges import IrodsPath, download
+from ibridges import IrodsPath, download, upload
 from ibridges.util import find_environment_provider, get_environment_providers
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QDialog, QFileDialog, QWidget, QMessageBox
 from PyQt6.uic import loadUi
 
 from ibridgesgui.config import _read_json, get_last_ienv_path, check_irods_config, save_irods_config
-from ibridgesgui.gui_utils import UI_FILE_DIR, populate_textfield
+from ibridgesgui.gui_utils import UI_FILE_DIR, populate_textfield, combine_operations
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
 from ibridgesgui.ui_files.renameItem import Ui_renameItem
 from ibridgesgui.ui_files.downloadData import Ui_downloadData
+from ibridgesgui.ui_files.uploadData import Ui_uploadData
 from ibridgesgui.threads import TransferDataThread
 
 
@@ -270,6 +271,138 @@ class CheckConfig(QDialog, Ui_configCheck):
                 self.error_label.setText("File type needs to be .json")
 
 
+class UploadData(QDialog, Ui_uploadData):
+    """Popup window to upload data to browser."""
+
+    def __init__(self, logger, session, irods_path):
+        """Initialise window."""
+        super().__init__()
+        if getattr(sys, "frozen", False):
+            super().setupUi(self)
+        else:
+            loadUi(UI_FILE_DIR / "uploadData.ui", self)
+
+        self.active_upload = False
+        self.selected_data = []
+        self.logger = logger
+        self.session = session
+        self.irods_path = irods_path
+        
+        self.destination_label.setText(str(irods_path))
+        
+        self.upload_button.clicked.connect(self._get_upload_params)
+        self.file_button.clicked.connect(self.select_file)
+        self.folder_button.clicked.connect(self.select_folder)
+        self.hide_button.clicked.connect(self.close_window)
+
+
+    def close_window(self):
+        """Close window while data transfer stays in progress."""
+        if self.active_upload:
+            reply = QMessageBox.critical(
+                        self, "Message",
+                        "Do you want to close the window while the transfer continues?",
+                        QMessageBox.StandardButton.Yes,
+                        QMessageBox.StandardButton.No,
+                    )
+            if reply == QMessageBox.StandardButton.Yes:
+                self.active_upload = False
+        self.close()
+
+
+    def closeEvent(self, evnt):
+        """Override close when download is in process"""
+        if self.active_upload:
+            evnt.ignore()
+
+    def select_file(self):
+        select_file = QFileDialog.getOpenFileName(self, "Open Filie")
+        path = self._fs_select(select_file)
+        if path is None or str(path) == "." or path in self.sources_list.toPlainText():
+            return
+        self.sources_list.append(path)
+
+    def select_folder(self):
+        select_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
+        path = self._fs_select(select_dir)
+        if path is None or str(path) == "." or path in self.sources_list.toPlainText():
+            return
+        self.sources_list.append(path)
+
+    def _get_upload_params(self):
+        local_paths = [Path(l) for l in self.sources_list.toPlainText().split("\n") if l != ""]
+        if len(local_paths) == 0:
+            self.error_label.setText("Please select a file or folder to upload.")
+            return
+
+        self._start_upload(local_paths)
+
+    def _start_upload(self, lpaths):
+        self._enable_buttons(False)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.active_upload = True
+        self.error_label.setText(f"Uploading to {str(self.irods_path)} ....")
+        env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
+        
+        try:
+            ops = combine_operations([upload(self.session, p, self.irods_path,
+                                         overwrite = self.overwrite.isChecked(),
+                                         dry_run = True) for p in lpaths])
+
+            self.upload_thread = TransferDataThread(env_path, self.logger, ops,
+                                                    overwrite = self.overwrite.isChecked())
+
+        except FileExistsError:
+            self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self._enable_buttons(True)
+            return
+        except Exception as err:
+            self.error_label.setText(
+                    f"Could not instantiate a new session from {env_path}: {repr(err)}."
+            )
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self._enable_buttons(True)
+            return
+
+        self.upload_thread.succeeded.connect(self._upload_end)
+        self.upload_thread.finished.connect(self._finish_upload)
+        self.upload_thread.current_progress.connect(self._upload_status)
+        self.upload_thread.start()
+
+    def _finish_upload(self):
+        self._enable_buttons(True)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        del self.upload_thread
+
+    def _upload_status(self, state):
+        self.error_label.setText(state)
+
+    def _upload_end(self, thread_output: dict):
+        self.active_upload = False
+        if thread_output["error"] == "":
+            self.error_label.setText("Upload finished.")
+        else:
+            self.error_label.setText("Errors occurred during upload. Consult the logs.")
+        self._enable_buttons(True)
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+
+    def _enable_buttons(self, enable):
+        self.upload_button.setEnabled(enable)
+        self.folder_button.setEnabled(enable)
+        self.file_button.setEnabled(enable)
+        self.overwrite.setEnabled(enable)
+
+    def _fs_select(self, path_select):
+        """Retrieve the path (file or folder) from a QFileDialog."""
+
+        if isinstance(path_select, tuple):
+            path = path_select[0]
+        else:
+            path = path_select
+
+        return path
+
 class DownloadData(QDialog, Ui_downloadData):
     """Popup window to dowload data from browser."""
 
@@ -285,8 +418,8 @@ class DownloadData(QDialog, Ui_downloadData):
         self.logger = logger
         self.session = session
         self.irods_path = irods_path
+        
         self.source_browser.append(self.irods_path_tree())
-        self.hide_button.clicked.connect(self.close_window)
         self.timestamp = datetime.now().strftime("%m%d%Y-%H%M")
         self.metadata.setText(
                 f"ibridges_metadata_{self.irods_path.name}_{self.timestamp}.json")
@@ -294,8 +427,10 @@ class DownloadData(QDialog, Ui_downloadData):
         self.meta_path = None
         self.folder_button.clicked.connect(self.select_folder)
         self.download_button.clicked.connect(self._get_download_params)
-    
+        self.hide_button.clicked.connect(self.close_window)
+
     def close_window(self):
+        """Close window while data transfer stays in progress."""
         if self.active_download:
             reply = QMessageBox.critical(
                         self, "Message",
@@ -305,11 +440,10 @@ class DownloadData(QDialog, Ui_downloadData):
                     )
             if reply == QMessageBox.StandardButton.Yes:
                 self.active_download = False
-                self.close()
+        self.close()
 
     def closeEvent(self, evnt):
         """Override clse when download is in process"""
-        print("Called closeEvent()")
         if self.active_download:
             evnt.ignore()
 
@@ -338,7 +472,6 @@ class DownloadData(QDialog, Ui_downloadData):
     def _get_download_params(self):
         """Retrieve and check all parameters for the dpwnload."""
         local_path = Path(self.destination_label.text())
-        print(local_path)
         if local_path is None or str(local_path) == ".":
             self.error_label.setText("Select a download folder.")
             return
@@ -365,12 +498,17 @@ class DownloadData(QDialog, Ui_downloadData):
         self._enable_buttons(False)
         self.error_label.setText(f"Downloading to {local_path} ....")
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
-        ops = download(self.session, self.irods_path, local_path,
-                       overwrite = self.overwrite.isChecked(),
-                       metadata = self.meta_path, dry_run=True)
         try:
+            ops = download(self.session, self.irods_path, local_path,
+                           overwrite = self.overwrite.isChecked(),
+                           metadata = self.meta_path, dry_run=True)
             self.download_thread = TransferDataThread(env_path, self.logger, ops,
                                                       overwrite=self.overwrite.isChecked())
+        except FileExistsError:
+            self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
+            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self._enable_buttons(True)
+            return
         except Exception as err:
             self.error_label.setText(
                     f"Could not instantiate a new session from {env_path}: {repr(err)}."

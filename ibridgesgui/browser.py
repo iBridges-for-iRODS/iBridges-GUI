@@ -9,7 +9,7 @@ import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
-from ibridges import IrodsPath, download, upload
+from ibridges import IrodsPath
 from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
 from ibridges.util import obj_replicas
@@ -20,7 +20,7 @@ from ibridgesgui.gui_utils import (
     populate_table,
     populate_textfield,
 )
-from ibridgesgui.popup_widgets import CreateCollection, Rename, DownloadData
+from ibridgesgui.popup_widgets import CreateCollection, Rename, DownloadData, UploadData
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 
 class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
@@ -59,7 +59,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.parent_button.setToolTip("Go one collection up.")
 
         # Main manipulation buttons Upload/Download, Create collection
-        self.upload_button.clicked.connect(self._upload)
+        self.upload_button.clicked.connect(self.upload_data)
         self.upload_button.setToolTip("Upload data.")
         self.download_button.clicked.connect(self.download_data)
         self.download_button.setToolTip("Download item from table.")
@@ -137,22 +137,6 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         rename_widget.exec()
         self.update_input_path(current_collection)
 
-    def folder_upload(self):
-        """Select a folder and upload."""
-        self.error_label.clear()
-        select_dir = PyQt6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
-        path = self._fs_select(select_dir)
-        if path is not None:
-            self._upload(path)
-
-    def file_upload(self):
-        """Select a file and upload."""
-        self.error_label.clear()
-        select_file = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self, "Open Filie")
-        path = self._fs_select(select_file)
-        if path is not None:
-            self._upload(path)
-
     def download_data(self):
         """Download collection or data object."""
         if self._nothing_selected_error():
@@ -162,6 +146,16 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             path = IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
             download_dialog = DownloadData(self.logger, self.session, path)
             download_dialog.exec()
+
+    def upload_data(self):
+        """Upload files or folders."""
+        path = IrodsPath(self.session, "/", *self.input_path.text().split("/"))
+        if path.collection_exists():
+            upload_dialog = UploadData(self.logger, self.session, path)
+            upload_dialog.exec()
+            self.refresh_browser()
+        else:
+            self.error_label.setText(f"{path} is not a collection. Cannot upload data.")
 
     def delete_data(self):
         """Delete selected data in the delete_browser."""
@@ -533,51 +527,3 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                     new_key, new_val, new_units, irods_path
                 )
             self._fill_metadata_tab(irods_path)
-
-    def _fs_select(self, path_select):
-        """Retrieve the path (file or folder) from a QFileDialog.
-
-        Parameters
-        ----------
-        path_select: PyQt6.QtWidgets.QFileDialog.getExistingDirectory
-                     PyQt6.QtWidgets.QFileDialog.getOpenFileName
-
-        """
-        yes_button = PyQt6.QtWidgets.QMessageBox.StandardButton.Yes
-        if isinstance(path_select, tuple):
-            path = path_select[0]
-        else:
-            path = path_select
-
-        if path != "":
-            info = f"Upload data:\n{path}\n\nto\n{self.input_path.text()}"
-            reply = PyQt6.QtWidgets.QMessageBox.question(self, "", info)
-            if reply == yes_button:
-                return Path(path)
-        return None
-
-    def _upload(self, source):
-        """Upload data to path in input_path."""
-        parent_path = IrodsPath(self.session, "/", *self.input_path.text().split("/"))
-
-        try:
-            self.logger.info(
-                "Uploading %s to %s", source, parent_path
-            )
-            upload(self.session, source, parent_path, overwrite=True)
-            self.load_browser_table()
-        except FileExistsError:
-            self.error_label.setText(
-                f"Data already exists in {parent_path}."
-                + ' Check "overwrite" to overwrite the data.'
-            )
-        except irods.exception.CAT_NO_ACCESS_PERMISSION:
-            self.error_label.setText(f"No permission to upload data to {parent_path}.")
-            self.logger.info(
-                "Uploading %s to %s, failed. No permissions.",
-                source,
-                parent_path,
-            )
-        except Exception as err:
-            self.logger.exception("Failed to upload %s to %s: %s", source, parent_path, err)
-            self.error_label.setText(f"Failed to upload {source}. Consult the logs.")

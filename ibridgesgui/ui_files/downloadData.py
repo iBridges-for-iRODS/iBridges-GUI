@@ -124,8 +124,7 @@ class Ui_downloadData(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Download"))
         self.download_button.setText(_translate("Form", "Download"))
-        self.hide_button.setText(_translate("Form", "Close window \n"
-"(download will proceed)"))
+        self.hide_button.setText(_translate("Form", "Close window"))
         self.metadata.setText(_translate("Form", "Download metadata as ibridges_metadata.json"))
         self.label.setText(_translate("Form", "Download to:"))
         self.overwrite.setText(_translate("Form", "Overwrite existing data"))
