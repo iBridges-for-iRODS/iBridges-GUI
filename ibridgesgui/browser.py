@@ -238,6 +238,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             self.last_selected_row != self.browser_table.currentRow()
             or tab_name not in self.updated_info_tabs
         ):
+            self.last_selected_row = self.current_selected_row
             try:
                 if tab_name == "metadata":
                     self._fill_metadata_tab(irods_path)
