@@ -31,7 +31,7 @@ LOG_LEVEL = {
 
 CONFIG_DIR = Path("~", ".ibridges").expanduser()
 CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
-IRODSA = Path("~", ".irods", ".irodsA").expanduser()
+IRODSA = Path.home() / ".irods" / ".irodsA"
 
 def ensure_log_config_location():
     """Ensure the location for logs and config files."""
