@@ -68,7 +68,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.rename_button.clicked.connect(self.rename_item)
         self.rename_button.setToolTip("Change the name or the path of item in the table.")
         self.delete_button.clicked.connect(self.delete_data)
-        self.delete_button.setToolTip("Delete an item permamnently.")
+        self.delete_button.setToolTip("Delete an item permanently.")
 
         # Browser table behaviour
         self.browser_table.doubleClicked.connect(self.load_path)
