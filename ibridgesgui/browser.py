@@ -379,6 +379,8 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         return False
 
     def _update_last_selected_row(self):
+        """On click on a row in the browser table, empty cached information and store indices."""
+        self.updated_info_tabs = []
         self.last_selected_row = self.current_selected_row
         self.current_selected_row = self.browser_table.currentRow()
         # fill currently selected tab with info
