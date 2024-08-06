@@ -3,25 +3,24 @@
 import json
 import os
 import sys
-import irods
-
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
+import irods
 from ibridges import IrodsPath, download, upload
 from ibridges.util import find_environment_provider, get_environment_providers
 from PyQt6 import QtCore, QtGui
-from PyQt6.QtWidgets import QDialog, QFileDialog, QWidget, QMessageBox
+from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PyQt6.uic import loadUi
 
-from ibridgesgui.config import _read_json, get_last_ienv_path, check_irods_config, save_irods_config
-from ibridgesgui.gui_utils import UI_FILE_DIR, populate_textfield, combine_operations
+from ibridgesgui.config import _read_json, check_irods_config, get_last_ienv_path, save_irods_config
+from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, populate_textfield
+from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
-from ibridgesgui.ui_files.renameItem import Ui_renameItem
 from ibridgesgui.ui_files.downloadData import Ui_downloadData
+from ibridgesgui.ui_files.renameItem import Ui_renameItem
 from ibridgesgui.ui_files.uploadData import Ui_uploadData
-from ibridgesgui.threads import TransferDataThread
 
 
 class CreateCollection(QDialog, Ui_createCollection):
@@ -34,7 +33,7 @@ class CreateCollection(QDialog, Ui_createCollection):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "createCollection.ui", self)
-        
+
         self.logger = logger
         self.setWindowTitle("Create iRODS collection")
         self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
@@ -270,7 +269,6 @@ class CheckConfig(QDialog, Ui_configCheck):
             except TypeError:
                 self.error_label.setText("File type needs to be .json")
 
-
 class UploadData(QDialog, Ui_uploadData):
     """Popup window to upload data to browser."""
 
@@ -283,13 +281,14 @@ class UploadData(QDialog, Ui_uploadData):
             loadUi(UI_FILE_DIR / "uploadData.ui", self)
 
         self.active_upload = False
+        self.upload_thread = None
         self.selected_data = []
         self.logger = logger
         self.session = session
         self.irods_path = irods_path
-        
+
         self.destination_label.setText(str(irods_path))
-        
+
         self.upload_button.clicked.connect(self._get_upload_params)
         self.file_button.clicked.connect(self.select_file)
         self.folder_button.clicked.connect(self.select_folder)
@@ -309,13 +308,14 @@ class UploadData(QDialog, Ui_uploadData):
                 self.active_upload = False
         self.close()
 
-
-    def closeEvent(self, evnt):
-        """Override close when download is in process"""
+    # pylint: disable=C0103
+    def closeEvent(self, evnt): # noqa
+        """Override close when download is in process."""
         if self.active_upload:
             evnt.ignore()
 
     def select_file(self):
+        """Open file selector."""
         select_file = QFileDialog.getOpenFileName(self, "Open Filie")
         path = self._fs_select(select_file)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
@@ -323,6 +323,7 @@ class UploadData(QDialog, Ui_uploadData):
         self.sources_list.append(path)
 
     def select_folder(self):
+        """Open folder selctor."""
         select_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
         path = self._fs_select(select_dir)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
@@ -330,7 +331,8 @@ class UploadData(QDialog, Ui_uploadData):
         self.sources_list.append(path)
 
     def _get_upload_params(self):
-        local_paths = [Path(l) for l in self.sources_list.toPlainText().split("\n") if l != ""]
+        local_paths = [Path(lp) for lp in self.sources_list.toPlainText().split("\n") if lp != ""]
+
         if len(local_paths) == 0:
             self.error_label.setText("Please select a file or folder to upload.")
             return
@@ -343,7 +345,7 @@ class UploadData(QDialog, Ui_uploadData):
         self.active_upload = True
         self.error_label.setText(f"Uploading to {str(self.irods_path)} ....")
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
-        
+
         try:
             ops = combine_operations([upload(self.session, p, self.irods_path,
                                          overwrite = self.overwrite.isChecked(),
@@ -395,7 +397,6 @@ class UploadData(QDialog, Ui_uploadData):
 
     def _fs_select(self, path_select):
         """Retrieve the path (file or folder) from a QFileDialog."""
-
         if isinstance(path_select, tuple):
             path = path_select[0]
         else:
@@ -415,10 +416,11 @@ class DownloadData(QDialog, Ui_downloadData):
             loadUi(UI_FILE_DIR / "downloadData.ui", self)
 
         self.active_download = False
+        self.download_thread = None
         self.logger = logger
         self.session = session
         self.irods_path = irods_path
-        
+
         self.source_browser.append(self.irods_path_tree())
         self.timestamp = datetime.now().strftime("%m%d%Y-%H%M")
         self.metadata.setText(
@@ -442,8 +444,9 @@ class DownloadData(QDialog, Ui_downloadData):
                 self.active_download = False
         self.close()
 
-    def closeEvent(self, evnt):
-        """Override clse when download is in process"""
+    # pylint: disable=C0103
+    def closeEvent(self, evnt): # noqa
+        """Override close when download is in process."""
         if self.active_download:
             evnt.ignore()
 
@@ -456,7 +459,7 @@ class DownloadData(QDialog, Ui_downloadData):
                     + [obj.name for obj in self.irods_path.collection.data_objects ])
 
         return str(self.irods_path)
-            
+
 
     def select_folder(self):
         """Select the download destination."""
@@ -468,7 +471,7 @@ class DownloadData(QDialog, Ui_downloadData):
         if str(select_dir) == "" or str(select_dir) == ".":
             return
         self.destination_label.setText(str(select_dir))
-    
+
     def _get_download_params(self):
         """Retrieve and check all parameters for the dpwnload."""
         local_path = Path(self.destination_label.text())
@@ -482,10 +485,11 @@ class DownloadData(QDialog, Ui_downloadData):
             return
 
         if self.metadata.isChecked():
-            self.meta_path = local_path / f"ibridges_metadata_{self.irods_path.name}_{self.timestamp}.json"
+            self.meta_path = local_path.joinpath(
+                    f"ibridges_metadata_{self.irods_path.name}_{self.timestamp}.json")
 
         self._start_download(local_path)
-                        
+
     def _enable_buttons(self, enable):
         self.download_button.setEnabled(enable)
         self.folder_button.setEnabled(enable)

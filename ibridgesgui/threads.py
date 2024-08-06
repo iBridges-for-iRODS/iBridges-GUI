@@ -183,7 +183,7 @@ class TransferDataThread(QThread):
             emit_string = f"{file_count} of {len(self.ops.download)} data objects"
             emit_string += f" transferred, failed: {file_failed}."
             self.current_progress.emit(emit_string)
-        
+
         self.ops.execute_meta_download()
         self._delete_session()
         self.succeeded.emit(transfer_out)

@@ -2,7 +2,6 @@
 
 import logging
 import sys
-from pathlib import Path
 
 import irods.exception
 import PyQt6.QtCore
@@ -20,8 +19,9 @@ from ibridgesgui.gui_utils import (
     populate_table,
     populate_textfield,
 )
-from ibridgesgui.popup_widgets import CreateCollection, Rename, DownloadData, UploadData
+from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
+
 
 class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
     """Browser view for iRODS session."""
