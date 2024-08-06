@@ -62,9 +62,10 @@ QTabWidget#info_tabs
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="stop_button">
+      <widget class="QPushButton" name="hide_button">
        <property name="text">
-        <string>Stop</string>
+        <string>Close window 
+(download will proceed)</string>
        </property>
       </widget>
      </item>

@@ -11,7 +11,7 @@ from datetime import datetime
 from ibridges import IrodsPath, download
 from ibridges.util import find_environment_provider, get_environment_providers
 from PyQt6 import QtCore, QtGui
-from PyQt6.QtWidgets import QDialog, QFileDialog, QWidget
+from PyQt6.QtWidgets import QDialog, QFileDialog, QWidget, QMessageBox
 from PyQt6.uic import loadUi
 
 from ibridgesgui.config import _read_json, get_last_ienv_path, check_irods_config, save_irods_config
@@ -286,7 +286,7 @@ class DownloadData(QDialog, Ui_downloadData):
         self.session = session
         self.irods_path = irods_path
         self.source_browser.append(self.irods_path_tree())
-        self.stop_button.hide() # Button to stop download, not implemented yet.
+        self.hide_button.clicked.connect(self.close_window)
         self.timestamp = datetime.now().strftime("%m%d%Y-%H%M")
         self.metadata.setText(
                 f"ibridges_metadata_{self.irods_path.name}_{self.timestamp}.json")
@@ -294,6 +294,18 @@ class DownloadData(QDialog, Ui_downloadData):
         self.meta_path = None
         self.folder_button.clicked.connect(self.select_folder)
         self.download_button.clicked.connect(self._get_download_params)
+    
+    def close_window(self):
+        if self.active_download:
+            reply = QMessageBox.critical(
+                        self, "Message",
+                        "Do you want to close the window while the transfer continues?",
+                        QMessageBox.StandardButton.Yes,
+                        QMessageBox.StandardButton.No,
+                    )
+            if reply == QMessageBox.StandardButton.Yes:
+                self.active_download = False
+                self.close()
 
     def closeEvent(self, evnt):
         """Override clse when download is in process"""

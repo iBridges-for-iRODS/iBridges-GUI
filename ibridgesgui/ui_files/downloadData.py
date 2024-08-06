@@ -56,9 +56,9 @@ class Ui_downloadData(object):
         self.download_button = QtWidgets.QPushButton(parent=Form)
         self.download_button.setObjectName("download_button")
         self.horizontalLayout.addWidget(self.download_button)
-        self.stop_button = QtWidgets.QPushButton(parent=Form)
-        self.stop_button.setObjectName("stop_button")
-        self.horizontalLayout.addWidget(self.stop_button)
+        self.hide_button = QtWidgets.QPushButton(parent=Form)
+        self.hide_button.setObjectName("hide_button")
+        self.horizontalLayout.addWidget(self.hide_button)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.gridLayout.addLayout(self.horizontalLayout, 8, 1, 1, 1)
@@ -124,7 +124,8 @@ class Ui_downloadData(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Download"))
         self.download_button.setText(_translate("Form", "Download"))
-        self.stop_button.setText(_translate("Form", "Stop"))
+        self.hide_button.setText(_translate("Form", "Close window \n"
+"(download will proceed)"))
         self.metadata.setText(_translate("Form", "Download metadata as ibridges_metadata.json"))
         self.label.setText(_translate("Form", "Download to:"))
         self.overwrite.setText(_translate("Form", "Overwrite existing data"))
