@@ -90,7 +90,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.add_acl_button.clicked.connect(self.update_permission)
 
     def update_input_path(self, irods_path):
-        """Set the input path to a niew path and loads the table."""
+        """Set the input path to a new path and loads the table."""
         self.input_path.setText(str(irods_path))
         # reset the params to load info tabs
         self.last_selected_row = -1
