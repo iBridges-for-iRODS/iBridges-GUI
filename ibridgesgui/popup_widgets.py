@@ -384,12 +384,15 @@ class UploadData(QDialog, Ui_uploadData):
         self.upload_thread.start()
 
     def _finish_upload(self):
-        self._enable_buttons(True)
+        #self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.upload_thread
 
     def _upload_status(self, state):
-        self.error_label.setText(state)
+        up_size, transferred_size, obj_count, num_objs, obj_failed = state
+        self.progress_bar.setValue(int(transferred_size*100/up_size))
+        text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        self.error_label.setText(text)
 
     def _upload_end(self, thread_output: dict):
         self.active_upload = False
@@ -397,7 +400,7 @@ class UploadData(QDialog, Ui_uploadData):
             self.error_label.setText("Upload finished.")
         else:
             self.error_label.setText("Errors occurred during upload. Consult the logs.")
-        self._enable_buttons(True)
+        #self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
 
     def _enable_buttons(self, enable):
@@ -546,12 +549,15 @@ class DownloadData(QDialog, Ui_downloadData):
         self.download_thread.start()
 
     def _finish_download(self):
-        self._enable_buttons(True)
+        #self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.download_thread
 
     def _download_status(self, state):
-        self.error_label.setText(state)
+        down_size, transferred_size, obj_count, num_objs, obj_failed = state
+        self.progress_bar.setValue(int(transferred_size*100/down_size))
+        text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        self.error_label.setText(text)
 
     def _download_end(self, thread_output: dict):
         self.active_download = False
@@ -559,5 +565,5 @@ class DownloadData(QDialog, Ui_downloadData):
             self.error_label.setText("Download finished.")
         else:
             self.error_label.setText("Errors occurred during download. Consult the logs.")
-        self._enable_buttons(True)
+        #self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))

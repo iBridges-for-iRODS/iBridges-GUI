@@ -23,6 +23,11 @@
     font: 16pt
 }
 
+QProgressBar::chunk
+{
+  background-color: rgb(21, 165, 137);
+}
+
 QLabel#error_label
 {
     color: rgb(220, 130, 30);
@@ -199,6 +204,16 @@ QTabWidget#info_tabs
    </item>
    <item row="3" column="1">
     <widget class="QTextBrowser" name="source_browser"/>
+   </item>
+   <item row="9" column="1">
+    <widget class="QProgressBar" name="progress_bar">
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="textVisible">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

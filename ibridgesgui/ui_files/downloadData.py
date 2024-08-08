@@ -22,6 +22,11 @@ class Ui_downloadData(object):
 "    font: 16pt\n"
 "}\n"
 "\n"
+"QProgressBar::chunk\n"
+"{\n"
+"  background-color: rgb(21, 165, 137);\n"
+"}\n"
+"\n"
 "QLabel#error_label\n"
 "{\n"
 "    color: rgb(220, 130, 30);\n"
@@ -116,6 +121,11 @@ class Ui_downloadData(object):
         self.source_browser = QtWidgets.QTextBrowser(parent=Form)
         self.source_browser.setObjectName("source_browser")
         self.gridLayout.addWidget(self.source_browser, 3, 1, 1, 1)
+        self.progress_bar = QtWidgets.QProgressBar(parent=Form)
+        self.progress_bar.setProperty("value", 0)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setObjectName("progress_bar")
+        self.gridLayout.addWidget(self.progress_bar, 9, 1, 1, 1)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

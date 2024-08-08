@@ -22,6 +22,12 @@
     selection-color: rgb(245, 244, 244)
 }
 
+QProgressBar::chunk
+{
+  background-color: rgb(21, 165, 137);
+  width: 5px;
+}
+
 QLabel#error_label
 {
     color: rgb(220, 130, 30);
@@ -64,7 +70,7 @@ QTabWidget#info_tabs
      <height>771</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_11" stretch="0,0,0,0,0,0,0">
+   <layout class="QVBoxLayout" name="verticalLayout_11" stretch="0,0,0,0,0,0,0,0">
     <property name="sizeConstraint">
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
@@ -415,6 +421,16 @@ QTabWidget#info_tabs
      <widget class="QLabel" name="error_label">
       <property name="text">
        <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="progress_bar">
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="textVisible">
+       <bool>false</bool>
       </property>
      </widget>
     </item>

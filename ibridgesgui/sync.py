@@ -220,6 +220,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.error_label.clear()
         self.diff_table.setRowCount(0)
         self._enable_buttons(False)
+        self.progress_bar.setValue(0)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
 
         self.error_label.setText("Calculating differences ....")
@@ -266,7 +267,10 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.error_label.setText("Data synchronisation complete.")
 
     def _sync_data_status(self, state):
-        self.error_label.setText(state)
+        up_size, transferred_size, obj_count, num_objs, obj_failed = state
+        self.progress_bar.setValue(int(transferred_size*100/up_size))
+        text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        self.error_label.setText(text)
 
     def _sync_diff_end(self, thread_output: dict):
         if thread_output["error"] != "":
