@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-from ibridges import IrodsPath, Session, download, search_data, sync, upload
-from ibridges.executor import Operations
+from ibridges import Session, search_data, sync
+from ibridges.executor import Operations, _obj_get, _obj_put
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
 from PyQt6.QtCore import QThread, pyqtSignal
 
@@ -88,42 +88,20 @@ class TransferDataThread(QThread):
         transfer_out["error"] = ""
 
         emit_string = "Create collections."
-        for coll in self.ops.create_collection:
-            try:
-                IrodsPath.create_collection(self.thread_session, coll)
-                self.logger.info("Transfer data thread: Created collection %s", coll)
-            except Exception as error:
-                self.logger.exception(
-                    "Transfer data thread: Could not create  %s; %s", coll, repr(error)
-                )
-                transfer_out["error"] = (
-                    transfer_out["error"] + f"\nTransfer failed Cannot create {coll}: {repr(error)}"
-                )
+        self.ops.execute_create_coll(self.thread_session)
 
         emit_string = "Create folders."
-        for folder in self.ops.create_dir:
-            print(f"create {folder}")
-            try:
-                Path(folder).mkdir(parents=True, exist_ok=True)
-                self.logger.info("Transfer data thread: Created folder %s", folder)
-            except Exception as error:
-                self.logger.exception(
-                    "Transfer data thread: Could not create  %s; %s", folder, repr(error)
-                )
-                transfer_out["error"] = (
-                    transfer_out["error"]
-                    + f"\nTransfer failed Cannot create {folder}: {repr(error)}"
-                )
+        self.ops.execute_create_dir()
 
         for local_path, irods_path in self.ops.upload:
             try:
-                upload(
+                _obj_put(
                     self.thread_session,
                     local_path,
                     irods_path,
-                    resc_name=self.ops.resc_name,
                     overwrite=self.overwrite,
                     options=self.ops.options,
+                    resc_name=self.ops.resc_name,
                 )
                 obj_count += 1
                 self.logger.info(
@@ -150,12 +128,12 @@ class TransferDataThread(QThread):
 
         for irods_path, local_path in self.ops.download:
             try:
-                download(
+                _obj_get(
                     self.thread_session,
                     irods_path,
                     local_path,
-                    resc_name=self.ops.resc_name,
                     overwrite=self.overwrite,
+                    resc_name=self.ops.resc_name,
                     options=self.ops.options,
                 )
                 file_count += 1

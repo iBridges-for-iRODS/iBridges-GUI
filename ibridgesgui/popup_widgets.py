@@ -269,6 +269,7 @@ class CheckConfig(QDialog, Ui_configCheck):
             except TypeError:
                 self.error_label.setText("File type needs to be .json")
 
+
 class UploadData(QDialog, Ui_uploadData):
     """Popup window to upload data to browser."""
 
@@ -294,22 +295,22 @@ class UploadData(QDialog, Ui_uploadData):
         self.folder_button.clicked.connect(self.select_folder)
         self.hide_button.clicked.connect(self.close_window)
 
-
     def close_window(self):
         """Close window while data transfer stays in progress."""
         if self.active_upload:
             reply = QMessageBox.critical(
-                        self, "Message",
-                        "Do you want to close the window while the transfer continues?",
-                        QMessageBox.StandardButton.Yes,
-                        QMessageBox.StandardButton.No,
-                    )
+                self,
+                "Message",
+                "Do you want to close the window while the transfer continues?",
+                QMessageBox.StandardButton.Yes,
+                QMessageBox.StandardButton.No,
+            )
             if reply == QMessageBox.StandardButton.Yes:
                 self.active_upload = False
         self.close()
 
     # pylint: disable=C0103
-    def closeEvent(self, evnt): # noqa
+    def closeEvent(self, evnt):  # noqa
         """Override close when download is in process."""
         if self.active_upload:
             evnt.ignore()
@@ -347,12 +348,22 @@ class UploadData(QDialog, Ui_uploadData):
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
 
         try:
-            ops = combine_operations([upload(self.session, p, self.irods_path,
-                                         overwrite = self.overwrite.isChecked(),
-                                         dry_run = True) for p in lpaths])
+            ops = combine_operations(
+                [
+                    upload(
+                        self.session,
+                        p,
+                        self.irods_path,
+                        overwrite=self.overwrite.isChecked(),
+                        dry_run=True,
+                    )
+                    for p in lpaths
+                ]
+            )
 
-            self.upload_thread = TransferDataThread(env_path, self.logger, ops,
-                                                    overwrite = self.overwrite.isChecked())
+            self.upload_thread = TransferDataThread(
+                env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
+            )
 
         except FileExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
@@ -361,7 +372,7 @@ class UploadData(QDialog, Ui_uploadData):
             return
         except Exception as err:
             self.error_label.setText(
-                    f"Could not instantiate a new session from {env_path}: {repr(err)}."
+                f"Could not instantiate a new session from {env_path}: {repr(err)}."
             )
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
@@ -404,6 +415,7 @@ class UploadData(QDialog, Ui_uploadData):
 
         return path
 
+
 class DownloadData(QDialog, Ui_downloadData):
     """Popup window to dowload data from browser."""
 
@@ -423,10 +435,11 @@ class DownloadData(QDialog, Ui_downloadData):
 
         self.source_browser.append(self.irods_path_tree())
         self.timestamp = datetime.now().strftime("%m%d%Y-%H%M")
-        self.metadata.setText(
-            f"Store metadata as\nibridges_metadata_{self.irods_path.name}_{self.timestamp}.json")
-
         self.meta_path = None
+        self.meta_download = (
+            f"bridges_metadata_{self.irods_path.name.split('.')[0]}_{self.timestamp}.json"
+        )
+        self.metadata.setText(f"Store metadata as\n{self.meta_download}")
         self.folder_button.clicked.connect(self.select_folder)
         self.download_button.clicked.connect(self._get_download_params)
         self.hide_button.clicked.connect(self.close_window)
@@ -435,38 +448,38 @@ class DownloadData(QDialog, Ui_downloadData):
         """Close window while data transfer stays in progress."""
         if self.active_download:
             reply = QMessageBox.critical(
-                        self, "Message",
-                        "Do you want to close the window while the transfer continues?",
-                        QMessageBox.StandardButton.Yes,
-                        QMessageBox.StandardButton.No,
-                    )
+                self,
+                "Message",
+                "Do you want to close the window while the transfer continues?",
+                QMessageBox.StandardButton.Yes,
+                QMessageBox.StandardButton.No,
+            )
             if reply == QMessageBox.StandardButton.Yes:
                 self.active_download = False
         self.close()
 
     # pylint: disable=C0103
-    def closeEvent(self, evnt): # noqa
+    def closeEvent(self, evnt):  # noqa
         """Override close when download is in process."""
         if self.active_download:
             evnt.ignore()
-
 
     def irods_path_tree(self):
         """Expand the irods_path if it is a collection."""
         if self.irods_path.collection_exists():
             return "\n".join(
-                    [coll.name for coll in self.irods_path.collection.subcollections]\
-                    + [obj.name for obj in self.irods_path.collection.data_objects ])
+                [coll.name for coll in self.irods_path.collection.subcollections]
+                + [obj.name for obj in self.irods_path.collection.data_objects]
+            )
 
         return str(self.irods_path)
-
 
     def select_folder(self):
         """Select the download destination."""
         select_dir = Path(
-                QFileDialog.getExistingDirectory(
-                    self, "Select Directory", directory=str(Path("~").expanduser())
-                )
+            QFileDialog.getExistingDirectory(
+                self, "Select Directory", directory=str(Path("~").expanduser())
+            )
         )
         if str(select_dir) == "" or str(select_dir) == ".":
             return
@@ -481,12 +494,12 @@ class DownloadData(QDialog, Ui_downloadData):
 
         if not local_path.is_dir():
             self.error_label.setText(
-                    f"Dowload folder {local_path} dows not exist or is not a folder.")
+                f"Dowload folder {local_path} dows not exist or is not a folder."
+            )
             return
 
         if self.metadata.isChecked():
-            self.meta_path = local_path.joinpath(
-                    f"ibridges_metadata_{self.irods_path.name}_{self.timestamp}.json")
+            self.meta_path = local_path.joinpath(self.meta_download)
 
         self._start_download(local_path)
 
@@ -503,11 +516,17 @@ class DownloadData(QDialog, Ui_downloadData):
         self.error_label.setText(f"Downloading to {local_path} ....")
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
         try:
-            ops = download(self.session, self.irods_path, local_path,
-                           overwrite = self.overwrite.isChecked(),
-                           metadata = self.meta_path, dry_run=True)
-            self.download_thread = TransferDataThread(env_path, self.logger, ops,
-                                                      overwrite=self.overwrite.isChecked())
+            ops = download(
+                self.session,
+                self.irods_path,
+                local_path,
+                overwrite=self.overwrite.isChecked(),
+                metadata=self.meta_path,
+                dry_run=True,
+            )
+            self.download_thread = TransferDataThread(
+                env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
+            )
         except FileExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
@@ -515,7 +534,7 @@ class DownloadData(QDialog, Ui_downloadData):
             return
         except Exception as err:
             self.error_label.setText(
-                    f"Could not instantiate a new session from {env_path}: {repr(err)}."
+                f"Could not instantiate a new session from {env_path}: {repr(err)}."
             )
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
