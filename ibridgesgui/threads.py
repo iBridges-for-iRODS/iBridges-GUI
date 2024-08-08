@@ -71,8 +71,8 @@ class TransferDataThread(QThread):
         self.ops = ops
         self.overwrite = overwrite
 
-        self.up_sizes = sum([lpath.stat().st_size for lpath, _ in self.ops.upload])
-        self.down_sizes = sum([ipath.size for ipath, _ in self.ops.download])
+        self.up_sizes = sum(lpath.stat().st_size for lpath, _ in self.ops.upload)
+        self.down_sizes = sum(ipath.size for ipath, _ in self.ops.download)
 
     def _delete_session(self):
         self.thread_session.close()
@@ -91,12 +91,10 @@ class TransferDataThread(QThread):
         transfer_out["error"] = ""
         transferred_size = 0
 
-        emit_string = "Create collections."
         self.ops.execute_create_coll(self.thread_session)
 
-        emit_string = "Create folders."
         self.ops.execute_create_dir()
-        
+
         for local_path, irods_path in self.ops.upload:
             try:
                 _obj_put(
