@@ -86,8 +86,8 @@ def prep_session_for_copy(session, error_label) -> pathlib.Path:
 def combine_operations(operations: list[Operations]) -> Operations:
     """Combine the operations of several upload or download dry-runs."""
     ops = operations[0]
-    ops.create_dir = set().union(*[o.create_dir for o in operations[1:]])
-    ops.create_collection = set().union(*[o.create_collection for o in operations[1:]])
+    ops.create_dir = set().union(*[o.create_dir for o in operations])
+    ops.create_collection = set().union(*[o.create_collection for o in operations])
     _ = [ops.download.extend(o.download) for o in operations[1:]]
     _ = [ops.upload.extend(o.upload) for o in operations[1:]]
 

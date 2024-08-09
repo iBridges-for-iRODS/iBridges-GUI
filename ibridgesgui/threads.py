@@ -92,7 +92,6 @@ class TransferDataThread(QThread):
         transferred_size = 0
 
         self.ops.execute_create_coll(self.thread_session)
-
         self.ops.execute_create_dir()
 
         for local_path, irods_path in self.ops.upload:
