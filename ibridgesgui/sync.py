@@ -233,7 +233,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.sync_diff_thread = SyncThread(env_path, self.logger, source, target, dry_run=True)
         except Exception:
             self.error_label.setText(
-                f"Could not instantiate a new session from{env_path}.Check configuration."
+                f"Could not instantiate a new session from {env_path}. Check configuration."
             )
 
             return
