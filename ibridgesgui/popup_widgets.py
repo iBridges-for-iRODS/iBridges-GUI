@@ -495,7 +495,7 @@ class DownloadData(QDialog, Ui_downloadData):
 
         if not local_path.is_dir():
             self.error_label.setText(
-                f"Dowload folder {local_path} dows not exist or is not a folder."
+                f"Dowload folder {local_path} does not exist or is not a folder."
             )
             return
 
