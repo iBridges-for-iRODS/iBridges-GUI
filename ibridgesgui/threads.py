@@ -11,7 +11,7 @@ from PyQt6.QtCore import QThread, pyqtSignal
 class SearchThread(QThread):
     """Start iRODS search in an own thread using the same iRODS session."""
 
-    succeeded = pyqtSignal(dict)
+    result = pyqtSignal(dict)
 
     def __init__(self, logger, ienv_path, path: str, checksum: str, key_vals: dict):
         """Pass searh parameters."""
@@ -42,13 +42,13 @@ class SearchThread(QThread):
         except NetworkException:
             self._delete_session()
             search_out["error"] = "Search takes too long. Please provide more parameters."
-        self.succeeded.emit(search_out)
+        self.result.emit(search_out)
 
 
 class TransferDataThread(QThread):
     """Transfer data between local and iRODS."""
 
-    succeeded = pyqtSignal(dict)
+    result = pyqtSignal(dict)
     current_progress = pyqtSignal(list)
 
     def __init__(self, ienv_path: Path, logger, ops: Operations, overwrite: bool):
@@ -170,13 +170,13 @@ class TransferDataThread(QThread):
 
         self.ops.execute_meta_download()
         self._delete_session()
-        self.succeeded.emit(transfer_out)
+        self.result.emit(transfer_out)
 
 
 class SyncThread(QThread):
     """Sync between iRODS and local FS."""
 
-    succeeded = pyqtSignal(dict)
+    result = pyqtSignal(dict)
 
     def __init__(self, ienv_path, logger, source, target, dry_run: bool):
         """Pass download parameters."""
@@ -236,4 +236,4 @@ class SyncThread(QThread):
                 + f"\nSync failed: {str(self.source)} --> {str(self.target)}: {repr(error)}"
             )
         self._delete_session()
-        self.succeeded.emit(sync_out)
+        self.result.emit(sync_out)

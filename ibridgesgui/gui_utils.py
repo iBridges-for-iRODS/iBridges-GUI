@@ -88,8 +88,9 @@ def combine_operations(operations: list[Operations]) -> Operations:
     ops = operations[0]
     ops.create_dir = set().union(*[o.create_dir for o in operations])
     ops.create_collection = set().union(*[o.create_collection for o in operations])
-    _ = [ops.download.extend(o.download) for o in operations[1:]]
-    _ = [ops.upload.extend(o.upload) for o in operations[1:]]
+    for op in operations[1:]:
+        ops.download.extend(op.download)
+        ops.upload.extend(op.upload)
 
     return ops
 

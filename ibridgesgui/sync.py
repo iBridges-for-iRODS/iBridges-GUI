@@ -211,7 +211,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             return
 
         self.sync_data_thread.current_progress.connect(self._sync_data_status)
-        self.sync_data_thread.succeeded.connect(self._sync_data_end)
+        self.sync_data_thread.result.connect(self._sync_data_end)
         self.sync_data_thread.finished.connect(self._finish_sync_data)
         self.sync_data_thread.start()
 
@@ -237,7 +237,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             )
 
             return
-        self.sync_diff_thread.succeeded.connect(self._sync_diff_end)
+        self.sync_diff_thread.result.connect(self._sync_diff_end)
         self.sync_diff_thread.finished.connect(self._finish_sync_diff)
         self.sync_diff_thread.start()
 

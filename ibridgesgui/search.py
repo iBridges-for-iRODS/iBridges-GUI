@@ -229,7 +229,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             )
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
-        self.download_thread.succeeded.connect(self._download_end)
+        self.download_thread.result.connect(self._download_fetch_result)
         self.download_thread.finished.connect(self._finish_download)
         self.download_thread.current_progress.connect(self._download_status)
         self.download_thread.start()
@@ -242,9 +242,11 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         del self.download_thread
 
     def _download_status(self, state):
-        self.error_label.setText(state)
+        _, _, obj_count, num_objs, obj_failed = state
+        text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        self.error_label.setText(text)
 
-    def _download_end(self, thread_output: dict):
+    def _download_fetch_result(self, thread_output: dict):
         if thread_output["error"] == "":
             self.error_label.setText("Download finished.")
         else:
@@ -269,7 +271,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                 "Could not instantiate a new session from{env_path}.Check configuration"
             )
             return
-        self.search_thread.succeeded.connect(self._fetch_results)
+        self.search_thread.result.connect(self._fetch_results)
         self.search_thread.finished.connect(self._finish_search)
         self.search_thread.start()
 

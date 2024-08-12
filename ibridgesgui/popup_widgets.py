@@ -378,13 +378,13 @@ class UploadData(QDialog, Ui_uploadData):
             self._enable_buttons(True)
             return
 
-        self.upload_thread.succeeded.connect(self._upload_end)
+        self.upload_thread.result.connect(self._upload_fetch_result)
         self.upload_thread.finished.connect(self._finish_upload)
         self.upload_thread.current_progress.connect(self._upload_status)
         self.upload_thread.start()
 
     def _finish_upload(self):
-        #self._enable_buttons(True)
+        self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.upload_thread
 
@@ -394,14 +394,12 @@ class UploadData(QDialog, Ui_uploadData):
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
-    def _upload_end(self, thread_output: dict):
+    def _upload_fetch_result(self, thread_output: dict):
         self.active_upload = False
         if thread_output["error"] == "":
             self.error_label.setText("Upload finished.")
         else:
             self.error_label.setText("Errors occurred during upload. Consult the logs.")
-        #self._enable_buttons(True)
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
 
     def _enable_buttons(self, enable):
         self.upload_button.setEnabled(enable)
@@ -543,13 +541,13 @@ class DownloadData(QDialog, Ui_downloadData):
             self._enable_buttons(True)
             return
 
-        self.download_thread.succeeded.connect(self._download_end)
+        self.download_thread.result.connect(self._download_fetch_result)
         self.download_thread.finished.connect(self._finish_download)
         self.download_thread.current_progress.connect(self._download_status)
         self.download_thread.start()
 
     def _finish_download(self):
-        #self._enable_buttons(True)
+        self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.download_thread
 
@@ -559,11 +557,9 @@ class DownloadData(QDialog, Ui_downloadData):
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
-    def _download_end(self, thread_output: dict):
+    def _download_fetch_result(self, thread_output: dict):
         self.active_download = False
         if thread_output["error"] == "":
             self.error_label.setText("Download finished.")
         else:
             self.error_label.setText("Errors occurred during download. Consult the logs.")
-        #self._enable_buttons(True)
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
