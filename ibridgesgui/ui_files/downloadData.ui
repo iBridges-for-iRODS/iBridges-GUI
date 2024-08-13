@@ -23,6 +23,11 @@
     font: 16pt
 }
 
+QProgressBar::chunk
+{
+  background-color: rgb(21, 165, 137);
+}
+
 QLabel#error_label
 {
     color: rgb(220, 130, 30);
@@ -62,13 +67,6 @@ QTabWidget#info_tabs
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="hide_button">
-       <property name="text">
-        <string>Close window</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -80,6 +78,13 @@ QTabWidget#info_tabs
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="hide_button">
+       <property name="text">
+        <string>Close window</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -199,6 +204,19 @@ QTabWidget#info_tabs
    </item>
    <item row="3" column="1">
     <widget class="QTextBrowser" name="source_browser"/>
+   </item>
+   <item row="9" column="1">
+    <widget class="QProgressBar" name="progress_bar">
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="textVisible">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

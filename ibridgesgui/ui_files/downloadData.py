@@ -22,6 +22,11 @@ class Ui_downloadData(object):
 "    font: 16pt\n"
 "}\n"
 "\n"
+"QProgressBar::chunk\n"
+"{\n"
+"  background-color: rgb(21, 165, 137);\n"
+"}\n"
+"\n"
 "QLabel#error_label\n"
 "{\n"
 "    color: rgb(220, 130, 30);\n"
@@ -56,11 +61,11 @@ class Ui_downloadData(object):
         self.download_button = QtWidgets.QPushButton(parent=Form)
         self.download_button.setObjectName("download_button")
         self.horizontalLayout.addWidget(self.download_button)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
         self.hide_button = QtWidgets.QPushButton(parent=Form)
         self.hide_button.setObjectName("hide_button")
         self.horizontalLayout.addWidget(self.hide_button)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
         self.gridLayout.addLayout(self.horizontalLayout, 8, 1, 1, 1)
         self.metadata = QtWidgets.QCheckBox(parent=Form)
         self.metadata.setObjectName("metadata")
@@ -116,6 +121,12 @@ class Ui_downloadData(object):
         self.source_browser = QtWidgets.QTextBrowser(parent=Form)
         self.source_browser.setObjectName("source_browser")
         self.gridLayout.addWidget(self.source_browser, 3, 1, 1, 1)
+        self.progress_bar = QtWidgets.QProgressBar(parent=Form)
+        self.progress_bar.setProperty("value", 0)
+        self.progress_bar.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.progress_bar.setTextVisible(True)
+        self.progress_bar.setObjectName("progress_bar")
+        self.gridLayout.addWidget(self.progress_bar, 9, 1, 1, 1)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
