@@ -119,6 +119,7 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
         for tab_fun in self.ui_tabs_lookup.values():
             tab_fun()
             # self.ui_tabs_lookup[tab_name]()
+        self.tab_widget.setCurrentIndex(1)
 
     def welcome_tab(self):
         """Create first tab."""

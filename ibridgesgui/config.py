@@ -31,7 +31,7 @@ LOG_LEVEL = {
 
 CONFIG_DIR = Path("~", ".ibridges").expanduser()
 CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
-
+IRODSA = Path.home() / ".irods" / ".irodsA"
 
 def ensure_log_config_location():
     """Ensure the location for logs and config files."""
@@ -131,6 +131,23 @@ def _get_config() -> Union[None, dict]:
         print(f"CANNOT START APP: {CONFIG_FILE} incorrectly formatted.")
         sys.exit(1)
 
+def save_current_settings(env_path_name: Path):
+    """Store the environment with the currently scrambled password in irodsA."""
+    with open(IRODSA, "r", encoding="utf-8") as f:
+        pw = f.read()
+    config = _get_config()
+    if config is not None:
+        if "settings" not in config:
+            config["settings"] = {}
+        config["settings"][str(env_path_name)] = pw
+        _save_config(config)
+
+def get_prev_settings():
+    """Extract the settings from the configuration."""
+    config = _get_config()
+    if config is None:
+        return {}
+    return config.get("settings", {})
 
 # irods config functions
 

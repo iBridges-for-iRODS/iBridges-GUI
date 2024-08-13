@@ -5,12 +5,12 @@ import sys
 from pathlib import Path
 
 import PyQt6.uic
-from ibridges import IrodsPath
+from ibridges import IrodsPath, download
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import UI_FILE_DIR, combine_diffs, populate_table
+from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, populate_table
 from ibridgesgui.threads import SearchThread, TransferDataThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
@@ -161,14 +161,14 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             return
 
     def send_to_browser(self):
-        """Set browser path_input to collection or parent of object."""
+        """Set browser input_path to collection or parent of object."""
         row = self.search_table.currentIndex().row()
         irods_path = IrodsPath(self.session, self.search_table.item(row, 1).text())
         if irods_path.collection_exists():
-            self.browser.path_input.setText(str(irods_path))
+            self.browser.input_path.setText(str(irods_path))
             self.error_label.setText(f"Browser tab switched to {irods_path}")
         else:
-            self.browser.path_input.setText(str(irods_path.parent))
+            self.browser.input_path.setText(str(irods_path.parent))
             self.error_label.setText(f"Browser tab switched to {irods_path.parent}")
         self.browser.load_browser_table()
 
@@ -213,20 +213,23 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             return
 
         # get diff dictionary
-        diffs = combine_diffs(self.session, irods_paths, folder)
+        single_ops = []
+        for ipath in irods_paths:
+            single_ops.append(download(self.session, ipath, folder, overwrite = True, dry_run=True))
+        ops = combine_operations(single_ops)
 
         self.error_label.setText(f"Downloading to {folder} ....")
         try:
             self.download_thread = TransferDataThread(
-                env_path, self.logger, diffs, overwrite=overwrite
+                env_path, self.logger, ops, overwrite=overwrite
             )
-        except Exception:
+        except Exception as err:
             self.error_label.setText(
-                "Could not instantiate a new session from{env_path}.Check configuration"
+                f"Could not instantiate a new session from {env_path}: {repr(err)}."
             )
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
-        self.download_thread.succeeded.connect(self._download_end)
+        self.download_thread.result.connect(self._download_fetch_result)
         self.download_thread.finished.connect(self._finish_download)
         self.download_thread.current_progress.connect(self._download_status)
         self.download_thread.start()
@@ -239,9 +242,11 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         del self.download_thread
 
     def _download_status(self, state):
-        self.error_label.setText(state)
+        _, _, obj_count, num_objs, obj_failed = state
+        text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        self.error_label.setText(text)
 
-    def _download_end(self, thread_output: dict):
+    def _download_fetch_result(self, thread_output: dict):
         if thread_output["error"] == "":
             self.error_label.setText("Download finished.")
         else:
@@ -266,7 +271,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                 "Could not instantiate a new session from{env_path}.Check configuration"
             )
             return
-        self.search_thread.succeeded.connect(self._fetch_results)
+        self.search_thread.result.connect(self._fetch_results)
         self.search_thread.finished.connect(self._finish_search)
         self.search_thread.start()
 

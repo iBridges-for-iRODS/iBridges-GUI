@@ -5,7 +5,8 @@ from typing import Union
 
 import irods
 import PyQt6
-from ibridges import IrodsPath, download
+from ibridges import IrodsPath
+from ibridges.executor import Operations
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
@@ -82,25 +83,16 @@ def prep_session_for_copy(session, error_label) -> pathlib.Path:
     return None
 
 
-def combine_diffs(session, sources: list, destination: Union[IrodsPath, pathlib.Path]) -> dict:
-    """Combine the diffs of several upload or download dry-runs."""
-    combined_diffs = {
-        "create_dir": set(),
-        "create_collection": set(),
-        "upload": [],
-        "download": [],
-        "resc_name": "",
-        "options": None,
-    }
-    if isinstance(destination, pathlib.Path):
-        for ipath in sources:
-            diff = download(session, ipath, destination, dry_run=True, overwrite=True)
-            combined_diffs["download"].extend(diff["download"])
-            combined_diffs["create_dir"] = combined_diffs["create_dir"].union(diff["create_dir"])
-    elif isinstance(destination, IrodsPath):
-        print("not implemented yet")
-    return combined_diffs
+def combine_operations(operations: list[Operations]) -> Operations:
+    """Combine the operations of several upload or download dry-runs."""
+    ops = operations[0]
+    ops.create_dir = set().union(*[o.create_dir for o in operations])
+    ops.create_collection = set().union(*[o.create_collection for o in operations])
+    for op in operations[1:]:
+        ops.download.extend(op.download)
+        ops.upload.extend(op.upload)
 
+    return ops
 
 # OS utils
 def get_downloads_dir() -> pathlib.Path:

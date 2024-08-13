@@ -30,9 +30,11 @@ You can **navigate to another part of the iRODS collection tree** by editing thi
 
 - The `Create Collection` button will create a collection in the path shown in the navigation field above.
 
-- The buttons `Upload File` and `Upload Folder` open a file dialog to select data to upload. The destination will be the path shown in the navigation field.
+- The `Upload` button opens a new popup window to select data to upload. The destination will be the path shown in the navigation field.
 
-- The `Download` button will download data to your `Downloads` folder. To download data you will need to select an item in the table below.
+- The `Download` button opens a popup window to select the destination on your computer. You will also be able to export the metadata and store it in a separate file along your download. To download data you will need to select an item in the table below.
+
+- With the `Delete` button you can delete the selected collection or data object in the table. **Note, The data will be deleted completely from the iRODS instance.**
 
 ### Listing
 

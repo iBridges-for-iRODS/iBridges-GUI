@@ -204,14 +204,14 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.sync_data_thread = TransferDataThread(
                 env_path, self.logger, self.diffs, overwrite=True
             )
-        except Exception:
+        except Exception as err:
             self.error_label.setText(
-                "Could not instantiate a new session from{env_path}. Check configuration."
+                    f"Could not instantiate a new session from{env_path}: {err}"
             )
             return
 
         self.sync_data_thread.current_progress.connect(self._sync_data_status)
-        self.sync_data_thread.succeeded.connect(self._sync_data_end)
+        self.sync_data_thread.result.connect(self._sync_data_end)
         self.sync_data_thread.finished.connect(self._finish_sync_data)
         self.sync_data_thread.start()
 
@@ -220,6 +220,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.error_label.clear()
         self.diff_table.setRowCount(0)
         self._enable_buttons(False)
+        self.progress_bar.setValue(0)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
 
         self.error_label.setText("Calculating differences ....")
@@ -232,11 +233,11 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             self.sync_diff_thread = SyncThread(env_path, self.logger, source, target, dry_run=True)
         except Exception:
             self.error_label.setText(
-                "Could not instantiate a new session from{env_path}.Check configuration."
+                f"Could not instantiate a new session from {env_path}. Check configuration."
             )
 
             return
-        self.sync_diff_thread.succeeded.connect(self._sync_diff_end)
+        self.sync_diff_thread.result.connect(self._sync_diff_end)
         self.sync_diff_thread.finished.connect(self._finish_sync_diff)
         self.sync_diff_thread.start()
 
@@ -266,7 +267,10 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.error_label.setText("Data synchronisation complete.")
 
     def _sync_data_status(self, state):
-        self.error_label.setText(state)
+        up_size, transferred_size, obj_count, num_objs, obj_failed = state
+        self.progress_bar.setValue(int(transferred_size*100/up_size))
+        text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        self.error_label.setText(text)
 
     def _sync_diff_end(self, thread_output: dict):
         if thread_output["error"] != "":
@@ -276,11 +280,10 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
             return
 
         self.error_label.clear()
+
         table_data = [
-            (ipath, lpath, ipath.size) for ipath, lpath in thread_output["result"]["download"]
-        ] + [
-            (lpath, ipath, lpath.stat().st_size)
-            for lpath, ipath in thread_output["result"]["upload"]
+            (source, dest, source.size if isinstance(source, IrodsPath) else source.stat().st_size)
+            for source, dest in thread_output["result"].upload + thread_output["result"].download
         ]
         populate_table(self.diff_table, len(table_data), table_data)
         if len(table_data) == 0:
