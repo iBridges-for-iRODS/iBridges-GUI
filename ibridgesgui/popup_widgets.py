@@ -341,9 +341,7 @@ class UploadData(QDialog, Ui_uploadData):
         self._start_upload(local_paths)
 
     def _start_upload(self, lpaths):
-        self._enable_buttons(False)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
-        self.active_upload = True
         self.error_label.setText(f"Uploading to {str(self.irods_path)} ....")
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
 
@@ -361,9 +359,19 @@ class UploadData(QDialog, Ui_uploadData):
                 ]
             )
 
-            self.upload_thread = TransferDataThread(
-                env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
-            )
+            if len(ops.upload) == 0:
+                self.error_label.setText("Data already present and up to date.")
+                self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            else:
+                self._enable_buttons(False)
+                self.active_upload = True
+                self.upload_thread = TransferDataThread(
+                    env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
+                )
+                self.upload_thread.result.connect(self._upload_fetch_result)
+                self.upload_thread.finished.connect(self._finish_upload)
+                self.upload_thread.current_progress.connect(self._upload_status)
+                self.upload_thread.start()
 
         except FileExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
@@ -378,13 +386,7 @@ class UploadData(QDialog, Ui_uploadData):
             self._enable_buttons(True)
             return
 
-        self.upload_thread.result.connect(self._upload_fetch_result)
-        self.upload_thread.finished.connect(self._finish_upload)
-        self.upload_thread.current_progress.connect(self._upload_status)
-        self.upload_thread.start()
-
     def _finish_upload(self):
-        self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.upload_thread
 
@@ -477,6 +479,7 @@ class DownloadData(QDialog, Ui_downloadData):
 
     def select_folder(self):
         """Select the download destination."""
+        self.error_label.clear()
         select_dir = Path(
             QFileDialog.getExistingDirectory(
                 self, "Select Directory", directory=str(Path("~").expanduser())
@@ -511,9 +514,7 @@ class DownloadData(QDialog, Ui_downloadData):
         self.metadata.setEnabled(enable)
 
     def _start_download(self, local_path):
-        self.active_download = True
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
-        self._enable_buttons(False)
         self.error_label.setText(f"Downloading to {local_path} ....")
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
         try:
@@ -525,9 +526,20 @@ class DownloadData(QDialog, Ui_downloadData):
                 metadata=self.meta_path,
                 dry_run=True,
             )
-            self.download_thread = TransferDataThread(
-                env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
-            )
+
+            if len(ops.download) == 0 and len(ops.meta_download) == 0:
+                self.error_label.setText("Data already present and up to date.")
+                self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            else:
+                self._enable_buttons(False)
+                self.active_download = True
+                self.download_thread = TransferDataThread(
+                    env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
+                )
+                self.download_thread.result.connect(self._download_fetch_result)
+                self.download_thread.finished.connect(self._finish_download)
+                self.download_thread.current_progress.connect(self._download_status)
+                self.download_thread.start()
         except FileExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
@@ -535,19 +547,13 @@ class DownloadData(QDialog, Ui_downloadData):
             return
         except Exception as err:
             self.error_label.setText(
-                f"Could not instantiate a new session from {env_path}: {repr(err)}."
+                f"Could not instantiate thread from {env_path}: {repr(err)}."
             )
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
             return
 
-        self.download_thread.result.connect(self._download_fetch_result)
-        self.download_thread.finished.connect(self._finish_download)
-        self.download_thread.current_progress.connect(self._download_status)
-        self.download_thread.start()
-
     def _finish_download(self):
-        self._enable_buttons(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.download_thread
 

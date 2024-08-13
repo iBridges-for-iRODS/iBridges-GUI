@@ -24,6 +24,7 @@ class Ui_tabSync(object):
 "QProgressBar::chunk\n"
 "{\n"
 "  background-color: rgb(21, 165, 137);\n"
+"  width: 5px;\n"
 "}\n"
 "\n"
 "QLabel#error_label\n"
@@ -204,7 +205,8 @@ class Ui_tabSync(object):
         self.verticalLayout_11.addWidget(self.error_label)
         self.progress_bar = QtWidgets.QProgressBar(parent=self.layoutWidget)
         self.progress_bar.setProperty("value", 0)
-        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.progress_bar.setTextVisible(True)
         self.progress_bar.setObjectName("progress_bar")
         self.verticalLayout_11.addWidget(self.progress_bar)
         spacerItem10 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)

@@ -67,13 +67,6 @@ QTabWidget#info_tabs
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="hide_button">
-       <property name="text">
-        <string>Close window</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -85,6 +78,13 @@ QTabWidget#info_tabs
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="hide_button">
+       <property name="text">
+        <string>Close window</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -210,8 +210,11 @@ QTabWidget#info_tabs
      <property name="value">
       <number>0</number>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
      <property name="textVisible">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
     </widget>
    </item>
