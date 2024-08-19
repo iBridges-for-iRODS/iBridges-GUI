@@ -59,7 +59,17 @@ QTabWidget#info_tabs
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="path_pattern_field"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Obj/Coll name</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
         <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -72,34 +82,7 @@ QTabWidget#info_tabs
          </property>
         </spacer>
        </item>
-       <item row="2" column="2">
-        <widget class="QLineEdit" name="checksum_field"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Path</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="path_field"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Checksum</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Search Wildcard is: %</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -115,37 +98,42 @@ QTabWidget#info_tabs
          </property>
         </spacer>
        </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Checksum</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="checksum_field"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Search Wildcard is: %</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Search in</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLineEdit" name="search_path_field"/>
+       </item>
       </layout>
      </item>
      <item>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="val3"/>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLineEdit" name="key4"/>
-       </item>
-       <item row="2" column="0">
-        <spacer name="verticalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="val1"/>
-       </item>
        <item row="4" column="0">
         <widget class="QLineEdit" name="key2"/>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLineEdit" name="key3"/>
        </item>
        <item row="0" column="0">
         <spacer name="verticalSpacer">
@@ -163,31 +151,51 @@ QTabWidget#info_tabs
          </property>
         </spacer>
        </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label1">
+         <property name="text">
+          <string>Search by Metadata</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="val3"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Key</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="val1"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="val2"/>
+       </item>
        <item row="6" column="1">
         <widget class="QLineEdit" name="val4"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Units</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLineEdit" name="key4"/>
        </item>
        <item row="3" column="0">
         <widget class="QLineEdit" name="key1"/>
        </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Value (optional)</string>
+          <string>Value</string>
          </property>
         </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label1">
-         <property name="text">
-          <string>Metadata Key</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLineEdit" name="key3"/>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="val2"/>
        </item>
        <item row="7" column="0">
         <spacer name="verticalSpacer_6">
@@ -204,6 +212,18 @@ QTabWidget#info_tabs
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="units1"/>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLineEdit" name="units2"/>
+       </item>
+       <item row="5" column="2">
+        <widget class="QLineEdit" name="units3"/>
+       </item>
+       <item row="6" column="2">
+        <widget class="QLineEdit" name="units4"/>
        </item>
       </layout>
      </item>
@@ -392,6 +412,13 @@ QTabWidget#info_tabs
        <string>Modified</string>
       </property>
      </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="load_more_button">
+     <property name="text">
+      <string>Load more Results</string>
+     </property>
     </widget>
    </item>
   </layout>

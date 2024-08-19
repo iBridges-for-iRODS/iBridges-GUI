@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ibridges import Session, search_data, sync
+from ibridges import Session, IrodsPath, search_data, sync
 from ibridges.executor import Operations, _obj_get, _obj_put
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -13,16 +13,18 @@ class SearchThread(QThread):
 
     result = pyqtSignal(dict)
 
-    def __init__(self, logger, ienv_path, path: str, checksum: str, key_vals: dict):
+    def __init__(self, logger, ienv_path: Path, search_path: IrodsPath, path_pattern: str,
+                 meta_searches: list, checksum: str):
         """Pass searh parameters."""
         super().__init__()
         self.logger = logger
         self.thread_session = Session(irods_env=ienv_path)
         self.logger.debug("Search thread: created new session")
         self.sync_thread = None
-        self.path = path
+        self.search_path = search_path
+        self.path_pattern = path_pattern
         self.checksum = checksum
-        self.key_vals = key_vals
+        self.ms = meta_searches
 
     def _delete_session(self):
         self.thread_session.close()
@@ -36,14 +38,14 @@ class SearchThread(QThread):
         search_out = {}
         try:
             search_out["results"] = search_data(
-                self.thread_session, path=self.path, checksum=self.checksum, key_vals=self.key_vals
+                self.thread_session, path=self.search_path, path_pattern = self.path_pattern, 
+                checksum=self.checksum, metadata=self.ms
             )
             self._delete_session()
         except NetworkException:
             self._delete_session()
             search_out["error"] = "Search takes too long. Please provide more parameters."
         self.result.emit(search_out)
-
 
 class TransferDataThread(QThread):
     """Transfer data between local and iRODS."""
