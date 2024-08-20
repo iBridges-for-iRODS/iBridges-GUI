@@ -43,13 +43,13 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         self.logger = logging.getLogger(app_name)
         self.session = session
-        self.results = None
         self.num_batches = 0 # number of batches of 50; loading results
         self.browser = browser
         self.search_thread = None
         self.download_thread = None
 
         self.hide_result_elements()
+        self.load_more_button.clicked.connect(self.next_batch)
         self.search_button.clicked.connect(self.search)
         self.clear_button.clicked.connect(self.hide_result_elements)
         self.download_button.clicked.connect(self.download)
@@ -70,7 +70,6 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.download_button.hide()
         self.load_more_button.hide()
         self.clear_button.hide()
-        self.info_label.hide()
         self.search_table.setRowCount(0)
 
     def show_result_elements(self):
@@ -78,13 +77,13 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.search_table.show()
         self.download_button.show()
         self.clear_button.show()
-        self.info_label.show()
 
     def search(self):
         """Validate search parameters and start search."""
         self.hide_result_elements()
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.clear()
+        self.num_batches = 0
 
         msg, search_path, path_pattern, meta_searches, checksum = self._validate_search_params()
         self.logger.debug("Search parameters %s, %s, %s, %s, %s",
@@ -96,12 +95,17 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         self._start_search(search_path, path_pattern, meta_searches, checksum)
 
-    def load_results(self, batch_size = 50):
+    def next_batch(self):
+        """Load next batch of results."""
+        self.load_results(batch_size=25)
+
+    def load_results(self, batch_size = 25):
         """Load seach results into the table view."""
         self.error_label.clear()
         table_data = []  # (Path, Name, Size, Checksum, created, modified)
-        for ipath in self.results[self.num_batches*50:min(self.num_batches*50+50, len(self.results))]:
-            print(str(ipath))
+        start = self.num_batches*batch_size
+        end = min(self.num_batches*25+25, len(self.results))
+        for ipath in self.results[start:end]:
             ipath = IrodsPath(self.session, str(ipath))
             if ipath.dataobject_exists():
                 table_data.append(
@@ -123,13 +127,16 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                         ipath.collection.modify_time.strftime("%d-%m-%Y"),
                     )
                 )
-
+        self.num_batches = self.num_batches + 1
         if self.num_batches == 0:
-            self.num_batches+=1
             populate_table(self.search_table, len(table_data), table_data)
         else:
-            self.num_batches+=1
             append_table(self.search_table, self.search_table.rowCount(), table_data)
+        if len(self.results) > batch_size*self.num_batches:
+            self.load_more_button.show()
+            self.load_more_button.setText(f"Load next {batch_size} results.")
+        else:
+            self.load_more_button.hide()
 
     def download(self):
         """Determine iRODS paths, select destination and start download."""

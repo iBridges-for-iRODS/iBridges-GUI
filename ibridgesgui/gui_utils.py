@@ -24,7 +24,7 @@ LOGO_DIR = files(__package__) / "icons"
 def populate_table(table_widget, rows: int, data_by_row: list):
     """Populate a table-like pyqt widget with data."""
     table_widget.setRowCount(0)
-    table_widget.setRowCount(rows)
+    table_widget.setRowCount(len(data_by_row))
 
     for row, data in enumerate(data_by_row):
         for col, item in enumerate(data):
@@ -33,11 +33,12 @@ def populate_table(table_widget, rows: int, data_by_row: list):
 
 
 def append_table(table_widget, curr_len_table, data_by_row):
+    table_widget.setRowCount(curr_len_table+len(data_by_row))
     for data in data_by_row:
-        curr_len_table+=1
         for col, item in enumerate(data):
             table_widget.setItem(curr_len_table, col,
                                  PyQt6.QtWidgets.QTableWidgetItem(str(item)))
+        curr_len_table+=1
     table_widget.resizeColumnsToContents()
 
 def populate_textfield(text_widget, text_by_row: Union[str, list]):
