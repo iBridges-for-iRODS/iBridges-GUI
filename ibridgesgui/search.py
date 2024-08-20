@@ -43,6 +43,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         self.logger = logging.getLogger(app_name)
         self.session = session
+        self.results = None
         self.num_batches = 0  # number of batches of 50; loading results
         self.browser = browser
         self.search_thread = None
@@ -85,6 +86,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.clear()
         self.num_batches = 0
+        self.results = None
 
         msg, search_path, path_pattern, meta_searches, checksum = self._validate_search_params()
         self.logger.debug(
@@ -216,11 +218,10 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         if not search_path.collection_exists():
             msg = f"Search in {str(search_path)}: Collection dos not exist."
             return msg, search_path, path_pattern, meta_searches, checksum
-        elif len(meta_searches) == 0 and path_pattern is None and checksum is None:
+        if len(meta_searches) == 0 and path_pattern is None and checksum is None:
             msg = "Please provide some search criteria."
             return msg, search_path, path_pattern, meta_searches, checksum
-        else:
-            return None, search_path, path_pattern, meta_searches, checksum
+        return None, search_path, path_pattern, meta_searches, checksum
 
     def _retrieve_selected_paths(self) -> list[IrodsPath]:
         """Retrieve paths from all selected rows in search results table."""

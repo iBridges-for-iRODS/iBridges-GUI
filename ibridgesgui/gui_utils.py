@@ -24,7 +24,7 @@ LOGO_DIR = files(__package__) / "icons"
 def populate_table(table_widget, rows: int, data_by_row: list):
     """Populate a table-like pyqt widget with data."""
     table_widget.setRowCount(0)
-    table_widget.setRowCount(len(data_by_row))
+    table_widget.setRowCount(rows)
 
     for row, data in enumerate(data_by_row):
         for col, item in enumerate(data):
