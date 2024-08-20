@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ibridges import Session, IrodsPath, search_data, sync
+from ibridges import IrodsPath, Session, search_data, sync
 from ibridges.executor import Operations, _obj_get, _obj_put
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -38,7 +38,7 @@ class SearchThread(QThread):
         search_out = {}
         try:
             search_out["results"] = search_data(
-                self.thread_session, path=self.search_path, path_pattern = self.path_pattern, 
+                self.thread_session, path=self.search_path, path_pattern = self.path_pattern,
                 checksum=self.checksum, metadata=self.ms
             )
             self._delete_session()

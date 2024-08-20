@@ -11,7 +11,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, populate_table, append_table
+from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, combine_operations, populate_table
 from ibridgesgui.threads import SearchThread, TransferDataThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
@@ -43,7 +43,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
         self.logger = logging.getLogger(app_name)
         self.session = session
-        self.num_batches = 0 # number of batches of 50; loading results
+        self.num_batches = 0  # number of batches of 50; loading results
         self.browser = browser
         self.search_thread = None
         self.download_thread = None
@@ -55,11 +55,12 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.download_button.clicked.connect(self.download)
 
         # group textfields for gathering key, value, unit
-        self.meta_fields = [(self.key1, self.val1, self.units1),
-                             (self.key2, self.val2, self.units2),
-                             (self.key3, self.val3, self.units3),
-                             (self.key4, self.val4, self.units4)
-                             ]
+        self.meta_fields = [
+            (self.key1, self.val1, self.units1),
+            (self.key2, self.val2, self.units2),
+            (self.key3, self.val3, self.units3),
+            (self.key4, self.val4, self.units4),
+        ]
         self.search_path_field.setText(self.session.home)
         self.search_table.doubleClicked.connect(self.send_to_browser)
 
@@ -86,8 +87,14 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.num_batches = 0
 
         msg, search_path, path_pattern, meta_searches, checksum = self._validate_search_params()
-        self.logger.debug("Search parameters %s, %s, %s, %s, %s",
-                          msg, str(search_path), path_pattern, str(meta_searches), checksum)
+        self.logger.debug(
+            "Search parameters %s, %s, %s, %s, %s",
+            msg,
+            str(search_path),
+            path_pattern,
+            str(meta_searches),
+            checksum,
+        )
         if msg is not None:
             self.error_label.setText(msg)
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
@@ -99,12 +106,12 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         """Load next batch of results."""
         self.load_results(batch_size=25)
 
-    def load_results(self, batch_size = 25):
+    def load_results(self, batch_size=25):
         """Load seach results into the table view."""
         self.error_label.clear()
         table_data = []  # (Path, Name, Size, Checksum, created, modified)
-        start = self.num_batches*batch_size
-        end = min(self.num_batches*25+25, len(self.results))
+        start = self.num_batches * batch_size
+        end = min(self.num_batches * 25 + 25, len(self.results))
         for ipath in self.results[start:end]:
             ipath = IrodsPath(self.session, str(ipath))
             if ipath.dataobject_exists():
@@ -132,7 +139,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             populate_table(self.search_table, len(table_data), table_data)
         else:
             append_table(self.search_table, self.search_table.rowCount(), table_data)
-        if len(self.results) > batch_size*self.num_batches:
+        if len(self.results) > batch_size * self.num_batches:
             self.load_more_button.show()
             self.load_more_button.setText(f"Load next {batch_size} results.")
         else:
@@ -193,13 +200,18 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         meta_triples = [(k.text(), v.text(), u.text()) for k, v, u in self.meta_fields]
         for key, value, units in meta_triples:
             if key != "" or value != "" or units != "":
-                if key == "": key = "%"
-                if value == "": value = "%"
-                if units == "": units = "%"
+                if key == "":
+                    key = "%"
+                if value == "":
+                    value = "%"
+                if units == "":
+                    units = "%"
                 meta_searches.append(MetaSearch(key, value, units))
 
         search_path = IrodsPath(self.session, self.search_path_field.text())
-        path_pattern = self.path_pattern_field.text() if self.path_pattern_field.text() != "" else None
+        path_pattern = (
+            self.path_pattern_field.text() if self.path_pattern_field.text() != "" else None
+        )
         checksum = self.checksum_field.text() if self.checksum_field.text() != "" else None
         if not search_path.collection_exists():
             msg = f"Search in {str(search_path)}: Collection dos not exist."
@@ -234,7 +246,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         # get diff dictionary
         single_ops = []
         for ipath in irods_paths:
-            single_ops.append(download(self.session, ipath, folder, overwrite = True, dry_run=True))
+            single_ops.append(download(self.session, ipath, folder, overwrite=True, dry_run=True))
         ops = combine_operations(single_ops)
 
         self.error_label.setText(f"Downloading to {folder} ....")
@@ -284,8 +296,9 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             return
         self.error_label.setText("Searching ...")
         try:
-            self.search_thread = SearchThread(self.logger, env_path,
-                                              search_path, path_pattern, meta_searches, checksum)
+            self.search_thread = SearchThread(
+                self.logger, env_path, search_path, path_pattern, meta_searches, checksum
+            )
         except Exception:
             self.error_label.setText(
                 "Could not instantiate a new session from{env_path}.Check configuration"
