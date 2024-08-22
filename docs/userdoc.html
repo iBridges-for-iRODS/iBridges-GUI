@@ -230,8 +230,13 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="search">Search</h2>
 <p><code>Search</code> provides a mask in which you can type in path information and iRODS metadata information. Click the <code>Search</code> button. If there are data objects or collections with these specifications they will be listed. A successful search will also open two more buttons: <code>Clear</code> to clear the search results and <code>Download</code>.</p>
 <p><img src="screenshots/search.png" class="img-fluid"></p>
+<p><strong>Search fields</strong></p>
+<p>The path at the top of the page shows the collection in which you are going to search. The collection needs to exist and by default your <code>home</code> collection will be used.</p>
+<p>In the field next to <code>Obj/Coll name</code> you can specify which data objects or sub collections you are looking for. E.g. if you fill in <code>demo</code> the search will look for all collections and data objects called <em>demo</em>.</p>
+<p>In the example above we are looking for all <em>.txt</em> data objects in a collection called <code>my_books</code> denoted by <code>my_books/%.txt</code>.</p>
+<p>In the metadata mask we narrow the search results down to all <em>.txt</em> data objects which are labeled with the metadata key <code>author</code> and the metadata value containing the substring <code>Doyle</code> denoted by <code>%Doyle%</code>.</p>
 <p><strong>Note that the wild card is <code>%</code></strong>!</p>
-<p>In the example search we are looking for data in a collection called <em>my_books</em> which can be located anywhere in the iRODS tree. This is denoted by <code>%</code> and we specify that we want to retrieve data which carries the metadata key <em>author</em> where the value ends with <em>Carroll</em>.</p>
+<p><strong>Search results</strong></p>
 <p><em>Single click</em> on items in the list and click the <code>Download</code> button to open a dialog to select the destination for the data and start the download</p>
 <p><em>Double click</em> on an item in the list to set the <code>Browser</code> to its location to further inspect the metadata, permissions etc.</p>
 
