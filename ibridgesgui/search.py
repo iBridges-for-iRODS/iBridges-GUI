@@ -321,4 +321,4 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.show_result_elements()
             self.results = thread["results"]
             self.load_results()
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursoreShape.ArrowCursor))
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
