@@ -11,7 +11,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, combine_operations, populate_table
+from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, combine_operations
 from ibridgesgui.threads import SearchThread, TransferDataThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
@@ -137,10 +137,8 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                     )
                 )
         self.current_batch_num = self.current_batch_num + 1
-        if self.current_batch_num == 0:
-            populate_table(self.search_table, len(table_data), table_data)
-        else:
-            append_table(self.search_table, self.search_table.rowCount(), table_data)
+        append_table(self.search_table, self.search_table.rowCount(), table_data)
+
         if len(self.results) > batch_size * self.current_batch_num:
             self.load_more_button.show()
             self.load_more_button.setText(f"Load next {batch_size} results.")

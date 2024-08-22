@@ -41,7 +41,7 @@ class SearchThread(QThread):
                 self.thread_session, path=self.search_path, path_pattern = self.path_pattern,
                 checksum=self.checksum, metadata=self.ms
             )
-            # convert IrodsPaths to strings, since the session which they use will be destroyed after the thread ends
+            # convert IrodsPaths to strings, the session  will be destroyed at the end of the thread
             search_out["results"] = [str(ipath) for ipath in res]
             self._delete_session()
         except NetworkException:
