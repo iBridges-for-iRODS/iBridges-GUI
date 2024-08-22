@@ -32,6 +32,16 @@ def populate_table(table_widget, rows: int, data_by_row: list):
     table_widget.resizeColumnsToContents()
 
 
+def append_table(table_widget, curr_len_table, data_by_row):
+    """Append more rows to an existing table widget."""
+    table_widget.setRowCount(curr_len_table+len(data_by_row))
+    for data in data_by_row:
+        for col, item in enumerate(data):
+            table_widget.setItem(curr_len_table, col,
+                                 PyQt6.QtWidgets.QTableWidgetItem(str(item)))
+        curr_len_table+=1
+    table_widget.resizeColumnsToContents()
+
 def populate_textfield(text_widget, text_by_row: Union[str, list]):
     """Populate a text viewer or editor with text."""
     text_widget.clear()

@@ -109,10 +109,20 @@ In the case you want to download a large collection from iRODS, create the desti
 `Search` provides a mask in which you can type in path information and iRODS metadata information. Click the `Search` button. If there are data objects or collections with these specifications they will be listed. A successful search will also open two more buttons: `Clear` to clear the search results and `Download`.
 
   ![](screenshots/search.png)
-  
+
+  **Search fields**
+   
+  The path at the top of the page shows the collection in which you are going to search. The collection needs to exist and by default your `home` collection will be used.
+
+In the field next to `Obj/Coll name` you can specify which data objects or sub collections you are looking for. E.g. if you fill in `demo` the search will look for all collections and data objects called *demo*.
+
+In the example above we are looking for all *.txt* data objects in a collection called `my_books` denoted by `my_books/%.txt`.
+
+In the metadata mask we narrow the search results down to all *.txt* data objects which are labeled with the metadata key `author` and the metadata value containing the substring `Doyle` denoted by `%Doyle%`.
+
   **Note that the wild card is `%`**!
   
-  In the example search we are looking for data in a collection called *my_books* which can be located anywhere in the iRODS tree. This is denoted by `%` and we specify that we want to retrieve data which carries the metadata key *author* where the value ends with *Carroll*.
+  **Search results**
 
   *Single click* on items in the list and click the `Download` button to open a dialog to select the destination for the data and start the download
   
