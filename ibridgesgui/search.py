@@ -44,7 +44,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.logger = logging.getLogger(app_name)
         self.session = session
         self.results = None
-        self.num_batches = 0  # number of batches of 50; loading results
+        self.current_batch_num = 0  # number of batches of 50; loading results
         self.browser = browser
         self.search_thread = None
         self.download_thread = None
@@ -85,7 +85,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.hide_result_elements()
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.clear()
-        self.num_batches = 0
+        self.current_batch_num = 0
         self.results = None
 
         msg, search_path, path_pattern, meta_searches, checksum = self._validate_search_params()
@@ -112,8 +112,8 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         """Load seach results into the table view."""
         self.error_label.clear()
         table_data = []  # (Path, Name, Size, Checksum, created, modified)
-        start = self.num_batches * batch_size
-        end = min(self.num_batches * 25 + 25, len(self.results))
+        start = self.current_batch_num * batch_size
+        end = min((self.current_batch_num + 1) * 25, len(self.results))
         for ipath in self.results[start:end]:
             ipath = IrodsPath(self.session, str(ipath))
             if ipath.dataobject_exists():
@@ -136,12 +136,12 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
                         ipath.collection.modify_time.strftime("%d-%m-%Y"),
                     )
                 )
-        self.num_batches = self.num_batches + 1
-        if self.num_batches == 0:
+        self.current_batch_num = self.current_batch_num + 1
+        if self.current_batch_num == 0:
             populate_table(self.search_table, len(table_data), table_data)
         else:
             append_table(self.search_table, self.search_table.rowCount(), table_data)
-        if len(self.results) > batch_size * self.num_batches:
+        if len(self.results) > batch_size * self.current_batch_num:
             self.load_more_button.show()
             self.load_more_button.setText(f"Load next {batch_size} results.")
         else:
@@ -278,8 +278,8 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
-    def _download_fetch_result(self, thread_output: dict):
-        if thread_output["error"] == "":
+    def _download_fetch_result(self, thread: dict):
+        if thread["error"] == "":
             self.error_label.setText("Download finished.")
         else:
             self.error_label.setText("Errors occurred during download. Consult the logs.")
@@ -314,13 +314,13 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         del self.search_thread
 
-    def _fetch_results(self, therad_output: dict):
-        if "error" in therad_output:
-            self.error_label.setText(therad_output["error"])
-        elif len(therad_output["results"]) == 0:
+    def _fetch_results(self, thread: dict):
+        if "error" in thread:
+            self.error_label.setText(thread["error"])
+        elif len(thread["results"]) == 0:
             self.error_label.setText("No objects or collections found.")
         else:
             self.show_result_elements()
-            self.results = therad_output["results"]
+            self.results = thread["results"]
             self.load_results()
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(QtGui.QCursor(QtCore.Qt.Cursorehape.ArrowCursor))

@@ -37,10 +37,12 @@ class SearchThread(QThread):
         """Run the thread."""
         search_out = {}
         try:
-            search_out["results"] = search_data(
+            res = search_data(
                 self.thread_session, path=self.search_path, path_pattern = self.path_pattern,
                 checksum=self.checksum, metadata=self.ms
             )
+            # convert IrodsPaths to strings, since the session which they use will be destroyed after the thread ends
+            search_out["results"] = [str(ipath) for ipath in res]
             self._delete_session()
         except NetworkException:
             self._delete_session()
