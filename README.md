@@ -1,4 +1,4 @@
-# iBridges <img src="ibridgesgui/icons/logo.png" width="150" align="right">  
+# iBridges GUI <img src="ibridgesgui/icons/logo.png" width="150" align="right">  
 
 <p align="center">
   <p align="center">
