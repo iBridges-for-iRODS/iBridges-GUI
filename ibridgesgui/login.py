@@ -83,10 +83,13 @@ class Login(QDialog, Ui_irodsLogin):
         return True
 
     def _check_resource(self, session):
-        resc = Resources(session).get_resource(session.default_resc)
-        if resc.parent is not None:
+        try:
+            resc = Resources(session).get_resource(session.default_resc)
+            if resc.parent is not None:
+                return False
+            return True
+        except Exception:
             return False
-        return True
 
     def login_function(self):
         """Connect to iRODS server with gathered info."""
@@ -116,14 +119,19 @@ class Login(QDialog, Ui_irodsLogin):
                 self.close()
             elif not self._check_home(session):
                 self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
+                return
             elif not self._check_resource(session):
                 self.error_label.setText(
                     f'"irods_default_resource": "{session.default_resc}" not writeable.'
                 )
+                return
 
         except LoginError:
             self.error_label.setText("irods_environment.json not setup correctly.")
             self.logger.error("irods_environment.json not setup correctly.")
+        except ValueError as err:
+            self.error_label.setText(repr(err))
+            self.logger.error(repr(err))
         except PasswordError:
             self.error_label.setText("Wrong password!")
             self.logger.error("Wrong password provided.")
