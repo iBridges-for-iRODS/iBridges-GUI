@@ -392,7 +392,8 @@ class UploadData(QDialog, Ui_uploadData):
 
     def _upload_status(self, state):
         up_size, transferred_size, obj_count, num_objs, obj_failed = state
-        self.progress_bar.setValue(int(transferred_size*100/up_size))
+        if up_size > 0:
+            self.progress_bar.setValue(int(transferred_size*100/up_size))
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
@@ -559,7 +560,8 @@ class DownloadData(QDialog, Ui_downloadData):
 
     def _download_status(self, state):
         down_size, transferred_size, obj_count, num_objs, obj_failed = state
-        self.progress_bar.setValue(int(transferred_size*100/down_size))
+        if down_size > 0:
+            self.progress_bar.setValue(int(transferred_size*100/down_size))
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
