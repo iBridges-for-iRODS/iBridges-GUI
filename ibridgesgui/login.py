@@ -13,6 +13,7 @@ from PyQt6.uic import loadUi
 
 from ibridgesgui.config import (
     IRODSA,
+    check_irods_config,
     get_last_ienv_path,
     get_prev_settings,
     save_current_settings,
@@ -83,15 +84,24 @@ class Login(QDialog, Ui_irodsLogin):
         return True
 
     def _check_resource(self, session):
-        resc = Resources(session).get_resource(session.default_resc)
-        if resc.parent is not None:
+        try:
+            resc = Resources(session).get_resource(session.default_resc)
+            if resc.parent is not None:
+                return False
+            return True
+        except Exception:
             return False
-        return True
 
     def login_function(self):
         """Connect to iRODS server with gathered info."""
         self.error_label.clear()
         env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
+
+        msg = check_irods_config(env_file, include_network = False)
+        if not msg == "All checks passed successfully.":
+            self.error_label.setText("Go to menu Configure. "+msg)
+            return
+
         try:
             if self.cached_pw is True and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
@@ -116,10 +126,12 @@ class Login(QDialog, Ui_irodsLogin):
                 self.close()
             elif not self._check_home(session):
                 self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')
+                return
             elif not self._check_resource(session):
                 self.error_label.setText(
                     f'"irods_default_resource": "{session.default_resc}" not writeable.'
                 )
+                return
 
         except LoginError:
             self.error_label.setText("irods_environment.json not setup correctly.")
