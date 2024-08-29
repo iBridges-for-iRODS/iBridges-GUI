@@ -268,7 +268,8 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
     def _sync_data_status(self, state):
         up_size, transferred_size, obj_count, num_objs, obj_failed = state
-        self.progress_bar.setValue(int(transferred_size*100/up_size))
+        if up_size > 0:
+            self.progress_bar.setValue(int(transferred_size*100/up_size))
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
