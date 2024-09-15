@@ -1,4 +1,4 @@
-# iBridges GUI <img src="ibridgesgui/icons/logo.png" width="150" align="right">  
+# iBridges GUI <img src="https://github.com/chStaiger/iBridges-Gui/blob/develop/ibridgesgui/icons/logo.png?raw=true" width="150" align="right">  
 
 <p align="center">
   <p align="center">
