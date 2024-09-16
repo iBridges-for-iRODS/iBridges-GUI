@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://chStaiger.github.io/iBridges-Gui/index.html</loc>
-    <lastmod>2024-08-22T18:20:06.119Z</lastmod>
-  </url>
-  <url>
-    <loc>https://chStaiger.github.io/iBridges-Gui/docs/userdoc.html</loc>
-    <lastmod>2024-08-22T18:20:06.111Z</lastmod>
+    <loc>https://chStaiger.github.io/iBridges-Gui/docs/info.html</loc>
+    <lastmod>2024-09-16T11:56:58.458Z</lastmod>
   </url>
   <url>
     <loc>https://chStaiger.github.io/iBridges-Gui/docs/getting-started.html</loc>
-    <lastmod>2024-08-22T18:20:06.091Z</lastmod>
+    <lastmod>2024-09-16T11:56:58.458Z</lastmod>
   </url>
   <url>
-    <loc>https://chStaiger.github.io/iBridges-Gui/docs/info.html</loc>
-    <lastmod>2024-08-22T18:20:06.091Z</lastmod>
+    <loc>https://chStaiger.github.io/iBridges-Gui/index.html</loc>
+    <lastmod>2024-09-16T11:56:58.482Z</lastmod>
+  </url>
+  <url>
+    <loc>https://chStaiger.github.io/iBridges-Gui/docs/userdoc.html</loc>
+    <lastmod>2024-09-16T11:56:58.478Z</lastmod>
   </url>
 </urlset>
