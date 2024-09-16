@@ -177,13 +177,17 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     return False
 
 
-def check_irods_config(ienv: Union[Path, dict]) -> str:
+def check_irods_config(ienv: Union[Path, dict], include_network = True) -> str:
     """Check whether an iRODS configuration file is correct.
 
     Parameters
     ----------
     ienv : Path or dict
         Path to the irods_environment.json or the dictionary conatining the json.
+
+    include_network : bool
+        If true connect to server and check more parameters. Otherwise only
+        existence of parameters in the environment.json will be checked.
 
     Returns
     -------
@@ -213,43 +217,44 @@ def check_irods_config(ienv: Union[Path, dict]) -> str:
         return 'Please set an "irods_default_resource".'
     if not isinstance(env["irods_port"], int):
         return '"irods_port" needs to be an integer, remove quotes.'
-    if not Session.network_check(env["irods_host"], env["irods_port"]):
-        return f'No connection: Network might be down or\n \
-                server name {env["irods_host"]} is incorrect or\n \
-                port {env["irods_port"]} is incorrect.'
-    # check authentication scheme
-    try:
-        sess = iRODSSession(password="bogus", **env)
-        _ = sess.server_version
-    except TypeError as err:
-        return repr(err)
-    except NetworkException as err:
-        return repr(err)
-    except AttributeError as err:
-        return repr(err)
-    except PamLoginException as err:
-        # irods4.3+ specific
-        return f'Adjust "irods_authentication_scheme" {err.args}'
-    except ModuleNotFoundError as err:
-        # irods4.3+ uses string in authenticationscheme as class
-        return f'"irods_authentication_scheme": "{err.name}" does not exist'
+    if include_network:
+        if not Session.network_check(env["irods_host"], env["irods_port"]):
+            return f'No connection: Network might be down or\n \
+                    server name {env["irods_host"]} is incorrect or\n \
+                    port {env["irods_port"]} is incorrect.'
+        # check authentication scheme
+        try:
+            sess = iRODSSession(password="bogus", **env)
+            _ = sess.server_version
+        except TypeError as err:
+            return repr(err)
+        except NetworkException as err:
+            return repr(err)
+        except AttributeError as err:
+            return repr(err)
+        except PamLoginException as err:
+            # irods4.3+ specific
+            return f'Adjust "irods_authentication_scheme" {err.args}'
+        except ModuleNotFoundError as err:
+            # irods4.3+ uses string in authenticationscheme as class
+            return f'"irods_authentication_scheme": "{err.name}" does not exist'
 
-    except PlainTextPAMPasswordError:
-        return (
-            'Value of "irods_client_server_negotiation" needs to be'
-            + ' "request_server_negotiation".'
-        )
+        except PlainTextPAMPasswordError:
+            return (
+                'Value of "irods_client_server_negotiation" needs to be'
+                + ' "request_server_negotiation".'
+            )
 
-    except CAT_INVALID_AUTHENTICATION:
-        return 'Wrong "irods_authentication_scheme".'
-    except ValueError as err:
-        if "scheme" in err.args[0]:
-            return 'Value of "irods_authentication_scheme" not recognised.'
-        return f"{err.args}"
+        except CAT_INVALID_AUTHENTICATION:
+            return 'Wrong "irods_authentication_scheme".'
+        except ValueError as err:
+            if "scheme" in err.args[0]:
+                return 'Value of "irods_authentication_scheme" not recognised.'
+            return f"{err.args}"
 
-    # password incorrect but rest is fine
-    except (CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
-        return "All checks passed successfully."
+        # password incorrect but rest is fine
+        except (CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
+            return "All checks passed successfully."
     # all tests passed
     return "All checks passed successfully."
 

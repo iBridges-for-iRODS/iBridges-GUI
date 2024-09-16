@@ -332,7 +332,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         elif acc_name == "":
             self.error_label.setText("Please provide an access level from the menu.")
             return
-        recursive = self.recurisive_box.currentText() == "True"
+        recursive = self.recursive_box.currentText() == "True"
         try:
             perm = Permissions(self.session, get_irods_item(irods_path))
             perm.set(perm=perm_lables_to_acl.get(acc_name, acc_name),
