@@ -317,7 +317,7 @@ QTabWidget#info_tabs
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="metadata">
       <attribute name="title">
@@ -329,7 +329,7 @@ QTabWidget#info_tabs
          <property name="minimumSize">
           <size>
            <width>600</width>
-           <height>300</height>
+           <height>200</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -502,7 +502,7 @@ QTabWidget#info_tabs
          <property name="minimumSize">
           <size>
            <width>600</width>
-           <height>0</height>
+           <height>200</height>
           </size>
          </property>
          <property name="styleSheet">
