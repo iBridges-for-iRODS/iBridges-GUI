@@ -72,6 +72,10 @@ extension-pkg-whitelist="PyQt6"
 disable=["E0611", "E0401", "E0401", "E1101",
          "W0718", "fixme", "too-many-arguments",
          "R0912", "R0916", "R0911", "R0801", "R0902"]
+
+[tool.pylint.'MESSAGES CONTROL']
+disable="too-many-positional-arguments"
+
 max-line-length=100
 max-locals=35
 max-args=10
