@@ -329,7 +329,7 @@ QTabWidget#info_tabs
          <property name="minimumSize">
           <size>
            <width>600</width>
-           <height>300</height>
+           <height>200</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -502,7 +502,7 @@ QTabWidget#info_tabs
          <property name="minimumSize">
           <size>
            <width>600</width>
-           <height>0</height>
+           <height>200</height>
           </size>
          </property>
          <property name="styleSheet">
