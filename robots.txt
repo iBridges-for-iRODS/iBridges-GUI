@@ -1,1 +1,1 @@
-Sitemap: https://chStaiger.github.io/iBridges-Gui/sitemap.xml
+Sitemap: https://iBridges-for-iRods.github.io/iBridges-GUI/sitemap.xml
