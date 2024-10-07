@@ -1,15 +1,16 @@
-# iBridges GUI <img src="https://github.com/chStaiger/iBridges-Gui/blob/develop/ibridgesgui/icons/logo.png?raw=true" width="150" align="right">  
+# iBridges GUI <img src="https://github.com/iBridges-for-iRods/iBridges-GUI/blob/3395dedf2c7b919e108356a3289eb2c2fc66af6d/ibridgesgui/icons/logo.png" width="150" align="right">  
+
 
 <p align="center">
   <p align="center">
-    <a href="https://chstaiger.github.io/iBridges-Gui/"><strong> Documentation »</strong></a> .
-    <a href="https://github.com/chStaiger/iBridges-Gui/issues">Report Bug or Request Feature</a>
+    <a href="https://ibridges-for-irods.github.io/iBridges-GUI/"><strong> Documentation »</strong></a> .
+    <a href="https://github.com/iBridges-for-iRods/iBridges-GUI/issues">Report Bug or Request Feature</a>
     .
   </p>
 </p>
 
-[![Python package](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/linter.yml)
-[![Quarto Publish](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml/badge.svg)](https://github.com/chStaiger/iBridges-Gui/actions/workflows/publish.yml)
+[![Python package](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/linter.yml/badge.svg)](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/linter.yml)
+[![Quarto Publish](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/publish.yml/badge.svg)](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/publish.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12583957.svg)](https://doi.org/10.5281/zenodo.12583957)
 
 
@@ -86,7 +87,7 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
     
 ## Contributing
 ### Code
-Instructions on how to extend the GUI or contribute to the code base can be found in the [documentation](https://chstaiger.github.io/iBridges-Gui/).
+Instructions on how to extend the GUI or contribute to the code base can be found in the [documentation](https://ibridges-for-irods.github.io/iBridges-GUI/).
 
 ## License
 This project is licensed under the GPL-v3 license.
