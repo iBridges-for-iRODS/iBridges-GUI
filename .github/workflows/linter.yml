@@ -8,9 +8,19 @@ on:
   push:
     branches:
       - develop
-  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - '_quarto.yml'
+      - 'index.qmd'
+  pull_request':
     branches:
       - develop
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - '_quarto.yml'
+      - 'index.qmd'
 
 jobs:
   build:
