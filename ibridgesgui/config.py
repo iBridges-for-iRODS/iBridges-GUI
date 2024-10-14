@@ -281,4 +281,4 @@ def _read_json(file_path: Path) -> dict:
 
 def _write_json(file_path: Path, content: dict):
     with open(file_path, "w", encoding="utf-8") as handle:
-        json.dump(content, handle)
+        json.dump(content, handle, indent=4)
