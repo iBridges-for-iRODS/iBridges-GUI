@@ -87,22 +87,24 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.error_label.clear()
         self.current_batch_num = 0
         self.results = None
+        case_sensitive = self.case_sensitive_box.isChecked()
 
         msg, search_path, path_pattern, meta_searches, checksum = self._validate_search_params()
         self.logger.debug(
-            "Search parameters %s, %s, %s, %s, %s",
+            "Search parameters %s, %s, %s, %s, %s, %s",
             msg,
             str(search_path),
             path_pattern,
             str(meta_searches),
             checksum,
+            str(case_sensitive),
         )
         if msg is not None:
             self.error_label.setText(msg)
             self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
             return
 
-        self._start_search(search_path, path_pattern, meta_searches, checksum)
+        self._start_search(search_path, path_pattern, meta_searches, checksum, case_sensitive)
 
     def next_batch(self):
         """Load next batch of results."""
@@ -283,7 +285,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.error_label.setText("Errors occurred during download. Consult the logs.")
         self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
 
-    def _start_search(self, search_path, path_pattern, meta_searches, checksum):
+    def _start_search(self, search_path, path_pattern, meta_searches, checksum, case_sensitive):
         self.search_button.setEnabled(False)
         # check if session comes from env file in ibridges config
         if is_session_from_config(self.session):
@@ -296,7 +298,13 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.error_label.setText("Searching ...")
         try:
             self.search_thread = SearchThread(
-                self.logger, env_path, search_path, path_pattern, meta_searches, checksum
+                self.logger,
+                env_path,
+                search_path,
+                path_pattern,
+                meta_searches,
+                checksum,
+                case_sensitive,
             )
         except Exception:
             self.error_label.setText(
