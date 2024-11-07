@@ -163,7 +163,7 @@ class CheckConfig(QDialog, Ui_configCheck):
 
     def _init_env_box(self):
         self.envbox.clear()
-        env_jsons = [""] + [path.name for path in self.env_path.glob("irods_environment*json")]
+        env_jsons = [""] + [path.name for path in self.env_path.glob("*.json")]
         if len(env_jsons) != 0:
             self.envbox.addItems(env_jsons)
         self.envbox.addItems(self.templates.keys())
@@ -260,13 +260,8 @@ class CheckConfig(QDialog, Ui_configCheck):
         )
         if create_file[0] != "":
             fname = create_file[0].split("/")[-1]
-            print(fname)
-            if not fname.startswith("irods_environment"):
-                self.error_label.setText(
-                        f"ERROR: Filename {fname} must start with irods_environment.")
-                return
             if not create_file[0].endswith(".json"):
-                self.error_label.setText(f"ERROR: {fname} needs to a .json file.")
+                self.error_label.setText(f"ERROR: {fname} needs must be .json file.")
                 return
             try:
                 save_irods_config(create_file[0], json.loads(self.env_field.toPlainText()))
