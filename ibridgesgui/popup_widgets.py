@@ -259,6 +259,15 @@ class CheckConfig(QDialog, Ui_configCheck):
             self, "Save as File", str(self.env_path), "(*.json)"
         )
         if create_file[0] != "":
+            fname = create_file[0].split("/")[-1]
+            print(fname)
+            if not fname.startswith("irods_environment"):
+                self.error_label.setText(
+                        f"ERROR: Filename {fname} must start with irods_environment.")
+                return
+            if not create_file[0].endswith(".json"):
+                self.error_label.setText(f"ERROR: {fname} needs to a .json file.")
+                return
             try:
                 save_irods_config(create_file[0], json.loads(self.env_field.toPlainText()))
                 self.error_label.setText(f"Configuration saved  as {create_file[0]}")
