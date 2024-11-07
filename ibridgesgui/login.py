@@ -51,10 +51,10 @@ class Login(QDialog, Ui_irodsLogin):
         self.envbox.currentTextChanged.connect(self._init_password)
 
     def _init_envbox(self):
-        env_jsons = [path.name for path in self.irods_config_dir.glob("irods_environment*json")]
+        env_jsons = [path.name for path in self.irods_config_dir.glob("*.json")]
         if len(env_jsons) == 0:
             self.error_label.setText(
-                f"ERROR: no irods_environment*json files found in {self.irods_config_dir}"
+                f"ERROR: no .json files found in {self.irods_config_dir}"
             )
 
         self.envbox.clear()
