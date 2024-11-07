@@ -22,6 +22,8 @@ from ibridgesgui.config import (
 from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
 
+def strictwrite(path, flags, mode='0o600'):
+    return os.open(path, flags, mode)
 
 class Login(QDialog, Ui_irodsLogin):
     """Definition and initialization of the iRODS login window."""
@@ -105,7 +107,7 @@ class Login(QDialog, Ui_irodsLogin):
         try:
             if self.cached_pw is True and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
-                with open(IRODSA, "w",  encoding="utf-8") as f:
+                with open(IRODSA, "w",  encoding="utf-8", opener=strictwrite) as f:
                     f.write(self.prev_settings[str(env_file)])
 
                 session = Session(irods_env=env_file)

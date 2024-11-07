@@ -35,13 +35,13 @@ IRODSA = Path.home() / ".irods" / ".irodsA"
 
 def ensure_log_config_location():
     """Ensure the location for logs and config files."""
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    CONFIG_DIR.mkdir(parents=True, mode=0o700, exist_ok=True)
 
 
 def ensure_irods_location():
     """Ensure that .irods exists in user's home."""
     irods_loc = Path("~/.irods").expanduser()
-    irods_loc.mkdir(exist_ok=True)
+    irods_loc.mkdir(mode=0o700, exist_ok=True)
 
 # logging functions
 def init_logger(app_name: str, log_level: str) -> logging.Logger:
