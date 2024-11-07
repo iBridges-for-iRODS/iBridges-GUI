@@ -54,7 +54,7 @@ class Login(QDialog, Ui_irodsLogin):
         env_jsons = [path.name for path in self.irods_config_dir.glob("*.json")]
         if len(env_jsons) == 0:
             self.error_label.setText(
-                f"ERROR: no irods_environment*json files found in {self.irods_config_dir}"
+                f"ERROR: no .json files found in {self.irods_config_dir}"
             )
 
         self.envbox.clear()
