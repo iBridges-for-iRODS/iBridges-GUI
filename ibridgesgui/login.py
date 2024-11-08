@@ -24,7 +24,7 @@ from ibridgesgui.gui_utils import UI_FILE_DIR
 from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
 
 
-def strictwrite(path, flags, mode='0o600'):
+def strictwrite(path, flags, mode=0o600):
     """Create opener for the standard open command to modify the umask."""
     return os.open(path, flags, mode)
 
