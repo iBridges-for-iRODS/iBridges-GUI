@@ -2,6 +2,7 @@
 
 import logging
 import sys
+from typing import Optional, Union
 
 import irods.exception
 import PyQt6.QtCore
@@ -9,7 +10,6 @@ import PyQt6.QtGui
 import PyQt6.QtWidgets
 import PyQt6.uic
 from ibridges import IrodsPath
-from ibridges.meta import MetaData
 from ibridges.permissions import Permissions
 from ibridges.util import obj_replicas
 
@@ -26,7 +26,7 @@ from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
     """Browser view for iRODS session."""
 
-    def __init__(self, session, app_name):
+    def __init__(self, session, app_name: str):
         """Initialize an iRODS browser view."""
         super().__init__()
         if getattr(sys, "frozen", False):
@@ -81,15 +81,15 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_table.clicked.connect(self.edit_metadata)
         self.add_meta_button.clicked.connect(self.add_icat_meta)
         self.add_meta_button.setToolTip("Add new metadata item.")
-        self.update_meta_button.clicked.connect(self.set_icat_meta)
-        self.update_meta_button.setToolTip("Set all entries with the same key to the new values.")
+        self.update_meta_button.clicked.connect(self.update_icat_meta)
+        self.update_meta_button.setToolTip("Update the metadata item.")
         self.delete_meta_button.clicked.connect(self.delete_icat_meta)
         self.delete_meta_button.setToolTip("Delete the metadata item.")
         # Manilpulate ACLs
         self.acl_table.clicked.connect(self.edit_permission)
         self.add_acl_button.clicked.connect(self.update_permission)
 
-    def update_input_path(self, irods_path):
+    def update_input_path(self, irods_path: Union[str, IrodsPath]):
         """Set the input path to a new path and loads the table."""
         self.input_path.setText(str(irods_path))
         # reset the params to load info tabs
@@ -253,10 +253,10 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                 self.logger.exception("Error loading %s of %s .", tab_name, irods_path)
                 self.error_label.setText(f"Error loading {tab_name} of {irods_path}: {repr(err)}")
 
-    def set_icat_meta(self):
+    def update_icat_meta(self):
         """Button metadata set."""
         try:
-            self._metadata_edits("set")
+            self._metadata_edits("update")
         except Exception as error:
             self.error_label.setText(repr(error))
 
@@ -275,7 +275,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             self.error_label.setText(repr(error))
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
-    def edit_metadata(self, index):
+    def edit_metadata(self, index: PyQt6.QtCore.QModelIndex):
         """Load selected metadata info edit fields."""
         self.error_label.clear()
         self.meta_key_field.clear()
@@ -293,7 +293,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_units_field.setText(units)
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
-    def edit_permission(self, index):
+    def edit_permission(self, index: PyQt6.QtCore.QModelIndex):
         """Load selected acl into editing fields."""
         self.error_label.clear()
         self.acl_user_field.clear()
@@ -367,7 +367,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.preview_browser.clear()
         self.no_meta_label.clear()
 
-    def _get_item_path(self, row):
+    def _get_item_path(self, row: int):
         item_name = self.browser_table.item(row, 1).text()
         return IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
 
@@ -386,7 +386,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         # fill currently selected tab with info
         self.fill_info_tab_content()
 
-    def _fill_replicas_tab(self, irods_path):
+    def _fill_replicas_tab(self, irods_path: Union[IrodsPath, str]):
         """Populate the table in the Replicas tab.
 
         Parameters
@@ -402,7 +402,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             self.replica_table.setRowCount(len(obj.replicas))
         self.replica_table.resizeColumnsToContents()
 
-    def _fill_acls_tab(self, irods_path):
+    def _fill_acls_tab(self, irods_path: Union[IrodsPath, str]):
         """Populate the table in the ACLs tab.
 
         Parameters
@@ -439,7 +439,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_table.resizeColumnsToContents()
         self.owner_label.setText(f"{obj.owner_name}")
 
-    def _fill_metadata_tab(self, irods_path):
+    def _fill_metadata_tab(self, irods_path: Union[IrodsPath, str]):
         """Populate the table in the metadata tab.
 
         Parameters
@@ -452,19 +452,13 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_value_field.clear()
         self.meta_units_field.clear()
         self.no_meta_label.clear()
-        item = None
-        if irods_path.collection_exists():
-            item = irods_path.collection
-        elif irods_path.dataobject_exists():
-            item = irods_path.dataobject
-        if item is not None:
-            meta = MetaData(item)
-            populate_table(self.meta_table, len(list(meta)), meta)
-        if len(list(meta)) == 0:
+        if irods_path.exists():
+            populate_table(self.meta_table, len(list(irods_path.meta)), irods_path.meta)
+        if len(irods_path.meta) == 0:
             self.no_meta_label.setText(f"Metadata for {str(irods_path)} is empty.")
         self.meta_table.resizeColumnsToContents()
 
-    def _fill_preview_tab(self, irods_path):
+    def _fill_preview_tab(self, irods_path: Union[IrodsPath, str]):
         """Populate the table in the metadata tab.
 
         Parameters
@@ -501,7 +495,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         populate_textfield(self.preview_browser, content)
         self.preview_browser.verticalScrollBar().setValue(0)
 
-    def _metadata_edits(self, operation):
+    def _metadata_edits(self, operation: str):
         self.error_label.clear()
         if self._nothing_selected_error():
             return
@@ -517,16 +511,56 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                 self.logger.info(
                     "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
                 )
-            elif operation == "set":
-                irods_path.meta.set(new_key, new_val, new_units)
+            elif operation == "update":
+                row = self.meta_table.currentRow()
+                old_md = [self.meta_table.item(row, 0).text(),
+                          self.meta_table.item(row, 1).text(),
+                          self.meta_table.item(row, 2).text()
+                          ]
+                new_md = [new_key, new_val, new_units]
+
+                new_units = new_md[2] if new_md[2] != 'None' else None
+                new_value = new_md[1] if new_md[1] != 'None' else None
+                old_units = old_md[2] if old_md[2] != 'None' else None
                 self.logger.info(
-                    "Set all metadata with key %s to (%s, %s, %s) for %s",
-                    new_key, new_key, new_val, new_units, irods_path
-                )
+                        "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
+                        irods_path, old_md[0], old_md[1], old_units,
+                        new_md[0], new_value, new_units)
+                self._update_md(irods_path, old_md[0], new_md[0], 
+                                old_md[1], new_value,
+                                old_units, new_units)
+
             elif operation == "delete":
-                irods_path.meta.delete(new_key, new_val, new_units)
+                if new_units == "None":
+                    irods_path.meta.delete(new_key, new_val, None)
+                else:
+                    irods_path.meta.delete(new_key, new_val, new_units)
                 self.logger.info(
                     "Delete metadata (%s, %s, %s) from %s",
                     new_key, new_val, new_units, irods_path
                 )
             self._fill_metadata_tab(irods_path)
+
+    def _update_md(self, irods_path: IrodsPath, 
+                   key: str, new_key: str,
+                   value: Optional[str] = None, new_value: Optional[str] = None,
+                   units: Optional[str] = None, new_units: Optional[str] = None):
+       
+        if new_key is None or new_key == '':
+            raise ValueError("No new key set.")
+        if new_value is None and new_units is None:
+            raise ValueError("New value and units cannot be empty.")
+        if new_value == '':
+            raise ValueError("New value cannot be empty.")
+        if units is None:
+            if (key, value) not in irods_path.meta:
+                raise ValueError(f"{key}, {value} does not exist.")
+        else:
+            if (key, value, units) not in irods_path.meta:
+                raise ValueError(f"{key}, {value} {units} does not exist.")
+
+        irods_path.meta.add(new_key, new_value, new_units)
+        if units:
+            irods_path.meta.delete(key, value, units)
+        else:
+            irods_path.meta.delete(key, value, None)

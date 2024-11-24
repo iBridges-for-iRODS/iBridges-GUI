@@ -405,7 +405,7 @@ class Ui_tabBrowser(object):
         self.delete_meta_button.setText(_translate("tabBrowser", "Delete"))
         self.label_4.setText(_translate("tabBrowser", "Key"))
         self.label_3.setText(_translate("tabBrowser", "Edit"))
-        self.update_meta_button.setText(_translate("tabBrowser", "Set all keys .."))
+        self.update_meta_button.setText(_translate("tabBrowser", "Update"))
         self.label_6.setText(_translate("tabBrowser", "Value"))
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.metadata), _translate("tabBrowser", "Metadata"))
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.preview), _translate("tabBrowser", "Preview"))
