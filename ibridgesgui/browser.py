@@ -526,7 +526,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                         "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
                         irods_path, old_md[0], old_md[1], old_units,
                         new_md[0], new_value, new_units)
-                self._update_md(irods_path, old_md[0], new_md[0], 
+                self._update_md(irods_path, old_md[0], new_md[0],
                                 old_md[1], new_value,
                                 old_units, new_units)
 
@@ -541,11 +541,11 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                 )
             self._fill_metadata_tab(irods_path)
 
-    def _update_md(self, irods_path: IrodsPath, 
+    def _update_md(self, irods_path: IrodsPath,
                    key: str, new_key: str,
                    value: Optional[str] = None, new_value: Optional[str] = None,
                    units: Optional[str] = None, new_units: Optional[str] = None):
-       
+
         if new_key is None or new_key == '':
             raise ValueError("No new key set.")
         if new_value is None and new_units is None:
