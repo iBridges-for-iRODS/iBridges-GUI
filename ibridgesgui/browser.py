@@ -2,7 +2,7 @@
 
 import logging
 import sys
-from typing import Optional, Union
+from typing import Union
 
 import irods.exception
 import PyQt6.QtCore
@@ -317,10 +317,10 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         acc_name = self.acl_box.currentText()
 
         perm_lables_to_acl = {
-                "Newly added items to collection will inherit permissions": "inherit",
-                "Remove inhertiance.": "noinherit",
-                "delete": "null"
-                }
+            "Newly added items to collection will inherit permissions": "inherit",
+            "Remove inhertiance.": "noinherit",
+            "delete": "null",
+        }
 
         if perm_lables_to_acl.get(acc_name, acc_name) in ("inherit", "noinherit"):
             if irods_path.dataobject_exists():
@@ -335,19 +335,29 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         recursive = self.recursive_box.currentText() == "True"
         try:
             perm = Permissions(self.session, get_irods_item(irods_path))
-            perm.set(perm=perm_lables_to_acl.get(acc_name, acc_name),
-                     user=user_name, zone=user_zone, recursive=recursive)
+            perm.set(
+                perm=perm_lables_to_acl.get(acc_name, acc_name),
+                user=user_name,
+                zone=user_zone,
+                recursive=recursive,
+            )
             if perm_lables_to_acl.get(acc_name, acc_name) == "null":
                 self.logger.info(
                     "Delete access (%s, %s, %s, %s) for %s",
                     perm_lables_to_acl.get(acc_name, acc_name),
-                    user_name, user_zone, str(recursive), str(irods_path)
+                    user_name,
+                    user_zone,
+                    str(recursive),
+                    str(irods_path),
                 )
             else:
                 self.logger.info(
                     "Add/change access of %s to (%s, %s, %s, %s)",
-                    str(irods_path), perm_lables_to_acl.get(acc_name, acc_name),
-                    user_name, user_zone, str(recursive)
+                    str(irods_path),
+                    perm_lables_to_acl.get(acc_name, acc_name),
+                    user_name,
+                    user_zone,
+                    str(recursive),
                 )
             self._fill_acls_tab(irods_path)
         except (irods.exception.CAT_INVALID_USER, irods.exception.SYS_NOT_ALLOWED):
@@ -420,7 +430,9 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         obj = None
         obj_acl_box_items = ["read", "write", "own", "delete"]
         coll_acl_box_items = obj_acl_box_items + [
-                "Newly added items to collection will inherit permissions", "Remove inheritance."]
+            "Newly added items to collection will inherit permissions",
+            "Remove inheritance.",
+        ]
 
         if irods_path.collection_exists():
             obj = irods_path.collection
@@ -504,7 +516,10 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         new_key = self.meta_key_field.text()
         new_val = self.meta_value_field.text()
         new_units = self.meta_units_field.text()
-        if new_key != "" and new_val != "":
+        if new_key == "" or new_val == "" or new_key == "None" or new_val == "None":
+            self.error_label.setText("Key and value must not be empty or None.")
+        else:
+            new_units = new_units if new_units != "None" else None
             irods_path = self._get_item_path(self.browser_table.currentRow())
             if operation == "add":
                 irods_path.meta.add(new_key, new_val, new_units)
@@ -513,54 +528,31 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
                 )
             elif operation == "update":
                 row = self.meta_table.currentRow()
-                old_md = [self.meta_table.item(row, 0).text(),
-                          self.meta_table.item(row, 1).text(),
-                          self.meta_table.item(row, 2).text()
-                          ]
-                new_md = [new_key, new_val, new_units]
-
-                new_units = new_md[2] if new_md[2] != 'None' else None
-                new_value = new_md[1] if new_md[1] != 'None' else None
-                old_units = old_md[2] if old_md[2] != 'None' else None
+                old_key = self.meta_table.item(row, 0).text()
+                old_val = self.meta_table.item(row, 1).text()
+                old_units = (
+                    self.meta_table.item(row, 2).text()
+                    if self.meta_table.item(row, 2).text() != "None"
+                    else None
+                )
+                print(old_key, old_val, old_units)
                 self.logger.info(
-                        "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
-                        irods_path, old_md[0], old_md[1], old_units,
-                        new_md[0], new_value, new_units)
-                self._update_md(irods_path, old_md[0], new_md[0],
-                                old_md[1], new_value,
-                                old_units, new_units)
-
+                    "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
+                    irods_path,
+                    old_key,
+                    old_val,
+                    old_units,
+                    new_key,
+                    new_val,
+                    new_units,
+                )
+                irods_path.meta[old_key, old_val, old_units] = [new_key, new_val, new_units]
             elif operation == "delete":
                 if new_units == "None":
                     irods_path.meta.delete(new_key, new_val, None)
                 else:
                     irods_path.meta.delete(new_key, new_val, new_units)
                 self.logger.info(
-                    "Delete metadata (%s, %s, %s) from %s",
-                    new_key, new_val, new_units, irods_path
+                    "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
                 )
             self._fill_metadata_tab(irods_path)
-
-    def _update_md(self, irods_path: IrodsPath,
-                   key: str, new_key: str,
-                   value: Optional[str] = None, new_value: Optional[str] = None,
-                   units: Optional[str] = None, new_units: Optional[str] = None):
-
-        if new_key is None or new_key == '':
-            raise ValueError("No new key set.")
-        if new_value is None and new_units is None:
-            raise ValueError("New value and units cannot be empty.")
-        if new_value == '':
-            raise ValueError("New value cannot be empty.")
-        if units is None:
-            if (key, value) not in irods_path.meta:
-                raise ValueError(f"{key}, {value} does not exist.")
-        else:
-            if (key, value, units) not in irods_path.meta:
-                raise ValueError(f"{key}, {value} {units} does not exist.")
-
-        irods_path.meta.add(new_key, new_value, new_units)
-        if units:
-            irods_path.meta.delete(key, value, units)
-        else:
-            irods_path.meta.delete(key, value, None)
