@@ -1,6 +1,7 @@
 """Welcome tab."""
 
 import sys
+from datetime import datetime
 
 import PyQt6.QtCore
 import PyQt6.QtGui
@@ -22,7 +23,10 @@ class Welcome(PyQt6.QtWidgets.QWidget, Ui_Welcome):
         else:
             PyQt6.uic.loadUi(UI_FILE_DIR / "welcome.ui", self)
 
-        self.pixmap = PyQt6.QtGui.QPixmap(str(LOGO_DIR / "logo.png"))
+        if datetime.today().month == 12:
+            self.pixmap = PyQt6.QtGui.QPixmap(str(LOGO_DIR / "christmas-logo.png"))
+        else:
+            self.pixmap = PyQt6.QtGui.QPixmap(str(LOGO_DIR / "logo.png"))
         self.logo = PyQt6.QtWidgets.QLabel()
         self.logo.setPixmap(self.pixmap)
         self.logo.setAlignment(PyQt6.QtCore.Qt.AlignmentFlag.AlignCenter)

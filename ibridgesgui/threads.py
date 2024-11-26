@@ -13,8 +13,16 @@ class SearchThread(QThread):
 
     result = pyqtSignal(dict)
 
-    def __init__(self, logger, ienv_path: Path, search_path: IrodsPath, path_pattern: str,
-                 meta_searches: list, checksum: str):
+    def __init__(
+        self,
+        logger,
+        ienv_path: Path,
+        search_path: IrodsPath,
+        path_pattern: str,
+        meta_searches: list,
+        checksum: str,
+        case_sensitive: bool,
+    ):
         """Pass searh parameters."""
         super().__init__()
         self.logger = logger
@@ -24,6 +32,7 @@ class SearchThread(QThread):
         self.search_path = search_path
         self.path_pattern = path_pattern
         self.checksum = checksum
+        self.case_sensitive = case_sensitive
         self.ms = meta_searches
 
     def _delete_session(self):
@@ -38,8 +47,12 @@ class SearchThread(QThread):
         search_out = {}
         try:
             res = search_data(
-                self.thread_session, path=self.search_path, path_pattern = self.path_pattern,
-                checksum=self.checksum, metadata=self.ms
+                self.thread_session,
+                path=self.search_path,
+                path_pattern=self.path_pattern,
+                checksum=self.checksum,
+                metadata=self.ms,
+                case_sensitive=self.case_sensitive,
             )
             # convert IrodsPaths to strings, the session  will be destroyed at the end of the thread
             search_out["results"] = [str(ipath) for ipath in res]
@@ -48,6 +61,7 @@ class SearchThread(QThread):
             self._delete_session()
             search_out["error"] = "Search takes too long. Please provide more parameters."
         self.result.emit(search_out)
+
 
 class TransferDataThread(QThread):
     """Transfer data between local and iRODS."""
@@ -128,12 +142,9 @@ class TransferDataThread(QThread):
                     transfer_out["error"]
                     + f"\nTransfer failed, cannot upload {str(local_path)}: {repr(error)}"
                 )
-            self.current_progress.emit([self.up_sizes,
-                                        transferred_size,
-                                        obj_count,
-                                        len(self.ops.upload),
-                                        obj_failed])
-
+            self.current_progress.emit(
+                [self.up_sizes, transferred_size, obj_count, len(self.ops.upload), obj_failed]
+            )
 
         transferred_size = 0
         for irods_path, local_path in self.ops.download:
@@ -166,11 +177,9 @@ class TransferDataThread(QThread):
                     transfer_out["error"]
                     + f"\nTransfer failed, cannot download {str(irods_path)}: {repr(error)}"
                 )
-            self.current_progress.emit([self.down_sizes,
-                                       transferred_size,
-                                       file_count,
-                                       len(self.ops.download),
-                                       file_failed])
+            self.current_progress.emit(
+                [self.down_sizes, transferred_size, file_count, len(self.ops.download), file_failed]
+            )
 
         self.ops.execute_meta_download()
         self._delete_session()
