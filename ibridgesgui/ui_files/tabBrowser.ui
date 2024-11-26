@@ -444,7 +444,7 @@ QTabWidget#info_tabs
             </font>
            </property>
            <property name="text">
-            <string>Set all keys ..</string>
+            <string>Update</string>
            </property>
           </widget>
          </item>
