@@ -516,43 +516,27 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         new_key = self.meta_key_field.text()
         new_val = self.meta_value_field.text()
         new_units = self.meta_units_field.text()
-        if new_key == "" or new_val == "" or new_key == "None" or new_val == "None":
-            self.error_label.setText("Key and value must not be empty or None.")
-        else:
-            new_units = new_units if new_units != "None" else None
-            irods_path = self._get_item_path(self.browser_table.currentRow())
-            if operation == "add":
-                irods_path.meta.add(new_key, new_val, new_units)
-                self.logger.info(
-                    "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
+        irods_path = self._get_item_path(self.browser_table.currentRow())
+        if operation == "add":
+            irods_path.meta.add(new_key, new_val, new_units)
+            self.logger.info(
+                "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
+            )
+        elif operation == "update":
+            row = self.meta_table.currentRow()
+            old_key = self.meta_table.item(row, 0).text()
+            old_val = self.meta_table.item(row, 1).text()
+            old_units = self.meta_table.item(row, 2).text()
+            print(old_key, old_val, old_units)
+            self.logger.info(
+                "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
+                irods_path, old_key, old_val, old_units,
+                new_key, new_val, new_units,
                 )
-            elif operation == "update":
-                row = self.meta_table.currentRow()
-                old_key = self.meta_table.item(row, 0).text()
-                old_val = self.meta_table.item(row, 1).text()
-                old_units = (
-                    self.meta_table.item(row, 2).text()
-                    if self.meta_table.item(row, 2).text() != "None"
-                    else None
+            irods_path.meta[old_key, old_val, old_units] = [new_key, new_val, new_units]
+        elif operation == "delete":
+            irods_path.meta.delete(new_key, new_val, new_units)
+            self.logger.info(
+                "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
                 )
-                print(old_key, old_val, old_units)
-                self.logger.info(
-                    "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
-                    irods_path,
-                    old_key,
-                    old_val,
-                    old_units,
-                    new_key,
-                    new_val,
-                    new_units,
-                )
-                irods_path.meta[old_key, old_val, old_units] = [new_key, new_val, new_units]
-            elif operation == "delete":
-                if new_units == "None":
-                    irods_path.meta.delete(new_key, new_val, None)
-                else:
-                    irods_path.meta.delete(new_key, new_val, new_units)
-                self.logger.info(
-                    "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
-                )
-            self._fill_metadata_tab(irods_path)
+        self._fill_metadata_tab(irods_path)
