@@ -21,6 +21,11 @@ from ibridgesgui.sync import Sync
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.welcome import Welcome
 
+try:  # Python < 3.10 (backport)
+    from importlib_metadata import version  # type: ignore
+except ImportError:
+    from importlib.metadata import version  # type: ignore [assignment]
+
 # Global constants
 THIS_APPLICATION = "ibridges-gui"
 
@@ -123,8 +128,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def welcome_tab(self):
         """Create first tab."""
+        try:
+            release = version("ibridgesgui")
+        except Exception:
+            release = ""
         welcome = Welcome()
-        self.tab_widget.addTab(welcome, "iBridges")
+        self.tab_widget.addTab(welcome, f"iBridges {release}")
 
     def init_info_tab(self):
         """Create info."""
