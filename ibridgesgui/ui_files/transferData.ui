@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>transferData</class>
+ <widget class="QWidget" name="transferData">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>936</width>
+    <width>973</width>
     <height>395</height>
    </rect>
   </property>
@@ -84,6 +84,7 @@ QTabWidget#info_tabs
        <property name="font">
         <font>
          <pointsize>16</pointsize>
+         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -115,6 +116,7 @@ ibridges_metadata.json</string>
      <property name="font">
       <font>
        <pointsize>16</pointsize>
+       <weight>50</weight>
        <italic>false</italic>
        <bold>false</bold>
       </font>
@@ -168,7 +170,7 @@ ibridges_metadata.json</string>
    <item row="1" column="3">
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>                                                              </string>
+      <string/>
      </property>
     </widget>
    </item>
