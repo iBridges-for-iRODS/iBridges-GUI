@@ -29,7 +29,7 @@ class CreateCollection(QDialog, Ui_createCollection):
     def __init__(self, parent, logger):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "createCollection.ui", self)
@@ -68,7 +68,7 @@ class CreateDirectory(QDialog, Ui_createCollection):
     def __init__(self, parent):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "createCollection.ui", self)
@@ -100,7 +100,7 @@ class Rename(QDialog, Ui_renameItem):
     def __init__(self, irods_path: IrodsPath, logger):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "renameItem.ui", self)
@@ -137,7 +137,7 @@ class CheckConfig(QDialog, Ui_configCheck):
     def __init__(self, logger, env_path):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "configCheck.ui", self)
@@ -280,7 +280,7 @@ class UploadData(QDialog, Ui_uploadData):
     def __init__(self, logger, session, irods_path):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "uploadData.ui", self)
@@ -430,7 +430,7 @@ class DownloadData(QDialog, Ui_downloadData):
     def __init__(self, logger, session, irods_path):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "downloadData.ui", self)

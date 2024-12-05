@@ -29,7 +29,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
     def __init__(self, session, app_name: str):
         """Initialize an iRODS browser view."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi(UI_FILE_DIR / "tabBrowser.ui", self)

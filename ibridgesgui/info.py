@@ -18,7 +18,7 @@ class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
     def __init__(self, session):
         """Initialise the tab."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi(UI_FILE_DIR / "tabInfo.ui", self)
