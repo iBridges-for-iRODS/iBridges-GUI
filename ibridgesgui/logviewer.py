@@ -35,7 +35,7 @@ class LogViewer(PyQt6.QtWidgets.QWidget, Ui_tabLogging):
     def __init__(self, logger):
         """Initialise the tab."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             PyQt6.uic.loadUi(UI_FILE_DIR / "tabLogging.ui", self)

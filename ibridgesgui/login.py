@@ -34,7 +34,7 @@ class Login(QDialog, Ui_irodsLogin):
     def __init__(self, session_dict, app_name):
         """Initialise tab."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             loadUi(UI_FILE_DIR / "irodsLogin.ui", self)
