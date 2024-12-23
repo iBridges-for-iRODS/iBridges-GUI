@@ -1,5 +1,7 @@
 """Handy and reusable functions for the GUI."""
 # ruff: noqa: N802 # Overriding a pyside6 function that is not snake_case
+# pylint: disable=R0903, R1705, C0103
+
 import os
 import pathlib
 from typing import Union
