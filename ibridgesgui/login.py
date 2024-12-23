@@ -9,8 +9,8 @@ from ibridges import IrodsPath, Session
 from ibridges.resources import Resources
 from ibridges.session import LoginError, PasswordError
 from irods.exception import ResourceDoesNotExist
-from PyQt6.QtWidgets import QDialog, QLineEdit
-from PyQt6.uic import loadUi
+from PySide6.QtWidgets import QDialog, QLineEdit
+
 
 from ibridgesgui.config import (
     IRODSA,
@@ -20,7 +20,7 @@ from ibridgesgui.config import (
     save_current_settings,
     set_last_ienv_path,
 )
-from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
 
 
@@ -37,7 +37,7 @@ class Login(QDialog, Ui_irodsLogin):
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            loadUi(UI_FILE_DIR / "irodsLogin.ui", self)
+            load_ui(UI_FILE_DIR / "irodsLogin.ui", self)
 
         self.logger = logging.getLogger(app_name)
         self.irods_config_dir = Path("~", ".irods").expanduser()

@@ -7,14 +7,14 @@ far as it displays.
 
 import irods
 import irods.exception
-import PyQt6
-import PyQt6.QtCore
-import PyQt6.QtGui
-import PyQt6.QtWidgets
+
+import PySide6.QtCore
+import PySide6.QtGui
+import PySide6.QtWidgets
 from ibridges import IrodsPath
 
 
-class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
+class IrodsTreeModel(PySide6.QtGui.QStandardItemModel):
     """Model for an iRODS tree view."""
 
     def __init__(self, tree_view, irods_root_path: IrodsPath):
@@ -43,24 +43,24 @@ class IrodsTreeModel(PyQt6.QtGui.QStandardItemModel):
         self.clear()
 
     def _tree_row_from_irods_item(self, item, parent_id, level, display_path=False):
-        icon_provider = PyQt6.QtWidgets.QFileIconProvider()
+        icon_provider = PySide6.QtWidgets.QFileIconProvider()
         if display_path:
-            display = PyQt6.QtGui.QStandardItem(item.path)
+            display = PySide6.QtGui.QStandardItem(item.path)
         else:
-            display = PyQt6.QtGui.QStandardItem(item.name)
+            display = PySide6.QtGui.QStandardItem(item.name)
         if isinstance(item, irods.collection.iRODSCollection):
-            display.setIcon(icon_provider.icon(PyQt6.QtWidgets.QFileIconProvider.IconType.Folder))
+            display.setIcon(icon_provider.icon(PySide6.QtWidgets.QFileIconProvider.IconType.Folder))
             datatype = "C"
         else:
-            display.setIcon(icon_provider.icon(PyQt6.QtWidgets.QFileIconProvider.IconType.File))
+            display.setIcon(icon_provider.icon(PySide6.QtWidgets.QFileIconProvider.IconType.File))
             datatype = "d"
         row = [
             display,  # display name
-            PyQt6.QtGui.QStandardItem(str(level + 1)),  # item level in the tree
-            PyQt6.QtGui.QStandardItem(str(item.id)),  # id in iRODS
-            PyQt6.QtGui.QStandardItem(str(parent_id)),  # parent id
-            PyQt6.QtGui.QStandardItem(datatype),  # C or d
-            PyQt6.QtGui.QStandardItem(item.path),  # absolute irods path
+            PySide6.QtGui.QStandardItem(str(level + 1)),  # item level in the tree
+            PySide6.QtGui.QStandardItem(str(item.id)),  # id in iRODS
+            PySide6.QtGui.QStandardItem(str(parent_id)),  # parent id
+            PySide6.QtGui.QStandardItem(datatype),  # C or d
+            PySide6.QtGui.QStandardItem(item.path),  # absolute irods path
         ]
         return row
 

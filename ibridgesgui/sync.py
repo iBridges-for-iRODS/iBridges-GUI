@@ -4,18 +4,18 @@ import logging
 import sys
 from pathlib import Path
 
-import PyQt6.uic
 from ibridges import IrodsPath
-from PyQt6 import QtCore, QtGui
+import PySide6.QtCore
+import PySide6.QtGui
 
-from ibridgesgui.gui_utils import UI_FILE_DIR, populate_table, prep_session_for_copy
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, populate_table, prep_session_for_copy
 from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
 from ibridgesgui.threads import SyncThread, TransferDataThread
 from ibridgesgui.ui_files.tabSync import Ui_tabSync
 
 
-class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
+class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
     """Sync view."""
 
     def __init__(self, session, app_name):
@@ -33,7 +33,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi(UI_FILE_DIR / "tabSync.ui", self)
+            load_ui(UI_FILE_DIR / "tabSync.ui", self)
 
         self.logger = logging.getLogger(app_name)
         self.session = session
@@ -59,10 +59,10 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
     def _init_local_fs_tree(self):
         """Create local FS tree."""
-        self.local_fs_model = QtGui.QFileSystemModel(self.local_fs_tree)
+        self.local_fs_model = PySide6.QtWidgets.QFileSystemModel(self.local_fs_tree)
         self.local_fs_tree.setModel(self.local_fs_model)
-        home_location = QtCore.QStandardPaths.standardLocations(
-            QtCore.QStandardPaths.StandardLocation.HomeLocation
+        home_location = PySide6.QtCore.QStandardPaths.standardLocations(
+            PySide6.QtCore.QStandardPaths.StandardLocation.HomeLocation
         )[0]
         index = self.local_fs_model.setRootPath(home_location)
         self.local_fs_tree.setCurrentIndex(index)
@@ -194,7 +194,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
     def _start_data_sync(self):
         self._enable_buttons(False)
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText("Synchronising data ....")
 
         env_path = prep_session_for_copy(self.session, self.error_label)
@@ -221,7 +221,7 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         self.diff_table.setRowCount(0)
         self._enable_buttons(False)
         self.progress_bar.setValue(0)
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
 
         self.error_label.setText("Calculating differences ....")
 
@@ -243,14 +243,14 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
 
     def _finish_sync_diff(self):
         self._enable_buttons(True)
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
         if self.sync_diff_thread:
             del self.sync_diff_thread
 
     def _finish_sync_data(self):
         self._enable_buttons(True)
         self.sync_button.hide()
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
         if self.sync_data_thread:
             del self.sync_data_thread
 
@@ -294,4 +294,4 @@ class Sync(PyQt6.QtWidgets.QWidget, Ui_tabSync):
         else:
             self.diffs = thread_output["result"]
             self.sync_button.show()
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))

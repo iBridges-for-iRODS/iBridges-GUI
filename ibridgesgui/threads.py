@@ -5,13 +5,13 @@ from pathlib import Path
 from ibridges import IrodsPath, Session, search_data, sync
 from ibridges.executor import Operations, _obj_get, _obj_put
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
-from PyQt6.QtCore import QThread, pyqtSignal
+import PySide6.QtCore
 
 
-class SearchThread(QThread):
+class SearchThread(PySide6.QtCore.QThread):
     """Start iRODS search in an own thread using the same iRODS session."""
 
-    result = pyqtSignal(dict)
+    result = PySide6.QtCore.Signal(dict)
 
     def __init__(
         self,
@@ -63,11 +63,11 @@ class SearchThread(QThread):
         self.result.emit(search_out)
 
 
-class TransferDataThread(QThread):
+class TransferDataThread(PySide6.QtCore.QThread):
     """Transfer data between local and iRODS."""
 
-    result = pyqtSignal(dict)
-    current_progress = pyqtSignal(list)
+    result = PySide6.QtCore.Signal(dict)
+    current_progress = PySide6.QtCore.Signal(list)
 
     def __init__(self, ienv_path: Path, logger, ops: Operations, overwrite: bool):
         """Pass parameters.
@@ -186,10 +186,10 @@ class TransferDataThread(QThread):
         self.result.emit(transfer_out)
 
 
-class SyncThread(QThread):
+class SyncThread(PySide6.QtCore.QThread):
     """Sync between iRODS and local FS."""
 
-    result = pyqtSignal(dict)
+    result = PySide6.QtCore.Signal(dict)
 
     def __init__(self, ienv_path, logger, source, target, dry_run: bool):
         """Pass download parameters."""

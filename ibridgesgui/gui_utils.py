@@ -3,8 +3,11 @@
 import pathlib
 from typing import Union
 
+import os
 import irods
-import PyQt6
+import PySide6.QtWidgets
+import PySide6.QtUiTools
+import PySide6.QtCore
 from ibridges import IrodsPath
 from ibridges.executor import Operations
 
@@ -20,6 +23,33 @@ UI_FILE_DIR = files(__package__) / "ui_files"
 LOGO_DIR = files(__package__) / "icons"
 
 
+class UiLoader(PySide6.QtUiTools.QUiLoader):
+    """UILoader to allow custom widgets"""
+    def __init__(self, base_instance):
+        PySide6.QtUiTools.QUiLoader.__init__(self, base_instance)
+        self.base_instance = base_instance
+
+    def createWidget(self, class_name, parent=None, name=''):
+        if parent is None and self.base_instance:
+            return self.base_instance
+        else:
+            # create a new widget for child widgets
+            widget = PySide6.QtUiTools.QUiLoader.createWidget(self, class_name, parent, name)
+            if self.base_instance:
+                setattr(self.base_instance, name, widget)
+            return widget
+
+
+def load_ui(ui_file, base_instance=None):
+    """load ui, as available in pyqt"""
+    ui_dir = os.path.dirname(ui_file)
+    os.chdir(ui_dir)
+    loader = UiLoader(base_instance)
+    widget = loader.load(ui_file)
+    PySide6.QtCore.QMetaObject.connectSlotsByName(widget)
+    return widget
+
+
 # Widget utils
 def populate_table(table_widget, rows: int, data_by_row: list):
     """Populate a table-like pyqt widget with data."""
@@ -28,7 +58,7 @@ def populate_table(table_widget, rows: int, data_by_row: list):
 
     for row, data in enumerate(data_by_row):
         for col, item in enumerate(data):
-            table_widget.setItem(row, col, PyQt6.QtWidgets.QTableWidgetItem(str(item)))
+            table_widget.setItem(row, col, PySide6.QtWidgets.QTableWidgetItem(str(item)))
     table_widget.resizeColumnsToContents()
 
 
@@ -38,7 +68,7 @@ def append_table(table_widget, curr_len_table, data_by_row):
     for data in data_by_row:
         for col, item in enumerate(data):
             table_widget.setItem(curr_len_table, col,
-                                 PyQt6.QtWidgets.QTableWidgetItem(str(item)))
+                                 PySide6.QtWidgets.QTableWidgetItem(str(item)))
         curr_len_table+=1
     table_widget.resizeColumnsToContents()
 
