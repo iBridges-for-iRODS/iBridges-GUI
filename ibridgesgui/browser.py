@@ -18,7 +18,6 @@ from ibridgesgui.gui_utils import (
     load_ui,
     populate_table,
     populate_textfield,
-    load_ui
 )
 from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
