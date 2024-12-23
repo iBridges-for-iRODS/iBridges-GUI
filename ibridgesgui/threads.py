@@ -2,10 +2,10 @@
 
 from pathlib import Path
 
+import PySide6.QtCore
 from ibridges import IrodsPath, Session, search_data, sync
 from ibridges.executor import Operations, _obj_get, _obj_put
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
-import PySide6.QtCore
 
 
 class SearchThread(PySide6.QtCore.QThread):

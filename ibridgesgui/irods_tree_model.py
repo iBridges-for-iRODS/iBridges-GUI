@@ -7,7 +7,6 @@ far as it displays.
 
 import irods
 import irods.exception
-
 import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets

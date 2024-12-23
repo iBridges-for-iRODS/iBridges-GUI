@@ -4,9 +4,9 @@ import logging
 import sys
 from pathlib import Path
 
-from ibridges import IrodsPath
 import PySide6.QtCore
 import PySide6.QtGui
+from ibridges import IrodsPath
 
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, populate_table, prep_session_for_copy
 from ibridgesgui.irods_tree_model import IrodsTreeModel

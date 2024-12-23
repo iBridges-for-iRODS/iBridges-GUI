@@ -1,13 +1,13 @@
 """Handy and reusable functions for the GUI."""
-
+# ruff: noqa: N802 # Overriding a pyside6 function that is not snake_case
+import os
 import pathlib
 from typing import Union
 
-import os
 import irods
-import PySide6.QtWidgets
-import PySide6.QtUiTools
 import PySide6.QtCore
+import PySide6.QtUiTools
+import PySide6.QtWidgets
 from ibridges import IrodsPath
 from ibridges.executor import Operations
 
@@ -24,12 +24,15 @@ LOGO_DIR = files(__package__) / "icons"
 
 
 class UiLoader(PySide6.QtUiTools.QUiLoader):
-    """UILoader to allow custom widgets"""
+    """UILoader to allow custom widgets."""
+
     def __init__(self, base_instance):
+        """Initialise the UiLoader."""
         PySide6.QtUiTools.QUiLoader.__init__(self, base_instance)
         self.base_instance = base_instance
 
     def createWidget(self, class_name, parent=None, name=''):
+        """Create a widget for the UI loader."""
         if parent is None and self.base_instance:
             return self.base_instance
         else:
@@ -41,7 +44,7 @@ class UiLoader(PySide6.QtUiTools.QUiLoader):
 
 
 def load_ui(ui_file, base_instance=None):
-    """load ui, as available in pyqt"""
+    """Load ui, as available in pyqt."""
     ui_dir = os.path.dirname(ui_file)
     os.chdir(ui_dir)
     loader = UiLoader(base_instance)

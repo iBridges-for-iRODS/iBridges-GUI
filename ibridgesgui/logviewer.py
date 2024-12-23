@@ -5,7 +5,6 @@ import sys
 
 import PySide6
 
-
 from ibridgesgui.config import CONFIG_DIR
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.tabLogging import Ui_tabLogging
