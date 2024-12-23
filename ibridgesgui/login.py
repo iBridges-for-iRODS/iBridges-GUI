@@ -27,6 +27,7 @@ def strictwrite(path, flags, mode=0o600):
     """Create opener for the standard open command to modify the umask."""
     return os.open(path, flags, mode)
 
+
 class Login(QDialog, Ui_irodsLogin):
     """Definition and initialization of the iRODS login window."""
 
@@ -101,7 +102,7 @@ class Login(QDialog, Ui_irodsLogin):
         self.error_label.clear()
         env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
 
-        msg = check_irods_config(env_file, include_network = False)
+        msg = check_irods_config(env_file, include_network=False)
         if not msg == "All checks passed successfully.":
             self.error_label.setText("Go to menu Configure. "+msg)
             return

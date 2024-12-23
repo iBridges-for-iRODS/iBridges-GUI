@@ -4,14 +4,14 @@ import logging
 import sys
 from pathlib import Path
 
+from ibridges import IrodsPath, download
+from ibridges.search import MetaSearch
 import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets
-from ibridges import IrodsPath, download
-from ibridges.search import MetaSearch
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, combine_operations, load_ui
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, append_table, combine_operations
 from ibridgesgui.threads import SearchThread, TransferDataThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 

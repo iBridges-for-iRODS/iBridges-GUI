@@ -6,10 +6,11 @@ import os
 import pathlib
 from typing import Union
 
+import os
 import irods
-import PySide6.QtCore
-import PySide6.QtUiTools
 import PySide6.QtWidgets
+import PySide6.QtUiTools
+import PySide6.QtCore
 from ibridges import IrodsPath
 from ibridges.executor import Operations
 
@@ -46,7 +47,7 @@ class UiLoader(PySide6.QtUiTools.QUiLoader):
 
 
 def load_ui(ui_file, base_instance=None):
-    """Load ui, as available in pyqt."""
+    """load ui, as available in pyqt"""
     ui_dir = os.path.dirname(ui_file)
     os.chdir(ui_dir)
     loader = UiLoader(base_instance)
