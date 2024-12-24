@@ -6,19 +6,19 @@ import sys
 from pathlib import Path
 
 import PySide6.QtGui
-import PySide6.QtWidgets
 import PySide6.QtUiTools
+import PySide6.QtWidgets
 import setproctitle
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import ensure_irods_location, get_log_level, init_logger, set_log_level
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
 from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.search import Search
 from ibridgesgui.sync import Sync
-from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.welcome import Welcome
 

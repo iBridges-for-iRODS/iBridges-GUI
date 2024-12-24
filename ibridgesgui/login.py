@@ -11,7 +11,6 @@ from ibridges.session import LoginError, PasswordError
 from irods.exception import ResourceDoesNotExist
 from PySide6.QtWidgets import QDialog, QLineEdit
 
-
 from ibridgesgui.config import (
     IRODSA,
     check_irods_config,
