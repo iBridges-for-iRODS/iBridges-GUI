@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1278</width>
-    <height>843</height>
+    <width>1307</width>
+    <height>846</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,6 +75,7 @@ QTabWidget#info_tabs
        <property name="font">
         <font>
          <pointsize>16</pointsize>
+         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -89,6 +90,7 @@ QTabWidget#info_tabs
        <property name="font">
         <font>
          <pointsize>16</pointsize>
+         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -374,6 +376,7 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
+             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -401,6 +404,7 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
+             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -425,6 +429,7 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
+             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -439,6 +444,7 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
+             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -476,6 +482,7 @@ QTabWidget#info_tabs
       <property name="font">
        <font>
         <pointsize>16</pointsize>
+        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -552,6 +559,7 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
+             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -645,6 +653,7 @@ in collection</string>
            <property name="font">
             <font>
              <pointsize>16</pointsize>
+             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>

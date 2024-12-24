@@ -4,19 +4,19 @@ import logging
 import sys
 from pathlib import Path
 
-import PyQt6.uic
+import PySide6.QtCore
+import PySide6.QtGui
+import PySide6.QtWidgets
 from ibridges import IrodsPath, download
 from ibridges.search import MetaSearch
-from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtWidgets import QMessageBox
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
-from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, combine_operations
+from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, combine_operations, load_ui
 from ibridgesgui.threads import SearchThread, TransferDataThread
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
 
-class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
+class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
     """Search view."""
 
     def __init__(self, session, app_name, browser):
@@ -39,7 +39,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi(UI_FILE_DIR / "tabSearch.ui", self)
+            load_ui(UI_FILE_DIR / "tabSearch.ui", self)
 
         self.logger = logging.getLogger(app_name)
         self.session = session
@@ -83,7 +83,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
     def search(self):
         """Validate search parameters and start search."""
         self.hide_result_elements()
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.clear()
         self.current_batch_num = 0
         self.results = None
@@ -101,7 +101,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         )
         if msg is not None:
             self.error_label.setText(msg)
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             return
 
         self._start_search(search_path, path_pattern, meta_searches, checksum, case_sensitive)
@@ -149,20 +149,20 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
     def download(self):
         """Determine iRODS paths, select destination and start download."""
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.clear()
         irods_paths = self._retrieve_selected_paths()
         if len(irods_paths) == 0:
             self.error_label.setText("No data selected.")
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             return
         select_dir = Path(
-            QtWidgets.QFileDialog.getExistingDirectory(
+            PySide6.QtWidgets.QFileDialog.getExistingDirectory(
                 self, "Select Directory", directory=str(Path("~").expanduser())
             )
         )
         if str(select_dir) == "" or str(select_dir) == ".":
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             return
         info = f"Download to: {select_dir}\n"
 
@@ -170,19 +170,19 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         overwrite = False
 
         if any(exists for _, exists in data_exists):
-            button_reply = QMessageBox.question(
+            button_reply = PySide6.QtWidgets.QMessageBox.question(
                 self,
                 "Message Box",
                 info + f"Some data already exists in {select_dir}." + "\nOverwrite data?",
             )
         else:
-            button_reply = QMessageBox.question(self, "Message Box", info)
+            button_reply = PySide6.QtWidgets.QMessageBox.question(self, "Message Box", info)
 
-        if button_reply == QMessageBox.StandardButton.Yes:
+        if button_reply == PySide6.QtWidgets.QMessageBox.StandardButton.Yes:
             overwrite = True
             self._start_download(irods_paths, select_dir, overwrite)
         else:
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             return
 
     def send_to_browser(self):
@@ -259,7 +259,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.error_label.setText(
                 f"Could not instantiate a new session from {env_path}: {repr(err)}."
             )
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             return
         self.download_thread.result.connect(self._download_fetch_result)
         self.download_thread.finished.connect(self._finish_download)
@@ -270,7 +270,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
         self.download_button.setEnabled(True)
         self.clear_button.setEnabled(True)
         self.search_button.setEnabled(True)
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
         del self.download_thread
 
     def _download_status(self, state):
@@ -283,7 +283,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.error_label.setText("Download finished.")
         else:
             self.error_label.setText("Errors occurred during download. Consult the logs.")
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
 
     def _start_search(self, search_path, path_pattern, meta_searches, checksum, case_sensitive):
         self.search_button.setEnabled(False)
@@ -317,7 +317,7 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
 
     def _finish_search(self):
         self.search_button.setEnabled(True)
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
         del self.search_thread
 
     def _fetch_results(self, thread: dict):
@@ -330,4 +330,4 @@ class Search(PyQt6.QtWidgets.QWidget, Ui_tabSearch):
             self.results = thread["results"]
             self.load_results()
 
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
