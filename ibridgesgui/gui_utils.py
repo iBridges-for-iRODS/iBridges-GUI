@@ -4,6 +4,7 @@
 
 import os
 import pathlib
+import sys
 from typing import Union
 
 import irods
@@ -20,9 +21,12 @@ try:
 except ImportError:
     from importlib_resources import files
 
-
-UI_FILE_DIR = files(__package__) / "ui_files"
-LOGO_DIR = files(__package__) / "icons"
+if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+    UI_FILE_DIR = pathlib.Path("ui_files")
+    LOGO_DIR = pathlib.Path("icons")
+else:
+    UI_FILE_DIR = files(__package__) / "ui_files"
+    LOGO_DIR = files(__package__) / "icons"
 
 
 class UiLoader(PySide6.QtUiTools.QUiLoader):
