@@ -4,13 +4,13 @@
 
 import os
 import pathlib
+import sys
 from typing import Union
 
-import os
 import irods
-import PySide6.QtWidgets
-import PySide6.QtUiTools
 import PySide6.QtCore
+import PySide6.QtUiTools
+import PySide6.QtWidgets
 from ibridges import IrodsPath
 from ibridges.executor import Operations
 
@@ -21,9 +21,12 @@ try:
 except ImportError:
     from importlib_resources import files
 
-
-UI_FILE_DIR = files(__package__) / "ui_files"
-LOGO_DIR = files(__package__) / "icons"
+if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+    UI_FILE_DIR = pathlib.Path("ui_files")
+    LOGO_DIR = pathlib.Path("icons")
+else:
+    UI_FILE_DIR = files(__package__) / "ui_files"
+    LOGO_DIR = files(__package__) / "icons"
 
 
 class UiLoader(PySide6.QtUiTools.QUiLoader):
@@ -47,7 +50,7 @@ class UiLoader(PySide6.QtUiTools.QUiLoader):
 
 
 def load_ui(ui_file, base_instance=None):
-    """load ui, as available in pyqt"""
+    """Load ui, as available in pyqt."""
     ui_dir = os.path.dirname(ui_file)
     os.chdir(ui_dir)
     loader = UiLoader(base_instance)
