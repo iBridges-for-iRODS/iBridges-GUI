@@ -50,7 +50,7 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
   ```bash
   git clone git@github.com:chStaiger/iBridges-Gui.git
   cd iBridges-Gui
-  pip install .
+  pip install ".[all]"
   ```
   
 ## Start the GUI
