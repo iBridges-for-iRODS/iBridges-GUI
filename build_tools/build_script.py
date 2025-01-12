@@ -67,16 +67,12 @@ def create_exe():
                                                        icons_folder.name))
 
     # Step 5, rename the distribution folder and file
-    shipping_folder = Path('dist').joinpath('ibridges-gui')
+    shipping_folder = Path('output/ibridgesgui')
     if Path(shipping_folder).exists():
         rmtree(shipping_folder, ignore_errors=True)
     shipping_folder.parent.mkdir(parents=True, exist_ok=True)
     Path('__main__.dist').rename(shipping_folder)
-    # Windows
-    if system()[0].upper() == "W":
-        Path(shipping_folder).joinpath('__main__.exe').rename((shipping_folder).joinpath('ibridges-gui.exe'))
-    else:  # Ubuntu/IOS
-        Path('dist').joinpath('__main__').rename((shipping_folder).joinpath('ibridges-gui'))
+    Path(f'{shipping_folder}/__main__.exe').rename(f'{shipping_folder}/ibridges.exe')
 
 
 if __name__ == "__main__":
