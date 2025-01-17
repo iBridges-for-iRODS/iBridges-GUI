@@ -41,7 +41,8 @@ def create_exe():
             venv_activate = f"source {venv_activate}"
         uipy.run_cmd(f"{python} -m venv {venv}")
         uipy.run_cmd(f"{venv_activate} {cmd_sep} python -m pip install --upgrade pip")
-        uipy.run_cmd(f"{venv_activate} {cmd_sep} pip install -r requirements.txt")
+        uipy.run_cmd(f"{venv_activate} {cmd_sep} pip install .")
+        uipy.run_cmd(f"{venv_activate} {cmd_sep} pip install .[deploy]")
     else:
         venv_activate = f"\"{str(venv_activate)}\""
 
