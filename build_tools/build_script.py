@@ -2,6 +2,7 @@
 from pathlib import Path
 from platform import system
 from shutil import copytree, rmtree
+import platform
 
 import ui_to_py as uipy
 
@@ -73,8 +74,10 @@ def create_exe():
         rmtree(shipping_folder, ignore_errors=True)
     shipping_folder.parent.mkdir(parents=True, exist_ok=True)
     Path('__main__.dist').rename(shipping_folder)
-    Path(f'{shipping_folder}/__main__.exe').rename(f'{shipping_folder}/ibridges.exe')
-
+    if 'windows' in platform.system().lower():
+        Path(f'{shipping_folder}/__main__.exe').rename(f'{shipping_folder}/ibridges.exe')
+    elif 'darwin' in platform.system().lower():
+        Path(f'{shipping_folder}/__main__.bin').rename(f'{shipping_folder}/ibridges.bin')
 
 if __name__ == "__main__":
     create_exe()
