@@ -37,7 +37,7 @@ def create_exe():
         venv_activate = venv.joinpath('bin', 'activate')
     if (not venv_activate.exists()) or (not venv_activate.is_file()):
         venv_activate = f"\"{str(venv_activate)}\""
-        if "windows" in system().lower():
+        if "windows" not in system().lower():
             venv_activate = f"source {venv_activate}"
         uipy.run_cmd(f"{python} -m venv {venv}")
         uipy.run_cmd(f"{venv_activate} {cmd_sep} python -m pip install --upgrade pip")

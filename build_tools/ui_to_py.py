@@ -2,6 +2,7 @@
 from pathlib import Path
 from platform import system
 from subprocess import STDOUT, run
+import sys
 
 
 def run_cmd(cmd: str):
@@ -20,7 +21,7 @@ def run_cmd(cmd: str):
     # Print all errors
     if ps.stderr is not None or ps.returncode != 0:
         print(f"commandline error: {ps.stderr}")
-        raise Exception("shell run error")
+        sys.exit(ps.returncode)
 
 
 def os_specific_settings():
