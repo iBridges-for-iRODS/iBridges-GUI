@@ -2,7 +2,6 @@
 from pathlib import Path
 from platform import system
 from shutil import copytree, rmtree
-import platform
 
 import ui_to_py as uipy
 
@@ -32,13 +31,13 @@ def create_exe():
 
     # Step 1b, Create the venv if needed
     # windows
-    if system()[0].upper() == "W":
+    if "windows" in system().lower():
         venv_activate = venv.joinpath('Scripts', 'activate.bat')
     else:  # Ubuntu/IOS
         venv_activate = venv.joinpath('bin', 'activate')
     if (not venv_activate.exists()) or (not venv_activate.is_file()):
         venv_activate = f"\"{str(venv_activate)}\""
-        if system()[0].upper() != "W":
+        if "windows" in system().lower():
             venv_activate = f"source {venv_activate}"
         uipy.run_cmd(f"{python} -m venv {venv}")
         uipy.run_cmd(f"{venv_activate} {cmd_sep} python -m pip install --upgrade pip")
@@ -74,10 +73,11 @@ def create_exe():
         rmtree(shipping_folder, ignore_errors=True)
     shipping_folder.parent.mkdir(parents=True, exist_ok=True)
     Path('__main__.dist').rename(shipping_folder)
-    if 'windows' in platform.system().lower():
+    if "windows" in system().lower():
         Path(f'{shipping_folder}/__main__.exe').rename(f'{shipping_folder}/ibridges.exe')
-    elif 'darwin' in platform.system().lower():
+    elif 'darwin' in system().lower():
         Path(f'{shipping_folder}/__main__.bin').rename(f'{shipping_folder}/ibridges.bin')
+
 
 if __name__ == "__main__":
     create_exe()

@@ -12,7 +12,8 @@ def run_cmd(cmd: str):
             Command to run.
 
     """
-    if system()[0].upper() == "W":  # Windows
+    # Windows
+    if "windows" in system().lower():  
         ps = run(cmd, stderr=STDOUT, shell=True, universal_newlines=True)
     else:
         ps = run(cmd, stderr=STDOUT, shell=True, universal_newlines=True, executable="/bin/bash")
@@ -32,7 +33,8 @@ def os_specific_settings():
             command separator
 
     """
-    if system()[0].upper() == "W":  # windows
+    # Windows
+    if "windows" in system().lower():   
         cmd_sep = "&&"
         python = "python"  # python version
     else:  # Linux, ensure it uses python 3
