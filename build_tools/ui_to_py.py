@@ -29,18 +29,19 @@ def os_specific_settings():
 
     Returns:
         python : str
-            python version
+            python version used to call this function
         cmd_sep : str
             command separator
 
     """
+    python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
     # Windows
-    if "windows" in system().lower():   
+    if "windows" in system().lower():
         cmd_sep = "&&"
-        python = "python"  # python version
+        python = f"py -{python_version}"
     else:  # Linux, ensure it uses python 3
         cmd_sep = ";"
-        python = "python3"
+        python = f"python{python_version}"
     return (python, cmd_sep)
 
 
