@@ -58,7 +58,7 @@ def create_exe():
     if not debug_mode:
         cmd += "--disable-console "
     cmd += f"--standalone --include-package=irods --nofollow-import-to=irods.test\
-        --remove-output --enable-plugin=pyside6 --include-qt-plugins=sensible,styles \
+        --remove-output --enable-plugin=pyside6 \
         --assume-yes-for-downloads --show-progress  \
         --windows-icon-from-ico=\"{icons_folder.joinpath('iBridges.ico')}\" \
         {code_dir.joinpath('__main__.py')} --quiet"
