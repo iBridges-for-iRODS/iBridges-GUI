@@ -73,10 +73,9 @@ def create_exe():
         rmtree(shipping_folder, ignore_errors=True)
     shipping_folder.parent.mkdir(parents=True, exist_ok=True)
     Path('__main__.dist').rename(shipping_folder)
-    if "windows" in system().lower():
-        Path(f'{shipping_folder}/__main__.exe').rename(f'{shipping_folder}/ibridges.exe')
-    elif 'darwin' in system().lower():
-        Path(f'{shipping_folder}/__main__.bin').rename(f'{shipping_folder}/ibridges.bin')
+    for file in Path(shipping_folder).glob('__main__.*'):
+        suffix = file.suffix
+        Path(f'{shipping_folder}/__main__{suffix}').rename(f'{shipping_folder}/ibridges_gui{suffix}')
 
 
 if __name__ == "__main__":
