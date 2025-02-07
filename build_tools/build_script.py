@@ -12,6 +12,7 @@ ui_folder = Path.cwd().joinpath(code_dir, 'ui_files')
 venv = Path.cwd().joinpath('venv')
 # Debug mode shows the console (command prompt with the logging)
 debug_mode = True
+remove_venv = False
 # ---------------------------------------------------------#
 
 
@@ -25,9 +26,10 @@ def create_exe():
     (python, cmd_sep) = uipy.os_specific_settings()
 
     # Step 1: Setup
-    # Step 1a, Ensure the folder for the venv exists
-    if (not venv.exists()) or (not venv.is_dir()):
-        venv.mkdir()
+    # Step 1a,(optional) remove the venv to prevent access issues.
+    if remove_venv:
+        rmtree(venv, ignore_errors=True)
+    venv.mkdir(exist_ok=True)
 
     # Step 1b, Create the venv if needed
     # windows
