@@ -76,7 +76,6 @@ def create_exe(args):
 
 if __name__ == "__main__":
     default_code_folder = Path.cwd().joinpath('ibridgesgui')
-    Path.cwd()
     parser = argparse.ArgumentParser(description="iBridges-Gui exe creator.")
     parser.add_argument('--debug_exe', action="store_true", help='Build executable with debug console')
     parser.add_argument('--rem_venv', action="store_true", help='remove virtual environment')
