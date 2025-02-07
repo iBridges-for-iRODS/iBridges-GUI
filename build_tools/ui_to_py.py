@@ -1,7 +1,7 @@
 """Convert Ui file to PY file."""
 from pathlib import Path
 from platform import system
-from subprocess import STDOUT, run
+from subprocess import run, PIPE
 import sys
 
 
@@ -11,17 +11,20 @@ def run_cmd(cmd: str):
     Args:
         cmd : str
             Command to run.
-
+    Returns:
+        str
+            Output of the command
     """
     # Windows
-    if "windows" in system().lower():  
-        ps = run(cmd, stderr=STDOUT, shell=True, universal_newlines=True)
+    if "windows" in system().lower():
+        ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
     else:
-        ps = run(cmd, stderr=STDOUT, shell=True, universal_newlines=True, executable="/bin/bash")
+        ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True, executable="/bin/bash")
     # Print all errors
-    if ps.stderr is not None or ps.returncode != 0:
+    if ps.stderr != '' or ps.returncode != 0:
         print(f"commandline error: {ps.stderr}")
         sys.exit(ps.returncode)
+    return ps.stdout
 
 
 def os_specific_settings():
