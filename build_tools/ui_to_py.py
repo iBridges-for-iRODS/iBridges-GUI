@@ -21,8 +21,8 @@ def run_cmd(cmd: str):
     else:
         ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True, executable="/bin/bash")
     # Print all errors
-    if ps.stderr != '' or ps.returncode != 0:
-        print(f"commandline error: {ps.stderr}")
+    if ps.returncode != 0:
+        print(f"commandline error: {ps.stderr}, output: {ps.stdout}")
         sys.exit(ps.returncode)
     return ps.stdout
 
