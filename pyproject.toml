@@ -49,8 +49,7 @@ deploy = [
 ]
 
 all = [
-    "ibridgesgui[test]",
-    "ibridgesgui[deploy]",
+    "ibridgesgui[test,deploy]",
 ]
 
 [project.scripts]
