@@ -18,7 +18,7 @@ def run_cmd(cmd: str):
     # Windows
     if "windows" in system().lower():
         ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
-    else:
+    else:  # Ubuntu/Mac OS
         ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True, executable="/bin/bash")
     # Print all errors
     if ps.returncode != 0:
@@ -42,7 +42,7 @@ def os_specific_settings():
     if "windows" in system().lower():
         cmd_sep = "&&"
         python = f"py -{python_version}"
-    else:  # Linux, ensure it uses python 3
+    else:  # Ubuntu/Mac OS
         cmd_sep = ";"
         python = f"python{python_version}"
     return (python, cmd_sep)

@@ -29,7 +29,7 @@ def create_exe(args):
     # windows
     if "windows" in system().lower():
         venv_activate = args.venv.joinpath('Scripts', 'activate.bat')
-    else:  # Ubuntu/IOS
+    else:  # Ubuntu/Mac OS
         venv_activate = args.venv.joinpath('bin', 'activate')
     if (not venv_activate.exists()) or (not venv_activate.is_file()):
         venv_activate = f"\"{str(venv_activate)}\""
