@@ -50,8 +50,9 @@ def os_specific_settings():
 
 def ui_to_py(ui_folder: Path, venv_activate: str, cmd_sep: str):
     """Convert the .ui files to .py files.
+        Example command:
+            pyside6-uic gui/MainWindow.ui -o gui/MainWindow.py
 
-    pyside6-uic gui/MainWindow.ui -o gui/MainWindow.py
     Args:
         ui_folder : Path
             folder containing the .ui files
