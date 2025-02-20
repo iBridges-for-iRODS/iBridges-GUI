@@ -3,6 +3,7 @@
 
 import logging
 import sys
+import os
 from pathlib import Path
 
 import PySide6.QtGui
@@ -185,6 +186,9 @@ def main():
     else:
         set_log_level("debug")
         init_logger(THIS_APPLICATION, "debug")
+
+    # Set the working directory to the directory of the current file
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     ensure_irods_location()
     main_widget = PySide6.QtWidgets.QStackedWidget()
     main_app = MainMenu(THIS_APPLICATION)
