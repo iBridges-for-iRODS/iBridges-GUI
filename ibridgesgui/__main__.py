@@ -2,8 +2,8 @@
 """iBridges GUI startup script."""
 
 import logging
-import sys
 import os
+import sys
 from pathlib import Path
 
 import PySide6.QtGui

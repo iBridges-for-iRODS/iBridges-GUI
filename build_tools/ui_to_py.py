@@ -1,8 +1,8 @@
 """Convert Ui file to PY file."""
+import sys
 from pathlib import Path
 from platform import system
-from subprocess import run, PIPE
-import sys
+from subprocess import PIPE, run
 
 
 def run_cmd(cmd: str):
@@ -11,15 +11,18 @@ def run_cmd(cmd: str):
     Args:
         cmd : str
             Command to run.
+
     Returns:
         str
             Output of the command
+
     """
     # Windows
     if "windows" in system().lower():
         ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
     else:  # Ubuntu/Mac OS
-        ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True, executable="/bin/bash")
+        ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True,
+                 executable="/bin/bash")
     # Print all errors
     if ps.returncode != 0:
         print(f"commandline error: {ps.stderr}, output: {ps.stdout}")
@@ -50,6 +53,7 @@ def os_specific_settings():
 
 def ui_to_py(ui_folder: Path, venv_activate: str, cmd_sep: str):
     """Convert the .ui files to .py files.
+
         Example command:
             pyside6-uic gui/MainWindow.ui -o gui/MainWindow.py
 

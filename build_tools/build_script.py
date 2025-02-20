@@ -1,8 +1,8 @@
 """Build executable with Nuitka."""
+import argparse
 from pathlib import Path
 from platform import system
 from shutil import copytree, rmtree
-import argparse
 
 import ui_to_py as uipy
 
@@ -14,8 +14,9 @@ def replace_folder(source: Path | str, destination: Path | str):
 
 def create_exe(args):
     """Create the exe file for the application.
-        args : argparse.Namespace
-            arguments passed to the function
+
+    args : argparse.Namespace
+        arguments passed to the function
     """
     (python, cmd_sep) = uipy.os_specific_settings()
 
@@ -77,15 +78,20 @@ def create_exe(args):
 if __name__ == "__main__":
     default_code_folder = Path.cwd().joinpath('ibridgesgui')
     parser = argparse.ArgumentParser(description="iBridges-Gui exe creator.")
-    parser.add_argument('--debug_exe', action="store_true", help='Build executable with debug console')
-    parser.add_argument('--rem_venv', action="store_true", help='remove virtual environment')
+    parser.add_argument('--debug_exe', action="store_true",
+                        help='Build executable with debug console')
+    parser.add_argument('--rem_venv', action="store_true",
+                        help='remove virtual environment')
     parser.add_argument('--code_folder', default=default_code_folder, type=Path,
                         help='Full path to the directory with code')
-    parser.add_argument('--ui_folder', default=default_code_folder.joinpath('ui_files'), type=Path, required=False,
+    parser.add_argument('--ui_folder', default=default_code_folder.joinpath('ui_files'),
+                        type=Path, required=False,
                         help='Full path to the directory with ui files')
-    parser.add_argument('--icons_folder', default=default_code_folder.joinpath('icons'), type=Path, required=False,
+    parser.add_argument('--icons_folder', default=default_code_folder.joinpath('icons'),
+                        type=Path, required=False,
                         help='Full path to the directory with the icons')
-    parser.add_argument('--venv', default=Path.cwd().joinpath('venv'), type=Path, required=False,
+    parser.add_argument('--venv', default=Path.cwd().joinpath('venv'),
+                        type=Path, required=False,
                         help='Full path to virtual python environment')
     args = parser.parse_args()
     create_exe(args)
