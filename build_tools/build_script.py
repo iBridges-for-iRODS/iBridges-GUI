@@ -65,10 +65,9 @@ def create_exe(args):
                                                             args.icons_folder.name))
 
     # Step 5, rename the distribution folder and file
-    shipping_folder = Path('output/ibridgesgui')
+    shipping_folder = Path('ibridgesgui_dist')
     if Path(shipping_folder).exists():
         rmtree(shipping_folder, ignore_errors=True)
-    shipping_folder.parent.mkdir(parents=True, exist_ok=True)
     Path('__main__.dist').rename(shipping_folder)
     for file in Path(shipping_folder).glob('__main__.*'):
         suffix = file.suffix
