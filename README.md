@@ -91,7 +91,7 @@ options:
   --venv VENV           Full path to virtual python environment
 ```
 
-This will create a virtual environment `venv` in your iBridges folder. Next to that you will find a new folder `build` and `output`. The executable can be found and started like this for Mac and Linux:
+This will create a virtual environment `venv` in your iBridges folder. Next to that you will find a new folder `build` and `ibridgesgui_dist`. The executable can be found and started like this for Mac and Linux:
 
 ```
 ./output/ibridgesgui/ibridges_gui.bin
