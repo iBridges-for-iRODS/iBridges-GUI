@@ -64,7 +64,42 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
   ```bash
   python ibridgesgui/__main__.py
   ```
- 
+
+ ## Building Executables
+
+We offer build scripts in case you would like to compile iBridges and distribute the executable.
+
+```
+python3 build_tools/build_script.py -h
+
+usage: build_script.py [-h] [--debug_exe] [--rem_venv]
+                       [--code_folder CODE_FOLDER] [--ui_folder UI_FOLDER]
+                       [--icons_folder ICONS_FOLDER] [--venv VENV]
+
+iBridges-Gui exe creator.
+
+options:
+  -h, --help            show this help message and exit
+  --debug_exe           Build executable with debug console
+  --rem_venv            remove virtual environment
+  --code_folder CODE_FOLDER
+                        Full path to the directory with code
+  --ui_folder UI_FOLDER
+                        Full path to the directory with ui files
+  --icons_folder ICONS_FOLDER
+                        Full path to the directory with the icons
+  --venv VENV           Full path to virtual python environment
+```
+
+This will create a virtual environment `venv` in your iBridges folder. Next to that you will find a new folder `build` and `ibridgesgui_dist`. The executable can be found and started like this for Mac and Linux:
+
+```
+./output/ibridgesgui/ibridges_gui.bin
+```
+
+For Windows simply click on the file `output/ibridgesgui/ibridges_gui.exe`.
+
+Please note, that this feature is still in experimental state.
  
 
 ## Authors
