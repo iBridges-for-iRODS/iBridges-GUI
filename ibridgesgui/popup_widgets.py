@@ -487,7 +487,9 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         """Select the download destination."""
         self.error_label.clear()
         select_dir = Path(
-            PySide6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
+            PySide6.QtWidgets.QFileDialog.getExistingDirectory(
+                self, "Select Directory", dir=str(Path("~").expanduser())
+            )
         )
         if str(select_dir) == "" or str(select_dir) == ".":
             return
