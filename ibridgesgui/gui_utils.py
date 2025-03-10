@@ -37,7 +37,7 @@ class UiLoader(PySide6.QtUiTools.QUiLoader):
         PySide6.QtUiTools.QUiLoader.__init__(self, base_instance)
         self.base_instance = base_instance
 
-    def createWidget(self, class_name, parent=None, name=''):
+    def createWidget(self, class_name, parent=None, name=""):
         """Create a widget for the UI loader."""
         if parent is None and self.base_instance:
             return self.base_instance
@@ -73,13 +73,13 @@ def populate_table(table_widget, rows: int, data_by_row: list):
 
 def append_table(table_widget, curr_len_table, data_by_row):
     """Append more rows to an existing table widget."""
-    table_widget.setRowCount(curr_len_table+len(data_by_row))
+    table_widget.setRowCount(curr_len_table + len(data_by_row))
     for data in data_by_row:
         for col, item in enumerate(data):
-            table_widget.setItem(curr_len_table, col,
-                                 PySide6.QtWidgets.QTableWidgetItem(str(item)))
-        curr_len_table+=1
+            table_widget.setItem(curr_len_table, col, PySide6.QtWidgets.QTableWidgetItem(str(item)))
+        curr_len_table += 1
     table_widget.resizeColumnsToContents()
+
 
 def populate_textfield(text_widget, text_by_row: Union[str, list]):
     """Populate a text viewer or editor with text."""
@@ -142,6 +142,7 @@ def combine_operations(operations: list[Operations]) -> Operations:
         ops.upload.extend(op.upload)
 
     return ops
+
 
 # OS utils
 def get_downloads_dir() -> pathlib.Path:

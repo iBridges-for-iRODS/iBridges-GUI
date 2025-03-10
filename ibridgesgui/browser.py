@@ -530,13 +530,18 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
             print(old_key, old_val, old_units)
             self.logger.info(
                 "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
-                irods_path, old_key, old_val, old_units,
-                new_key, new_val, new_units,
-                )
+                irods_path,
+                old_key,
+                old_val,
+                old_units,
+                new_key,
+                new_val,
+                new_units,
+            )
             irods_path.meta[old_key, old_val, old_units] = [new_key, new_val, new_units]
         elif operation == "delete":
             irods_path.meta.delete(new_key, new_val, new_units)
             self.logger.info(
                 "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
-                )
+            )
         self._fill_metadata_tab(irods_path)

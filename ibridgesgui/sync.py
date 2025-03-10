@@ -205,9 +205,7 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
                 env_path, self.logger, self.diffs, overwrite=True
             )
         except Exception as err:
-            self.error_label.setText(
-                    f"Could not instantiate a new session from{env_path}: {err}"
-            )
+            self.error_label.setText(f"Could not instantiate a new session from{env_path}: {err}")
             return
 
         self.sync_data_thread.current_progress.connect(self._sync_data_status)
@@ -269,7 +267,7 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
     def _sync_data_status(self, state):
         up_size, transferred_size, obj_count, num_objs, obj_failed = state
         if up_size > 0:
-            self.progress_bar.setValue(int(transferred_size*100/up_size))
+            self.progress_bar.setValue(int(transferred_size * 100 / up_size))
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 

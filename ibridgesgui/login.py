@@ -58,9 +58,7 @@ class Login(QDialog, Ui_irodsLogin):
     def _init_envbox(self):
         env_jsons = [path.name for path in self.irods_config_dir.glob("*.json")]
         if len(env_jsons) == 0:
-            self.error_label.setText(
-                f"ERROR: no .json files found in {self.irods_config_dir}"
-            )
+            self.error_label.setText(f"ERROR: no .json files found in {self.irods_config_dir}")
 
         self.envbox.clear()
         self.envbox.addItems(env_jsons)
@@ -104,13 +102,13 @@ class Login(QDialog, Ui_irodsLogin):
 
         msg = check_irods_config(env_file, include_network=False)
         if not msg == "All checks passed successfully.":
-            self.error_label.setText("Go to menu Configure. "+msg)
+            self.error_label.setText("Go to menu Configure. " + msg)
             return
 
         try:
             if self.cached_pw is True and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
-                with open(IRODSA, "w",  encoding="utf-8", opener=strictwrite) as f:
+                with open(IRODSA, "w", encoding="utf-8", opener=strictwrite) as f:
                     f.write(self.prev_settings[str(env_file)])
 
                 session = Session(irods_env=env_file)
