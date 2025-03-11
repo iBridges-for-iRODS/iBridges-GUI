@@ -158,7 +158,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
             return
         select_dir = Path(
             PySide6.QtWidgets.QFileDialog.getExistingDirectory(
-                self, "Select Directory", directory=str(Path("~").expanduser())
+                self, "Select Directory", dir=str(Path("~").expanduser())
             )
         )
         if str(select_dir) == "" or str(select_dir) == ".":
