@@ -22,7 +22,7 @@ class QPlainTextEditLogger(logging.Handler, PySide6.QtCore.QObject):
 
     def emit(self, record: logging.LogRecord):
         """Pass `record` to all connected slots."""
-        msg = self.format(record)+"\n"
+        msg = self.format(record) + "\n"
         self.widget.insertPlainText(msg)
 
 

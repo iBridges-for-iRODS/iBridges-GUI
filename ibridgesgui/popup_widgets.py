@@ -13,7 +13,7 @@ import PySide6.QtWidgets
 from ibridges import IrodsPath, download, upload
 from ibridges.util import find_environment_provider, get_environment_providers
 
-#from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
+# from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from ibridgesgui.config import _read_json, check_irods_config, get_last_ienv_path, save_irods_config
 from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, load_ui, populate_textfield
 from ibridgesgui.threads import TransferDataThread
@@ -398,7 +398,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
     def _upload_status(self, state):
         up_size, transferred_size, obj_count, num_objs, obj_failed = state
         if up_size > 0:
-            self.progress_bar.setValue(int(transferred_size*100/up_size))
+            self.progress_bar.setValue(int(transferred_size * 100 / up_size))
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
@@ -488,7 +488,7 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         self.error_label.clear()
         select_dir = Path(
             PySide6.QtWidgets.QFileDialog.getExistingDirectory(
-                self, "Select Directory", directory=str(Path("~").expanduser())
+                self, "Select Directory", dir=str(Path("~").expanduser())
             )
         )
         if str(select_dir) == "" or str(select_dir) == ".":
@@ -520,7 +520,7 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         self.metadata.setEnabled(enable)
 
     def _start_download(self, local_path):
-        self.setCursor(PySide6.QtGui.QCursor(PySide6. QtCore.Qt.CursorShape.WaitCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText(f"Downloading to {local_path} ....")
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
         try:
@@ -552,9 +552,7 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
             self._enable_buttons(True)
             return
         except Exception as err:
-            self.error_label.setText(
-                f"Could not instantiate thread from {env_path}: {repr(err)}."
-            )
+            self.error_label.setText(f"Could not instantiate thread from {env_path}: {repr(err)}.")
             self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
             return
@@ -566,7 +564,7 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
     def _download_status(self, state):
         down_size, transferred_size, obj_count, num_objs, obj_failed = state
         if down_size > 0:
-            self.progress_bar.setValue(int(transferred_size*100/down_size))
+            self.progress_bar.setValue(int(transferred_size * 100 / down_size))
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
