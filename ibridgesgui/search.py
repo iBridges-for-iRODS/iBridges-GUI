@@ -74,6 +74,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.search_table.hide()
         self.download_button.hide()
         self.load_more_button.hide()
+        self.found_label.clear()
         self.downall_button.hide()
         self.clear_button.hide()
         self.search_table.setRowCount(0)
@@ -148,9 +149,11 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
 
         if len(self.results) > batch_size * self.current_batch_num:
             self.load_more_button.show()
+            self.found_label.setText(f"{len(self.results)} items found.")
             self.load_more_button.setText(f"Load next {batch_size} results.")
         else:
             self.load_more_button.hide()
+            self.found_label.clear()
 
     def download_all(self):
         """Download all search results."""
