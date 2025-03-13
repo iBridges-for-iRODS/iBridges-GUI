@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>984</width>
-    <height>619</height>
+    <height>591</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -266,6 +266,7 @@ QTabWidget#info_tabs
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -286,6 +287,7 @@ QTabWidget#info_tabs
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -323,6 +325,7 @@ QTabWidget#info_tabs
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -332,6 +335,29 @@ QTabWidget#info_tabs
          </property>
          <property name="text">
           <string>Download Selection</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="downall_button">
+         <property name="text">
+          <string>Download all</string>
          </property>
         </widget>
        </item>

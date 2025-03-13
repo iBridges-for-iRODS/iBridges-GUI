@@ -54,6 +54,9 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.search_button.clicked.connect(self.search)
         self.clear_button.clicked.connect(self.hide_result_elements)
         self.download_button.clicked.connect(self.download)
+        self.downall_button.clicked.connect(self.download_all)
+
+        self.download_all_results = False
 
         # group textfields for gathering key, value, unit
         self.meta_fields = [
@@ -71,6 +74,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.search_table.hide()
         self.download_button.hide()
         self.load_more_button.hide()
+        self.downall_button.hide()
         self.clear_button.hide()
         self.search_table.setRowCount(0)
 
@@ -78,6 +82,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         """Show the GUI elemnts that show and manipulate search results."""
         self.search_table.show()
         self.download_button.show()
+        self.downall_button.show()
         self.clear_button.show()
 
     def search(self):
@@ -147,11 +152,19 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         else:
             self.load_more_button.hide()
 
+    def download_all(self):
+        """Download all search results."""
+        self.download_all_results = True
+        self.download()
+
     def download(self):
         """Determine iRODS paths, select destination and start download."""
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.clear()
-        irods_paths = self._retrieve_selected_paths()
+        if self.download_all_results:
+            irods_paths = [IrodsPath(self.session, res) for res in self.results]
+        else:
+            irods_paths = self._retrieve_selected_paths()
         if len(irods_paths) == 0:
             self.error_label.setText("No data selected.")
             self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
@@ -233,6 +246,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
 
     def _start_download(self, irods_paths, folder, overwrite):
         self.download_button.setEnabled(False)
+        self.downall_button.setEnabled(False)
         self.clear_button.setEnabled(False)
         self.search_button.setEnabled(False)
         # check if session comes from env file in ibridges config
@@ -268,6 +282,8 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
 
     def _finish_download(self):
         self.download_button.setEnabled(True)
+        self.downall_button.setEnabled(True)
+        self.download_all_results = False
         self.clear_button.setEnabled(True)
         self.search_button.setEnabled(True)
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
