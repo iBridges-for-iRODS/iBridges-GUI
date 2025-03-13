@@ -48,7 +48,7 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 - Locally from code (for developers)
 
   ```bash
-  git clone git@github.com:chStaiger/iBridges-Gui.git
+  git clone git@github.com:iBridges-for-iRODS/iBridges-Gui.git
   cd iBridges-Gui
   pip install ".[all]"
   ```
