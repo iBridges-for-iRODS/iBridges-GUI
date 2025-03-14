@@ -163,10 +163,10 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.clear()
         irods_paths = self._retrieve_selected_paths()
+        print(irods_paths)
         if len(irods_paths) == 0:
             self.error_label.setText("No data selected.")
             self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
-            return
         select_dir = Path(
             PySide6.QtWidgets.QFileDialog.getExistingDirectory(
                 self, "Select Directory", dir=str(Path("~").expanduser())
@@ -245,6 +245,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
     def _start_download(self, irods_paths, folder, overwrite):
         self.download_button.setEnabled(False)
         self.clear_button.setEnabled(False)
+        self.select_all_box.setEnabled(False)
         self.search_button.setEnabled(False)
         # check if session comes from env file in ibridges config
         if is_session_from_config(self.session):
@@ -279,6 +280,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
 
     def _finish_download(self):
         self.download_button.setEnabled(True)
+        self.select_all_box.setEnabled(True)
         self.clear_button.setEnabled(True)
         self.search_button.setEnabled(True)
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
