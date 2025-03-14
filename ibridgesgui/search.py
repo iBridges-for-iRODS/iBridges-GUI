@@ -154,7 +154,9 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         """Download all search results."""
         if self.select_all_box.isChecked():
             for row in range(self.search_table.rowCount()):
-                self.search_table.selectRow(row)
+                cur_sel_rows = [idx.row() for idx in self.search_table.selectedIndexes()]
+                if row not in cur_sel_rows:
+                    self.search_table.selectRow(row)
         else:
             self.search_table.clearSelection()
 
