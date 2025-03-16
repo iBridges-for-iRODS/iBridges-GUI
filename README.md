@@ -42,13 +42,13 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 - A specific branch of the git repository (testers, developers)
 
   ```bash
-  pip install git+https://github.com/chStaiger/iBridges-Gui.git@branch-name
+  pip install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@branch-name
   ```
   
 - Locally from code (for developers)
 
   ```bash
-  git clone git@github.com:chStaiger/iBridges-Gui.git
+  git clone git@github.com:iBridges-for-iRODS/iBridges-Gui.git
   cd iBridges-Gui
   pip install ".[all]"
   ```

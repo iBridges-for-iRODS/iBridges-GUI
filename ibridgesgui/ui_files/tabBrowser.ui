@@ -75,7 +75,6 @@ QTabWidget#info_tabs
        <property name="font">
         <font>
          <pointsize>16</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -90,7 +89,6 @@ QTabWidget#info_tabs
        <property name="font">
         <font>
          <pointsize>16</pointsize>
-         <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
         </font>
@@ -328,10 +326,22 @@ QTabWidget#info_tabs
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QTableWidget" name="meta_table">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
            <width>600</width>
            <height>200</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>600</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -376,7 +386,6 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
-             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -404,7 +413,6 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
-             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -429,7 +437,6 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
-             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -444,7 +451,6 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
-             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -482,7 +488,6 @@ QTabWidget#info_tabs
       <property name="font">
        <font>
         <pointsize>16</pointsize>
-        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -559,7 +564,6 @@ QTabWidget#info_tabs
            <property name="font">
             <font>
              <pointsize>16</pointsize>
-             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>
@@ -653,7 +657,6 @@ in collection</string>
            <property name="font">
             <font>
              <pointsize>16</pointsize>
-             <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
             </font>

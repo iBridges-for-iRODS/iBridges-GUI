@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>984</width>
-    <height>619</height>
+    <height>563</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -137,22 +137,6 @@ QTabWidget#info_tabs
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="1">
         <widget class="QLabel" name="label">
@@ -221,22 +205,6 @@ QTabWidget#info_tabs
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer_5">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <widget class="QCheckBox" name="case_sensitive_box">
        <property name="text">
         <string>Case sensitive</string>
@@ -244,7 +212,7 @@ QTabWidget#info_tabs
       </widget>
      </item>
      <item>
-      <spacer name="verticalSpacer_6">
+      <spacer name="verticalSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -313,6 +281,29 @@ QTabWidget#info_tabs
          <property name="sizeHint" stdset="0">
           <size>
            <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="select_all_box">
+         <property name="text">
+          <string>Select all</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
            <height>20</height>
           </size>
          </property>
