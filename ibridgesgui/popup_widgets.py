@@ -322,7 +322,8 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
 
     def select_file(self):
         """Open file selector."""
-        select_file = PySide6.QtWidgets.QFileDialog.getOpenFileName(self, "Open Filie")
+        select_file = PySide6.QtWidgets.QFileDialog.getOpenFileName(self, "Open File",
+                                                                    dir=str(Path("~").expanduser()))
         path = self._fs_select(select_file)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
             return
@@ -330,7 +331,8 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
 
     def select_folder(self):
         """Open folder selctor."""
-        select_dir = PySide6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
+        select_dir = PySide6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory",
+                                                                        dir=str(Path("~").expanduser()))
         path = self._fs_select(select_dir)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
             return
