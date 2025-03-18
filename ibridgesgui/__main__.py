@@ -84,8 +84,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
     def connect(self):
         """Create iRODS session."""
         if self.session:
-            reply = PySide6.QtWidgets.QMessageBox.about(self, "Information",
-                                                "Please close session first.")
+            PySide6.QtWidgets.QMessageBox.about(self, "Information", "Please close session first.")
             return
 
         login_window = Login(self.session_dict, self.app_name)
