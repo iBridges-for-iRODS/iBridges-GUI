@@ -35,7 +35,7 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 ## Prebuild executable <alpha>
 There are prebuild executables available for Windows, macos and Ubuntu.
 You can find the latest release [here](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases/latest).
-The build was done using the latest version an x64 architecture.
+The build was done using the latest version on an x64 architecture.
 
 
 
