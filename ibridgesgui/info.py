@@ -47,5 +47,7 @@ class Info(PySide6.QtWidgets.QWidget, Ui_tabInfo):
         # irods resources
         resc_info = Resources(self.session).root_resources
         populate_table(self.resc_table, len(resc_info[0]), resc_info)
-        self.resc_table.resizeColumnsToContents()
+        header = self.resc_table.horizontalHeader()
+        for col in range(header.count()):
+            header.setSectionResizeMode(col, PySide6.QtWidgets.QHeaderView.ResizeToContents)
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))

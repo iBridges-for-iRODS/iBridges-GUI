@@ -57,6 +57,10 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
         self._init_local_fs_tree()
         self._init_irods_tree()
 
+        # Set minimum width for diff_table columns
+        header = self.diff_table.horizontalHeader()
+        header.setMinimumSectionSize(150)  # Adjust the value as needed
+
     def _init_local_fs_tree(self):
         """Create local FS tree."""
         self.local_fs_model = PySide6.QtWidgets.QFileSystemModel(self.local_fs_tree)
