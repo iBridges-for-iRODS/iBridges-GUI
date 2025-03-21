@@ -73,7 +73,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def disconnect(self):
         """Close iRODS session."""
-        self.error_label.clear()
         if "session" in self.session_dict:
             self.logger.info("Disconnecting %s from %s", self.session.username, self.session.host)
             self.session.close()
@@ -84,9 +83,8 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def connect(self):
         """Create iRODS session."""
-        self.error_label.clear()
         if self.session:
-            self.error_label.setText("Please close session first.")
+            PySide6.QtWidgets.QMessageBox.about(self, "Information", "Please close session first.")
             return
 
         login_window = Login(self.session_dict, self.app_name)
