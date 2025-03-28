@@ -18,12 +18,12 @@
 
 The git repository contains a generic *iRODS* graphical user interface.  The iRODS functionality is based on [ibridges](https://github.com/UtrechtUniversity/iBridges) and works with any *iRODS* instance.  
 
-
 ![](docs/screenshots/metadata.png)
   
 ## Highlights
 
-- Works on Windows, Mac OS and Linux
+- Works on Windows, Mac OS and Linux: [supported versions](https://doc.qt.io/qt-6/supported-platforms.html)
+
 - Runs on Python 3.9 or higher.
 - Supported iRODS server versions: 4.2.11 or higher and 4.3.0 or higher.
 - **Upload** and **Download** your data.
@@ -31,6 +31,13 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 - **Synchronize** your data between your local computer and the iRODS server.
 - **Search** through all metadata for your dataset or collection.
 - Safe default options when working with your data.
+
+## Prebuild executable <alpha>
+There are prebuild executables available for Windows, macos and Ubuntu.
+You can find the latest release [here](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases/latest).
+The build was done using the latest version on an x64 architecture.
+
+
 
 ## Installation
 - The python package 

@@ -1,0 +1,64 @@
+# Build executables on release and upload them as release assets.
+# Based on https://github.com/Nuitka/Nuitka-Action
+
+on:
+  release:
+    types: [created]
+
+jobs:
+ build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            tag: macos
+            arch: x64
+          - os: ubuntu-latest
+            tag: ubuntu
+            arch: x64
+          - os: windows-latest
+            tag: windows
+            arch: x64
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' 
+
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Dependencies
+        run: |
+          pip install .[deploy]
+
+      - name: execute py script
+        run: |
+          python build_tools/build_script.py
+
+      - name: Zip the build directory (Linux and macOS)
+        if: runner.os != 'Windows'
+        run: |
+          zip -r ibridgesgui_${{ matrix.tag }}.zip ./ibridgesgui_dist/*
+
+      - name: Zip the build directory (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Compress-Archive -Path ./ibridgesgui_dist/* -DestinationPath ibridgesgui_${{ matrix.tag }}.zip
+  
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./ibridgesgui_${{ matrix.tag }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
