@@ -18,6 +18,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+ibridgesgui_dist/
 downloads/
 eggs/
 .eggs/

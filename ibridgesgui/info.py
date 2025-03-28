@@ -2,26 +2,24 @@
 
 import sys
 
-import PyQt6
-import PyQt6.QtWidgets
-import PyQt6.uic
+import PySide6.QtWidgets
 from ibridges.resources import Resources
 
 from ibridgesgui.config import CONFIG_DIR
-from ibridgesgui.gui_utils import UI_FILE_DIR, populate_table, populate_textfield
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, populate_table, populate_textfield
 from ibridgesgui.ui_files.tabInfo import Ui_tabInfo
 
 
-class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
+class Info(PySide6.QtWidgets.QWidget, Ui_tabInfo):
     """Set iRODS information in the GUI."""
 
     def __init__(self, session):
         """Initialise the tab."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi(UI_FILE_DIR / "tabInfo.ui", self)
+            load_ui(UI_FILE_DIR / "tabInfo.ui", self)
         self.session = session
 
         self.refresh_button.clicked.connect(self.refresh_info)
@@ -30,7 +28,7 @@ class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
     def refresh_info(self):
         """Find and set the information of the connected iRODS system."""
         self.resc_table.setRowCount(0)
-        self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.WaitCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         # irods Zone
         self.zone_label.setText(self.session.zone)
         # irods user
@@ -49,5 +47,7 @@ class Info(PyQt6.QtWidgets.QWidget, Ui_tabInfo):
         # irods resources
         resc_info = Resources(self.session).root_resources
         populate_table(self.resc_table, len(resc_info[0]), resc_info)
-        self.resc_table.resizeColumnsToContents()
-        self.setCursor(PyQt6.QtGui.QCursor(PyQt6.QtCore.Qt.CursorShape.ArrowCursor))
+        header = self.resc_table.horizontalHeader()
+        for col in range(header.count()):
+            header.setSectionResizeMode(col, PySide6.QtWidgets.QHeaderView.ResizeToContents)
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))

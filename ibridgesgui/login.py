@@ -9,8 +9,7 @@ from ibridges import IrodsPath, Session
 from ibridges.resources import Resources
 from ibridges.session import LoginError, PasswordError
 from irods.exception import ResourceDoesNotExist
-from PyQt6.QtWidgets import QDialog, QLineEdit
-from PyQt6.uic import loadUi
+from PySide6.QtWidgets import QDialog, QLineEdit
 
 from ibridgesgui.config import (
     IRODSA,
@@ -20,7 +19,7 @@ from ibridgesgui.config import (
     save_current_settings,
     set_last_ienv_path,
 )
-from ibridgesgui.gui_utils import UI_FILE_DIR
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
 
 
@@ -28,16 +27,17 @@ def strictwrite(path, flags, mode=0o600):
     """Create opener for the standard open command to modify the umask."""
     return os.open(path, flags, mode)
 
+
 class Login(QDialog, Ui_irodsLogin):
     """Definition and initialization of the iRODS login window."""
 
     def __init__(self, session_dict, app_name):
         """Initialise tab."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            loadUi(UI_FILE_DIR / "irodsLogin.ui", self)
+            load_ui(UI_FILE_DIR / "irodsLogin.ui", self)
 
         self.logger = logging.getLogger(app_name)
         self.irods_config_dir = Path("~", ".irods").expanduser()
@@ -58,9 +58,7 @@ class Login(QDialog, Ui_irodsLogin):
     def _init_envbox(self):
         env_jsons = [path.name for path in self.irods_config_dir.glob("*.json")]
         if len(env_jsons) == 0:
-            self.error_label.setText(
-                f"ERROR: no .json files found in {self.irods_config_dir}"
-            )
+            self.error_label.setText(f"ERROR: no .json files found in {self.irods_config_dir}")
 
         self.envbox.clear()
         self.envbox.addItems(env_jsons)
@@ -102,15 +100,15 @@ class Login(QDialog, Ui_irodsLogin):
         self.error_label.clear()
         env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
 
-        msg = check_irods_config(env_file, include_network = False)
+        msg = check_irods_config(env_file, include_network=False)
         if not msg == "All checks passed successfully.":
-            self.error_label.setText("Go to menu Configure. "+msg)
+            self.error_label.setText("Go to menu Configure. " + msg)
             return
 
         try:
             if self.cached_pw is True and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
-                with open(IRODSA, "w",  encoding="utf-8", opener=strictwrite) as f:
+                with open(IRODSA, "w", encoding="utf-8", opener=strictwrite) as f:
                     f.write(self.prev_settings[str(env_file)])
 
                 session = Session(irods_env=env_file)

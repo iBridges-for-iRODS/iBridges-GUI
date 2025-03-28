@@ -20,6 +20,11 @@ from irods.exception import (
 )
 from irods.session import iRODSSession
 
+try:  # Python < 3.10 (backport)
+    from importlib_metadata import version  # type: ignore
+except ImportError:
+    from importlib.metadata import version  # type: ignore [assignment]
+
 LOG_LEVEL = {
     "fulldebug": logging.DEBUG - 5,
     "debug": logging.DEBUG,
@@ -33,6 +38,7 @@ CONFIG_DIR = Path("~", ".ibridges").expanduser()
 CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
 IRODSA = Path.home() / ".irods" / ".irodsA"
 
+
 def ensure_log_config_location():
     """Ensure the location for logs and config files."""
     CONFIG_DIR.mkdir(parents=True, mode=0o700, exist_ok=True)
@@ -42,6 +48,7 @@ def ensure_irods_location():
     """Ensure that .irods exists in user's home."""
     irods_loc = Path("~/.irods").expanduser()
     irods_loc.mkdir(mode=0o700, exist_ok=True)
+
 
 # logging functions
 def init_logger(app_name: str, log_level: str) -> logging.Logger:
@@ -61,13 +68,19 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
     logger.setLevel(LOG_LEVEL.get(log_level, LOG_LEVEL["info"]))
+    try:
+        release = version("ibridgesgui")
+    except Exception:
+        release = ""
 
     # Logger greeting when app is started
     with open(logfile, "a", encoding="utf-8") as logfd:
         logfd.write("\n\n")
         underscores = f"{'_' * 50}\n"
         logfd.write(underscores * 2)
-        logfd.write(f"\t Starting iBridges-GUI \n\t{datetime.datetime.now().isoformat()}\n")
+        logfd.write(
+            f"\t Starting iBridges-GUI {release}\n\t{datetime.datetime.now().isoformat()}\n"
+        )
         logfd.write(underscores * 2)
 
     return logger
@@ -131,6 +144,7 @@ def _get_config() -> Union[None, dict]:
         print(f"CANNOT START APP: {CONFIG_FILE} incorrectly formatted.")
         sys.exit(1)
 
+
 def save_current_settings(env_path_name: Path):
     """Store the environment with the currently scrambled password in irodsA."""
     with open(IRODSA, "r", encoding="utf-8") as f:
@@ -142,12 +156,14 @@ def save_current_settings(env_path_name: Path):
         config["settings"][str(env_path_name)] = pw
         _save_config(config)
 
+
 def get_prev_settings():
     """Extract the settings from the configuration."""
     config = _get_config()
     if config is None:
         return {}
     return config.get("settings", {})
+
 
 # irods config functions
 
@@ -177,7 +193,7 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     return False
 
 
-def check_irods_config(ienv: Union[Path, dict], include_network = True) -> str:
+def check_irods_config(ienv: Union[Path, dict], include_network=True) -> str:
     """Check whether an iRODS configuration file is correct.
 
     Parameters

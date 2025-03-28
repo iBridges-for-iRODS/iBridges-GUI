@@ -33,6 +33,8 @@ You can **navigate to another part of the iRODS collection tree** by editing thi
 - The `Upload` button opens a new popup window to select data to upload. The destination will be the path shown in the navigation field.
 
 - The `Download` button opens a popup window to select the destination on your computer. You will also be able to export the metadata and store it in a separate file along your download. To download data you will need to select an item in the table below.
+  
+  For downloading selections of data, please have a look at the **Search** manual.
 
 - With the `Delete` button you can delete the selected collection or data object in the table. **Note, The data will be deleted completely from the iRODS instance.**
 
@@ -124,6 +126,6 @@ In the metadata mask we narrow the search results down to all *.txt* data object
   
   **Search results**
 
-  *Single click* on items in the list and click the `Download` button to open a dialog to select the destination for the data and start the download
+  *Single click* on items or use the *Select all* checkbox and click the `Download` button to open a dialog to select the destination for the data and start the download.
   
   *Double click* on an item in the list to set the `Browser` to its location to further inspect the metadata, permissions etc.

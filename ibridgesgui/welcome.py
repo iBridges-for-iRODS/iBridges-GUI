@@ -3,41 +3,40 @@
 import sys
 from datetime import datetime
 
-import PyQt6.QtCore
-import PyQt6.QtGui
-import PyQt6.QtWidgets
-import PyQt6.uic
+import PySide6.QtCore
+import PySide6.QtGui
+import PySide6.QtWidgets
 
-from ibridgesgui.gui_utils import LOGO_DIR, UI_FILE_DIR
+from ibridgesgui.gui_utils import LOGO_DIR, UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.welcome import Ui_Welcome
 
 
-class Welcome(PyQt6.QtWidgets.QWidget, Ui_Welcome):
+class Welcome(PySide6.QtWidgets.QWidget, Ui_Welcome):
     """Welcome page."""
 
     def __init__(self):
         """Initialize welcome tab."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi(UI_FILE_DIR / "welcome.ui", self)
+            load_ui(UI_FILE_DIR / "welcome.ui", self)
 
         if datetime.today().month == 12:
-            self.pixmap = PyQt6.QtGui.QPixmap(str(LOGO_DIR / "christmas-logo.png"))
+            self.pixmap = PySide6.QtGui.QPixmap(str(LOGO_DIR / "christmas-logo.png"))
         else:
-            self.pixmap = PyQt6.QtGui.QPixmap(str(LOGO_DIR / "logo.png"))
-        self.logo = PyQt6.QtWidgets.QLabel()
+            self.pixmap = PySide6.QtGui.QPixmap(str(LOGO_DIR / "logo.png"))
+        self.logo = PySide6.QtWidgets.QLabel()
         self.logo.setPixmap(self.pixmap)
-        self.logo.setAlignment(PyQt6.QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.logo.setAlignment(PySide6.QtCore.Qt.AlignmentFlag.AlignCenter)
         self.logo.resize(self.pixmap.width(), self.pixmap.height())
 
-        self.tag = PyQt6.QtWidgets.QLabel()
+        self.tag = PySide6.QtWidgets.QLabel()
         self.tag.setText("Bridging Science and Research Data Management.")
-        self.tag.setAlignment(PyQt6.QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.tag.setAlignment(PySide6.QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self.grid = PyQt6.QtWidgets.QGridLayout()
-        self.grid.addWidget(PyQt6.QtWidgets.QLabel(), 0, 1)
+        self.grid = PySide6.QtWidgets.QGridLayout()
+        self.grid.addWidget(PySide6.QtWidgets.QLabel(), 0, 1)
         self.grid.addWidget(self.logo, 1, 1)
         self.grid.addWidget(self.tag, 2, 1)
         self.setLayout(self.grid)

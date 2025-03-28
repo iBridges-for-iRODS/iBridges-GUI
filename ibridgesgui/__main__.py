@@ -2,16 +2,18 @@
 """iBridges GUI startup script."""
 
 import logging
+import os
 import sys
 from pathlib import Path
 
-import PyQt6.QtGui
-import PyQt6.QtWidgets
-import PyQt6.uic
+import PySide6.QtGui
+import PySide6.QtUiTools
+import PySide6.QtWidgets
 import setproctitle
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import ensure_irods_location, get_log_level, init_logger, set_log_level
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
@@ -21,20 +23,28 @@ from ibridgesgui.sync import Sync
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.welcome import Welcome
 
+try:  # Python < 3.10 (backport)
+    from importlib_metadata import version  # type: ignore
+except ImportError:
+    from importlib.metadata import version  # type: ignore [assignment]
+
 # Global constants
 THIS_APPLICATION = "ibridges-gui"
 
 # Application globals
-app = PyQt6.QtWidgets.QApplication(sys.argv)
+app = PySide6.QtWidgets.QApplication(sys.argv)
 
 
-class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
+class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
     """Set up the GUI Main Menu."""
 
     def __init__(self, app_name):
         """Initialise the main window."""
         super().__init__()
-        super().setupUi(self)
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+            super().setupUi(self)
+        else:
+            load_ui(UI_FILE_DIR / "MainMenu.ui", self)
 
         app.aboutToQuit.connect(self.close_event)
 
@@ -63,7 +73,6 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def disconnect(self):
         """Close iRODS session."""
-        self.error_label.clear()
         if "session" in self.session_dict:
             self.logger.info("Disconnecting %s from %s", self.session.username, self.session.host)
             self.session.close()
@@ -74,9 +83,8 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def connect(self):
         """Create iRODS session."""
-        self.error_label.clear()
         if self.session:
-            self.error_label.setText("Please close session first.")
+            PySide6.QtWidgets.QMessageBox.about(self, "Information", "Please close session first.")
             return
 
         login_window = Login(self.session_dict, self.app_name)
@@ -96,14 +104,14 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
     def exit(self):
         """Quit program."""
         quit_msg = "Are you sure you want to exit the program?"
-        reply = PyQt6.QtWidgets.QMessageBox.question(
+        reply = PySide6.QtWidgets.QMessageBox.question(
             self,
             "Message",
             quit_msg,
-            PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
-            PyQt6.QtWidgets.QMessageBox.StandardButton.No,
+            PySide6.QtWidgets.QMessageBox.StandardButton.Yes,
+            PySide6.QtWidgets.QMessageBox.StandardButton.No,
         )
-        if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
+        if reply == PySide6.QtWidgets.QMessageBox.StandardButton.Yes:
             self.disconnect()
             sys.exit()
         else:
@@ -123,8 +131,12 @@ class MainMenu(PyQt6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def welcome_tab(self):
         """Create first tab."""
+        try:
+            release = version("ibridgesgui")
+        except Exception:
+            release = ""
         welcome = Welcome()
-        self.tab_widget.addTab(welcome, "iBridges")
+        self.tab_widget.addTab(welcome, f"iBridges {release}")
 
     def init_info_tab(self):
         """Create info."""
@@ -172,8 +184,11 @@ def main():
     else:
         set_log_level("debug")
         init_logger(THIS_APPLICATION, "debug")
+
+    # Set the working directory to the directory of the current file
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     ensure_irods_location()
-    main_widget = PyQt6.QtWidgets.QStackedWidget()
+    main_widget = PySide6.QtWidgets.QStackedWidget()
     main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
     main_widget.show()

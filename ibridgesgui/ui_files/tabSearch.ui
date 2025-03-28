@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>984</width>
-    <height>619</height>
+    <width>1119</width>
+    <height>611</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -137,22 +137,6 @@ QTabWidget#info_tabs
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="1">
         <widget class="QLabel" name="label">
@@ -221,22 +205,6 @@ QTabWidget#info_tabs
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer_5">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <widget class="QCheckBox" name="case_sensitive_box">
        <property name="text">
         <string>Case sensitive</string>
@@ -244,7 +212,7 @@ QTabWidget#info_tabs
       </widget>
      </item>
      <item>
-      <spacer name="verticalSpacer_6">
+      <spacer name="verticalSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -266,6 +234,7 @@ QTabWidget#info_tabs
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -286,6 +255,7 @@ QTabWidget#info_tabs
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -319,10 +289,34 @@ QTabWidget#info_tabs
         </spacer>
        </item>
        <item>
+        <widget class="QCheckBox" name="select_all_box">
+         <property name="text">
+          <string>Select all</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="QPushButton" name="download_button">
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -445,6 +439,30 @@ QTabWidget#info_tabs
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>search_path_field</tabstop>
+  <tabstop>path_pattern_field</tabstop>
+  <tabstop>checksum_field</tabstop>
+  <tabstop>key1</tabstop>
+  <tabstop>val1</tabstop>
+  <tabstop>units1</tabstop>
+  <tabstop>key2</tabstop>
+  <tabstop>val2</tabstop>
+  <tabstop>units2</tabstop>
+  <tabstop>key3</tabstop>
+  <tabstop>val3</tabstop>
+  <tabstop>units3</tabstop>
+  <tabstop>key4</tabstop>
+  <tabstop>val4</tabstop>
+  <tabstop>units4</tabstop>
+  <tabstop>case_sensitive_box</tabstop>
+  <tabstop>search_button</tabstop>
+  <tabstop>clear_button</tabstop>
+  <tabstop>load_more_button</tabstop>
+  <tabstop>select_all_box</tabstop>
+  <tabstop>download_button</tabstop>
+  <tabstop>search_table</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

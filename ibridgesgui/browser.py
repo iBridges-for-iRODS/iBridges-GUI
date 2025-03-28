@@ -5,10 +5,9 @@ import sys
 from typing import Union
 
 import irods.exception
-import PyQt6.QtCore
-import PyQt6.QtGui
-import PyQt6.QtWidgets
-import PyQt6.uic
+import PySide6.QtCore
+import PySide6.QtGui
+import PySide6.QtWidgets
 from ibridges import IrodsPath
 from ibridges.permissions import Permissions
 from ibridges.util import obj_replicas
@@ -16,6 +15,7 @@ from ibridges.util import obj_replicas
 from ibridgesgui.gui_utils import (
     UI_FILE_DIR,
     get_irods_item,
+    load_ui,
     populate_table,
     populate_textfield,
 )
@@ -23,16 +23,16 @@ from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, Up
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 
 
-class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
+class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
     """Browser view for iRODS session."""
 
     def __init__(self, session, app_name: str):
         """Initialize an iRODS browser view."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            PyQt6.uic.loadUi(UI_FILE_DIR / "tabBrowser.ui", self)
+            load_ui(UI_FILE_DIR / "tabBrowser.ui", self)
 
         self.logger = logging.getLogger(app_name)
         self.session = session
@@ -166,14 +166,14 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             item_name = self.browser_table.item(self.browser_table.currentRow(), 1).text()
             irods_path = IrodsPath(self.session, "/", *self.input_path.text().split("/"), item_name)
             quit_msg = f"Are you sure you want to delete {str(irods_path)}?"
-            reply = PyQt6.QtWidgets.QMessageBox.critical(
+            reply = PySide6.QtWidgets.QMessageBox.critical(
                 self,
                 "Message",
                 quit_msg,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.Yes,
-                PyQt6.QtWidgets.QMessageBox.StandardButton.No,
+                PySide6.QtWidgets.QMessageBox.StandardButton.Yes,
+                PySide6.QtWidgets.QMessageBox.StandardButton.No,
             )
-            if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
+            if reply == PySide6.QtWidgets.QMessageBox.StandardButton.Yes:
                 try:
                     irods_path.remove()
                     self.logger.info("Delete data %s", str(irods_path))
@@ -275,7 +275,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             self.error_label.setText(repr(error))
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
-    def edit_metadata(self, index: PyQt6.QtCore.QModelIndex):
+    def edit_metadata(self, index: PySide6.QtCore.QModelIndex):
         """Load selected metadata info edit fields."""
         self.error_label.clear()
         self.meta_key_field.clear()
@@ -293,7 +293,7 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_units_field.setText(units)
 
     # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
-    def edit_permission(self, index: PyQt6.QtCore.QModelIndex):
+    def edit_permission(self, index: PySide6.QtCore.QModelIndex):
         """Load selected acl into editing fields."""
         self.error_label.clear()
         self.acl_user_field.clear()
@@ -530,13 +530,18 @@ class Browser(PyQt6.QtWidgets.QWidget, Ui_tabBrowser):
             print(old_key, old_val, old_units)
             self.logger.info(
                 "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
-                irods_path, old_key, old_val, old_units,
-                new_key, new_val, new_units,
-                )
+                irods_path,
+                old_key,
+                old_val,
+                old_units,
+                new_key,
+                new_val,
+                new_units,
+            )
             irods_path.meta[old_key, old_val, old_units] = [new_key, new_val, new_units]
         elif operation == "delete":
             irods_path.meta.delete(new_key, new_val, new_units)
             self.logger.info(
                 "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
-                )
+            )
         self._fill_metadata_tab(irods_path)

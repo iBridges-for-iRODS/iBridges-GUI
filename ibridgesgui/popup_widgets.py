@@ -7,14 +7,16 @@ from datetime import datetime
 from pathlib import Path
 
 import irods
+import PySide6.QtCore
+import PySide6.QtGui
+import PySide6.QtWidgets
 from ibridges import IrodsPath, download, upload
+from ibridges.exception import DataObjectExistsError
 from ibridges.util import find_environment_provider, get_environment_providers
-from PyQt6 import QtCore, QtGui
-from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
-from PyQt6.uic import loadUi
 
+# from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from ibridgesgui.config import _read_json, check_irods_config, get_last_ienv_path, save_irods_config
-from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, populate_textfield
+from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, load_ui, populate_textfield
 from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
@@ -23,20 +25,20 @@ from ibridgesgui.ui_files.renameItem import Ui_renameItem
 from ibridgesgui.ui_files.uploadData import Ui_uploadData
 
 
-class CreateCollection(QDialog, Ui_createCollection):
+class CreateCollection(PySide6.QtWidgets.QDialog, Ui_createCollection):
     """Popup window to create a new collection."""
 
     def __init__(self, parent, logger):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            loadUi(UI_FILE_DIR / "createCollection.ui", self)
+            load_ui(UI_FILE_DIR / "createCollection.ui", self)
 
         self.logger = logger
         self.setWindowTitle("Create iRODS collection")
-        self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setWindowFlags(PySide6.QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.parent = parent
         self.label.setText(str(self.parent) + "/")
         self.buttonBox.accepted.connect(self.accept)
@@ -62,18 +64,18 @@ class CreateCollection(QDialog, Ui_createCollection):
                     self.error_label.setText(f"Could not create {new_coll_path}, consult the logs.")
 
 
-class CreateDirectory(QDialog, Ui_createCollection):
+class CreateDirectory(PySide6.QtWidgets.QDialog, Ui_createCollection):
     """Popup window to create a new directory."""
 
     def __init__(self, parent):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            loadUi(UI_FILE_DIR / "createCollection.ui", self)
+            load_ui(UI_FILE_DIR / "createCollection.ui", self)
         self.setWindowTitle("Create Directory")
-        self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setWindowFlags(PySide6.QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.parent = parent
         self.label.setText(self.parent + os.sep)
         self.buttonBox.accepted.connect(self.accept)
@@ -94,20 +96,20 @@ class CreateDirectory(QDialog, Ui_createCollection):
                     self.error_label.setText("ERROR: insufficient rights.")
 
 
-class Rename(QDialog, Ui_renameItem):
+class Rename(PySide6.QtWidgets.QDialog, Ui_renameItem):
     """Popup window to rename and move a collection or data object."""
 
     def __init__(self, irods_path: IrodsPath, logger):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            loadUi(UI_FILE_DIR / "renameItem.ui", self)
+            load_ui(UI_FILE_DIR / "renameItem.ui", self)
 
         self.logger = logger
         self.setWindowTitle("Create iRODS collection")
-        self.setWindowFlags(QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setWindowFlags(PySide6.QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.irods_path = irods_path
         self.item_path_label.setText(str(irods_path))
         self.item_path_input.setText(str(irods_path))
@@ -131,16 +133,16 @@ class Rename(QDialog, Ui_renameItem):
                     self.error_label.setText(f"Could not create {new_path}, consult the logs.")
 
 
-class CheckConfig(QDialog, Ui_configCheck):
+class CheckConfig(PySide6.QtWidgets.QDialog, Ui_configCheck):
     """Popup window to edit, create and check an environment.json."""
 
     def __init__(self, logger, env_path):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            loadUi(UI_FILE_DIR / "configCheck.ui", self)
+            load_ui(UI_FILE_DIR / "configCheck.ui", self)
 
         self.logger = logger
         self.env_path = env_path
@@ -252,10 +254,10 @@ class CheckConfig(QDialog, Ui_configCheck):
     def save_env_as(self):
         """Choose file to save text field as json."""
         self.error_label.clear()
-        dialog = QFileDialog(self)
-        dialog.setFileMode(QFileDialog.FileMode.AnyFile)
+        dialog = PySide6.QtWidgets.QFileDialog(self)
+        dialog.setFileMode(PySide6.QtWidgets.QFileDialog.FileMode.AnyFile)
         dialog.setNameFilter("(*.json)")
-        create_file = QFileDialog.getSaveFileName(
+        create_file = PySide6.QtWidgets.QFileDialog.getSaveFileName(
             self, "Save as File", str(self.env_path), "(*.json)"
         )
         if create_file[0] != "":
@@ -274,16 +276,16 @@ class CheckConfig(QDialog, Ui_configCheck):
                 self.error_label.setText("File type needs to be .json")
 
 
-class UploadData(QDialog, Ui_uploadData):
+class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
     """Popup window to upload data to browser."""
 
     def __init__(self, logger, session, irods_path):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            loadUi(UI_FILE_DIR / "uploadData.ui", self)
+            load_ui(UI_FILE_DIR / "uploadData.ui", self)
 
         self.active_upload = False
         self.upload_thread = None
@@ -302,14 +304,14 @@ class UploadData(QDialog, Ui_uploadData):
     def close_window(self):
         """Close window while data transfer stays in progress."""
         if self.active_upload:
-            reply = QMessageBox.critical(
+            reply = PySide6.QtWidgets.QMessageBox.critical(
                 self,
                 "Message",
                 "Do you want to close the window while the transfer continues?",
-                QMessageBox.StandardButton.Yes,
-                QMessageBox.StandardButton.No,
+                PySide6.QtWidgets.QMessageBox.StandardButton.Yes,
+                PySide6.QtWidgets.QMessageBox.StandardButton.No,
             )
-            if reply == QMessageBox.StandardButton.Yes:
+            if reply == PySide6.QtWidgets.QMessageBox.StandardButton.Yes:
                 self.active_upload = False
         self.close()
 
@@ -321,7 +323,9 @@ class UploadData(QDialog, Ui_uploadData):
 
     def select_file(self):
         """Open file selector."""
-        select_file = QFileDialog.getOpenFileName(self, "Open Filie")
+        select_file = PySide6.QtWidgets.QFileDialog.getOpenFileName(
+            self, "Open File", dir=str(Path("~").expanduser())
+        )
         path = self._fs_select(select_file)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
             return
@@ -329,7 +333,9 @@ class UploadData(QDialog, Ui_uploadData):
 
     def select_folder(self):
         """Open folder selctor."""
-        select_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
+        select_dir = PySide6.QtWidgets.QFileDialog.getExistingDirectory(
+            self, "Select Directory", dir=str(Path("~").expanduser())
+        )
         path = self._fs_select(select_dir)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
             return
@@ -345,7 +351,7 @@ class UploadData(QDialog, Ui_uploadData):
         self._start_upload(local_paths)
 
     def _start_upload(self, lpaths):
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText(f"Uploading to {str(self.irods_path)} ....")
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
 
@@ -365,7 +371,7 @@ class UploadData(QDialog, Ui_uploadData):
 
             if len(ops.upload) == 0:
                 self.error_label.setText("Data already present and up to date.")
-                self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+                self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             else:
                 self._enable_buttons(False)
                 self.active_upload = True
@@ -377,27 +383,27 @@ class UploadData(QDialog, Ui_uploadData):
                 self.upload_thread.current_progress.connect(self._upload_status)
                 self.upload_thread.start()
 
-        except FileExistsError:
+        except DataObjectExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
             return
         except Exception as err:
             self.error_label.setText(
                 f"Could not instantiate a new session from {env_path}: {repr(err)}."
             )
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
             return
 
     def _finish_upload(self):
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
         del self.upload_thread
 
     def _upload_status(self, state):
         up_size, transferred_size, obj_count, num_objs, obj_failed = state
         if up_size > 0:
-            self.progress_bar.setValue(int(transferred_size*100/up_size))
+            self.progress_bar.setValue(int(transferred_size * 100 / up_size))
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
@@ -424,16 +430,16 @@ class UploadData(QDialog, Ui_uploadData):
         return path
 
 
-class DownloadData(QDialog, Ui_downloadData):
+class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
     """Popup window to dowload data from browser."""
 
     def __init__(self, logger, session, irods_path):
         """Initialise window."""
         super().__init__()
-        if getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
-            loadUi(UI_FILE_DIR / "downloadData.ui", self)
+            load_ui(UI_FILE_DIR / "downloadData.ui", self)
 
         self.active_download = False
         self.download_thread = None
@@ -455,14 +461,14 @@ class DownloadData(QDialog, Ui_downloadData):
     def close_window(self):
         """Close window while data transfer stays in progress."""
         if self.active_download:
-            reply = QMessageBox.critical(
+            reply = PySide6.QtWidgets.QMessageBox.critical(
                 self,
                 "Message",
                 "Do you want to close the window while the transfer continues?",
-                QMessageBox.StandardButton.Yes,
-                QMessageBox.StandardButton.No,
+                PySide6.QtWidgets.QMessageBox.StandardButton.Yes,
+                PySide6.QtWidgets.QMessageBox.StandardButton.No,
             )
-            if reply == QMessageBox.StandardButton.Yes:
+            if reply == PySide6.QtWidgets.QMessageBox.StandardButton.Yes:
                 self.active_download = False
         self.close()
 
@@ -486,8 +492,8 @@ class DownloadData(QDialog, Ui_downloadData):
         """Select the download destination."""
         self.error_label.clear()
         select_dir = Path(
-            QFileDialog.getExistingDirectory(
-                self, "Select Directory", directory=str(Path("~").expanduser())
+            PySide6.QtWidgets.QFileDialog.getExistingDirectory(
+                self, "Select Directory", dir=str(Path("~").expanduser())
             )
         )
         if str(select_dir) == "" or str(select_dir) == ".":
@@ -519,7 +525,7 @@ class DownloadData(QDialog, Ui_downloadData):
         self.metadata.setEnabled(enable)
 
     def _start_download(self, local_path):
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText(f"Downloading to {local_path} ....")
         env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
         try:
@@ -534,7 +540,7 @@ class DownloadData(QDialog, Ui_downloadData):
 
             if len(ops.download) == 0 and len(ops.meta_download) == 0:
                 self.error_label.setText("Data already present and up to date.")
-                self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+                self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             else:
                 self._enable_buttons(False)
                 self.active_download = True
@@ -547,25 +553,23 @@ class DownloadData(QDialog, Ui_downloadData):
                 self.download_thread.start()
         except FileExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
             return
         except Exception as err:
-            self.error_label.setText(
-                f"Could not instantiate thread from {env_path}: {repr(err)}."
-            )
-            self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+            self.error_label.setText(f"Could not instantiate thread from {env_path}: {repr(err)}.")
+            self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
             return
 
     def _finish_download(self):
-        self.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
         del self.download_thread
 
     def _download_status(self, state):
         down_size, transferred_size, obj_count, num_objs, obj_failed = state
         if down_size > 0:
-            self.progress_bar.setValue(int(transferred_size*100/down_size))
+            self.progress_bar.setValue(int(transferred_size * 100 / down_size))
         text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
         self.error_label.setText(text)
 
