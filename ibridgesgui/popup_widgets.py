@@ -11,8 +11,8 @@ import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets
 from ibridges import IrodsPath, download, upload
-from ibridges.util import find_environment_provider, get_environment_providers
 from ibridges.exception import DataObjectExistsError
+from ibridges.util import find_environment_provider, get_environment_providers
 
 # from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from ibridgesgui.config import _read_json, check_irods_config, get_last_ienv_path, save_irods_config
