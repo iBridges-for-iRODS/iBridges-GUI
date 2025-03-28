@@ -12,6 +12,7 @@ import PySide6.QtGui
 import PySide6.QtWidgets
 from ibridges import IrodsPath, download, upload
 from ibridges.util import find_environment_provider, get_environment_providers
+from ibridges.exception import DataObjectExistsError
 
 # from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from ibridgesgui.config import _read_json, check_irods_config, get_last_ienv_path, save_irods_config
@@ -382,7 +383,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
                 self.upload_thread.current_progress.connect(self._upload_status)
                 self.upload_thread.start()
 
-        except FileExistsError:
+        except DataObjectExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
             self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
