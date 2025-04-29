@@ -17,6 +17,11 @@ from ibridges.executor import Operations
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
 try:
+    from importlib_metadata import entry_points
+except ImportError:
+    from importlib.metadata import entry_points  # type: ignore
+
+try:
     from importlib.resources import files
 except ImportError:
     from importlib_resources import files
@@ -161,3 +166,14 @@ def get_downloads_dir() -> pathlib.Path:
     # Try to create Downloads
     pathlib.Path.home().joinpath("Downloads").mkdir(parents=True)
     return pathlib.Path.home().joinpath("Downloads")
+
+
+def get_tab_providers() -> list:
+    """Get a list of all environment template providers.
+
+    Returns
+    -------
+        The list that contains the providers.
+
+    """
+    return [entry.load() for entry in entry_points(group="ibridges_gui_tab")]

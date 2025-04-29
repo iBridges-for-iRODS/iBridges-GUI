@@ -13,7 +13,7 @@ import setproctitle
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import ensure_irods_location, get_log_level, init_logger, set_log_level
-from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, get_tab_providers
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
@@ -53,6 +53,10 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
+        self.third_party_tabs = get_tab_providers()
+        self.logger.info("Third party tabs: %s", self.third_party_tabs)
+        self.logger.info("Tab names: %s", [tab.__name__ for tab in self.third_party_tabs])
+        
         self.ui_tabs_lookup = {
             "tabBrowser": self.init_browser_tab,
             "tabSync": self.init_sync_tab,
@@ -126,7 +130,9 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Init tab view."""
         for tab_fun in self.ui_tabs_lookup.values():
             tab_fun()
-            # self.ui_tabs_lookup[tab_name]()
+        for tab in self.third_party_tabs:
+            self.init_third_party_tab(tab)
+
         self.tab_widget.setCurrentIndex(1)
 
     def welcome_tab(self):
@@ -162,6 +168,11 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Create sync."""
         irods_sync = Sync(self.session, self.app_name)
         self.tab_widget.addTab(irods_sync, "Synchronise Data")
+
+    def init_third_party_tab(self, tab_class: object):
+        """Create third-party tabs."""
+        third_party_tab = tab_class(self.session, self.app_name)
+        self.tab_widget.addTab(third_party_tab, third_party_tab.name)
 
     def create_env_file(self):
         """Populate drop down menu to create a new environment.json."""
