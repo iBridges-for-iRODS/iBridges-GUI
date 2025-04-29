@@ -13,7 +13,7 @@ import setproctitle
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import ensure_irods_location, get_log_level, init_logger, set_log_level
-from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, get_tab_providers
+from ibridgesgui.gui_utils import UI_FILE_DIR, get_tab_providers, load_ui
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
@@ -56,7 +56,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.third_party_tabs = get_tab_providers()
         self.logger.info("Third party tabs: %s", self.third_party_tabs)
         self.logger.info("Tab names: %s", [tab.__name__ for tab in self.third_party_tabs])
-        
+
         self.ui_tabs_lookup = {
             "tabBrowser": self.init_browser_tab,
             "tabSync": self.init_sync_tab,
