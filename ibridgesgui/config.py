@@ -126,6 +126,33 @@ def set_log_level(level: str):
         config = {"log_level": level}
     _save_config(config)
 
+def config_add_third_party(tab_provider: object):
+    """Add a current third party tab."""
+  
+    obj_str = str(tab_provider).split("'")[1]
+    config = _get_config()
+    if config is not None:
+        third_party_tabs = set(config.get("third_party_tabs", []))
+        third_party_tabs.add(obj_str)
+        config["third_party_tabs"] = list(third_party_tabs)
+    else:
+        config = {"third_party_tabs": [obj_str]}
+    _save_config(config)
+
+def config_remove_third_party(tab_provider: object):
+    "Remove a third party provider"
+    config = _get_config()
+    obj_str = str(tab_provider).split("'")[1]
+    if config is not None and "third_party_tabs" in config:
+        third_party_tabs = config.get("third_party_tabs", [])
+        if obj_str in third_party_tabs:
+            third_party_tabs.remove(obj_str)
+            config["third_party_tabs"] = third_party_tabs
+            _save_config(config)
+
+def get_third_party_tabs() -> list:
+    config = _get_config()
+    return config.get("third_party_tabs", [])
 
 def _save_config(conf: dict):
     ensure_log_config_location()

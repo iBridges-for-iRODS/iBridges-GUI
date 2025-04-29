@@ -177,3 +177,30 @@ def get_tab_providers() -> list:
 
     """
     return [entry.load() for entry in entry_points(group="ibridges_gui_tab")]
+
+def find_tab_provider(tab_providers: list, tab_name: str) -> object:
+    """Find the provider that provides the right template.
+
+    Parameters
+    ----------
+    tab_providers
+        A list of all installed tab providers.
+    tab_name
+        Name of the tab.
+
+    Returns
+    -------
+        The provider that contains the tab.
+
+    Raises
+    ------
+    ValueError
+        If the server_name identifier can't be found in the providers.
+
+    """
+    for provider in tab_providers:
+        if provider.name == tab_name:
+            return provider
+    raise ValueError(
+        "Cannot find provider with name {tab_name} ensure that the plugin is installed."
+    )
