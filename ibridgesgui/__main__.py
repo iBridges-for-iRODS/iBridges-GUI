@@ -111,9 +111,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
                     config_add_third_party(provider)
             else:
                 if widget.text() in current_tabs:
-                    self.remove_third_party_tab(provider,
-                                                widget.text(),
-                                                current_tabs[widget.text()])
+                    self.remove_third_party_tab(current_tabs[widget.text()])
                     config_remove_third_party(provider)
 
 
@@ -218,7 +216,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         third_party_tab = tab_class(self.session, self.app_name)
         self.tab_widget.addTab(third_party_tab, third_party_tab.name)
 
-    def remove_third_party_tab(self, tab_class: object, tab_name: str, tab_idx: int):
+    def remove_third_party_tab(self, tab_idx: int):
         """Remove a third party tab from tab widget."""
         self.tab_widget.removeTab(tab_idx)
 
