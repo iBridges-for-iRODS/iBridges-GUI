@@ -4,8 +4,8 @@
 import logging
 import os
 import sys
-from pathlib import Path
 from functools import partial
+from pathlib import Path
 
 import PySide6.QtGui
 import PySide6.QtUiTools
@@ -13,15 +13,16 @@ import PySide6.QtWidgets
 import setproctitle
 
 from ibridgesgui.browser import Browser
-from ibridgesgui.config import (ensure_irods_location,
-                                get_log_level,
-                                init_logger,
-                                set_log_level,
-                                config_add_third_party,
-                                config_remove_third_party,
-                                get_third_party_tabs
-                                )
-from ibridgesgui.gui_utils import UI_FILE_DIR, get_tab_providers, load_ui, find_tab_provider
+from ibridgesgui.config import (
+    config_add_third_party,
+    config_remove_third_party,
+    ensure_irods_location,
+    get_log_level,
+    get_third_party_tabs,
+    init_logger,
+    set_log_level,
+)
+from ibridgesgui.gui_utils import UI_FILE_DIR, find_tab_provider, get_tab_providers, load_ui
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
@@ -100,6 +101,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         return selected_tabs
 
     def load_and_unload_tab(self, widget):
+        """Load and unload a third party provider tab, triggered by drop down menu."""
         provider = find_tab_provider(self.third_party_tabs, widget.text())
         current_tabs = {self.tab_widget.tabText(idx): idx for idx in range(self.tab_widget.count())}
         if self.session is not None:
@@ -109,7 +111,9 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
                     config_add_third_party(provider)
             else:
                 if widget.text() in current_tabs:
-                    self.remove_third_party_tab(provider, widget.text(), current_tabs[widget.text()])
+                    self.remove_third_party_tab(provider,
+                                                widget.text(),
+                                                current_tabs[widget.text()])
                     config_remove_third_party(provider)
 
 
@@ -215,6 +219,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.tab_widget.addTab(third_party_tab, third_party_tab.name)
 
     def remove_third_party_tab(self, tab_class: object, tab_name: str, tab_idx: int):
+        """Remove a third party tab from tab widget."""
         self.tab_widget.removeTab(tab_idx)
 
     def create_env_file(self):

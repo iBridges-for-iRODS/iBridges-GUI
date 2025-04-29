@@ -128,7 +128,6 @@ def set_log_level(level: str):
 
 def config_add_third_party(tab_provider: object):
     """Add a current third party tab."""
-  
     obj_str = str(tab_provider).split("'")[1]
     config = _get_config()
     if config is not None:
@@ -140,7 +139,7 @@ def config_add_third_party(tab_provider: object):
     _save_config(config)
 
 def config_remove_third_party(tab_provider: object):
-    "Remove a third party provider"
+    """Remove a third party provider."""
     config = _get_config()
     obj_str = str(tab_provider).split("'")[1]
     if config is not None and "third_party_tabs" in config:
@@ -151,6 +150,7 @@ def config_remove_third_party(tab_provider: object):
             _save_config(config)
 
 def get_third_party_tabs() -> list:
+    """Get list of previously chosen tird party tab providers."""
     config = _get_config()
     return config.get("third_party_tabs", [])
 
