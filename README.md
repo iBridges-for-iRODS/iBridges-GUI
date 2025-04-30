@@ -33,7 +33,7 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 - Safe default options when working with your data.
 
 ## Prebuild executable <alpha>
-There are prebuild executables available for Windows, Macos and Ubuntu.
+There are prebuild executables available for Windows, macOS and Ubuntu.
 You can find the latest release [here](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases/latest).
 The build was done using the latest version on an x64 architecture.
 
