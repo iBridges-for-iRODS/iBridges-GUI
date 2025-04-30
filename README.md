@@ -116,7 +116,7 @@ For Windows simply click on the file `output/ibridgesgui/ibridges_gui.exe`.
 
 ## Extending iBridges-GUI (for developers)
 iBridges-GUI supports Plugins. You can create a plugin for your own tab and it will be detected and run by the main application when it is installed.
-Weprovide a small guide and template structure [here](https://github.com/iBridges-for-iRODS/ibridges-gui-tab-example).
+We provide a small guide and template structure [here](https://github.com/iBridges-for-iRODS/ibridges-gui-tab-example).
 
 ## Authors
 **Christine Staiger (Maintainer) [ORCID](https://orcid.org/0000-0002-6754-7647)**
