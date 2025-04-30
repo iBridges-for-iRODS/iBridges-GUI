@@ -9,4 +9,4 @@ iBridges is an open-source project, we welcome any type of contribution.
 
 To steer and streamline our development we use GitHub. Please feel free to create issues and start discussions about (new) features.
 If you want to directly contribute to the code base, please fork the repository and create a new feature branch from the `develop` branch. 
-Merge back by sending us a pull request.
+Merge back by creating a pull request.
