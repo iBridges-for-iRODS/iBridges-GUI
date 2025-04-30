@@ -3,9 +3,9 @@ title: "Welcome to the documentation of iBridges-Gui!"
 ---
 
 # Welcome
-iBridges-Gui is a Python package that implements a Graphical User Interface RODS servers. It provides users with a graphical way to do Data management.
+iBridges-Gui is a Python package that implements a Graphical User Interface yo iRODS servers. It provides users with a graphical way to do Data management.
 
-This page provides user and developer documentation of the iBridges iRODS client. Get started using the links below!
+This page provides user and developer documentation. Get started using the links below!
 
 ## Table of contents
 - [What is iBridges](docs/info.qmd)
