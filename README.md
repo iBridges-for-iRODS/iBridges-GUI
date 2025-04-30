@@ -71,7 +71,7 @@ The build was done using the latest version on an x64 architecture.
   ```
 
 ## Executables
-Since iBridges version 1.4.0 we are offering to download executables or build tem your self. 
+Since iBridges version 1.4.0 we are offering to download executables or to build them. 
 Please note, that this feature is still in experimental state.
 
 ### Prebuilt executables
