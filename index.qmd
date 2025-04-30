@@ -11,3 +11,4 @@ This page provides user and developer documentation of the iBridges iRODS client
 - [What is iBridges](docs/info.qmd)
 - [Getting started](docs/getting-started.qmd)
 - [User guide](docs/userdoc.qmd)
+- [Contributing](docs/developers.qmd)
