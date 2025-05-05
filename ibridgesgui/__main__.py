@@ -213,7 +213,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def init_third_party_tab(self, tab_class: object):
         """Create third-party tabs."""
-        third_party_tab = tab_class(self.session, self.app_name)
+        third_party_tab = tab_class(self.session, self.app_name, self.logger)
         self.tab_widget.addTab(third_party_tab, third_party_tab.name)
 
     def remove_third_party_tab(self, tab_idx: int):
