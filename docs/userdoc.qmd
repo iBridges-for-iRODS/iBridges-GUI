@@ -9,7 +9,7 @@ The views which currently are in use:
 - The **Search** to search for data collections and objects. 
 - The **Info** tab summarises information e.g. the user's role and groups; and storage resources on the iRODS server, their status and their available capacity.
 
-## Viewing Plugin and Tabs
+## View Plugins and Tabs
 
 In the Mainmenu you will find a drop down menu called "Plugins and Tabs". By selecting and unselecting certain tabs and plugins, the GUI tabs will extend and show the specified tabs or hide them. All tabs and plugins that are checked in the drop-down menu, will be reloaded in the next session automatically.
 
