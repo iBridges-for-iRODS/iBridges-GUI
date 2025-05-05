@@ -127,7 +127,7 @@ QTabBar::tab:top:selected {
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
-     <string>Plugins</string>
+     <string>Tabs and Plugins</string>
     </property>
    </widget>
    <addaction name="main_menu"/>
