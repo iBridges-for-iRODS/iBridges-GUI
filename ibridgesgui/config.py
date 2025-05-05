@@ -126,33 +126,40 @@ def set_log_level(level: str):
         config = {"log_level": level}
     _save_config(config)
 
-def config_add_third_party(tab_provider: object):
+def config_add_tab(tab_provider: object):
     """Add a current third party tab."""
-    obj_str = str(tab_provider).split("'")[1]
+    try:
+        obj_str = str(tab_provider).split("'")[1]
+    except:
+        obj_str = tab_provider
     config = _get_config()
     if config is not None:
-        third_party_tabs = set(config.get("third_party_tabs", []))
+        third_party_tabs = set(config.get("tabs", []))
         third_party_tabs.add(obj_str)
-        config["third_party_tabs"] = list(third_party_tabs)
+        config["tabs"] = list(third_party_tabs)
     else:
-        config = {"third_party_tabs": [obj_str]}
+        config = {"tabs": [obj_str]}
     _save_config(config)
 
-def config_remove_third_party(tab_provider: object):
+def config_remove_tab(tab_provider: object):
     """Remove a third party provider."""
     config = _get_config()
-    obj_str = str(tab_provider).split("'")[1]
-    if config is not None and "third_party_tabs" in config:
-        third_party_tabs = config.get("third_party_tabs", [])
+    try:
+        # third party plugin class name
+        obj_str = str(tab_provider).split("'")[1]
+    except:
+        obj_str = tab_provider
+    if config is not None and "tabs" in config:
+        third_party_tabs = config.get("tabs", [])
         if obj_str in third_party_tabs:
             third_party_tabs.remove(obj_str)
-            config["third_party_tabs"] = third_party_tabs
+            config["tabs"] = third_party_tabs
             _save_config(config)
 
-def get_third_party_tabs() -> list:
+def get_tabs() -> list:
     """Get list of previously chosen tird party tab providers."""
     config = _get_config()
-    return config.get("third_party_tabs", [])
+    return config.get("tabs", [])
 
 def _save_config(conf: dict):
     ensure_log_config_location()
