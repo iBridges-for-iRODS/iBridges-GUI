@@ -103,7 +103,7 @@ class Ui_MainWindow(object):
         self.config_menu.setObjectName(u"config_menu")
         self.menuPlugins = QMenu(self.menubar)
         self.menuPlugins.setObjectName(u"menuPlugins")
-        self.menuPlugins.setEnabled(False)
+        self.menuPlugins.setEnabled(True)
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.main_menu.menuAction())
