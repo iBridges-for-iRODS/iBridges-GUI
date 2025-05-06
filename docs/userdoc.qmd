@@ -2,18 +2,18 @@
 ## Synopsis 
 iBridges is a **GUI to a Data management** platform **based on iRODS**. It exposes iRODS functionality through the graphical interface to the users. We divided the different functions into groups where each function group is represented in an own view in the GUI. 
 
-The views which currently are in use:
+iBridges-GUI default views:
 
 - The **Browser** is a tool to browse through iRODS collections and inspect data objects and collections. You can also **edit metadata and permissions**; and you can **delete data** in this view.
 - The **Data Synchronisation** exposes functionality to synchronise local directories with their counterpart collections in iRODS.
 - The **Search** to search for data collections and objects. 
 - The **Info** tab summarises information e.g. the user's role and groups; and storage resources on the iRODS server, their status and their available capacity.
 
-## View Plugins and Tabs
+## Views and Plugins
 
-In the Mainmenu you will find a drop down menu called "Plugins and Tabs". By selecting and unselecting certain tabs and plugins, the GUI tabs will extend and show the specified tabs or hide them. All tabs and plugins that are checked in the drop-down menu, will be reloaded in the next session automatically.
+In the upper main menu next to the configuration menu you will find a drop down menu called "Plugins and Tabs". By selecting and unselecting certain tabs and plugins, the GUI tabs will extend and show the specified tabs or hide them. All tabs and plugins that are checked in the drop-down menu, will be reloaded in the next session automatically.
 
-The first time you start the GUI, the default tabs `Welcome`, `Browser`, `Synchronise Data`, `Search`, `Info` and `Logs` will be shown.
+The first time you start the GUI, the above-mentioned default views `Welcome`, `Browser`, `Synchronise Data`, `Search`, `Info` and `Logs` will be shown.
 
 ## Browsing through your iRODS collections
 
