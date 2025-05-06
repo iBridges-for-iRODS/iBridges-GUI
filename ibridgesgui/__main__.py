@@ -86,11 +86,11 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             "Logs": self.init_log_tab,
         }
         for tab in self.standard_tabs:
-             action = PySide6.QtGui.QAction(tab, self.menuPlugins, checkable=True)
-             action.triggered.connect(partial(self.load_and_unload_tab, widget=action))
-             self.menuPlugins.addAction(action)
-             if tab in self.prev_tabs:
-                 action.setChecked(True)
+            action = PySide6.QtGui.QAction(tab, self.menuPlugins, checkable=True)
+            action.triggered.connect(partial(self.load_and_unload_tab, widget=action))
+            self.menuPlugins.addAction(action)
+            if tab in self.prev_tabs:
+                action.setChecked(True)
 
         self.session = None
         self.irods_browser = None
