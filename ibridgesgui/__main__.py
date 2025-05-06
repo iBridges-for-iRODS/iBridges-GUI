@@ -62,7 +62,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
-        
+
         # Plugin tabs
         self.prev_tabs = get_tabs() # previously checked tabs
         self.third_party_tabs = get_tab_providers()
@@ -200,7 +200,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def setup_tabs(self):
         """Init tab view."""
-
         # init the standard tabs first
         for tab in self.standard_tabs:
             if tab in self.prev_tabs:
@@ -210,7 +209,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             try:
                 provider = find_tab_provider(self.third_party_tabs, third_party_tab)
                 self.init_third_party_tab(provider)
-            except:
+            except ValueError:
                 self.logger.info("Third party tab %s not known", third_party_tab)
 
         # When no previous tabs in config initialise the standard tabs

@@ -130,7 +130,7 @@ def config_add_tab(tab_provider: object):
     """Add a current third party tab."""
     try:
         obj_str = str(tab_provider).split("'")[1]
-    except:
+    except IndexError:
         obj_str = tab_provider
     config = _get_config()
     if config is not None:
@@ -147,7 +147,7 @@ def config_remove_tab(tab_provider: object):
     try:
         # third party plugin class name
         obj_str = str(tab_provider).split("'")[1]
-    except:
+    except IndexError:
         obj_str = tab_provider
     if config is not None and "tabs" in config:
         third_party_tabs = config.get("tabs", [])
