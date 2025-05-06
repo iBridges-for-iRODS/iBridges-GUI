@@ -1,5 +1,6 @@
 """Pop up Widget for Login."""
 
+import json
 import logging
 import os
 import sys
@@ -12,6 +13,7 @@ from irods.exception import ResourceDoesNotExist
 from PySide6.QtWidgets import QDialog, QLineEdit
 
 from ibridgesgui.config import (
+    CONFIG_DIR,
     IRODSA,
     check_irods_config,
     get_last_ienv_path,
@@ -44,10 +46,29 @@ class Login(QDialog, Ui_irodsLogin):
 
         self.session_dict = session_dict
         self._init_envbox()
+        # get GUI settings and extend with CLI settings
         self.prev_settings = get_prev_settings()
+        cli_settings = self._cached_pw_from_cli()
+        for cli_env, cli_pw  in cli_settings.items():
+            if cli_env not in self.prev_settings and cli_pw is not None:
+                self.prev_settings[cli_env] = cli_pw
+
         self.cached_pw = self._init_password()
         self._load_gui()
         self.setWindowTitle("Connect to iRODS server")
+
+    def _cached_pw_from_cli(self) -> dict:
+        """Retrieve dict from env file to cached password from the cli settings."""
+        cli_config = None
+        cli_config_path = CONFIG_DIR / "ibridges_cli.json"
+        cli_aliases = {}
+        if cli_config_path.is_file():
+            with open(cli_config_path, "r", encoding="utf-8") as handle:
+                cli_config = json.load(handle)
+        if cli_config:
+            for server in cli_config["servers"]:
+                cli_aliases[server] = cli_config["servers"][server].get("irodsa_backup", None)
+        return cli_aliases
 
     def _load_gui(self):
         self.connect_button.clicked.connect(self.login_function)
@@ -71,6 +92,7 @@ class Login(QDialog, Ui_irodsLogin):
     def _init_password(self):
         # Check if there is a cached password in the ibridges_gui config file
         env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
+
         if str(env_file) in self.prev_settings:
             self.password_field.setText("***********")
             return True
