@@ -70,9 +70,9 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.logger.info("Tab names: %s", [tab.name for tab in self.third_party_tabs])
         # populate Plugin/Tabs drop down
         for tab in self.third_party_tabs:
-            obj_str = str(tab).split("'")[1]
+            #obj_str = str(tab).split("'")[1]
             action = PySide6.QtGui.QAction(tab.name, self.menuPlugins, checkable=True)
-            if obj_str in self.prev_tabs:
+            if tab.name in self.prev_tabs:
                 action.setChecked(True)
             action.triggered.connect(partial(self.load_and_unload_tab, widget=action))
             self.menuPlugins.addAction(action)
@@ -91,6 +91,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.menuPlugins.addAction(action)
             if tab in self.prev_tabs:
                 action.setChecked(True)
+        
 
         self.session = None
         self.irods_browser = None
@@ -120,7 +121,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             if widget.text() in self.standard_tabs:
                 provider = widget.text()
             else:
-                print("Cannot find provider for {widget.text()}")
+                self.logger.exception("Cannot find provider for %s", widget.text())
         # Current checked tabs
         current_tabs = {self.tab_widget.tabText(idx): idx for idx in range(self.tab_widget.count())}
 
@@ -155,6 +156,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.session = None
             self.session_dict.clear()
         self.tab_widget.clear()
+        self.menuPlugins.setEnabled(False)
         self.welcome_tab()
 
     def connect(self):
@@ -171,6 +173,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.session = self.session_dict["session"]
             try:
                 self.setup_tabs()
+                self.menuPlugins.setEnabled(True)
             except:
                 self.session = None
                 raise
@@ -204,7 +207,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         for tab in self.standard_tabs:
             if tab in self.prev_tabs:
                 self.ui_tabs_lookup[tab]()
-        print(set(self.prev_tabs).difference(self.standard_tabs))
         for third_party_tab in set(self.prev_tabs).difference(self.standard_tabs):
             try:
                 provider = find_tab_provider(self.third_party_tabs, third_party_tab)
