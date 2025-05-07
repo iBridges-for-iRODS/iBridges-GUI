@@ -14,7 +14,6 @@ import setproctitle
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import (
-
     config_add_tab,
     config_remove_tab,
     ensure_irods_location,
@@ -93,7 +92,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.menuPlugins.addAction(action)
             if tab in self.prev_tabs:
                 action.setChecked(True)
-        
+
 
         self.session = None
         self.irods_browser = None
@@ -205,7 +204,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def setup_tabs(self):
         """Init tab view."""
-
         # init the standard tabs first
         for tab in self.standard_tabs:
             if tab in self.prev_tabs:
