@@ -17,6 +17,11 @@ from ibridges.executor import Operations
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
 try:
+    from importlib_metadata import entry_points
+except ImportError:
+    from importlib.metadata import entry_points  # type: ignore
+
+try:
     from importlib.resources import files
 except ImportError:
     from importlib_resources import files
@@ -161,3 +166,41 @@ def get_downloads_dir() -> pathlib.Path:
     # Try to create Downloads
     pathlib.Path.home().joinpath("Downloads").mkdir(parents=True)
     return pathlib.Path.home().joinpath("Downloads")
+
+
+def get_tab_providers() -> list:
+    """Get a list of all environment template providers.
+
+    Returns
+    -------
+        The list that contains the providers.
+
+    """
+    return [entry.load() for entry in entry_points(group="ibridges.gui_tab")]
+
+def find_tab_provider(tab_providers: list, tab_name: str) -> object:
+    """Find the provider that provides the right template.
+
+    Parameters
+    ----------
+    tab_providers
+        A list of all installed tab providers.
+    tab_name
+        Name of the tab.
+
+    Returns
+    -------
+        The provider that contains the tab.
+
+    Raises
+    ------
+    ValueError
+        If the server_name identifier can't be found in the providers.
+
+    """
+    for provider in tab_providers:
+        if provider.name == tab_name:
+            return provider
+    raise ValueError(
+        "Cannot find provider with name {tab_name} ensure that the plugin is installed."
+    )

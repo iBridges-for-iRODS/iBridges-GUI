@@ -4,6 +4,7 @@
 import logging
 import os
 import sys
+from functools import partial
 from pathlib import Path
 
 import PySide6.QtGui
@@ -12,8 +13,16 @@ import PySide6.QtWidgets
 import setproctitle
 
 from ibridgesgui.browser import Browser
-from ibridgesgui.config import ensure_irods_location, get_log_level, init_logger, set_log_level
-from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
+from ibridgesgui.config import (
+    config_add_third_party,
+    config_remove_third_party,
+    ensure_irods_location,
+    get_log_level,
+    get_third_party_tabs,
+    init_logger,
+    set_log_level,
+)
+from ibridgesgui.gui_utils import UI_FILE_DIR, find_tab_provider, get_tab_providers, load_ui
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
@@ -53,6 +62,18 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
+        self.third_party_tabs = get_tab_providers()
+        self.logger.info("Third party tabs: %s", self.third_party_tabs)
+        self.logger.info("Tab names: %s", [tab.name for tab in self.third_party_tabs])
+        # populate Plugin drop down
+        prev_third_party_tabs = get_third_party_tabs()
+        for tab in self.third_party_tabs:
+            obj_str = str(tab).split("'")[1]
+            action = PySide6.QtGui.QAction(tab.name, self.menuPlugins, checkable=True)
+            if obj_str in prev_third_party_tabs:
+                action.setChecked(True)
+            action.triggered.connect(partial(self.load_and_unload_tab, widget=action))
+            self.menuPlugins.addAction(action)
         self.ui_tabs_lookup = {
             "tabBrowser": self.init_browser_tab,
             "tabSync": self.init_sync_tab,
@@ -70,6 +91,29 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_add_configuration.triggered.connect(self.create_env_file)
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
         self.tab_widget.setCurrentIndex(0)
+
+    def checked_third_party_tabs(self):
+        """Retrieve names of checked third party tabs."""
+        selected_tabs = []
+        for action in self.menuPlugins.actions():
+            if action.isChecked():
+                selected_tabs.append(action.text())
+        return selected_tabs
+
+    def load_and_unload_tab(self, widget):
+        """Load and unload a third party provider tab, triggered by drop down menu."""
+        provider = find_tab_provider(self.third_party_tabs, widget.text())
+        current_tabs = {self.tab_widget.tabText(idx): idx for idx in range(self.tab_widget.count())}
+        if self.session is not None:
+            if widget.isChecked():
+                if widget.text() not in current_tabs:
+                    self.init_third_party_tab(provider)
+                    config_add_third_party(provider)
+            else:
+                if widget.text() in current_tabs:
+                    self.remove_third_party_tab(current_tabs[widget.text()])
+                    config_remove_third_party(provider)
+
 
     def disconnect(self):
         """Close iRODS session."""
@@ -126,7 +170,11 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Init tab view."""
         for tab_fun in self.ui_tabs_lookup.values():
             tab_fun()
-            # self.ui_tabs_lookup[tab_name]()
+        selected_tabs = self.checked_third_party_tabs()
+        for tab in self.third_party_tabs:
+            if tab.name in selected_tabs:
+                self.init_third_party_tab(tab)
+
         self.tab_widget.setCurrentIndex(1)
 
     def welcome_tab(self):
@@ -162,6 +210,15 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Create sync."""
         irods_sync = Sync(self.session, self.app_name)
         self.tab_widget.addTab(irods_sync, "Synchronise Data")
+
+    def init_third_party_tab(self, tab_class: object):
+        """Create third-party tabs."""
+        third_party_tab = tab_class(self.session, self.app_name, self.logger)
+        self.tab_widget.addTab(third_party_tab, third_party_tab.name)
+
+    def remove_third_party_tab(self, tab_idx: int):
+        """Remove a third party tab from tab widget."""
+        self.tab_widget.removeTab(tab_idx)
 
     def create_env_file(self):
         """Populate drop down menu to create a new environment.json."""
