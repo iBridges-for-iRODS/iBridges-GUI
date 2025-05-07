@@ -14,6 +14,7 @@ import setproctitle
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import (
+
     config_add_tab,
     config_remove_tab,
     ensure_irods_location,
@@ -78,6 +79,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.menuPlugins.addAction(action)
         # Standard tabs
         self.standard_tabs = ["Browser", "Synchronise Data", "Search", "Info", "Logs"]
+
         self.ui_tabs_lookup = {
             "Browser": self.init_browser_tab,
             "Synchronise Data": self.init_sync_tab,
@@ -102,6 +104,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_add_configuration.triggered.connect(self.create_env_file)
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
         self.tab_widget.setCurrentIndex(0)
+
 
     def checked_tabs(self):
         """Retrieve names of checked third party tabs."""
@@ -146,7 +149,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
                 if widget.text() in current_tabs:
                     self.remove_tab(current_tabs[widget.text()])
                     config_remove_tab(provider)
-
 
     def disconnect(self):
         """Close iRODS session."""
@@ -203,6 +205,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def setup_tabs(self):
         """Init tab view."""
+
         # init the standard tabs first
         for tab in self.standard_tabs:
             if tab in self.prev_tabs:
@@ -263,6 +266,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Create third-party tabs."""
         third_party_tab = tab_class(self.session, self.app_name, self.logger)
         self.tab_widget.addTab(third_party_tab, third_party_tab.name)
+
 
     def remove_tab(self, tab_idx: int):
         """Remove a third party tab from tab widget."""

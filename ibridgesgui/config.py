@@ -126,6 +126,7 @@ def set_log_level(level: str):
         config = {"log_level": level}
     _save_config(config)
 
+
 def config_add_tab(tab_provider: object):
     """Add a current third party tab."""
     try:

@@ -176,7 +176,8 @@ def get_tab_providers() -> list:
         The list that contains the providers.
 
     """
-    return [entry.load() for entry in entry_points(group="ibridges_gui_tab")]
+
+    return [entry.load() for entry in entry_points(group="ibridges.gui_tab")]
 
 def find_tab_provider(tab_providers: list, tab_name: str) -> object:
     """Find the provider that provides the right template.
