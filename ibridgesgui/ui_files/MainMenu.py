@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'MainMenu.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,9 +16,8 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QLabel, QMainWindow, QMenu,
-    QMenuBar, QSizePolicy, QTabWidget, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu, QMenuBar,
+    QSizePolicy, QTabWidget, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -92,11 +91,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.tab_widget)
 
-        self.error_label = QLabel(self.centralwidget)
-        self.error_label.setObjectName(u"error_label")
-
-        self.verticalLayout.addWidget(self.error_label)
-
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -107,10 +101,15 @@ class Ui_MainWindow(object):
         self.main_menu.setFont(font1)
         self.config_menu = QMenu(self.menubar)
         self.config_menu.setObjectName(u"config_menu")
+        self.menuPlugins = QMenu(self.menubar)
+        self.menuPlugins.setObjectName(u"menuPlugins")
+        self.menuPlugins.setEnabled(True)
+
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.main_menu.menuAction())
         self.menubar.addAction(self.config_menu.menuAction())
+        self.menubar.addAction(self.menuPlugins.menuAction())
         self.main_menu.addAction(self.action_connect)
         self.main_menu.addAction(self.action_close_session)
         self.main_menu.addAction(self.action_exit)
@@ -134,8 +133,9 @@ class Ui_MainWindow(object):
         self.action_connect.setText(QCoreApplication.translate("MainWindow", u"Connect to iRODS", None))
         self.action_check_configuration.setText(QCoreApplication.translate("MainWindow", u"Check Configuration", None))
         self.action_add_configuration.setText(QCoreApplication.translate("MainWindow", u"Add Configuration", None))
-        self.error_label.setText("")
         self.main_menu.setTitle(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.config_menu.setTitle(QCoreApplication.translate("MainWindow", u"Configure", None))
+        self.menuPlugins.setTitle(QCoreApplication.translate("MainWindow", u"Views and Plugins", None))
+
     # retranslateUi
 
