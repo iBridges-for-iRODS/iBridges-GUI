@@ -9,10 +9,12 @@ def run_cmd(cmd: str):
     """Run a commandline command and check if it was successful.
 
     Args:
+    ----
         cmd : str
             Command to run.
 
     Returns:
+    -------
         str
             Output of the command
 
@@ -33,7 +35,8 @@ def run_cmd(cmd: str):
 def os_specific_settings():
     """Get the settings for the operating system.
 
-    Returns:
+    Returns
+    -------
         python : str
             python version used to call this function
         cmd_sep : str
@@ -58,6 +61,7 @@ def ui_to_py(ui_folder: Path, venv_activate: str, cmd_sep: str):
             pyside6-uic gui/MainWindow.ui -o gui/MainWindow.py
 
     Args:
+    ----
         ui_folder : Path
             folder containing the .ui files
         venv_activate : str
@@ -77,6 +81,7 @@ def replace_icon_paths(py_file: Path):
     """Replace the icon paths in the .py file.
 
     Args:
+    ----
         py_file : Path
             .py file to update
 
@@ -96,6 +101,7 @@ def remove_pyui_files(ui_folder: Path):
     """Remove the locally stored .py versions of the files.
 
     Args:
+    ----
         ui_folder : Path
             folder containing the .ui files
 

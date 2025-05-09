@@ -103,6 +103,8 @@ class Ui_MainWindow(object):
         self.config_menu.setObjectName(u"config_menu")
         self.menuPlugins = QMenu(self.menubar)
         self.menuPlugins.setObjectName(u"menuPlugins")
+        self.menuPlugins.setEnabled(True)
+
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.main_menu.menuAction())
@@ -133,6 +135,7 @@ class Ui_MainWindow(object):
         self.action_add_configuration.setText(QCoreApplication.translate("MainWindow", u"Add Configuration", None))
         self.main_menu.setTitle(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.config_menu.setTitle(QCoreApplication.translate("MainWindow", u"Configure", None))
-        self.menuPlugins.setTitle(QCoreApplication.translate("MainWindow", u"Plugins", None))
+        self.menuPlugins.setTitle(QCoreApplication.translate("MainWindow", u"Views and Plugins", None))
+
     # retranslateUi
 
