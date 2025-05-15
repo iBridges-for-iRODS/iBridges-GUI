@@ -67,36 +67,39 @@ class Login(QDialog, Ui_irodsLogin):
         # remove all aliases or previous envs, that do not exist any longer
         for alias, (env, _) in self.aliases_envs.items():
             env = Path(env)
-            print(alias, env)
             if env not in env_files:
                 unavailable_envs_aliases.append(alias)
         for key in unavailable_envs_aliases:
             del self.aliases_envs[key]
-        print(self.aliases_envs)
-        print()
-        print()
 
         # remove all env files that are already in aliases and envs
         aliased_envs = [Path(env) for env, _ in self.aliases_envs.values()]
         for env_file in env_files:
             if env_file in aliased_envs:
                 env_files.remove(env_file)
+        
         # Combine the two lists for the env box
-        envbox_items = [env.name for env in env_files] + list(self.aliases_envs.keys())
+        # Drop down for aliases should also show env file name
+        print(self.aliases_envs)
+        aliases = [key + " - " + Path(value[0]).name for key, value in self.aliases_envs.items()]
+        envbox_items = [env.name for env in env_files] + aliases
 
         self.envbox.clear()
         self.envbox.addItems(envbox_items)
         last_env = get_last_ienv_path()
+        print(last_env)
         if last_env is not None and last_env in envbox_items:
-            self.envbox.setCurrentIndex(env_jsons.index(last_env))
+            self.envbox.setCurrentIndex(envbox_items.index(last_env))
         else:
             self.envbox.setCurrentIndex(0)
 
     def _init_password(self):
         # Check if there is a cached password in the ibridges_gui config file
-        env_or_alias = self.irods_config_dir.joinpath(self.envbox.currentText())
-
-        if str(env_or_alias) in self.aliases and self.aliases[env_or_alias][1]:
+        env_or_alias = self.envbox.currentText().split(" - ")[0]
+        if str(env_or_alias) in self.aliases_envs and self.aliases_envs[env_or_alias][1]:
+            self.password_field.setText("***********")
+            return True
+        elif self.irods_config_dir.joinpath(env_or_alias) in self.aliases_envs and self.aliases_envs[self.irods_config_dir.joinpath(env_or_alias)][1]:
             self.password_field.setText("***********")
             return True
         self.password_field.clear()

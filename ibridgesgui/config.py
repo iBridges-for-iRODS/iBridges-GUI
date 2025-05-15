@@ -299,12 +299,11 @@ def combine_envs_gui_cli():
         if env in cli:
             # Use latest GUI password if differs from CLI
             if 'irodsa_backup' in cli[env] and gui[env] != cli[env]['irodsa_backup']:
-                print(gui[env], cli[env]['irodsa_backup'])
                 aliases[cli[env]['alias']] = (env, gui[env])
 
         else:
-            # GUI saved environments do not have an alias, ise env file path
-            aliases[env] = (env, gui[env])
+            # GUI saved environments do not have an alias, use env file name
+            aliases[env] = (Path(env).name, gui[env])
 
     return aliases
 
