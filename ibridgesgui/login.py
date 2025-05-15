@@ -1,6 +1,5 @@
 """Pop up Widget for Login."""
 
-import json
 import logging
 import os
 import sys
@@ -13,14 +12,13 @@ from irods.exception import ResourceDoesNotExist
 from PySide6.QtWidgets import QDialog, QLineEdit
 
 from ibridgesgui.config import (
-    CONFIG_DIR,
     IRODSA,
     check_irods_config,
+    combine_envs_gui_cli,
     get_last_ienv_path,
     get_prev_settings,
     save_current_settings,
     set_last_ienv,
-    combine_envs_gui_cli
 )
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
@@ -49,7 +47,7 @@ class Login(QDialog, Ui_irodsLogin):
         # get settings from GUI and CLI form previous sessions
         self.aliases_envs = combine_envs_gui_cli()
         self._init_envbox()
-        self.prev_settings = get_prev_settings() # previous env file or alias
+        self.prev_settings = get_prev_settings()  # previous env file or alias
         self._load_gui()
         self.setWindowTitle("Connect to iRODS server")
 
@@ -83,7 +81,9 @@ class Login(QDialog, Ui_irodsLogin):
             self.aliases_envs[env_file.name] = (env_file, None)
 
         # Drop down for aliases should also show env file path
-        envbox_items = [key + " - " + str(Path(value[0])) for key, value in self.aliases_envs.items()]
+        envbox_items = [
+            key + " - " + str(Path(value[0])) for key, value in self.aliases_envs.items()
+        ]
 
         self.envbox.clear()
         self.envbox.addItems(envbox_items)

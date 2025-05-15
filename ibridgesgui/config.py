@@ -146,6 +146,7 @@ def config_add_tab(tab_provider: object):
         config = {"tabs": [obj_str]}
     _save_config(config)
 
+
 def config_remove_tab(tab_provider: object):
     """Remove a tab from the config file."""
     config = _get_config()
@@ -162,10 +163,12 @@ def config_remove_tab(tab_provider: object):
             config["tabs"] = tabs
             _save_config(config)
 
+
 def get_tabs() -> list:
     """Get list of previously chosen tird party tab providers."""
     config = _get_config()
     return config.get("tabs", [])
+
 
 def _save_config(conf: dict):
     ensure_log_config_location()
@@ -329,16 +332,18 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
     else:
         raise ValueError("Filetype needs to be '.json'.")
 
+
 def combine_envs_gui_cli():
+    """Read in the saved aliases from the CLI and combine with the GUI environments."""
     aliases = _get_aliases_from_cli()
     gui = get_prev_settings()
     cli = _read_json(CLI_CONFIG_FILE)["servers"] if CLI_CONFIG_FILE.exists() else []
-    
+
     for env in gui:
         if env in cli:
             # Use latest GUI password if differs from CLI
-            if 'irodsa_backup' in cli[env] and gui[env] != cli[env]['irodsa_backup']:
-                aliases[cli[env]['alias']] = (env, gui[env])
+            if "irodsa_backup" in cli[env] and gui[env] != cli[env]["irodsa_backup"]:
+                aliases[cli[env]["alias"]] = (env, gui[env])
 
         else:
             # GUI saved environments do not have an alias, use env file name
