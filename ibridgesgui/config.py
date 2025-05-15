@@ -37,6 +37,7 @@ LOG_LEVEL = {
 CONFIG_DIR = Path("~", ".ibridges").expanduser()
 CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
 IRODSA = Path.home() / ".irods" / ".irodsA"
+CLI_CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_cli.json")
 
 
 def ensure_log_config_location():
@@ -288,6 +289,40 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
         _write_json(env_path, conf)
     else:
         raise ValueError("Filetype needs to be '.json'.")
+
+def combine_envs_gui_cli():
+    aliases = _get_aliases_from_cli()
+    gui = get_prev_settings()
+    cli = _read_json(CLI_CONFIG_FILE)["servers"]
+    
+    for env in gui:
+        print(env)
+        if env in cli:
+            print(gui[env], cli[env]['irodsa_backup'])
+            # Use latest GUI password if differs from CLI
+            if 'irodsa_backup' in cli[env] and gui[env] != cli[env]['irodsa_backup']:
+                print(gui[env], cli[env]['irodsa_backup'])
+                aliases[cli[env]['alias']] = (env, gui[env])
+
+        else:
+            # GUI saved environments do not have an alias, ise env file path
+            aliases[env] = (env, gui[env])
+
+    return aliases
+
+
+def _get_aliases_from_cli():
+    # Will be deprecated once the class IbridgesConf in iBridges is updated
+    cli_conf = _read_json(CLI_CONFIG_FILE)
+    aliases = {
+        cli_conf["servers"][path]["alias"]: (
+            path,
+            cli_conf["servers"][path].get("irodsa_backup", None),
+        )
+        for path in cli_conf["servers"]
+    }
+
+    return aliases
 
 
 def _read_json(file_path: Path) -> dict:
