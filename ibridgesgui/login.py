@@ -59,7 +59,7 @@ class Login(QDialog, Ui_irodsLogin):
 
     def _init_envbox(self):
         # all env files in the .irods folder
-        env_files = [path for path in self.irods_config_dir.glob("*.json")]
+        env_files = list(self.irods_config_dir.glob('*.json'))
         if len(env_files) == 0:
             self.error_label.setText(f"ERROR: no .json files found in {self.irods_config_dir}")
         unavailable_envs_aliases = []
