@@ -302,5 +302,10 @@ def main():
     app.exec()
 
 
-if __name__ == "__main__":
+def main_deprecated():
+    """Deprecate the ibridges-gui call."""
+    print("'ibridges-gui' will be deprecated. Please use 'ibridges gui' from ibridges 1.5.1")
     main()
+
+if __name__ == "__main__":
+    main_deprecated()
