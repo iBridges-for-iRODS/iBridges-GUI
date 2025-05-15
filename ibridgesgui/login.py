@@ -19,7 +19,7 @@ from ibridgesgui.config import (
     get_last_ienv_path,
     get_prev_settings,
     save_current_settings,
-    set_last_ienv_path,
+    set_last_ienv,
     combine_envs_gui_cli
 )
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
@@ -60,6 +60,7 @@ class Login(QDialog, Ui_irodsLogin):
         self.envbox.currentTextChanged.connect(self._init_password)
 
     def _init_envbox(self):
+        # all env files in the .irods folder
         env_files = [path for path in self.irods_config_dir.glob("*.json")]
         if len(env_files) == 0:
             self.error_label.setText(f"ERROR: no .json files found in {self.irods_config_dir}")
@@ -77,29 +78,26 @@ class Login(QDialog, Ui_irodsLogin):
         for env_file in env_files:
             if env_file in aliased_envs:
                 env_files.remove(env_file)
-        
-        # Combine the two lists for the env box
-        # Drop down for aliases should also show env file name
-        print(self.aliases_envs)
-        aliases = [key + " - " + Path(value[0]).name for key, value in self.aliases_envs.items()]
-        envbox_items = [env.name for env in env_files] + aliases
+        # add remaining items to dictionary
+        for env_file in env_files:
+            self.aliases_envs[env_file.name] = (env_file, None)
+
+        # Drop down for aliases should also show env file path
+        envbox_items = [key + " - " + str(Path(value[0])) for key, value in self.aliases_envs.items()]
 
         self.envbox.clear()
         self.envbox.addItems(envbox_items)
         last_env = get_last_ienv_path()
-        print(last_env)
         if last_env is not None and last_env in envbox_items:
             self.envbox.setCurrentIndex(envbox_items.index(last_env))
         else:
             self.envbox.setCurrentIndex(0)
+        self._init_password()
 
     def _init_password(self):
         # Check if there is a cached password in the ibridges_gui config file
         env_or_alias = self.envbox.currentText().split(" - ")[0]
-        if str(env_or_alias) in self.aliases_envs and self.aliases_envs[env_or_alias][1]:
-            self.password_field.setText("***********")
-            return True
-        elif self.irods_config_dir.joinpath(env_or_alias) in self.aliases_envs and self.aliases_envs[self.irods_config_dir.joinpath(env_or_alias)][1]:
+        if env_or_alias in self.aliases_envs and self.aliases_envs[env_or_alias][1]:
             self.password_field.setText("***********")
             return True
         self.password_field.clear()
@@ -126,18 +124,19 @@ class Login(QDialog, Ui_irodsLogin):
     def login_function(self):
         """Connect to iRODS server with gathered info."""
         self.error_label.clear()
-        env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
+        selected_env = self.envbox.currentText()
+        env_file, cached_pw = self.aliases_envs[selected_env.split(" - ")[0]]
 
         msg = check_irods_config(env_file, include_network=False)
         if not msg == "All checks passed successfully.":
-            self.error_label.setText("Go to menu Configure. " + msg)
+            self.error_label.setText("Go to menu Configure. \n" + msg)
             return
 
         try:
-            if self.cached_pw is True and self.password_field.text() == "***********":
+            if cached_pw and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
                 with open(IRODSA, "w", encoding="utf-8", opener=strictwrite) as f:
-                    f.write(self.prev_settings[str(env_file)])
+                    f.write(cached_pw)
 
                 session = Session(irods_env=env_file)
             else:
@@ -153,7 +152,7 @@ class Login(QDialog, Ui_irodsLogin):
             save_current_settings(env_file)
             if self._check_home(session) and self._check_resource(session):
                 self.session_dict["session"] = session
-                set_last_ienv_path(env_file.name)
+                set_last_ienv(selected_env)
                 self.close()
             elif not self._check_home(session):
                 self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')

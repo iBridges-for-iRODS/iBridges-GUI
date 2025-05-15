@@ -96,17 +96,18 @@ def get_last_ienv_path() -> Union[None, str]:
     return None
 
 
-def set_last_ienv_path(ienv_path: Path):
+def set_last_ienv(ienv: str):
     """Save the last used environment path to the config file.
 
     ienv_path : Path
         Path to last environment
     """
     config = _get_config()
+    print(ienv)
     if config is not None:
-        config["gui_last_env"] = ienv_path
+        config["gui_last_env"] = ienv
     else:
-        config = {"gui_last_env": ienv_path}
+        config = {"gui_last_env": ienv}
     _save_config(config)
 
 
@@ -303,23 +304,24 @@ def combine_envs_gui_cli():
 
         else:
             # GUI saved environments do not have an alias, use env file name
-            aliases[env] = (Path(env).name, gui[env])
+            aliases[Path(env).name] = (Path(env), gui[env])
 
     return aliases
 
 
 def _get_aliases_from_cli():
     # Will be deprecated once the class IbridgesConf in iBridges is updated
-    cli_conf = _read_json(CLI_CONFIG_FILE)
-    aliases = {
-        cli_conf["servers"][path]["alias"]: (
-            path,
-            cli_conf["servers"][path].get("irodsa_backup", None),
-        )
-        for path in cli_conf["servers"]
-    }
-
-    return aliases
+    if CLI_CONFIG_FILE.exists():
+        cli_conf = _read_json(CLI_CONFIG_FILE)
+        aliases = {
+            cli_conf["servers"][path]["alias"]: (
+                path,
+                cli_conf["servers"][path].get("irodsa_backup", None),
+            )
+            for path in cli_conf["servers"]
+        }
+        return aliases
+    return {}
 
 
 def _read_json(file_path: Path) -> dict:
