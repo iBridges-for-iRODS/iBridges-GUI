@@ -332,7 +332,7 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
 def combine_envs_gui_cli():
     aliases = _get_aliases_from_cli()
     gui = get_prev_settings()
-    cli = _read_json(CLI_CONFIG_FILE)["servers"]
+    cli = _read_json(CLI_CONFIG_FILE)["servers"] if CLI_CONFIG_FILE.exists() else []
     
     for env in gui:
         if env in cli:
