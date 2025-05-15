@@ -296,9 +296,7 @@ def combine_envs_gui_cli():
     cli = _read_json(CLI_CONFIG_FILE)["servers"]
     
     for env in gui:
-        print(env)
         if env in cli:
-            print(gui[env], cli[env]['irodsa_backup'])
             # Use latest GUI password if differs from CLI
             if 'irodsa_backup' in cli[env] and gui[env] != cli[env]['irodsa_backup']:
                 print(gui[env], cli[env]['irodsa_backup'])

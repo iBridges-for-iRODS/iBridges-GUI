@@ -20,6 +20,7 @@ from ibridgesgui.config import (
     get_prev_settings,
     save_current_settings,
     set_last_ienv_path,
+    combine_envs_gui_cli
 )
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.irodsLogin import Ui_irodsLogin
@@ -45,30 +46,12 @@ class Login(QDialog, Ui_irodsLogin):
         self.irods_config_dir = Path("~", ".irods").expanduser()
 
         self.session_dict = session_dict
+        # get settings from GUI and CLI form previous sessions
+        self.aliases_envs = combine_envs_gui_cli()
         self._init_envbox()
-        # get GUI settings and extend with CLI settings
-        self.prev_settings = get_prev_settings()
-        cli_settings = self._cached_pw_from_cli()
-        for cli_env, cli_pw  in cli_settings.items():
-            if cli_env not in self.prev_settings and cli_pw is not None:
-                self.prev_settings[cli_env] = cli_pw
-
-        self.cached_pw = self._init_password()
+        self.prev_settings = get_prev_settings() # previous env file or alias
         self._load_gui()
         self.setWindowTitle("Connect to iRODS server")
-
-    def _cached_pw_from_cli(self) -> dict:
-        """Retrieve dict from env file to cached password from the cli settings."""
-        cli_config = None
-        cli_config_path = CONFIG_DIR / "ibridges_cli.json"
-        cli_aliases = {}
-        if cli_config_path.is_file():
-            with open(cli_config_path, "r", encoding="utf-8") as handle:
-                cli_config = json.load(handle)
-        if cli_config:
-            for server in cli_config["servers"]:
-                cli_aliases[server] = cli_config["servers"][server].get("irodsa_backup", None)
-        return cli_aliases
 
     def _load_gui(self):
         self.connect_button.clicked.connect(self.login_function)
@@ -77,23 +60,43 @@ class Login(QDialog, Ui_irodsLogin):
         self.envbox.currentTextChanged.connect(self._init_password)
 
     def _init_envbox(self):
-        env_jsons = [path.name for path in self.irods_config_dir.glob("*.json")]
-        if len(env_jsons) == 0:
+        env_files = [path for path in self.irods_config_dir.glob("*.json")]
+        if len(env_files) == 0:
             self.error_label.setText(f"ERROR: no .json files found in {self.irods_config_dir}")
+        unavailable_envs_aliases = []
+        # remove all aliases or previous envs, that do not exist any longer
+        for alias, (env, _) in self.aliases_envs.items():
+            env = Path(env)
+            print(alias, env)
+            if env not in env_files:
+                unavailable_envs_aliases.append(alias)
+        for key in unavailable_envs_aliases:
+            del self.aliases_envs[key]
+        print(self.aliases_envs)
+        print()
+        print()
+
+        # remove all env files that are already in aliases and envs
+        aliased_envs = [Path(env) for env, _ in self.aliases_envs.values()]
+        for env_file in env_files:
+            if env_file in aliased_envs:
+                env_files.remove(env_file)
+        # Combine the two lists for the env box
+        envbox_items = [env.name for env in env_files] + list(self.aliases_envs.keys())
 
         self.envbox.clear()
-        self.envbox.addItems(env_jsons)
+        self.envbox.addItems(envbox_items)
         last_env = get_last_ienv_path()
-        if last_env is not None and last_env in env_jsons:
+        if last_env is not None and last_env in envbox_items:
             self.envbox.setCurrentIndex(env_jsons.index(last_env))
         else:
             self.envbox.setCurrentIndex(0)
 
     def _init_password(self):
         # Check if there is a cached password in the ibridges_gui config file
-        env_file = self.irods_config_dir.joinpath(self.envbox.currentText())
+        env_or_alias = self.irods_config_dir.joinpath(self.envbox.currentText())
 
-        if str(env_file) in self.prev_settings:
+        if str(env_or_alias) in self.aliases and self.aliases[env_or_alias][1]:
             self.password_field.setText("***********")
             return True
         self.password_field.clear()
