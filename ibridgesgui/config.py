@@ -129,6 +129,44 @@ def set_log_level(level: str):
     _save_config(config)
 
 
+def config_add_tab(tab_provider: object):
+    """Add a tab name to the config file."""
+    try:
+        # third party plugin class name
+        obj_str = str(tab_provider).split("'")[1]
+    except IndexError:
+        # ibridges native tab name
+        obj_str = tab_provider
+    config = _get_config()
+    if config is not None:
+        tabs = set(config.get("tabs", []))
+        tabs.add(obj_str)
+        config["tabs"] = list(tabs)
+    else:
+        config = {"tabs": [obj_str]}
+    _save_config(config)
+
+def config_remove_tab(tab_provider: object):
+    """Remove a tab from the config file."""
+    config = _get_config()
+    try:
+        # third party plugin class name
+        obj_str = str(tab_provider).split("'")[1]
+    except IndexError:
+        # ibridges native tab name
+        obj_str = tab_provider
+    if config is not None and "tabs" in config:
+        tabs = config.get("tabs", [])
+        if obj_str in tabs:
+            tabs.remove(obj_str)
+            config["tabs"] = tabs
+            _save_config(config)
+
+def get_tabs() -> list:
+    """Get list of previously chosen tird party tab providers."""
+    config = _get_config()
+    return config.get("tabs", [])
+
 def _save_config(conf: dict):
     ensure_log_config_location()
     _write_json(CONFIG_FILE, conf)

@@ -13,6 +13,8 @@ website:
         text: Getting started
       - href: docs/userdoc.qmd
         text: Documentation
+      - href: docs/developers.qmd
+        text: Contributing to iBridges
 
 format:
   html:

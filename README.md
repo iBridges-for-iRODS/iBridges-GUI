@@ -33,11 +33,9 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 - Safe default options when working with your data.
 
 ## Prebuild executable <alpha>
-There are prebuild executables available for Windows, macos and Ubuntu.
+There are prebuild executables available for Windows, macOS and Ubuntu.
 You can find the latest release [here](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases/latest).
 The build was done using the latest version on an x64 architecture.
-
-
 
 ## Installation
 - The python package 
@@ -72,7 +70,17 @@ The build was done using the latest version on an x64 architecture.
   python ibridgesgui/__main__.py
   ```
 
- ## Building Executables
+## Executables
+Since iBridges version 1.4.0 we offer pre-built executables. These executables can also be built from source.
+Please note, that this feature is still in experimental state.
+
+### Prebuilt executables
+Go to the [Releases page](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases). In the latest releases you will find three zip-files, these contain the prebuilt application.
+Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file `ibridges_gui.[exe, sh]`
+For Windows simply click on the exe-file, for Mac and Linux open the file with a shell `bash ./ibridges_gui.sh`.
+
+
+### Building Executables
 
 We offer build scripts in case you would like to compile iBridges and distribute the executable.
 
@@ -106,8 +114,9 @@ This will create a virtual environment `venv` in your iBridges folder. Next to t
 
 For Windows simply click on the file `output/ibridgesgui/ibridges_gui.exe`.
 
-Please note, that this feature is still in experimental state.
- 
+## Extending iBridges-GUI (for developers)
+iBridges-GUI supports Plugins. You can create a plugin for your own tab and it will be detected and run by the main application when it is installed.
+We provide a small guide and template structure [here](https://github.com/iBridges-for-iRODS/ibridges-gui-tab-example).
 
 ## Authors
 **Christine Staiger (Maintainer) [ORCID](https://orcid.org/0000-0002-6754-7647)**
@@ -126,11 +135,11 @@ Please note, that this feature is still in experimental state.
 
 **J.P. Mc Farland**,
 *University of Groningen, Center for Information Technology*, 2022
-    
+
 ## Contributing
 ### Code
 Instructions on how to extend the GUI or contribute to the code base can be found in the [documentation](https://ibridges-for-irods.github.io/iBridges-GUI/).
 
 ## License
-This project is licensed under the GPL-v3 license.
+This project is licensed under the LGPL license.
 The full license can be found in [LICENSE](LICENSE).

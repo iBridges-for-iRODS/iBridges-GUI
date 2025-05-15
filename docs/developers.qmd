@@ -1,0 +1,12 @@
+# For developers
+
+## Extending iBridges-GUI (for developers)
+iBridges-GUI supports Plugins. You can create your own tab and it will be detected and run by the main application.
+We provide a small guide and template structure [here](https://github.com/iBridges-for-iRODS/ibridges-gui-tab-example).
+
+## Contributing
+iBridges is an open-source project, we welcome any type of contribution. 
+
+To steer and streamline our development we use GitHub. Please feel free to create issues and start discussions about (new) features.
+If you want to directly contribute to the code base, please fork the repository and create a new feature branch from the `develop` branch. 
+Merge back by creating a pull request.

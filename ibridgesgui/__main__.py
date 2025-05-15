@@ -4,6 +4,7 @@
 import logging
 import os
 import sys
+from functools import partial
 from pathlib import Path
 
 import PySide6.QtGui
@@ -12,8 +13,16 @@ import PySide6.QtWidgets
 import setproctitle
 
 from ibridgesgui.browser import Browser
-from ibridgesgui.config import ensure_irods_location, get_log_level, init_logger, set_log_level
-from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
+from ibridgesgui.config import (
+    config_add_tab,
+    config_remove_tab,
+    ensure_irods_location,
+    get_log_level,
+    get_tabs,
+    init_logger,
+    set_log_level,
+)
+from ibridgesgui.gui_utils import UI_FILE_DIR, find_tab_provider, get_tab_providers, load_ui
 from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
@@ -53,13 +62,37 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
+
+        # Plugin tabs
+        self.prev_tabs = get_tabs() # previously checked tabs
+        self.third_party_tabs = get_tab_providers()
+        self.logger.info("Third party tabs: %s", self.third_party_tabs)
+        self.logger.info("Tab names: %s", [tab.name for tab in self.third_party_tabs])
+        # populate Plugin/Tabs drop down
+        for tab in self.third_party_tabs:
+            #obj_str = str(tab).split("'")[1]
+            action = PySide6.QtGui.QAction(tab.name, self.menuPlugins, checkable=True)
+            if tab.name in self.prev_tabs:
+                action.setChecked(True)
+            action.triggered.connect(partial(self.load_and_unload_tab, widget=action))
+            self.menuPlugins.addAction(action)
+        # Standard tabs
+        self.standard_tabs = ["Browser", "Synchronise Data", "Search", "Info", "Logs"]
+
         self.ui_tabs_lookup = {
-            "tabBrowser": self.init_browser_tab,
-            "tabSync": self.init_sync_tab,
-            "tabSearch": self.init_search_tab,
-            "tabInfo": self.init_info_tab,
-            "tabLog": self.init_log_tab,
+            "Browser": self.init_browser_tab,
+            "Synchronise Data": self.init_sync_tab,
+            "Search": self.init_search_tab,
+            "Info": self.init_info_tab,
+            "Logs": self.init_log_tab,
         }
+        for tab in self.standard_tabs:
+            action = PySide6.QtGui.QAction(tab, self.menuPlugins, checkable=True)
+            action.triggered.connect(partial(self.load_and_unload_tab, widget=action))
+            self.menuPlugins.addAction(action)
+            if tab in self.prev_tabs:
+                action.setChecked(True)
+
 
         self.session = None
         self.irods_browser = None
@@ -71,6 +104,51 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
         self.tab_widget.setCurrentIndex(0)
 
+
+    def checked_tabs(self):
+        """Retrieve names of checked third party tabs."""
+        selected_tabs = []
+        for action in self.menuPlugins.actions():
+            if action.isChecked():
+                selected_tabs.append(action.text())
+        return selected_tabs
+
+    def load_and_unload_tab(self, widget):
+        """Load and unload a third party provider tab, triggered by drop down menu."""
+        # Check if third party tab
+        provider = ""
+        try:
+            provider = find_tab_provider(self.third_party_tabs, widget.text())
+        except ValueError:
+            if widget.text() in self.standard_tabs:
+                provider = widget.text()
+            else:
+                self.logger.exception("Cannot find provider for %s", widget.text())
+        # Current checked tabs
+        current_tabs = {self.tab_widget.tabText(idx): idx for idx in range(self.tab_widget.count())}
+
+        if self.session is not None:
+            if widget.isChecked() and widget.text() not in current_tabs:
+                # Load widget
+                if widget.text() not in current_tabs:
+                    if provider == "Browser":
+                        self.init_browser_tab()
+                    elif provider == "Synchronise Data":
+                        self.init_sync_tab()
+                    elif provider == "Search":
+                        self.init_search_tab()
+                    elif provider == "Info":
+                        self.init_info_tab()
+                    elif provider == "Logs":
+                        self.init_log_tab()
+                    elif provider in self.third_party_tabs:
+                        self.init_third_party_tab(provider)
+                    config_add_tab(widget.text())
+            else:
+                if widget.text() in current_tabs:
+                    self.remove_tab(current_tabs[widget.text()])
+                    config_remove_tab(provider)
+
     def disconnect(self):
         """Close iRODS session."""
         if "session" in self.session_dict:
@@ -79,6 +157,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.session = None
             self.session_dict.clear()
         self.tab_widget.clear()
+        self.menuPlugins.setEnabled(False)
         self.welcome_tab()
 
     def connect(self):
@@ -95,6 +174,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             self.session = self.session_dict["session"]
             try:
                 self.setup_tabs()
+                self.menuPlugins.setEnabled(True)
             except:
                 self.session = None
                 raise
@@ -124,9 +204,26 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def setup_tabs(self):
         """Init tab view."""
-        for tab_fun in self.ui_tabs_lookup.values():
-            tab_fun()
-            # self.ui_tabs_lookup[tab_name]()
+        # init the standard tabs first
+        for tab in self.standard_tabs:
+            if tab in self.prev_tabs:
+                self.ui_tabs_lookup[tab]()
+        for third_party_tab in set(self.prev_tabs).difference(self.standard_tabs):
+            try:
+                provider = find_tab_provider(self.third_party_tabs, third_party_tab)
+                self.init_third_party_tab(provider)
+            except ValueError:
+                self.logger.info("Third party tab %s not known", third_party_tab)
+
+        # When no previous tabs in config initialise the standard tabs
+        if len(self.prev_tabs) == 0:
+            for action in self.menuPlugins.actions():
+                if action.text() in self.standard_tabs:
+                    action.setChecked(True)
+                    config_add_tab(action.text())
+            for tab_fun in self.ui_tabs_lookup.values():
+                tab_fun()
+
         self.tab_widget.setCurrentIndex(1)
 
     def welcome_tab(self):
@@ -162,6 +259,16 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Create sync."""
         irods_sync = Sync(self.session, self.app_name)
         self.tab_widget.addTab(irods_sync, "Synchronise Data")
+
+    def init_third_party_tab(self, tab_class: object):
+        """Create third-party tabs."""
+        third_party_tab = tab_class(self.session, self.app_name, self.logger)
+        self.tab_widget.addTab(third_party_tab, third_party_tab.name)
+
+
+    def remove_tab(self, tab_idx: int):
+        """Remove a third party tab from tab widget."""
+        self.tab_widget.removeTab(tab_idx)
 
     def create_env_file(self):
         """Populate drop down menu to create a new environment.json."""
