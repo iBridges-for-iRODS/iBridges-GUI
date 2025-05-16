@@ -53,7 +53,7 @@ all = [
 ]
 
 [project.scripts]
-ibridges-gui = "ibridgesgui.__main__:main_deprecated"
+ibridges-gui = "ibridgesgui.__main__:main"
 
 [tool.setuptools]
 packages = ["ibridgesgui"]
