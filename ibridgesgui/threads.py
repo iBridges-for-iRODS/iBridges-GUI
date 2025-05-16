@@ -25,6 +25,7 @@ class SearchThread(PySide6.QtCore.QThread):
     ):
         """Pass searh parameters."""
         super().__init__()
+
         self.logger = logger
         self.thread_session = Session(irods_env=ienv_path)
         self.logger.debug("Search thread: created new session")

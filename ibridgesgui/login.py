@@ -15,7 +15,7 @@ from ibridgesgui.config import (
     IRODSA,
     check_irods_config,
     combine_envs_gui_cli,
-    get_last_ienv_path,
+    get_last_ienv_name,
     get_prev_settings,
     save_current_settings,
     set_last_ienv,
@@ -87,7 +87,7 @@ class Login(QDialog, Ui_irodsLogin):
 
         self.envbox.clear()
         self.envbox.addItems(envbox_items)
-        last_env = get_last_ienv_path()
+        last_env = get_last_ienv_name()
         if last_env is not None and last_env in envbox_items:
             self.envbox.setCurrentIndex(envbox_items.index(last_env))
         else:

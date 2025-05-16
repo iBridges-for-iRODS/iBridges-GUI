@@ -88,13 +88,19 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
 
 
 # ibridges config functions
-def get_last_ienv_path() -> Union[None, str]:
-    """Retrieve last used environment path from the config file."""
+def get_last_ienv_name() -> Union[None, str]:
+    """Retrieve last used environment name as in the login drop down from the config file."""
     config = _get_config()
     if config is not None:
         return config.get("gui_last_env")
     return None
 
+def get_last_ienv_path() ->  Union[None, str]:
+    """Retrieve the last successfully used environment file."""
+    name = get_last_ienv_name()
+    if name:
+        return name.split(" - ")[1]
+    return None
 
 def set_last_ienv(ienv: str):
     """Save the last used environment path to the config file.
@@ -103,7 +109,6 @@ def set_last_ienv(ienv: str):
         Path to last environment
     """
     config = _get_config()
-    print(ienv)
     if config is not None:
         config["gui_last_env"] = ienv
     else:
@@ -218,7 +223,7 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     We will verify that the given session was instantiated by the
     parameters saved in the ibridges configuration.
     """
-    ienv_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
+    ienv_path = get_last_ienv_path()
     try:
         env = _read_json(ienv_path)
     except Exception:
