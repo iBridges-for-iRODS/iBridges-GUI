@@ -178,6 +178,7 @@ def get_tab_providers() -> list:
     """
     return [entry.load() for entry in entry_points(group="ibridges.gui_tab")]
 
+
 def find_tab_provider(tab_providers: list, tab_name: str) -> object:
     """Find the provider that provides the right template.
 

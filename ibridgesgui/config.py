@@ -37,6 +37,7 @@ LOG_LEVEL = {
 CONFIG_DIR = Path("~", ".ibridges").expanduser()
 CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
 IRODSA = Path.home() / ".irods" / ".irodsA"
+CLI_CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_cli.json")
 
 
 def ensure_log_config_location():
@@ -87,15 +88,21 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
 
 
 # ibridges config functions
-def get_last_ienv_path() -> Union[None, str]:
-    """Retrieve last used environment path from the config file."""
+def get_last_ienv_name() -> Union[None, str]:
+    """Retrieve last used environment name as in the login drop down from the config file."""
     config = _get_config()
     if config is not None:
         return config.get("gui_last_env")
     return None
 
+def get_last_ienv_path() ->  Union[None, str]:
+    """Retrieve the last successfully used environment file."""
+    name = get_last_ienv_name()
+    if name:
+        return name.split(" - ")[1]
+    return None
 
-def set_last_ienv_path(ienv_path: Path):
+def set_last_ienv(ienv: str):
     """Save the last used environment path to the config file.
 
     ienv_path : Path
@@ -103,9 +110,9 @@ def set_last_ienv_path(ienv_path: Path):
     """
     config = _get_config()
     if config is not None:
-        config["gui_last_env"] = ienv_path
+        config["gui_last_env"] = ienv
     else:
-        config = {"gui_last_env": ienv_path}
+        config = {"gui_last_env": ienv}
     _save_config(config)
 
 
@@ -144,6 +151,7 @@ def config_add_tab(tab_provider: object):
         config = {"tabs": [obj_str]}
     _save_config(config)
 
+
 def config_remove_tab(tab_provider: object):
     """Remove a tab from the config file."""
     config = _get_config()
@@ -160,10 +168,12 @@ def config_remove_tab(tab_provider: object):
             config["tabs"] = tabs
             _save_config(config)
 
+
 def get_tabs() -> list:
     """Get list of previously chosen tird party tab providers."""
     config = _get_config()
     return config.get("tabs", [])
+
 
 def _save_config(conf: dict):
     ensure_log_config_location()
@@ -213,7 +223,7 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     We will verify that the given session was instantiated by the
     parameters saved in the ibridges configuration.
     """
-    ienv_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
+    ienv_path = get_last_ienv_path()
     try:
         env = _read_json(ienv_path)
     except Exception:
@@ -326,6 +336,40 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
         _write_json(env_path, conf)
     else:
         raise ValueError("Filetype needs to be '.json'.")
+
+
+def combine_envs_gui_cli():
+    """Read in the saved aliases from the CLI and combine with the GUI environments."""
+    aliases = _get_aliases_from_cli()
+    gui = get_prev_settings()
+    cli = _read_json(CLI_CONFIG_FILE)["servers"] if CLI_CONFIG_FILE.exists() else []
+
+    for env in gui:
+        if env in cli:
+            # Use latest GUI password if differs from CLI
+            if "irodsa_backup" in cli[env] and gui[env] != cli[env]["irodsa_backup"]:
+                aliases[cli[env]["alias"]] = (env, gui[env])
+
+        else:
+            # GUI saved environments do not have an alias, use env file name
+            aliases[Path(env).name] = (Path(env), gui[env])
+
+    return aliases
+
+
+def _get_aliases_from_cli():
+    # Will be deprecated once the class IbridgesConf in iBridges is updated
+    if CLI_CONFIG_FILE.exists():
+        cli_conf = _read_json(CLI_CONFIG_FILE)
+        aliases = {
+            cli_conf["servers"][path]["alias"]: (
+                path,
+                cli_conf["servers"][path].get("irodsa_backup", None),
+            )
+            for path in cli_conf["servers"]
+        }
+        return aliases
+    return {}
 
 
 def _read_json(file_path: Path) -> dict:
