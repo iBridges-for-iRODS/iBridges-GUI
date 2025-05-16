@@ -6,6 +6,7 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
+import warnings
 
 import PySide6.QtGui
 import PySide6.QtUiTools
@@ -58,7 +59,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         app.aboutToQuit.connect(self.close_event)
 
         self.logger = logging.getLogger(app_name)
-
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
@@ -292,6 +292,8 @@ def main():
         set_log_level("debug")
         init_logger(THIS_APPLICATION, "debug")
 
+    main_deprecated()
+
     # Set the working directory to the directory of the current file
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     ensure_irods_location()
@@ -301,6 +303,12 @@ def main():
     main_widget.show()
     app.exec()
 
+
+def main_deprecated():
+    """Deprecate the ibridges-gui call."""
+    logger = logging.getLogger(THIS_APPLICATION)
+    logger.warn(
+        "'ibridges-gui' will be deprecated. Use 'ibridges gui', needs ibridges 1.5.1 or higher.")
 
 if __name__ == "__main__":
     main()
