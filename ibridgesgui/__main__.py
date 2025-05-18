@@ -6,7 +6,6 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
-import warnings
 
 import PySide6.QtGui
 import PySide6.QtUiTools
