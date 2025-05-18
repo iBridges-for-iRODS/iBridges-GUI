@@ -306,7 +306,7 @@ def main():
 def main_deprecated():
     """Deprecate the ibridges-gui call."""
     logger = logging.getLogger(THIS_APPLICATION)
-    logger.warn(
+    logger.warning(
         "'ibridges-gui' will be deprecated. Use 'ibridges gui', needs ibridges 1.5.1 or higher.")
 
 if __name__ == "__main__":
