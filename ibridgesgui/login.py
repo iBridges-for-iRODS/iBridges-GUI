@@ -62,20 +62,23 @@ class Login(QDialog, Ui_irodsLogin):
         env_files = list(self.irods_config_dir.glob('*.json'))
         if len(env_files) == 0:
             self.error_label.setText(f"ERROR: no .json files found in {self.irods_config_dir}")
-        unavailable_envs_aliases = []
+        # unavailable_envs_aliases = []
         # remove all aliases or previous envs, that do not exist any longer
-        for alias, (env, _) in self.aliases_envs.items():
-            env = Path(env)
-            if env not in env_files:
-                unavailable_envs_aliases.append(alias)
-        for key in unavailable_envs_aliases:
-            del self.aliases_envs[key]
+        # for alias, (env, _) in self.aliases_envs.items():
+        #     env = Path(env)
+        #     if env not in env_files:
+        #         unavailable_envs_aliases.append(alias)
+        # for key in unavailable_envs_aliases:
+        #     del self.aliases_envs[key]
 
         # remove all env files that are already in aliases and envs
         aliased_envs = [Path(env) for env, _ in self.aliases_envs.values()]
-        for env_file in env_files:
-            if env_file in aliased_envs:
-                env_files.remove(env_file)
+        # print(env_files)
+        # print(aliased_envs)
+        env_files = [x for x in env_files if x not in aliased_envs]
+        # for env_file in env_files:
+            # if env_file in aliased_envs:
+                # env_files.remove(env_file)
         # add remaining items to dictionary
         for env_file in env_files:
             self.aliases_envs[env_file.name] = (env_file, None)

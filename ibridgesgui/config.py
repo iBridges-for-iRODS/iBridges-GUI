@@ -9,6 +9,7 @@ from json import JSONDecodeError
 from pathlib import Path
 from typing import Union
 
+from ibridges.cli.config import IbridgesConf
 from ibridges.session import Session
 from irods.auth.pam import PamLoginException
 from irods.connection import PlainTextPAMPasswordError
@@ -205,7 +206,7 @@ def save_current_settings(env_path_name: Path):
         _save_config(config)
 
 
-def get_prev_settings():
+def get_prev_settings() -> dict:
     """Extract the settings from the configuration."""
     config = _get_config()
     if config is None:
@@ -338,38 +339,43 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
         raise ValueError("Filetype needs to be '.json'.")
 
 
-def combine_envs_gui_cli():
+def combine_envs_gui_cli() -> dict[str, (tuple[Path, str])]:
     """Read in the saved aliases from the CLI and combine with the GUI environments."""
-    aliases = _get_aliases_from_cli()
+    cli_servers = IbridgesConf(None).servers
     gui = get_prev_settings()
-    cli = _read_json(CLI_CONFIG_FILE)["servers"] if CLI_CONFIG_FILE.exists() else []
+    # cli = _read_json(CLI_CONFIG_FILE)["servers"] if CLI_CONFIG_FILE.exists() else []
+    aliases = {}
 
-    for env in gui:
-        if env in cli:
+    for env_path, gui_irodsa in gui.items():
+        # print(env_path, gui_irodsa)
+        if env_path in cli_servers:
+            cli_entry = cli_servers[env_path]
             # Use latest GUI password if differs from CLI
-            if "irodsa_backup" in cli[env] and gui[env] != cli[env]["irodsa_backup"]:
-                aliases[cli[env]["alias"]] = (env, gui[env])
+            # if "irodsa_backup" in cli_entry and gui_irodsa != cli_entry["irodsa_backup"]:
+            aliases[cli_entry["alias"]] = (Path(env_path), gui_irodsa)
+            # else:
+                # aliases[cli_entry["alias"]] = (Path(env_path), )
 
         else:
             # GUI saved environments do not have an alias, use env file name
-            aliases[Path(env).name] = (Path(env), gui[env])
-
+            aliases[Path(env_path).name] = (Path(env_path), gui_irodsa)
+    # print(aliases)
     return aliases
 
 
-def _get_aliases_from_cli():
-    # Will be deprecated once the class IbridgesConf in iBridges is updated
-    if CLI_CONFIG_FILE.exists():
-        cli_conf = _read_json(CLI_CONFIG_FILE)
-        aliases = {
-            cli_conf["servers"][path]["alias"]: (
-                path,
-                cli_conf["servers"][path].get("irodsa_backup", None),
-            )
-            for path in cli_conf["servers"]
-        }
-        return aliases
-    return {}
+# def _get_aliases_from_cli():
+#     # Will be deprecated once the class IbridgesConf in iBridges is updated
+#     if CLI_CONFIG_FILE.exists():
+#         cli_conf = _read_json(CLI_CONFIG_FILE)
+#         aliases = {
+#             cli_conf["servers"][path]["alias"]: (
+#                 path,
+#                 cli_conf["servers"][path].get("irodsa_backup", None),
+#             )
+#             for path in cli_conf["servers"]
+#         }
+#         return aliases
+#     return {}
 
 
 def _read_json(file_path: Path) -> dict:
