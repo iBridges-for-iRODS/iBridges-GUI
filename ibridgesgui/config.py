@@ -16,8 +16,8 @@ from irods.connection import PlainTextPAMPasswordError
 from irods.exception import (
     CAT_INVALID_AUTHENTICATION,
     CAT_INVALID_USER,
-    PAM_AUTH_PASSWORD_INVALID_TTL,
     PAM_AUTH_PASSWORD_FAILED,
+    PAM_AUTH_PASSWORD_INVALID_TTL,
     NetworkException,
 )
 from irods.session import iRODSSession
@@ -365,8 +365,9 @@ def combine_envs_gui_cli() -> dict[str, (tuple[Path, str])]:
     # add cli aliases which are not in the gui config
     for env_path in cli_servers:
         if env_path not in gui.keys():
-            print(env_path, cli_servers[env_path].get("alias", Path(env_path).name))
-            aliases[cli_servers[env_path].get("alias", Path(env_path).name)] = (env_path, cli_servers[env_path].get("irodsa_backup", None))
+            alias = cli_servers[env_path].get("alias", Path(env_path).name)
+            irodsa = cli_servers[env_path].get("irodsa_backup", None)
+            aliases[alias] = (env_path, irodsa)
 
     return aliases
 
