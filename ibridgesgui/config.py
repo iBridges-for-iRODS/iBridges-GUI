@@ -195,9 +195,22 @@ def _get_config() -> Union[None, dict]:
 
 
 def save_current_settings(env_path_name: Path):
-    """Store the environment with the currently scrambled password in irodsA."""
+    """Store the environment with the currently scrambled password in irodsA.
+       Will be stored in ibridges_cli.json and in ibridges_gui.json.
+    """
+    ibridges_conf = IbridgesConf(None)
     with open(IRODSA, "r", encoding="utf-8") as f:
         pw = f.read()
+    try:
+        ienv_path, ienv_entry = ibridges_conf.get_entry(env_path_name)
+    except KeyError:
+        ienv_path = env_path_name
+        ienv_entry = {}
+    print(ienv_path, ienv_entry)
+    ienv_entry["irodsa_backup"] = pw
+    ibridges_conf.servers[str(ienv_path)] = ienv_entry
+    ibridges_conf.save()
+
     config = _get_config()
     if config is not None:
         if "settings" not in config:
