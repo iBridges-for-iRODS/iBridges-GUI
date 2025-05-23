@@ -16,6 +16,7 @@ from irods.connection import PlainTextPAMPasswordError
 from irods.exception import (
     CAT_INVALID_AUTHENTICATION,
     CAT_INVALID_USER,
+    PAM_AUTH_PASSWORD_INVALID_TTL,
     PAM_AUTH_PASSWORD_FAILED,
     NetworkException,
 )
@@ -38,7 +39,6 @@ LOG_LEVEL = {
 CONFIG_DIR = Path("~", ".ibridges").expanduser()
 CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_gui.json")
 IRODSA = Path.home() / ".irods" / ".irodsA"
-CLI_CONFIG_FILE = CONFIG_DIR.joinpath("ibridges_cli.json")
 
 
 def ensure_log_config_location():
@@ -318,7 +318,7 @@ def check_irods_config(ienv: Union[Path, dict], include_network=True) -> str:
             return f"{err.args}"
 
         # password incorrect but rest is fine
-        except (CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
+        except (PAM_AUTH_PASSWORD_INVALID_TTL, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
             return "All checks passed successfully."
     # all tests passed
     return "All checks passed successfully."
@@ -343,7 +343,6 @@ def combine_envs_gui_cli() -> dict[str, (tuple[Path, str])]:
     """Read in the saved aliases from the CLI and combine with the GUI environments."""
     cli_servers = IbridgesConf(None).servers
     gui = get_prev_settings()
-    # cli = _read_json(CLI_CONFIG_FILE)["servers"] if CLI_CONFIG_FILE.exists() else []
     aliases = {}
 
     for env_path, gui_irodsa in gui.items():
@@ -362,6 +361,13 @@ def combine_envs_gui_cli() -> dict[str, (tuple[Path, str])]:
         else:
             # GUI saved environments do not have an alias, use env file name
             aliases[Path(env_path).name] = (Path(env_path), gui_irodsa)
+
+    # add cli aliases which are not in the gui config
+    for env_path in cli_servers:
+        if env_path not in gui.keys():
+            print(env_path, cli_servers[env_path].get("alias", Path(env_path).name))
+            aliases[cli_servers[env_path].get("alias", Path(env_path).name)] = (env_path, cli_servers[env_path].get("irodsa_backup", None))
+
     return aliases
 
 
