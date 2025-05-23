@@ -347,35 +347,24 @@ def combine_envs_gui_cli() -> dict[str, (tuple[Path, str])]:
     aliases = {}
 
     for env_path, gui_irodsa in gui.items():
-        # print(env_path, gui_irodsa)
+        print(env_path, gui_irodsa)
         if env_path in cli_servers:
             cli_entry = cli_servers[env_path]
+            # env files in cli do not always carry an alias
+            alias = cli_entry.get("alias", Path(env_path).name)
             # Use latest GUI password if differs from CLI
-            # if "irodsa_backup" in cli_entry and gui_irodsa != cli_entry["irodsa_backup"]:
-            aliases[cli_entry["alias"]] = (Path(env_path), gui_irodsa)
-            # else:
-                # aliases[cli_entry["alias"]] = (Path(env_path), )
+            if "irodsa_backup" in cli_entry and gui_irodsa != cli_entry["irodsa_backup"]:
+                aliases[alias] = (Path(env_path), gui_irodsa)
+            else:
+                # aliases do not always have a pw
+                irodsa = cli_entry.get("irodsa_backup", gui_irodsa)
+                aliases[alias] = (Path(env_path), irodsa)
 
         else:
             # GUI saved environments do not have an alias, use env file name
             aliases[Path(env_path).name] = (Path(env_path), gui_irodsa)
-    # print(aliases)
+    print(aliases)
     return aliases
-
-
-# def _get_aliases_from_cli():
-#     # Will be deprecated once the class IbridgesConf in iBridges is updated
-#     if CLI_CONFIG_FILE.exists():
-#         cli_conf = _read_json(CLI_CONFIG_FILE)
-#         aliases = {
-#             cli_conf["servers"][path]["alias"]: (
-#                 path,
-#                 cli_conf["servers"][path].get("irodsa_backup", None),
-#             )
-#             for path in cli_conf["servers"]
-#         }
-#         return aliases
-#     return {}
 
 
 def _read_json(file_path: Path) -> dict:
