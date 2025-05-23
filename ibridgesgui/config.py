@@ -347,7 +347,6 @@ def combine_envs_gui_cli() -> dict[str, (tuple[Path, str])]:
     aliases = {}
 
     for env_path, gui_irodsa in gui.items():
-        print(env_path, gui_irodsa)
         if env_path in cli_servers:
             cli_entry = cli_servers[env_path]
             # env files in cli do not always carry an alias
@@ -363,7 +362,6 @@ def combine_envs_gui_cli() -> dict[str, (tuple[Path, str])]:
         else:
             # GUI saved environments do not have an alias, use env file name
             aliases[Path(env_path).name] = (Path(env_path), gui_irodsa)
-    print(aliases)
     return aliases
 
 
