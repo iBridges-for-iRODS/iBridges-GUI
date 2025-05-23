@@ -14,7 +14,6 @@ from ibridges import IrodsPath, download, upload
 from ibridges.exception import DataObjectExistsError
 from ibridges.util import find_environment_provider, get_environment_providers
 
-# from PyQt6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from ibridgesgui.config import _read_json, check_irods_config, get_last_ienv_path, save_irods_config
 from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, load_ui, populate_textfield
 from ibridgesgui.threads import TransferDataThread
@@ -353,7 +352,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
     def _start_upload(self, lpaths):
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText(f"Uploading to {str(self.irods_path)} ....")
-        env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
+        env_path = Path(get_last_ienv_path())
 
         try:
             ops = combine_operations(
@@ -527,7 +526,7 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
     def _start_download(self, local_path):
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText(f"Downloading to {local_path} ....")
-        env_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
+        env_path = Path(get_last_ienv_path())
         try:
             ops = download(
                 self.session,
