@@ -212,12 +212,13 @@ def save_current_settings(env_path_name: Path):
         ibridges_conf.servers[str(ienv_path)] = ienv_entry
         ibridges_conf.save()
 
+    # Till ibridges gui 2.0.0 empty passwords from gui config
+    # In ibridges gui 2.0.0 no passwords and envs will be stored in gui config
     config = _get_config()
     if config is not None:
-        if "settings" not in config:
-            config["settings"] = {}
-        config["settings"][str(env_path_name)] = pw
-        _save_config(config)
+        if "settings" in config and str(env_path_name) in config["settings"]:
+            del config["settings"][str(env_path_name)]
+            _save_config(config)
 
 
 def get_prev_settings() -> dict:
