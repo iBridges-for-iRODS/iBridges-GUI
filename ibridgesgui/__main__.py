@@ -63,13 +63,13 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.welcome_tab()
 
         # Plugin tabs
-        self.prev_tabs = get_tabs() # previously checked tabs
+        self.prev_tabs = get_tabs()  # previously checked tabs
         self.third_party_tabs = get_tab_providers()
         self.logger.info("Third party tabs: %s", self.third_party_tabs)
         self.logger.info("Tab names: %s", [tab.name for tab in self.third_party_tabs])
         # populate Plugin/Tabs drop down
         for tab in self.third_party_tabs:
-            #obj_str = str(tab).split("'")[1]
+            # obj_str = str(tab).split("'")[1]
             action = PySide6.QtGui.QAction(tab.name, self.menuPlugins, checkable=True)
             if tab.name in self.prev_tabs:
                 action.setChecked(True)
@@ -92,7 +92,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             if tab in self.prev_tabs:
                 action.setChecked(True)
 
-
         self.session = None
         self.irods_browser = None
         self.session_dict = {}
@@ -102,7 +101,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_add_configuration.triggered.connect(self.create_env_file)
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
         self.tab_widget.setCurrentIndex(0)
-
 
     def checked_tabs(self):
         """Retrieve names of checked third party tabs."""
@@ -263,7 +261,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Create third-party tabs."""
         third_party_tab = tab_class(self.session, self.app_name, self.logger)
         self.tab_widget.addTab(third_party_tab, third_party_tab.name)
-
 
     def remove_tab(self, tab_idx: int):
         """Remove a third party tab from tab widget."""
