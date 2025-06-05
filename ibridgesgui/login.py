@@ -118,7 +118,7 @@ class Login(QDialog, Ui_irodsLogin):
         selected_env = self.envbox.currentText()
         env_file, cached_pw = self.aliases_envs[selected_env.split(" - ")[0]]
 
-        msg = check_irods_config(env_file, include_network=False)
+        msg = check_irods_config(Path(env_file), include_network=False)
         if not msg == "All checks passed successfully.":
             self.error_label.setText("Go to menu Configure. \n" + msg)
             return
