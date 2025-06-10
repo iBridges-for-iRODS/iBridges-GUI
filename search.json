@@ -1,82 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Welcome to the documentation of iBridges-Gui!",
-    "section": "",
-    "text": "iBridges-Gui is a Python package that implements a Graphical User Interface to iRODS servers. It provides users with a graphical way to do Data management.\nThis page provides user and developer documentation. Get started using the links below!\n\n\n\nWhat is iBridges\nGetting started\nUser guide\nContributing"
-  },
-  {
-    "objectID": "index.html#table-of-contents",
-    "href": "index.html#table-of-contents",
-    "title": "Welcome to the documentation of iBridges-Gui!",
-    "section": "",
-    "text": "What is iBridges\nGetting started\nUser guide\nContributing"
-  },
-  {
-    "objectID": "docs/developers.html",
-    "href": "docs/developers.html",
-    "title": "For developers",
-    "section": "",
-    "text": "iBridges-GUI supports Plugins. You can create your own tab and it will be detected and run by the main application. We provide a small guide and template structure here.\n\n\n\niBridges is an open-source project, we welcome any type of contribution.\nTo steer and streamline our development we use GitHub. Please feel free to create issues and start discussions about (new) features. If you want to directly contribute to the code base, please fork the repository and create a new feature branch from the develop branch. Merge back by creating a pull request."
-  },
-  {
-    "objectID": "docs/developers.html#extending-ibridges-gui-for-developers",
-    "href": "docs/developers.html#extending-ibridges-gui-for-developers",
-    "title": "For developers",
-    "section": "",
-    "text": "iBridges-GUI supports Plugins. You can create your own tab and it will be detected and run by the main application. We provide a small guide and template structure here."
-  },
-  {
-    "objectID": "docs/developers.html#contributing",
-    "href": "docs/developers.html#contributing",
-    "title": "For developers",
-    "section": "",
-    "text": "iBridges is an open-source project, we welcome any type of contribution.\nTo steer and streamline our development we use GitHub. Please feel free to create issues and start discussions about (new) features. If you want to directly contribute to the code base, please fork the repository and create a new feature branch from the develop branch. Merge back by creating a pull request."
-  },
-  {
-    "objectID": "docs/getting-started.html",
-    "href": "docs/getting-started.html",
-    "title": "Getting started with iBridges-Gui",
-    "section": "",
-    "text": "pip install ibridgesgui\n\n\n\nPlease start iBridges-Gui by typing ibridges-gui on your terminal and hit enter.\n\n\n\nTo connect to the server you need a configuration file, a so-called irods_environment.json. You can create one for yourself using templates, editing default settings we provide for you or simply create such a file.\n\n\nWe have created a plugin system to automatically create the environment file for you. Please follow the documentation how to set it up.\n\n\n\nWhen you start iBridges you will find in the upper drop-down menu Connect and Configure.\n\n\n\n\n\nLet us check or create a valid configuration file; Click on Configure -&gt; Add Configuration.\n\n\n\n\n\n\n\nIn the drop-down menu you will find previously created iRODS environments, they start with irods_environment and end with .json. Select the one you want to check.\n\n\n\nIf you do not have an iRODS configuration yet, and you installed a plugin (see above) you can select a configuration template from the drop-down menu. You will have to add your username and save as irods_environment.json.\n\n\n\nTo create a new environment click on the button New Config. You should see now something like:\n\n\n\n\n\nClick the Check button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service provider.\nOnce the check runs through fine click the Save or Save as button. This will store the adjusted configuration in the correct directory on your laptop so that we can use it for the login (See Section below).\n\n\n\n\n\nTo start working with data in iRODS select Connect -&gt; Connect to iRODS. This will open the pop-up window\n\n\n\n\n\n\n\n\nSince iBridges version 1.4.0 we are offering to download executables or to build them. Please note, that this feature is still in experimental state.\n\n\nGo to the Releases page. In the latest releases you will find three zip-files, these contain the prebuilt application. Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file ibridges_gui.[exe, sh] For Windows simply click on the exe-file, for Mac and Linux open the file with a shell bash ./ibridges_gui.sh.\n\n\n\nWe offer build scripts in case you would like to compile iBridges and distribute the executable.\npython3 build_tools/build_script.py -h\n\nusage: build_script.py [-h] [--debug_exe] [--rem_venv]\n                       [--code_folder CODE_FOLDER] [--ui_folder UI_FOLDER]\n                       [--icons_folder ICONS_FOLDER] [--venv VENV]\n\niBridges-Gui exe creator.\n\noptions:\n  -h, --help            show this help message and exit\n  --debug_exe           Build executable with debug console\n  --rem_venv            remove virtual environment\n  --code_folder CODE_FOLDER\n                        Full path to the directory with code\n  --ui_folder UI_FOLDER\n                        Full path to the directory with ui files\n  --icons_folder ICONS_FOLDER\n                        Full path to the directory with the icons\n  --venv VENV           Full path to virtual python environment\nThis will create a virtual environment venv in your iBridges folder. Next to that you will find a new folder build and ibridgesgui_dist. The executable can be found and started like this for Mac and Linux:\n./output/ibridgesgui/ibridges_gui.bin\nFor Windows simply click on the file output/ibridgesgui/ibridges_gui.exe.\nSelect the file we edited above from the drop-down menu and provide your password. If you already logged into iRODS with this or another iRODS client your password might still be cached. This is indicated by the ******. Hit &lt;Enter&gt; or press the Connect button."
-  },
-  {
-    "objectID": "docs/getting-started.html#install-ibridges-gui",
-    "href": "docs/getting-started.html#install-ibridges-gui",
-    "title": "Getting started with iBridges-Gui",
-    "section": "",
-    "text": "pip install ibridgesgui"
-  },
-  {
-    "objectID": "docs/getting-started.html#start-the-program",
-    "href": "docs/getting-started.html#start-the-program",
-    "title": "Getting started with iBridges-Gui",
-    "section": "",
-    "text": "Please start iBridges-Gui by typing ibridges-gui on your terminal and hit enter."
-  },
-  {
-    "objectID": "docs/getting-started.html#configuring-ibridges-gui",
-    "href": "docs/getting-started.html#configuring-ibridges-gui",
-    "title": "Getting started with iBridges-Gui",
-    "section": "",
-    "text": "To connect to the server you need a configuration file, a so-called irods_environment.json. You can create one for yourself using templates, editing default settings we provide for you or simply create such a file.\n\n\nWe have created a plugin system to automatically create the environment file for you. Please follow the documentation how to set it up.\n\n\n\nWhen you start iBridges you will find in the upper drop-down menu Connect and Configure.\n\n\n\n\n\nLet us check or create a valid configuration file; Click on Configure -&gt; Add Configuration.\n\n\n\n\n\n\n\nIn the drop-down menu you will find previously created iRODS environments, they start with irods_environment and end with .json. Select the one you want to check.\n\n\n\nIf you do not have an iRODS configuration yet, and you installed a plugin (see above) you can select a configuration template from the drop-down menu. You will have to add your username and save as irods_environment.json.\n\n\n\nTo create a new environment click on the button New Config. You should see now something like:\n\n\n\n\n\nClick the Check button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service provider.\nOnce the check runs through fine click the Save or Save as button. This will store the adjusted configuration in the correct directory on your laptop so that we can use it for the login (See Section below)."
-  },
-  {
-    "objectID": "docs/getting-started.html#start-an-irods-session",
-    "href": "docs/getting-started.html#start-an-irods-session",
-    "title": "Getting started with iBridges-Gui",
-    "section": "",
-    "text": "To start working with data in iRODS select Connect -&gt; Connect to iRODS. This will open the pop-up window"
-  },
-  {
-    "objectID": "docs/getting-started.html#executables",
-    "href": "docs/getting-started.html#executables",
-    "title": "Getting started with iBridges-Gui",
-    "section": "",
-    "text": "Since iBridges version 1.4.0 we are offering to download executables or to build them. Please note, that this feature is still in experimental state.\n\n\nGo to the Releases page. In the latest releases you will find three zip-files, these contain the prebuilt application. Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file ibridges_gui.[exe, sh] For Windows simply click on the exe-file, for Mac and Linux open the file with a shell bash ./ibridges_gui.sh.\n\n\n\nWe offer build scripts in case you would like to compile iBridges and distribute the executable.\npython3 build_tools/build_script.py -h\n\nusage: build_script.py [-h] [--debug_exe] [--rem_venv]\n                       [--code_folder CODE_FOLDER] [--ui_folder UI_FOLDER]\n                       [--icons_folder ICONS_FOLDER] [--venv VENV]\n\niBridges-Gui exe creator.\n\noptions:\n  -h, --help            show this help message and exit\n  --debug_exe           Build executable with debug console\n  --rem_venv            remove virtual environment\n  --code_folder CODE_FOLDER\n                        Full path to the directory with code\n  --ui_folder UI_FOLDER\n                        Full path to the directory with ui files\n  --icons_folder ICONS_FOLDER\n                        Full path to the directory with the icons\n  --venv VENV           Full path to virtual python environment\nThis will create a virtual environment venv in your iBridges folder. Next to that you will find a new folder build and ibridgesgui_dist. The executable can be found and started like this for Mac and Linux:\n./output/ibridgesgui/ibridges_gui.bin\nFor Windows simply click on the file output/ibridgesgui/ibridges_gui.exe.\nSelect the file we edited above from the drop-down menu and provide your password. If you already logged into iRODS with this or another iRODS client your password might still be cached. This is indicated by the ******. Hit &lt;Enter&gt; or press the Connect button."
-  },
-  {
     "objectID": "docs/userdoc.html",
     "href": "docs/userdoc.html",
     "title": "iBridges User Documentation",
@@ -117,6 +40,41 @@
     "title": "iBridges User Documentation",
     "section": "",
     "text": "Search provides a mask in which you can type in path information and iRODS metadata information. Click the Search button. If there are data objects or collections with these specifications they will be listed. A successful search will also open two more buttons: Clear to clear the search results and Download.\n\nSearch fields\nThe path at the top of the page shows the collection in which you are going to search. The collection needs to exist and by default your home collection will be used.\nIn the field next to Obj/Coll name you can specify which data objects or sub collections you are looking for. E.g. if you fill in demo the search will look for all collections and data objects called demo.\nIn the example above we are looking for all .txt data objects in a collection called my_books denoted by my_books/%.txt.\nIn the metadata mask we narrow the search results down to all .txt data objects which are labeled with the metadata key author and the metadata value containing the substring Doyle denoted by %Doyle%.\nNote that the wild card is %!\nSearch results\nSingle click on items or use the Select all checkbox and click the Download button to open a dialog to select the destination for the data and start the download.\nDouble click on an item in the list to set the Browser to its location to further inspect the metadata, permissions etc."
+  },
+  {
+    "objectID": "docs/developers.html",
+    "href": "docs/developers.html",
+    "title": "For developers",
+    "section": "",
+    "text": "iBridges-GUI supports Plugins. You can create your own tab and it will be detected and run by the main application. We provide a small guide and template structure here.\n\n\n\niBridges is an open-source project, we welcome any type of contribution.\nTo steer and streamline our development we use GitHub. Please feel free to create issues and start discussions about (new) features. If you want to directly contribute to the code base, please fork the repository and create a new feature branch from the develop branch. Merge back by creating a pull request."
+  },
+  {
+    "objectID": "docs/developers.html#extending-ibridges-gui-for-developers",
+    "href": "docs/developers.html#extending-ibridges-gui-for-developers",
+    "title": "For developers",
+    "section": "",
+    "text": "iBridges-GUI supports Plugins. You can create your own tab and it will be detected and run by the main application. We provide a small guide and template structure here."
+  },
+  {
+    "objectID": "docs/developers.html#contributing",
+    "href": "docs/developers.html#contributing",
+    "title": "For developers",
+    "section": "",
+    "text": "iBridges is an open-source project, we welcome any type of contribution.\nTo steer and streamline our development we use GitHub. Please feel free to create issues and start discussions about (new) features. If you want to directly contribute to the code base, please fork the repository and create a new feature branch from the develop branch. Merge back by creating a pull request."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome to the documentation of iBridges-Gui!",
+    "section": "",
+    "text": "iBridges-Gui is a Python package that implements a Graphical User Interface to iRODS servers. It provides users with a graphical way to do Data management.\nThis page provides user and developer documentation. Get started using the links below!\n\n\n\nWhat is iBridges\nGetting started\nUser guide\nContributing"
+  },
+  {
+    "objectID": "index.html#table-of-contents",
+    "href": "index.html#table-of-contents",
+    "title": "Welcome to the documentation of iBridges-Gui!",
+    "section": "",
+    "text": "What is iBridges\nGetting started\nUser guide\nContributing"
   },
   {
     "objectID": "docs/info.html",
@@ -180,5 +138,47 @@
     "title": "What is iBridges-Gui",
     "section": "License",
     "text": "License\nGPL v3"
+  },
+  {
+    "objectID": "docs/getting-started.html",
+    "href": "docs/getting-started.html",
+    "title": "Getting started with iBridges-Gui",
+    "section": "",
+    "text": "pip install ibridgesgui\n\n\n\nPlease start iBridges-Gui by typing ibridges-gui on your terminal and hit enter.\n\n\n\nTo connect to the server you need a configuration file, a so-called irods_environment.json. You can create one for yourself using templates, editing default settings we provide for you or simply create such a file.\n\n\nWe have created a plugin system to automatically create the environment file for you. Please follow the documentation how to set it up.\n\n\n\nWhen you start iBridges you will find in the upper drop-down menu Connect and Configure.\n\n\n\n\n\nLet us check or create a valid configuration file; Click on Configure -&gt; Add Configuration.\n\n\n\n\n\n\n\nIn the drop-down menu you will find previously created iRODS environments, they start with irods_environment and end with .json. Select the one you want to check.\n\n\n\nIf you do not have an iRODS configuration yet, and you installed a plugin (see above) you can select a configuration template from the drop-down menu. You will have to add your username and save as irods_environment.json.\n\n\n\nTo create a new environment click on the button New Config. You should see now something like:\n\n\n\n\n\nClick the Check button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service provider.\nOnce the check runs through fine click the Save or Save as button. This will store the adjusted configuration in the correct directory on your laptop so that we can use it for the login (See Section below).\n\n\n\n\n\nTo start working with data in iRODS select Connect -&gt; Connect to iRODS. This will open the pop-up window\n\n\n\n\n\n\n\n\nSince iBridges version 1.4.0 we are offering to download executables or to build them. Please note, that this feature is still in experimental state.\n\n\nGo to the Releases page. In the latest releases you will find three zip-files, these contain the prebuilt application. Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file ibridges_gui.[exe, sh] For Windows simply click on the exe-file, for Mac and Linux open the file with a shell bash ./ibridges_gui.sh.\n\n\n\nWe offer build scripts in case you would like to compile iBridges and distribute the executable.\npython3 build_tools/build_script.py -h\n\nusage: build_script.py [-h] [--debug_exe] [--rem_venv]\n                       [--code_folder CODE_FOLDER] [--ui_folder UI_FOLDER]\n                       [--icons_folder ICONS_FOLDER] [--venv VENV]\n\niBridges-Gui exe creator.\n\noptions:\n  -h, --help            show this help message and exit\n  --debug_exe           Build executable with debug console\n  --rem_venv            remove virtual environment\n  --code_folder CODE_FOLDER\n                        Full path to the directory with code\n  --ui_folder UI_FOLDER\n                        Full path to the directory with ui files\n  --icons_folder ICONS_FOLDER\n                        Full path to the directory with the icons\n  --venv VENV           Full path to virtual python environment\nThis will create a virtual environment venv in your iBridges folder. Next to that you will find a new folder build and ibridgesgui_dist. The executable can be found and started like this for Mac and Linux:\n./output/ibridgesgui/ibridges_gui.bin\nFor Windows simply click on the file output/ibridgesgui/ibridges_gui.exe.\nSelect the file we edited above from the drop-down menu and provide your password. If you already logged into iRODS with this or another iRODS client your password might still be cached. This is indicated by the ******. Hit &lt;Enter&gt; or press the Connect button."
+  },
+  {
+    "objectID": "docs/getting-started.html#install-ibridges-gui",
+    "href": "docs/getting-started.html#install-ibridges-gui",
+    "title": "Getting started with iBridges-Gui",
+    "section": "",
+    "text": "pip install ibridgesgui"
+  },
+  {
+    "objectID": "docs/getting-started.html#start-the-program",
+    "href": "docs/getting-started.html#start-the-program",
+    "title": "Getting started with iBridges-Gui",
+    "section": "",
+    "text": "Please start iBridges-Gui by typing ibridges-gui on your terminal and hit enter."
+  },
+  {
+    "objectID": "docs/getting-started.html#configuring-ibridges-gui",
+    "href": "docs/getting-started.html#configuring-ibridges-gui",
+    "title": "Getting started with iBridges-Gui",
+    "section": "",
+    "text": "To connect to the server you need a configuration file, a so-called irods_environment.json. You can create one for yourself using templates, editing default settings we provide for you or simply create such a file.\n\n\nWe have created a plugin system to automatically create the environment file for you. Please follow the documentation how to set it up.\n\n\n\nWhen you start iBridges you will find in the upper drop-down menu Connect and Configure.\n\n\n\n\n\nLet us check or create a valid configuration file; Click on Configure -&gt; Add Configuration.\n\n\n\n\n\n\n\nIn the drop-down menu you will find previously created iRODS environments, they start with irods_environment and end with .json. Select the one you want to check.\n\n\n\nIf you do not have an iRODS configuration yet, and you installed a plugin (see above) you can select a configuration template from the drop-down menu. You will have to add your username and save as irods_environment.json.\n\n\n\nTo create a new environment click on the button New Config. You should see now something like:\n\n\n\n\n\nClick the Check button to find out whether you can make a connection to the iRODS server. If you get error messages, adjust the contents accordingly. If you are unsure, please contact your iRODS service provider.\nOnce the check runs through fine click the Save or Save as button. This will store the adjusted configuration in the correct directory on your laptop so that we can use it for the login (See Section below)."
+  },
+  {
+    "objectID": "docs/getting-started.html#start-an-irods-session",
+    "href": "docs/getting-started.html#start-an-irods-session",
+    "title": "Getting started with iBridges-Gui",
+    "section": "",
+    "text": "To start working with data in iRODS select Connect -&gt; Connect to iRODS. This will open the pop-up window"
+  },
+  {
+    "objectID": "docs/getting-started.html#executables",
+    "href": "docs/getting-started.html#executables",
+    "title": "Getting started with iBridges-Gui",
+    "section": "",
+    "text": "Since iBridges version 1.4.0 we are offering to download executables or to build them. Please note, that this feature is still in experimental state.\n\n\nGo to the Releases page. In the latest releases you will find three zip-files, these contain the prebuilt application. Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file ibridges_gui.[exe, sh] For Windows simply click on the exe-file, for Mac and Linux open the file with a shell bash ./ibridges_gui.sh.\n\n\n\nWe offer build scripts in case you would like to compile iBridges and distribute the executable.\npython3 build_tools/build_script.py -h\n\nusage: build_script.py [-h] [--debug_exe] [--rem_venv]\n                       [--code_folder CODE_FOLDER] [--ui_folder UI_FOLDER]\n                       [--icons_folder ICONS_FOLDER] [--venv VENV]\n\niBridges-Gui exe creator.\n\noptions:\n  -h, --help            show this help message and exit\n  --debug_exe           Build executable with debug console\n  --rem_venv            remove virtual environment\n  --code_folder CODE_FOLDER\n                        Full path to the directory with code\n  --ui_folder UI_FOLDER\n                        Full path to the directory with ui files\n  --icons_folder ICONS_FOLDER\n                        Full path to the directory with the icons\n  --venv VENV           Full path to virtual python environment\nThis will create a virtual environment venv in your iBridges folder. Next to that you will find a new folder build and ibridgesgui_dist. The executable can be found and started like this for Mac and Linux:\n./output/ibridgesgui/ibridges_gui.bin\nFor Windows simply click on the file output/ibridgesgui/ibridges_gui.exe.\nSelect the file we edited above from the drop-down menu and provide your password. If you already logged into iRODS with this or another iRODS client your password might still be cached. This is indicated by the ******. Hit &lt;Enter&gt; or press the Connect button."
   }
 ]
