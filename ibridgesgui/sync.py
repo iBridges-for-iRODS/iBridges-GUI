@@ -8,6 +8,7 @@ import PySide6.QtCore
 import PySide6.QtGui
 from ibridges import IrodsPath
 
+from ibridgesgui.config import get_last_ienv_path
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, populate_table, prep_session_for_copy
 from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
@@ -201,7 +202,7 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText("Synchronising data ....")
 
-        env_path = prep_session_for_copy(self.session, self.error_label)
+        env_path = Path(get_last_ienv_path())
         if env_path is None:
             return
         try:

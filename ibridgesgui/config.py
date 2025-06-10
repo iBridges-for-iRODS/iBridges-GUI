@@ -9,6 +9,7 @@ from json import JSONDecodeError
 from pathlib import Path
 from typing import Union
 
+from ibridges.cli.config import IbridgesConf
 from ibridges.session import Session
 from irods.auth.pam import PamLoginException
 from irods.connection import PlainTextPAMPasswordError
@@ -16,6 +17,7 @@ from irods.exception import (
     CAT_INVALID_AUTHENTICATION,
     CAT_INVALID_USER,
     PAM_AUTH_PASSWORD_FAILED,
+    PAM_AUTH_PASSWORD_INVALID_TTL,
     NetworkException,
 )
 from irods.session import iRODSSession
@@ -87,15 +89,21 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
 
 
 # ibridges config functions
-def get_last_ienv_path() -> Union[None, str]:
-    """Retrieve last used environment path from the config file."""
+def get_last_ienv_name() -> Union[None, str]:
+    """Retrieve last used environment name as in the login drop down from the config file."""
     config = _get_config()
     if config is not None:
         return config.get("gui_last_env")
     return None
 
+def get_last_ienv_path() ->  Union[None, str]:
+    """Retrieve the last successfully used environment file."""
+    name = get_last_ienv_name()
+    if name:
+        return name.split(" - ")[1]
+    return None
 
-def set_last_ienv_path(ienv_path: Path):
+def set_last_ienv(ienv: str):
     """Save the last used environment path to the config file.
 
     ienv_path : Path
@@ -103,9 +111,9 @@ def set_last_ienv_path(ienv_path: Path):
     """
     config = _get_config()
     if config is not None:
-        config["gui_last_env"] = ienv_path
+        config["gui_last_env"] = ienv
     else:
-        config = {"gui_last_env": ienv_path}
+        config = {"gui_last_env": ienv}
     _save_config(config)
 
 
@@ -144,6 +152,7 @@ def config_add_tab(tab_provider: object):
         config = {"tabs": [obj_str]}
     _save_config(config)
 
+
 def config_remove_tab(tab_provider: object):
     """Remove a tab from the config file."""
     config = _get_config()
@@ -160,10 +169,12 @@ def config_remove_tab(tab_provider: object):
             config["tabs"] = tabs
             _save_config(config)
 
+
 def get_tabs() -> list:
     """Get list of previously chosen tird party tab providers."""
     config = _get_config()
     return config.get("tabs", [])
+
 
 def _save_config(conf: dict):
     ensure_log_config_location()
@@ -184,18 +195,33 @@ def _get_config() -> Union[None, dict]:
 
 
 def save_current_settings(env_path_name: Path):
-    """Store the environment with the currently scrambled password in irodsA."""
+    """Store the environment with the currently scrambled password in irodsA.
+
+    Will be stored in ibridges_cli.json and in ibridges_gui.json.
+    """
+    ibridges_conf = IbridgesConf(None)
     with open(IRODSA, "r", encoding="utf-8") as f:
         pw = f.read()
+    try:
+        ienv_path, ienv_entry = ibridges_conf.get_entry(env_path_name)
+    except KeyError:
+        ienv_path = env_path_name
+        ienv_entry = {}
+    if ienv_entry.get("irodsa_backup", "") != pw:
+        ienv_entry["irodsa_backup"] = pw
+        ibridges_conf.servers[str(ienv_path)] = ienv_entry
+        ibridges_conf.save()
+
+    # Till ibridges gui 2.0.0 empty passwords from gui config
+    # In ibridges gui 2.0.0 no passwords and envs will be stored in gui config
     config = _get_config()
     if config is not None:
-        if "settings" not in config:
-            config["settings"] = {}
-        config["settings"][str(env_path_name)] = pw
-        _save_config(config)
+        if "settings" in config and str(env_path_name) in config["settings"]:
+            del config["settings"][str(env_path_name)]
+            _save_config(config)
 
 
-def get_prev_settings():
+def get_prev_settings() -> dict:
     """Extract the settings from the configuration."""
     config = _get_config()
     if config is None:
@@ -213,7 +239,7 @@ def is_session_from_config(session: Session) -> Union[Session, None]:
     We will verify that the given session was instantiated by the
     parameters saved in the ibridges configuration.
     """
-    ienv_path = Path("~").expanduser().joinpath(".irods", get_last_ienv_path())
+    ienv_path = get_last_ienv_path()
     try:
         env = _read_json(ienv_path)
     except Exception:
@@ -307,7 +333,7 @@ def check_irods_config(ienv: Union[Path, dict], include_network=True) -> str:
             return f"{err.args}"
 
         # password incorrect but rest is fine
-        except (CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
+        except (PAM_AUTH_PASSWORD_INVALID_TTL, CAT_INVALID_USER, PAM_AUTH_PASSWORD_FAILED):
             return "All checks passed successfully."
     # all tests passed
     return "All checks passed successfully."
@@ -326,6 +352,39 @@ def save_irods_config(env_path: Union[Path, str], conf: dict):
         _write_json(env_path, conf)
     else:
         raise ValueError("Filetype needs to be '.json'.")
+
+
+def combine_envs_gui_cli() -> dict[str, (tuple[Path, str])]:
+    """Read in the saved aliases from the CLI and combine with the GUI environments."""
+    cli_servers = IbridgesConf(None).servers
+    gui = get_prev_settings()
+    aliases = {}
+
+    for env_path, gui_irodsa in gui.items():
+        if env_path in cli_servers:
+            cli_entry = cli_servers[env_path]
+            # env files in cli do not always carry an alias
+            alias = cli_entry.get("alias", Path(env_path).name)
+            # Use latest GUI password if differs from CLI
+            if "irodsa_backup" in cli_entry and gui_irodsa != cli_entry["irodsa_backup"]:
+                aliases[alias] = (Path(env_path), gui_irodsa)
+            else:
+                # aliases do not always have a pw
+                irodsa = cli_entry.get("irodsa_backup", gui_irodsa)
+                aliases[alias] = (Path(env_path), irodsa)
+
+        else:
+            # GUI saved environments do not have an alias, use env file name
+            aliases[Path(env_path).name] = (Path(env_path), gui_irodsa)
+
+    # add cli aliases which are not in the gui config
+    for env_path in cli_servers:
+        if env_path not in gui.keys():
+            alias = cli_servers[env_path].get("alias", Path(env_path).name)
+            irodsa = cli_servers[env_path].get("irodsa_backup", None)
+            aliases[alias] = (env_path, irodsa)
+
+    return aliases
 
 
 def _read_json(file_path: Path) -> dict:
