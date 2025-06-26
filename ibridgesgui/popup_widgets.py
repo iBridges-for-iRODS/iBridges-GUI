@@ -450,7 +450,7 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         self.timestamp = datetime.now().strftime("%m%d%Y-%H%M")
         self.meta_path = None
         self.meta_download = (
-            f"bridges_metadata_{self.irods_path.name.split('.')[0]}_{self.timestamp}.json"
+            f"ibridges_metadata_{self.irods_path.name.split('.')[0]}_{self.timestamp}.json"
         )
         self.metadata.setText(f"Store metadata as\n{self.meta_download}")
         self.folder_button.clicked.connect(self.select_folder)
