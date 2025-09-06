@@ -165,7 +165,6 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.clear()
         irods_paths = self._retrieve_selected_paths()
-        print(irods_paths)
         if len(irods_paths) == 0:
             self.error_label.setText("No data selected.")
             self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
