@@ -261,7 +261,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         # get diff dictionary
         single_ops = []
         for ipath in irods_paths:
-            single_ops.append(download(self.session, ipath, folder, overwrite=True, dry_run=True))
+            single_ops.append(download(ipath, folder, overwrite=True, dry_run=True))
         ops = combine_operations(single_ops)
 
         self.error_label.setText(f"Downloading to {folder} ....")
