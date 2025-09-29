@@ -6,11 +6,14 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
+from typing import Optional
 
 import PySide6.QtGui
 import PySide6.QtUiTools
 import PySide6.QtWidgets
 import setproctitle
+
+from ibridges import Session
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import (
@@ -47,7 +50,7 @@ app = PySide6.QtWidgets.QApplication(sys.argv)
 class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
     """Set up the GUI Main Menu."""
 
-    def __init__(self, app_name):
+    def __init__(self, app_name: str, session: Optional[Session] = None):
         """Initialise the main window."""
         super().__init__()
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
@@ -92,7 +95,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             if tab in self.prev_tabs:
                 action.setChecked(True)
 
-        self.session = None
+        self.session = session
         self.irods_browser = None
         self.session_dict = {}
         self.action_connect.triggered.connect(self.connect)
@@ -100,7 +103,17 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_close_session.triggered.connect(self.disconnect)
         self.action_add_configuration.triggered.connect(self.create_env_file)
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
-        self.tab_widget.setCurrentIndex(0)
+
+        if session: # login from ibridges shell or by calling main(session) from python
+            print(session)
+            try:
+                self.setup_tabs()
+                self.menuPlugins.setEnabled(True)
+            except:
+                self.session = None
+                raise
+        else: # show only first page and menu bar
+            self.tab_widget.setCurrentIndex(0)
 
     def checked_tabs(self):
         """Retrieve names of checked third party tabs."""
@@ -203,6 +216,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Init tab view."""
         # init the standard tabs first
         for tab in self.standard_tabs:
+            print(tab)
             if tab in self.prev_tabs:
                 self.ui_tabs_lookup[tab]()
         for third_party_tab in set(self.prev_tabs).difference(self.standard_tabs):
@@ -277,7 +291,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         create_widget.exec()
 
 
-def main():
+def main(session: Optional[Session] = None):
     """Call main function."""
     setproctitle.setproctitle(THIS_APPLICATION)
 
@@ -294,7 +308,10 @@ def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     ensure_irods_location()
     main_widget = PySide6.QtWidgets.QStackedWidget()
-    main_app = MainMenu(THIS_APPLICATION)
+    if session:
+        main_app = MainMenu(THIS_APPLICATION, session)
+    else:
+        main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
     main_widget.show()
     app.exec()
