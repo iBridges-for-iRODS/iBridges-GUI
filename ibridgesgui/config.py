@@ -170,6 +170,24 @@ def config_remove_tab(tab_provider: object):
             _save_config(config)
 
 
+def config_set_last_upload_path(path: Path):
+    config = _get_config()
+    config["last_upload_path"] = str(path)
+    _save_config(config)
+
+def config_get_last_upload_path():
+    config = _get_config()
+    return config.get("last_upload_path", None)
+
+def config_set_last_download_path(path: Path):
+    config = _get_config()
+    config["last_download_path"] = str(path)
+    _save_config(config)
+
+def config_get_last_download_path():
+    config = _get_config()
+    return config.get("last_download_path", None)
+
 def get_tabs() -> list:
     """Get list of previously chosen tird party tab providers."""
     config = _get_config()

@@ -15,6 +15,7 @@ from ibridges.exception import DataObjectExistsError
 from ibridges.util import find_environment_provider, get_environment_providers
 
 from ibridgesgui.config import _read_json, check_irods_config, get_last_ienv_path, save_irods_config
+from ibridgesgui.config import config_set_last_upload_path, config_set_last_download_path, config_get_last_upload_path, config_get_last_download_path
 from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, load_ui, populate_textfield
 from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
@@ -322,22 +323,32 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
 
     def select_file(self):
         """Open file selector."""
+        last_upload_path = config_get_last_upload_path()
+        if not last_upload_path:
+            last_upload_path = Path("~").expanduser()
         select_file = PySide6.QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open File", dir=str(Path("~").expanduser())
+            self, "Open File", dir=str(last_upload_path)
         )
         path = self._fs_select(select_file)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
             return
+        print(path)
+        config_set_last_upload_path(Path(path).parent)
         self.sources_list.append(path)
 
     def select_folder(self):
         """Open folder selctor."""
+        last_upload_path = config_get_last_upload_path()
+        if not last_upload_path:
+            last_upload_path = Path("~").expanduser()
         select_dir = PySide6.QtWidgets.QFileDialog.getExistingDirectory(
-            self, "Select Directory", dir=str(Path("~").expanduser())
+            self, "Select Directory", dir=str(last_upload_path)
         )
         path = self._fs_select(select_dir)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
             return
+        print(path)
+        config_set_last_upload_path(path)
         self.sources_list.append(path)
 
     def _get_upload_params(self):
@@ -490,14 +501,18 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
     def select_folder(self):
         """Select the download destination."""
         self.error_label.clear()
+        last_download_path = config_get_last_download_path()
+        if not last_download_path:
+            last_download_path = Path("~").expanduser()
         select_dir = Path(
             PySide6.QtWidgets.QFileDialog.getExistingDirectory(
-                self, "Select Directory", dir=str(Path("~").expanduser())
+                self, "Select Directory", dir=str()
             )
         )
         if str(select_dir) == "" or str(select_dir) == ".":
             return
         self.destination_label.setText(str(select_dir))
+        config_set_last_download_path(last_download_path)
 
     def _get_download_params(self):
         """Retrieve and check all parameters for the dpwnload."""
