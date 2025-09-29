@@ -14,8 +14,16 @@ from ibridges import IrodsPath, download, upload
 from ibridges.exception import DataObjectExistsError
 from ibridges.util import find_environment_provider, get_environment_providers
 
-from ibridgesgui.config import _read_json, check_irods_config, get_last_ienv_path, save_irods_config
-from ibridgesgui.config import config_set_last_upload_path, config_set_last_download_path, config_get_last_upload_path, config_get_last_download_path
+from ibridgesgui.config import (
+    _read_json,
+    check_irods_config,
+    config_get_last_download_path,
+    config_get_last_upload_path,
+    config_set_last_download_path,
+    config_set_last_upload_path,
+    get_last_ienv_path,
+    save_irods_config,
+)
 from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, load_ui, populate_textfield
 from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
@@ -505,9 +513,7 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         if not last_download_path:
             last_download_path = Path("~").expanduser()
         select_dir = Path(
-            PySide6.QtWidgets.QFileDialog.getExistingDirectory(
-                self, "Select Directory", dir=str()
-            )
+            PySide6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory", dir=str())
         )
         if str(select_dir) == "" or str(select_dir) == ".":
             return

@@ -96,12 +96,14 @@ def get_last_ienv_name() -> Union[None, str]:
         return config.get("gui_last_env")
     return None
 
-def get_last_ienv_path() ->  Union[None, str]:
+
+def get_last_ienv_path() -> Union[None, str]:
     """Retrieve the last successfully used environment file."""
     name = get_last_ienv_name()
     if name:
         return name.split(" - ")[1]
     return None
+
 
 def set_last_ienv(ienv: str):
     """Save the last used environment path to the config file.
@@ -171,22 +173,30 @@ def config_remove_tab(tab_provider: object):
 
 
 def config_set_last_upload_path(path: Path):
+    """Store the folder of the upload dialog."""
     config = _get_config()
     config["last_upload_path"] = str(path)
     _save_config(config)
 
+
 def config_get_last_upload_path():
+    """Get the last used upload location."""
     config = _get_config()
     return config.get("last_upload_path", None)
 
+
 def config_set_last_download_path(path: Path):
+    """Store the folder of download dialog."""
     config = _get_config()
     config["last_download_path"] = str(path)
     _save_config(config)
 
+
 def config_get_last_download_path():
+    """Get the lats used download location."""
     config = _get_config()
     return config.get("last_download_path", None)
+
 
 def get_tabs() -> list:
     """Get list of previously chosen tird party tab providers."""
