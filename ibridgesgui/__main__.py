@@ -105,7 +105,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
 
         if session: # login from ibridges shell or by calling main(session) from python
-            print(session)
             try:
                 self.setup_tabs()
                 self.menuPlugins.setEnabled(True)
@@ -216,7 +215,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         """Init tab view."""
         # init the standard tabs first
         for tab in self.standard_tabs:
-            print(tab)
             if tab in self.prev_tabs:
                 self.ui_tabs_lookup[tab]()
         for third_party_tab in set(self.prev_tabs).difference(self.standard_tabs):
