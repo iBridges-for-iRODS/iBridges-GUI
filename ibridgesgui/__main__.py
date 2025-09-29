@@ -12,7 +12,6 @@ import PySide6.QtGui
 import PySide6.QtUiTools
 import PySide6.QtWidgets
 import setproctitle
-
 from ibridges import Session
 
 from ibridgesgui.browser import Browser
