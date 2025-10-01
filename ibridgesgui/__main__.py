@@ -58,6 +58,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             load_ui(UI_FILE_DIR / "MainMenu.ui", self)
 
         app.aboutToQuit.connect(self.close_event)
+        self.started_with_session = session is not None
 
         self.logger = logging.getLogger(app_name)
         self.irods_path = Path("~", ".irods").expanduser()
@@ -206,10 +207,10 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def close_event(self):
         """Close program properly if main window is closed."""
-        if check_called_by_command():
-            sys.exit()
-        else:
+        if self.started_with_session:
             self.close()
+        else:
+            sys.exit()
 
 
     def setup_tabs(self):
@@ -289,13 +290,6 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         create_widget = CheckConfig(self.logger, self.irods_path)
         create_widget.exec()
 
-
-def check_called_by_command():
-    """Check if the app was called from another Python script."""
-    if len(sys.argv) > 1:
-        # If arguments are passed, it's likely called from a script or subprocess
-        return True
-    return False
 
 def main(session: Optional[Session] = None):
     """Call main function."""
