@@ -200,15 +200,17 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             PySide6.QtWidgets.QMessageBox.StandardButton.No,
         )
         if reply == PySide6.QtWidgets.QMessageBox.StandardButton.Yes:
-            self.disconnect()
-            sys.exit()
+            self.close_event()
         else:
             pass
 
     def close_event(self):
         """Close program properly if main window is closed."""
-        self.disconnect()
-        sys.exit()
+        if check_called_by_command():
+            sys.exit()
+        else:
+            self.close()
+
 
     def setup_tabs(self):
         """Init tab view."""
@@ -288,6 +290,13 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         create_widget.exec()
 
 
+def check_called_by_command():
+    """Check if the app was called from another Python script."""
+    if len(sys.argv) > 1:
+        # If arguments are passed, it's likely called from a script or subprocess
+        return True
+    return False
+
 def main(session: Optional[Session] = None):
     """Call main function."""
     setproctitle.setproctitle(THIS_APPLICATION)
@@ -321,4 +330,4 @@ def main_deprecated():
         "The command 'ibridges-gui' will be deprecated in iBridges 2.0. Use 'ibridges gui' instead.") # noqa: E501 # pylint: disable=C0301
 
 if __name__ == "__main__":
-    main()
+    main(session=None)
