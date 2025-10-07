@@ -9,7 +9,7 @@ pip install ibridgesgui
 
 ## Start the program
 
-Please start **iBridges-Gui** by typing `ibridges-gui` on your terminal and hit enter.
+Please start **iBridges-Gui** by typing `ibridges gui` on your terminal and hit enter.
 
 ## Configuring iBridges-Gui
 
