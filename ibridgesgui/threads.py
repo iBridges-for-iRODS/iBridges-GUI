@@ -217,7 +217,6 @@ class SyncThread(PySide6.QtCore.QThread):
 
         try:
             result = sync(
-                self.thread_session,
                 self.source,
                 self.target,
                 dry_run=self.dry_run,

@@ -59,7 +59,7 @@ class CreateCollection(PySide6.QtWidgets.QDialog, Ui_createCollection):
                 self.error_label.setText(f"{new_coll_path} already exists.")
             else:
                 try:
-                    IrodsPath.create_collection(new_coll_path.session, new_coll_path)
+                    new_coll_path.create_collection()
                     self.logger.info(f"Created collection {new_coll_path}")
                     self.done(0)
                 except irods.exception.CAT_NO_ACCESS_PERMISSION:
@@ -377,7 +377,6 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             ops = combine_operations(
                 [
                     upload(
-                        self.session,
                         p,
                         self.irods_path,
                         overwrite=self.overwrite.isChecked(),
@@ -550,7 +549,6 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         env_path = Path(get_last_ienv_path())
         try:
             ops = download(
-                self.session,
                 self.irods_path,
                 local_path,
                 overwrite=self.overwrite.isChecked(),
