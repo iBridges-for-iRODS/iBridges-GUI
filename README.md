@@ -62,7 +62,7 @@ The build was done using the latest version on an x64 architecture.
 - From a pip python package
 
   ```bash
-  ibridges-gui
+  ibridges gui
   ```
 - From code (for developers)
 

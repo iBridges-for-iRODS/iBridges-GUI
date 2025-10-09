@@ -53,9 +53,6 @@ all = [
     "ibridgesgui[test,deploy]",
 ]
 
-[project.scripts]
-ibridges-gui = "ibridgesgui.__main__:main"
-
 [tool.setuptools]
 packages = ["ibridgesgui"]
 
