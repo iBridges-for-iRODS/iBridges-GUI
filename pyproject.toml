@@ -23,8 +23,9 @@ classifiers = [
 
 dependencies = [
     "PySide6>=6.8.1",
-    "ibridges>=1.5.1, <1.6",
-    "setproctitle==1.3.6",
+
+    "ibridges>=2.0.0, <2.1",
+    "setproctitle==1.3.7",
     "importlib-resources;python_version<='3.10'",
 ]
 
@@ -51,9 +52,6 @@ deploy = [
 all = [
     "ibridgesgui[test,deploy]",
 ]
-
-[project.scripts]
-ibridges-gui = "ibridgesgui.__main__:main"
 
 [tool.setuptools]
 packages = ["ibridgesgui"]

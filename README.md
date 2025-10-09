@@ -11,7 +11,7 @@
 
 [![Python package](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/linter.yml/badge.svg)](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/linter.yml)
 [![Quarto Publish](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/publish.yml/badge.svg)](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/publish.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12583957.svg)](https://doi.org/10.5281/zenodo.12583957)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12583957.svg)](https://doi.org/10.5281/zenodo.17139123)
 
 
 ## About
@@ -62,7 +62,7 @@ The build was done using the latest version on an x64 architecture.
 - From a pip python package
 
   ```bash
-  ibridges-gui
+  ibridges gui
   ```
 - From code (for developers)
 

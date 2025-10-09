@@ -6,11 +6,13 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
+from typing import Optional
 
 import PySide6.QtGui
 import PySide6.QtUiTools
 import PySide6.QtWidgets
 import setproctitle
+from ibridges import Session
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import (
@@ -47,7 +49,7 @@ app = PySide6.QtWidgets.QApplication(sys.argv)
 class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
     """Set up the GUI Main Menu."""
 
-    def __init__(self, app_name):
+    def __init__(self, app_name: str, session: Optional[Session] = None):
         """Initialise the main window."""
         super().__init__()
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
@@ -56,6 +58,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             load_ui(UI_FILE_DIR / "MainMenu.ui", self)
 
         app.aboutToQuit.connect(self.close_event)
+        self.started_with_session = session is not None
 
         self.logger = logging.getLogger(app_name)
         self.irods_path = Path("~", ".irods").expanduser()
@@ -92,7 +95,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             if tab in self.prev_tabs:
                 action.setChecked(True)
 
-        self.session = None
+        self.session = session
         self.irods_browser = None
         self.session_dict = {}
         self.action_connect.triggered.connect(self.connect)
@@ -100,7 +103,16 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_close_session.triggered.connect(self.disconnect)
         self.action_add_configuration.triggered.connect(self.create_env_file)
         self.action_check_configuration.triggered.connect(self.inspect_env_file)
-        self.tab_widget.setCurrentIndex(0)
+
+        if session: # login from ibridges shell or by calling main(session) from python
+            try:
+                self.setup_tabs()
+                self.menuPlugins.setEnabled(True)
+            except:
+                self.session = None
+                raise
+        else: # show only first page and menu bar
+            self.tab_widget.setCurrentIndex(0)
 
     def checked_tabs(self):
         """Retrieve names of checked third party tabs."""
@@ -189,15 +201,17 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             PySide6.QtWidgets.QMessageBox.StandardButton.No,
         )
         if reply == PySide6.QtWidgets.QMessageBox.StandardButton.Yes:
-            self.disconnect()
-            sys.exit()
+            self.close_event()
         else:
             pass
 
     def close_event(self):
         """Close program properly if main window is closed."""
-        self.disconnect()
-        sys.exit()
+        if self.started_with_session:
+            self.close()
+        else:
+            sys.exit()
+
 
     def setup_tabs(self):
         """Init tab view."""
@@ -277,7 +291,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         create_widget.exec()
 
 
-def main():
+def main(session: Optional[Session] = None):
     """Call main function."""
     setproctitle.setproctitle(THIS_APPLICATION)
 
@@ -288,23 +302,17 @@ def main():
         set_log_level("debug")
         init_logger(THIS_APPLICATION, "debug")
 
-    main_deprecated()
-
     # Set the working directory to the directory of the current file
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     ensure_irods_location()
     main_widget = PySide6.QtWidgets.QStackedWidget()
-    main_app = MainMenu(THIS_APPLICATION)
+    if session:
+        main_app = MainMenu(THIS_APPLICATION, session)
+    else:
+        main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
     main_widget.show()
     app.exec()
 
-
-def main_deprecated():
-    """Deprecate the ibridges-gui call."""
-    logger = logging.getLogger(THIS_APPLICATION)
-    logger.warning(
-        "The command 'ibridges-gui' will be deprecated in iBridges 2.0. Use 'ibridges gui' instead.") # noqa: E501 # pylint: disable=C0301
-
 if __name__ == "__main__":
-    main()
+    main(session=None)
