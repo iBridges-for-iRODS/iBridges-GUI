@@ -29,10 +29,20 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
     def __init__(self, session, app_name: str):
         """Initialize an iRODS browser view."""
         super().__init__()
-        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-            super().setupUi(self)
+        # if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+        #     super().setupUi(self)
+        # else:
+        #     load_ui(UI_FILE_DIR / "tabBrowser_resized.ui", self)
+
+        rec = app.primaryScreen().availableGeometry()
+        self.screen_dim = {'w': rec.width(), 'h': rec.height()}
+        print(f"{rec.width()} x {rec.height()}")
+
+        if self.screen_dim['w'] < 1250:
+            load_ui(UI_FILE_DIR / "tabBrowser_resized.ui", self)
         else:
             load_ui(UI_FILE_DIR / "tabBrowser.ui", self)
+
 
         self.logger = logging.getLogger(app_name)
         self.session = session
@@ -41,6 +51,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.current_selected_row = -1
         self.updated_info_tabs = []
         self.init_browser()
+        self.showMaximized()
 
     def init_browser(self):
         """Initialize browser view GUI elements. Define the signals and slots."""

@@ -52,8 +52,16 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, app_name: str, session: Optional[Session] = None):
         """Initialise the main window."""
         super().__init__()
-        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-            super().setupUi(self)
+        # if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+        #     super().setupUi(self)
+        # else:
+        #     load_ui(UI_FILE_DIR / "MainMenu.ui", self)
+
+        rec = app.primaryScreen().availableGeometry()
+        self.screen_dim = {'w': rec.width(), 'h': rec.height()}
+        print(f"{rec.width()} x {rec.height()}")
+        if self.screen_dim['w'] < 1250:
+            load_ui(UI_FILE_DIR / "MainMenu_resized.ui", self)
         else:
             load_ui(UI_FILE_DIR / "MainMenu.ui", self)
 
@@ -64,6 +72,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
+        self.showMaximized()
 
         # Plugin tabs
         self.prev_tabs = get_tabs()  # previously checked tabs
