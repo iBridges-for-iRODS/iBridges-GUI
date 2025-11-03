@@ -11,6 +11,7 @@ from typing import Optional
 import PySide6.QtGui
 import PySide6.QtUiTools
 import PySide6.QtWidgets
+import PySide6.QtCore
 import setproctitle
 from ibridges import Session
 
@@ -59,7 +60,9 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
         rec = app.primaryScreen().availableGeometry()
         self.screen_dim = {'w': rec.width(), 'h': rec.height()}
-        print(f"{rec.width()} x {rec.height()}")
+        print(f"{self.screen_dim['w']} x {self.screen_dim['h']}")
+        # UI_FILE_DIR = Path('/home/maarten/Documents/Projects/ibridges/iBridges-GUI/ibridgesgui/ui_files')
+
         if self.screen_dim['w'] < 1250:
             load_ui(UI_FILE_DIR / "MainMenu_resized.ui", self)
         else:
@@ -72,7 +75,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
-        self.showMaximized()
+        # self.showMaximized()
 
         # Plugin tabs
         self.prev_tabs = get_tabs()  # previously checked tabs
@@ -123,6 +126,15 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         else: # show only first page and menu bar
             self.tab_widget.setCurrentIndex(0)
 
+        # self.showMaximized()
+
+    def keyPressEvent(self, e):      
+        if e.key() == PySide6.QtCore.Qt.Key_F11:
+            if self.parent().isMaximized():
+                self.parent().showNormal()
+            else:
+                self.parent().showMaximized()
+          
     def checked_tabs(self):
         """Retrieve names of checked third party tabs."""
         selected_tabs = []
@@ -267,7 +279,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def init_browser_tab(self):
         """Create browser."""
-        self.irods_browser = Browser(self.session, self.app_name)
+        self.irods_browser = Browser(self.session, self.app_name, self.screen_dim)
         self.tab_widget.addTab(self.irods_browser, "Browser")
 
     def init_search_tab(self):

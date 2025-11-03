@@ -2,6 +2,7 @@
 
 import logging
 import sys
+from pathlib import Path
 from typing import Union
 
 import irods.exception
@@ -22,11 +23,10 @@ from ibridgesgui.gui_utils import (
 from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 
-
 class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
     """Browser view for iRODS session."""
 
-    def __init__(self, session, app_name: str):
+    def __init__(self, session, app_name: str, screen_dim: dict):
         """Initialize an iRODS browser view."""
         super().__init__()
         # if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
@@ -34,15 +34,13 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         # else:
         #     load_ui(UI_FILE_DIR / "tabBrowser_resized.ui", self)
 
-        rec = app.primaryScreen().availableGeometry()
-        self.screen_dim = {'w': rec.width(), 'h': rec.height()}
-        print(f"{rec.width()} x {rec.height()}")
+        # print(f"{screen_dim['w']} x {screen_dim['h']}")
+        # UI_FILE_DIR = Path('/home/maarten/Documents/Projects/ibridges/iBridges-GUI/ibridgesgui/ui_files')
 
-        if self.screen_dim['w'] < 1250:
+        if screen_dim['w'] < 1250:
             load_ui(UI_FILE_DIR / "tabBrowser_resized.ui", self)
         else:
             load_ui(UI_FILE_DIR / "tabBrowser.ui", self)
-
 
         self.logger = logging.getLogger(app_name)
         self.session = session
@@ -501,7 +499,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
             obj = irods_path.dataobject
             if "." in irods_path.parts[-1]:
                 file_type = irods_path.parts[-1].split(".")[1]
-            if file_type in ["txt", "json", "csv"]:
+            if file_type in ["txt", "json", "csv", "md", "yaml", "R", "py"]:
                 try:
                     with obj.open("r") as objfd:
                         content = [objfd.read(1024).decode("utf-8")]

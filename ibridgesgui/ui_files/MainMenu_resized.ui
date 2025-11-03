@@ -10,6 +10,12 @@
     <height>574</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
     <width>800</width>
@@ -61,7 +67,7 @@ QTabBar::tab:top:selected {
    <property name="styleSheet">
     <string notr="true"/>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QTabWidget" name="tab_widget">
       <property name="minimumSize">
@@ -150,7 +156,7 @@ QTabBar::tab:top:selected {
   </action>
   <action name="action_exit">
    <property name="text">
-    <string>Exit iBridgessssssssss</string>
+    <string>Exit iBridges</string>
    </property>
    <property name="font">
     <font/>
