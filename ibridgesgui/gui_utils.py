@@ -62,9 +62,7 @@ def load_ui(ui_file, base_instance=None, screen_dim=None, threshold_w=1280):
     ui_file_small = f.with_stem(f"{f.stem}_small")
     if screen_dim and screen_dim['w'] < threshold_w and  ui_file_small.exists():
         ui_file = ui_file_small
-
-    print(ui_file)
-
+    # print(ui_file)
     ui_dir = os.path.dirname(ui_file)
     os.chdir(ui_dir)
     loader = UiLoader(base_instance)
