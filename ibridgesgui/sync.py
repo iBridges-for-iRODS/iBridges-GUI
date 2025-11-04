@@ -19,7 +19,7 @@ from ibridgesgui.ui_files.tabSync import Ui_tabSync
 class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
     """Sync view."""
 
-    def __init__(self, session, app_name):
+    def __init__(self, session, app_name, screen_dim: dict):
         """Initialise data synchronisation between iRODS and local.
 
         Parameters
@@ -31,10 +31,15 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
 
         """
         super().__init__()
-        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-            super().setupUi(self)
-        else:
-            load_ui(UI_FILE_DIR / "tabSync.ui", self)
+        # if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+        #     super().setupUi(self)
+        # else:
+        #     load_ui(UI_FILE_DIR / "tabSync.ui", self)
+
+        load_ui(
+            ui_file=UI_FILE_DIR / "tabSync.ui",
+            base_instance=self,
+            screen_dim=screen_dim)
 
         self.logger = logging.getLogger(app_name)
         self.session = session

@@ -60,13 +60,11 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
         rec = app.primaryScreen().availableGeometry()
         self.screen_dim = {'w': rec.width(), 'h': rec.height()}
-        print(f"{self.screen_dim['w']} x {self.screen_dim['h']}")
-        # UI_FILE_DIR = Path('/home/maarten/Documents/Projects/ibridges/iBridges-GUI/ibridgesgui/ui_files')
 
-        if self.screen_dim['w'] < 1250:
-            load_ui(UI_FILE_DIR / "MainMenu_resized.ui", self)
-        else:
-            load_ui(UI_FILE_DIR / "MainMenu.ui", self)
+        load_ui(
+            ui_file=UI_FILE_DIR / "MainMenu.ui",
+            base_instance=self,
+            screen_dim=self.screen_dim)
 
         app.aboutToQuit.connect(self.close_event)
         self.started_with_session = session is not None
@@ -269,7 +267,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def init_info_tab(self):
         """Create info."""
-        irods_info = Info(self.session)
+        irods_info = Info(self.session, self.screen_dim)
         self.tab_widget.addTab(irods_info, "Info")
 
     def init_log_tab(self):
@@ -284,12 +282,12 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def init_search_tab(self):
         """Create search. Depends on Browser."""
-        irods_search = Search(self.session, self.app_name, self.irods_browser)
+        irods_search = Search(self.session, self.app_name, self.irods_browser, self.screen_dim)
         self.tab_widget.addTab(irods_search, "Search")
 
     def init_sync_tab(self):
         """Create sync."""
-        irods_sync = Sync(self.session, self.app_name)
+        irods_sync = Sync(self.session, self.app_name, self.screen_dim)
         self.tab_widget.addTab(irods_sync, "Synchronise Data")
 
     def init_third_party_tab(self, tab_class: object):

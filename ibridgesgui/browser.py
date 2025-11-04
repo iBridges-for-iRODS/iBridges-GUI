@@ -29,18 +29,12 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
     def __init__(self, session, app_name: str, screen_dim: dict):
         """Initialize an iRODS browser view."""
         super().__init__()
-        # if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-        #     super().setupUi(self)
-        # else:
-        #     load_ui(UI_FILE_DIR / "tabBrowser_resized.ui", self)
 
-        # print(f"{screen_dim['w']} x {screen_dim['h']}")
-        # UI_FILE_DIR = Path('/home/maarten/Documents/Projects/ibridges/iBridges-GUI/ibridgesgui/ui_files')
+        load_ui(
+            ui_file=UI_FILE_DIR / "tabBrowser.ui",
+            base_instance=self,
+            screen_dim=screen_dim)
 
-        if screen_dim['w'] < 1250:
-            load_ui(UI_FILE_DIR / "tabBrowser_resized.ui", self)
-        else:
-            load_ui(UI_FILE_DIR / "tabBrowser.ui", self)
 
         self.logger = logging.getLogger(app_name)
         self.session = session

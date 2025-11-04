@@ -5,6 +5,7 @@
 import os
 import pathlib
 import sys
+from pathlib import Path
 from typing import Union
 
 import irods
@@ -54,8 +55,16 @@ class UiLoader(PySide6.QtUiTools.QUiLoader):
             return widget
 
 
-def load_ui(ui_file, base_instance=None):
+def load_ui(ui_file, base_instance=None, screen_dim=None, threshold_w=1280):
     """Load ui, as available in pyqt."""
+
+    f = Path(ui_file)
+    ui_file_small = f.with_stem(f"{f.stem}_small")
+    if screen_dim and screen_dim['w'] < threshold_w and  ui_file_small.exists:
+        ui_file = ui_file_small
+
+    # print(ui_file)
+
     ui_dir = os.path.dirname(ui_file)
     os.chdir(ui_dir)
     loader = UiLoader(base_instance)

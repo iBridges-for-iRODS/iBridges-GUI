@@ -19,7 +19,7 @@ from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
     """Search view."""
 
-    def __init__(self, session, app_name, browser):
+    def __init__(self, session, app_name, browser, screen_dim: dict):
         """Initialize an iRODS search view.
 
         This tab is linked to the browser tab. When double-clicking one of
@@ -36,10 +36,15 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
 
         """
         super().__init__()
-        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-            super().setupUi(self)
-        else:
-            load_ui(UI_FILE_DIR / "tabSearch.ui", self)
+        # if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+        #     super().setupUi(self)
+        # else:
+        #     load_ui(UI_FILE_DIR / "tabSearch.ui", self)
+
+        load_ui(
+            ui_file=UI_FILE_DIR / "tabSearch.ui",
+            base_instance=self,
+            screen_dim=screen_dim)
 
         self.logger = logging.getLogger(app_name)
         self.session = session

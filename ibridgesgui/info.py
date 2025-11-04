@@ -13,7 +13,7 @@ from ibridgesgui.ui_files.tabInfo import Ui_tabInfo
 class Info(PySide6.QtWidgets.QWidget, Ui_tabInfo):
     """Set iRODS information in the GUI."""
 
-    def __init__(self, session):
+    def __init__(self, session, screen_dim: dict):
         """Initialise the tab."""
         super().__init__()
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
