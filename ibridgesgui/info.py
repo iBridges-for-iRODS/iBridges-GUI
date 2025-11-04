@@ -16,10 +16,16 @@ class Info(PySide6.QtWidgets.QWidget, Ui_tabInfo):
     def __init__(self, session, screen_dim: dict):
         """Initialise the tab."""
         super().__init__()
-        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-            super().setupUi(self)
-        else:
-            load_ui(UI_FILE_DIR / "tabInfo.ui", self)
+        # if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+        #     super().setupUi(self)
+        # else:
+        #     load_ui(UI_FILE_DIR / "tabInfo.ui", self)
+
+        load_ui(
+            ui_file=UI_FILE_DIR / "tabInfo.ui",
+            base_instance=self,
+            screen_dim=screen_dim)
+
         self.session = session
 
         self.refresh_button.clicked.connect(self.refresh_info)

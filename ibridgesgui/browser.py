@@ -35,7 +35,6 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
             base_instance=self,
             screen_dim=screen_dim)
 
-
         self.logger = logging.getLogger(app_name)
         self.session = session
         self.home_coll = IrodsPath(self.session)

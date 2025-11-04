@@ -2,6 +2,7 @@
 
 import logging
 import sys
+import os
 from pathlib import Path
 
 import PySide6.QtCore
@@ -69,18 +70,28 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
 
     def _init_local_fs_tree(self):
         """Create local FS tree."""
+
         self.local_fs_model = PySide6.QtWidgets.QFileSystemModel(self.local_fs_tree)
         self.local_fs_tree.setModel(self.local_fs_model)
-        home_location = PySide6.QtCore.QStandardPaths.standardLocations(
-            PySide6.QtCore.QStandardPaths.StandardLocation.HomeLocation
-        )[0]
-        index = self.local_fs_model.setRootPath(home_location)
-        self.local_fs_tree.setCurrentIndex(index)
+
+        # user home folder
+        # home_location = PySide6.QtCore.QStandardPaths.standardLocations(
+        #     PySide6.QtCore.QStandardPaths.StandardLocation.HomeLocation
+        # )[0]
+
+        # system root folder
+        home_location = os.path.abspath(os.sep)
+
+        self.local_fs_model.setRootPath(home_location)
+        self.local_fs_tree.setRootIndex(self.local_fs_model.index(home_location))
+        self.local_fs_tree.setSortingEnabled(True)
+        self.local_fs_tree.sortByColumn(0, PySide6.QtCore.Qt.SortOrder())
 
         # hide unnecessary information
         self.local_fs_tree.setColumnHidden(1, True)
         self.local_fs_tree.setColumnHidden(2, True)
         self.local_fs_tree.setColumnHidden(3, True)
+
 
     def _init_irods_tree(self):
         root = self.irods_root()

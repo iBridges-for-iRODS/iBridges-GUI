@@ -34,7 +34,7 @@
     color: rgb(88, 88, 90);
     selection-background-color: rgb(21, 165, 137);
     selection-color: rgb(245, 244, 244);
-    font: 12pt
+    font-size: 12pt;
 }
 
 QLabel#error_label
@@ -65,8 +65,8 @@ QTabWidget#info_tabs
 
 </string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_4"/>
@@ -101,7 +101,7 @@ QTabWidget#info_tabs
         </font>
        </property>
        <property name="text">
-        <string>iRODS path: </string>
+        <string>iRODS path:</string>
        </property>
       </widget>
      </item>
@@ -260,7 +260,7 @@ QTabWidget#info_tabs
      </item>
     </layout>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QTableWidget" name="browser_table">
      <property name="minimumSize">
       <size>
@@ -347,7 +347,7 @@ QTabWidget#info_tabs
      </column>
     </widget>
    </item>
-   <item>
+   <item row="2" column="0">
     <widget class="QTabWidget" name="info_tabs">
      <property name="minimumSize">
       <size>
@@ -451,9 +451,9 @@ QTabWidget#info_tabs
       <widget class="QLabel" name="label_4">
        <property name="geometry">
         <rect>
-         <x>690</x>
-         <y>20</y>
-         <width>35</width>
+         <x>702</x>
+         <y>38</y>
+         <width>31</width>
          <height>24</height>
         </rect>
        </property>
@@ -466,15 +466,15 @@ QTabWidget#info_tabs
         </font>
        </property>
        <property name="text">
-        <string>Key</string>
+        <string>Key:</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_6">
        <property name="geometry">
         <rect>
-         <x>690</x>
-         <y>50</y>
-         <width>53</width>
+         <x>688</x>
+         <y>77</y>
+         <width>51</width>
          <height>24</height>
         </rect>
        </property>
@@ -487,14 +487,14 @@ QTabWidget#info_tabs
         </font>
        </property>
        <property name="text">
-        <string>Value</string>
+        <string>Value:</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="meta_key_field">
        <property name="geometry">
         <rect>
-         <x>760</x>
-         <y>10</y>
+         <x>740</x>
+         <y>33</y>
          <width>331</width>
          <height>32</height>
         </rect>
@@ -511,8 +511,8 @@ QTabWidget#info_tabs
       <widget class="QPushButton" name="delete_meta_button">
        <property name="geometry">
         <rect>
-         <x>940</x>
-         <y>130</y>
+         <x>920</x>
+         <y>153</y>
          <width>80</width>
          <height>32</height>
         </rect>
@@ -532,8 +532,8 @@ QTabWidget#info_tabs
       <widget class="QPushButton" name="add_meta_button">
        <property name="geometry">
         <rect>
-         <x>760</x>
-         <y>130</y>
+         <x>740</x>
+         <y>153</y>
          <width>80</width>
          <height>32</height>
         </rect>
@@ -553,8 +553,8 @@ QTabWidget#info_tabs
       <widget class="QPushButton" name="update_meta_button">
        <property name="geometry">
         <rect>
-         <x>850</x>
-         <y>130</y>
+         <x>830</x>
+         <y>153</y>
          <width>80</width>
          <height>32</height>
         </rect>
@@ -574,8 +574,8 @@ QTabWidget#info_tabs
       <widget class="QLineEdit" name="meta_units_field">
        <property name="geometry">
         <rect>
-         <x>760</x>
-         <y>90</y>
+         <x>740</x>
+         <y>113</y>
          <width>141</width>
          <height>32</height>
         </rect>
@@ -593,8 +593,8 @@ QTabWidget#info_tabs
        <property name="geometry">
         <rect>
          <x>690</x>
-         <y>90</y>
-         <width>49</width>
+         <y>117</y>
+         <width>41</width>
          <height>24</height>
         </rect>
        </property>
@@ -607,14 +607,14 @@ QTabWidget#info_tabs
         </font>
        </property>
        <property name="text">
-        <string>Units</string>
+        <string>Units:</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="meta_value_field">
        <property name="geometry">
         <rect>
-         <x>760</x>
-         <y>50</y>
+         <x>740</x>
+         <y>73</y>
          <width>331</width>
          <height>32</height>
         </rect>
@@ -943,7 +943,7 @@ QTabWidget#info_tabs
      </widget>
     </widget>
    </item>
-   <item>
+   <item row="3" column="0">
     <widget class="QLabel" name="no_meta_label">
      <property name="font">
       <font>
@@ -958,7 +958,7 @@ QTabWidget#info_tabs
      </property>
     </widget>
    </item>
-   <item>
+   <item row="4" column="0">
     <widget class="QLabel" name="error_label">
      <property name="font">
       <font>
