@@ -95,6 +95,7 @@ QTabWidget#info_tabs
           <property name="font">
            <font>
             <pointsize>13</pointsize>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -323,6 +324,9 @@ QTabWidget#info_tabs
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_16" stretch="0,0,1">
+        <property name="spacing">
+         <number>2</number>
+        </property>
         <item>
          <widget class="QLabel" name="label_20">
           <property name="sizePolicy">
@@ -334,6 +338,7 @@ QTabWidget#info_tabs
           <property name="font">
            <font>
             <pointsize>13</pointsize>
+            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
