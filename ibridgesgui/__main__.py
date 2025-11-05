@@ -50,7 +50,6 @@ THIS_APPLICATION = "ibridges-gui"
 # Application globals
 app = PySide6.QtWidgets.QApplication(sys.argv)
 
-
 class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
     """Set up the GUI Main Menu."""
 
@@ -343,7 +342,7 @@ def main(session: Optional[Session] = None):
         main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
     main_widget.show()
-    app.exec()
+    sys.exit(app.exec())
 
 
 def main_deprecated():
