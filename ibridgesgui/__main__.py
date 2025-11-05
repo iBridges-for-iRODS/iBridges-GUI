@@ -127,7 +127,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
         # self.showMaximized()
 
-    def keyPressEvent(self, e):  # noqa: N802
+    def keyPressEvent(self, e):  # noqa: N802  pylint: disable=C0103
         """Catch key press events."""
         if e.key() == PySide6.QtCore.Qt.Key_F11:
             if self.parent().isMaximized():
