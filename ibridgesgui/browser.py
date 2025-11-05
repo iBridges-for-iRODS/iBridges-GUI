@@ -91,6 +91,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_table.clicked.connect(self.edit_permission)
         self.add_acl_button.clicked.connect(self.update_permission)
 
+
     def update_input_path(self, irods_path: Union[str, IrodsPath]):
         """Set the input path to a new path and loads the table."""
         self.input_path.setText(str(irods_path))

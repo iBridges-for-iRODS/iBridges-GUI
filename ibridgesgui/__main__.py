@@ -12,6 +12,10 @@ import PySide6.QtGui
 import PySide6.QtUiTools
 import PySide6.QtWidgets
 import PySide6.QtCore
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QLineEdit, QApplication
+
 import setproctitle
 from ibridges import Session
 
@@ -194,9 +198,12 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             PySide6.QtWidgets.QMessageBox.about(self, "Information", "Please close session first.")
             return
 
+
         login_window = Login(self.session_dict, self.app_name)
         login_window.exec()
         # Trick to get the session object from the QDialog
+
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
         if "session" in self.session_dict:
             self.session = self.session_dict["session"]
@@ -208,6 +215,9 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
                 raise
         else:
             self.logger.exception("No session created. %s", self.session_dict)
+
+        QApplication.restoreOverrideCursor()
+
 
     def exit(self):
         """Quit program."""
