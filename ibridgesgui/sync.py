@@ -1,7 +1,6 @@
 """Sync tab."""
 
 import logging
-import sys
 import os
 from pathlib import Path
 
@@ -29,6 +28,9 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
             The iRODS session object
         app_name : str
             The name of the app and corresponding logger
+        screen_dim : dict
+            Dictionary containing the screen dimensions on startup
+            { 'w': <width>, 'h': <height> }
 
         """
         super().__init__()
@@ -70,7 +72,6 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
 
     def _init_local_fs_tree(self):
         """Create local FS tree."""
-
         self.local_fs_model = PySide6.QtWidgets.QFileSystemModel(self.local_fs_tree)
         self.local_fs_tree.setModel(self.local_fs_model)
 

@@ -1,6 +1,5 @@
 """Provide the GUI with iRODS information."""
 
-import sys
 
 import PySide6.QtWidgets
 from ibridges.resources import Resources

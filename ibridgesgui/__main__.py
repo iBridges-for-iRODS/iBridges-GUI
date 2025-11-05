@@ -8,16 +8,14 @@ from functools import partial
 from pathlib import Path
 from typing import Optional
 
+import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtUiTools
 import PySide6.QtWidgets
-import PySide6.QtCore
-
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QLineEdit, QApplication
-
 import setproctitle
 from ibridges import Session
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import (
@@ -129,13 +127,14 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
         # self.showMaximized()
 
-    def keyPressEvent(self, e):      
+    def keyPressEvent(self, e):  # noqa: N802
+        """Catch key press events."""
         if e.key() == PySide6.QtCore.Qt.Key_F11:
             if self.parent().isMaximized():
                 self.parent().showNormal()
             else:
                 self.parent().showMaximized()
-          
+
     def checked_tabs(self):
         """Retrieve names of checked third party tabs."""
         selected_tabs = []

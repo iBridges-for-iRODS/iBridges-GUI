@@ -1,7 +1,6 @@
 """Search tab."""
 
 import logging
-import sys
 from pathlib import Path
 
 import PySide6.QtCore
@@ -33,6 +32,9 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
             The name of the app and corresponding logger
         browser : PyQt6.QtWidgets.QWidget
             The browser widget
+        screen_dim : dict
+            Dictionary containing the screen dimensions on startup
+            { 'w': <width>, 'h': <height> }
 
         """
         super().__init__()

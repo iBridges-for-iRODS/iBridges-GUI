@@ -1,8 +1,6 @@
 """Browser tab."""
 
 import logging
-import sys
-from pathlib import Path
 from typing import Union
 
 import irods.exception
@@ -22,6 +20,7 @@ from ibridgesgui.gui_utils import (
 )
 from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
+
 
 class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
     """Browser view for iRODS session."""
