@@ -3,8 +3,11 @@
 # pylint: disable=R0903, R1705, C0103
 
 import os
-import pathlib
 import sys
+import json
+import importlib.resources as pkg_resources
+from jsonschema import validate, ValidationError
+from pathlib import Path
 from typing import Union
 
 import irods
@@ -15,6 +18,7 @@ from ibridges import IrodsPath
 from ibridges.executor import Operations
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
+import ibridgesgui.md_schemas
 
 try:
     from importlib_metadata import entry_points
@@ -27,8 +31,8 @@ except ImportError:
     from importlib_resources import files
 
 if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-    UI_FILE_DIR = pathlib.Path("ui_files")
-    LOGO_DIR = pathlib.Path("icons")
+    UI_FILE_DIR = Path("ui_files")
+    LOGO_DIR = Path("icons")
 else:
     UI_FILE_DIR = files(__package__) / "ui_files"
     LOGO_DIR = files(__package__) / "icons"
@@ -97,6 +101,43 @@ def populate_textfield(text_widget, text_by_row: Union[str, list]):
 
 
 # iBridges/iRODS utils
+def validate_metadata(md_path: Path) -> bool:
+    """
+    Validates a JSON metadata file against a JSON schema.
+
+    Args:
+        md_path (Path): Path to the JSON metadata file.
+        schema (Path): Path to the JSON Schema file.
+
+    Returns:
+        bool: True if JSON is valid.
+
+    Raises:
+        ValueError: If JSON is invalid or files cannot be read.
+    """
+    if not md_path.exists() or not md_path.is_file():
+        raise ValueError(f"Metadata file not found: {md_path}")
+
+
+    try:
+        with md_path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON in metadata file: {e}")
+
+
+    # Load the schema from the package
+    with pkg_resources.files(ibridgesgui.md_schemas).joinpath("ibridges_metadata_schema.json").open("r", encoding="utf-8") as f:
+        schema_data = json.load(f)
+
+    try:
+        validate(instance=data, schema=schema_data)
+    except ValidationError as e:
+        raise ValueError(f"Metadata validation failed: {e.message}")
+
+    return True
+
+
 def get_irods_item(irods_path: IrodsPath):
     """Get the item behind an iRODS path."""
     if irods_path.collection_exists():
@@ -126,10 +167,10 @@ def get_coll_dict(root_coll: irods.collection.iRODSCollection) -> dict:
     }
 
 
-def prep_session_for_copy(session, error_label) -> pathlib.Path:
+def prep_session_for_copy(session, error_label) -> Path:
     """Either return a save path to create a new session from or sets message in error label."""
     if is_session_from_config(session):
-        return pathlib.Path.home().joinpath(".irods", get_last_ienv_path())
+        return Path.home().joinpath(".irods", get_last_ienv_path())
 
     text = "The ibridges config changed during the session."
     text += "Please reset or restart the session."
@@ -150,22 +191,22 @@ def combine_operations(operations: list[Operations]) -> Operations:
 
 
 # OS utils
-def get_downloads_dir() -> pathlib.Path:
+def get_downloads_dir() -> Path:
     """Find the platform-dependent 'Downloads' directory.
 
     Returns
     -------
-    pathlib.Path
+    Path
         Absolute path to 'Downloads' directory.
 
     """
     # Linux and Mac Download folders
-    if pathlib.Path.home().joinpath("Downloads").is_dir():
-        return pathlib.Path.home().joinpath("Downloads")
+    if Path.home().joinpath("Downloads").is_dir():
+        return Path.home().joinpath("Downloads")
 
     # Try to create Downloads
-    pathlib.Path.home().joinpath("Downloads").mkdir(parents=True)
-    return pathlib.Path.home().joinpath("Downloads")
+    Path.home().joinpath("Downloads").mkdir(parents=True)
+    return Path.home().joinpath("Downloads")
 
 
 def get_tab_providers() -> list:

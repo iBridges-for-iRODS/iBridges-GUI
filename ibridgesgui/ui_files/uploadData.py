@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'uploadData.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QGridLayout, QHBoxLayout,
-    QLabel, QProgressBar, QPushButton, QSizePolicy,
-    QSpacerItem, QTextBrowser, QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QGridLayout,
+    QHBoxLayout, QHeaderView, QLabel, QProgressBar,
+    QPushButton, QSizePolicy, QSpacerItem, QTableWidget,
+    QTableWidgetItem, QWidget)
 
 class Ui_uploadData(object):
     def setupUi(self, uploadData):
@@ -67,30 +68,10 @@ class Ui_uploadData(object):
 "")
         self.gridLayout = QGridLayout(uploadData)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.destination_label = QLabel(uploadData)
-        self.destination_label.setObjectName(u"destination_label")
-
-        self.gridLayout.addWidget(self.destination_label, 2, 2, 1, 1)
-
-        self.overwrite = QCheckBox(uploadData)
-        self.overwrite.setObjectName(u"overwrite")
-
-        self.gridLayout.addWidget(self.overwrite, 3, 2, 1, 1)
-
-        self.label_5 = QLabel(uploadData)
-        self.label_5.setObjectName(u"label_5")
-
-        self.gridLayout.addWidget(self.label_5, 2, 0, 1, 1)
-
         self.label_4 = QLabel(uploadData)
         self.label_4.setObjectName(u"label_4")
 
         self.gridLayout.addWidget(self.label_4, 2, 3, 1, 1)
-
-        self.label_3 = QLabel(uploadData)
-        self.label_3.setObjectName(u"label_3")
-
-        self.gridLayout.addWidget(self.label_3, 2, 4, 1, 1)
 
         self.label = QLabel(uploadData)
         self.label.setObjectName(u"label")
@@ -102,11 +83,39 @@ class Ui_uploadData(object):
 
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
 
-        self.label_2 = QLabel(uploadData)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setFont(font)
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.upload_button = QPushButton(uploadData)
+        self.upload_button.setObjectName(u"upload_button")
 
-        self.gridLayout.addWidget(self.label_2, 3, 0, 1, 1)
+        self.horizontalLayout.addWidget(self.upload_button)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer_2)
+
+        self.hide_button = QPushButton(uploadData)
+        self.hide_button.setObjectName(u"hide_button")
+
+        self.horizontalLayout.addWidget(self.hide_button)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout, 4, 2, 1, 1)
+
+        self.destination_label = QLabel(uploadData)
+        self.destination_label.setObjectName(u"destination_label")
+
+        self.gridLayout.addWidget(self.destination_label, 2, 2, 1, 1)
+
+        self.label_3 = QLabel(uploadData)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayout.addWidget(self.label_3, 2, 4, 1, 1)
+
+        self.overwrite = QCheckBox(uploadData)
+        self.overwrite.setObjectName(u"overwrite")
+
+        self.gridLayout.addWidget(self.overwrite, 3, 2, 1, 1)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
@@ -132,29 +141,10 @@ class Ui_uploadData(object):
 
         self.gridLayout.addWidget(self.error_label, 9, 0, 1, 6)
 
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.upload_button = QPushButton(uploadData)
-        self.upload_button.setObjectName(u"upload_button")
+        self.label_5 = QLabel(uploadData)
+        self.label_5.setObjectName(u"label_5")
 
-        self.horizontalLayout.addWidget(self.upload_button)
-
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_2)
-
-        self.hide_button = QPushButton(uploadData)
-        self.hide_button.setObjectName(u"hide_button")
-
-        self.horizontalLayout.addWidget(self.hide_button)
-
-
-        self.gridLayout.addLayout(self.horizontalLayout, 4, 2, 1, 1)
-
-        self.sources_list = QTextBrowser(uploadData)
-        self.sources_list.setObjectName(u"sources_list")
-
-        self.gridLayout.addWidget(self.sources_list, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.label_5, 2, 0, 1, 1)
 
         self.progress_bar = QProgressBar(uploadData)
         self.progress_bar.setObjectName(u"progress_bar")
@@ -165,6 +155,26 @@ class Ui_uploadData(object):
 
         self.gridLayout.addWidget(self.progress_bar, 5, 2, 1, 1)
 
+        self.label_2 = QLabel(uploadData)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setFont(font)
+
+        self.gridLayout.addWidget(self.label_2, 3, 0, 1, 1)
+
+        self.table = QTableWidget(uploadData)
+        if (self.table.columnCount() < 3):
+            self.table.setColumnCount(3)
+        __qtablewidgetitem = QTableWidgetItem()
+        self.table.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        self.table.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.table.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        self.table.setObjectName(u"table")
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        self.gridLayout.addWidget(self.table, 1, 2, 1, 1)
+
 
         self.retranslateUi(uploadData)
 
@@ -173,17 +183,21 @@ class Ui_uploadData(object):
 
     def retranslateUi(self, uploadData):
         uploadData.setWindowTitle(QCoreApplication.translate("uploadData", u"Upload", None))
-        self.destination_label.setText("")
-        self.overwrite.setText(QCoreApplication.translate("uploadData", u"Overwrite existing data", None))
-        self.label_5.setText(QCoreApplication.translate("uploadData", u"Uploading to", None))
         self.label_4.setText("")
-        self.label_3.setText("")
         self.label.setText(QCoreApplication.translate("uploadData", u"Upload data", None))
-        self.label_2.setText(QCoreApplication.translate("uploadData", u"Options:", None))
+        self.upload_button.setText(QCoreApplication.translate("uploadData", u"Upload", None))
+        self.hide_button.setText(QCoreApplication.translate("uploadData", u"Close Window", None))
+        self.destination_label.setText("")
+        self.label_3.setText("")
+        self.overwrite.setText(QCoreApplication.translate("uploadData", u"Overwrite existing data", None))
         self.folder_button.setText(QCoreApplication.translate("uploadData", u"Select Folders", None))
         self.file_button.setText(QCoreApplication.translate("uploadData", u"Select Files", None))
         self.error_label.setText("")
-        self.upload_button.setText(QCoreApplication.translate("uploadData", u"Upload", None))
-        self.hide_button.setText(QCoreApplication.translate("uploadData", u"Close Window", None))
+        self.label_5.setText(QCoreApplication.translate("uploadData", u"Uploading to", None))
+        self.label_2.setText(QCoreApplication.translate("uploadData", u"Options:", None))
+        ___qtablewidgetitem = self.table.horizontalHeaderItem(0)
+        ___qtablewidgetitem.setText(QCoreApplication.translate("uploadData", u"Path", None));
+        ___qtablewidgetitem1 = self.table.horizontalHeaderItem(1)
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("uploadData", u"Metadata", None));
     # retranslateUi
 

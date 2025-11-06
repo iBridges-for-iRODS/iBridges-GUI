@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["ibridges_metadata_version", "recursive", "root_path", "items"],
+  "properties": {
+    "ibridges_metadata_version": {
+      "type": "string"
+    },
+    "recursive": {
+      "type": "boolean"
+    },
+    "root_path": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rel_path", "type", "name", "irods_id", "metadata"],
+        "properties": {
+          "rel_path": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["collection", "data object"]
+          },
+          "name": {
+            "type": "string"
+          },
+          "irods_id": {
+            "type": "integer"
+          },
+          "checksum": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

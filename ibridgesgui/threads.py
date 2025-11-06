@@ -183,6 +183,7 @@ class TransferDataThread(PySide6.QtCore.QThread):
             )
 
         self.ops.execute_meta_download()
+        self.ops.execute_meta_upload()
         self._delete_session()
         self.result.emit(transfer_out)
 

@@ -10,6 +10,10 @@ import irods
 import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QTableWidget, QTableWidgetItem, QHBoxLayout,
+    QVBoxLayout, QPushButton, QFileDialog
+)
 from ibridges import IrodsPath, download, upload
 from ibridges.exception import DataObjectExistsError
 from ibridges.util import find_environment_provider, get_environment_providers
@@ -24,7 +28,7 @@ from ibridgesgui.config import (
     get_last_ienv_path,
     save_irods_config,
 )
-from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, load_ui, populate_textfield
+from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, load_ui, populate_textfield, validate_metadata
 from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
@@ -309,6 +313,68 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         self.folder_button.clicked.connect(self.select_folder)
         self.hide_button.clicked.connect(self.close_window)
 
+
+    def add_row(self, path: str, metadata: str):
+        if path == "":
+            return
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+
+        # Set text columns
+        self.table.setItem(row, 0, QTableWidgetItem(path))
+        self.table.setItem(row, 1, QTableWidgetItem(metadata))
+
+        # Create the buttons for the third column
+        upload_btn = QPushButton("Metadata JSON")
+        delete_btn = QPushButton("Delete")
+
+        upload_btn.clicked.connect(lambda _, r=row: self.upload_metadata(r))
+        delete_btn.clicked.connect(lambda _, r=row: self.clear_metadata(r))
+
+        # Layout for the buttons
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(upload_btn)
+        button_layout.addWidget(delete_btn)
+        button_layout.setContentsMargins(0, 0, 0, 0)
+        button_layout.setSpacing(5)
+
+        # Container widget for the buttons
+        container = QWidget()
+        container.setLayout(button_layout)
+        self.table.setCellWidget(row, 2, container)
+
+        self.table.resizeColumnsToContents()
+
+    def upload_metadata(self, row):
+        """Open a file dialog and store the chosen file path in the Metadata column."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select Metadata File",
+            "",
+            "Metadata Files (*.json *.yaml *.yml);;All Files (*)"
+        )
+        
+        try:
+            if file_path and validate_metadata(Path(file_path)):
+                self.table.item(row, 1).setText(file_path)
+        except Exception as err:
+            self.error_label.setText(repr(err))
+
+    def clear_metadata(self, row):
+        """Clear the metadata path for the selected row."""
+        self.table.item(row, 1).setText("")
+
+    def get_all_paths(self):
+        """Return a list of all Path values from the table."""
+        paths = []
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, 0)
+            if item is not None:
+                paths.append(item.text())
+            else:
+                paths.append("")  # or skip if you prefer
+        return paths
+
     def close_window(self):
         """Close window while data transfer stays in progress."""
         if self.active_upload:
@@ -338,11 +404,10 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             self, "Open File", dir=str(last_upload_path)
         )
         path = self._fs_select(select_file)
-        if path is None or str(path) == "." or path in self.sources_list.toPlainText():
+        if path is None or str(path) == "." or path in self.get_all_paths():
             return
-        print(path)
         config_set_last_upload_path(Path(path).parent)
-        self.sources_list.append(path)
+        self.add_row(path, "")
 
     def select_folder(self):
         """Open folder selctor."""
@@ -353,22 +418,31 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             self, "Select Directory", dir=str(last_upload_path)
         )
         path = self._fs_select(select_dir)
-        if path is None or str(path) == "." or path in self.sources_list.toPlainText():
+        if path is None or str(path) == "." or path in self.get_all_paths():
             return
-        print(path)
         config_set_last_upload_path(path)
-        self.sources_list.append(path)
+        self.add_row(path, "")
 
     def _get_upload_params(self):
-        local_paths = [Path(lp) for lp in self.sources_list.toPlainText().split("\n") if lp != ""]
+        
+        data = []
+        for row in range(self.table.rowCount()):
+            path_item = self.table.item(row, 0)
+            meta_item = self.table.item(row, 1)
 
-        if len(local_paths) == 0:
+            path = Path(path_item.text()) if path_item and path_item.text() else None
+            metadata = Path(meta_item.text()) if meta_item and meta_item.text() else None
+
+            data.append((path, metadata))
+
+        if len(data) == 0:
             self.error_label.setText("Please select a file or folder to upload.")
             return
 
-        self._start_upload(local_paths)
+        print(data)
+        self._start_upload(data)
 
-    def _start_upload(self, lpaths):
+    def _start_upload(self, data):
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText(f"Uploading to {str(self.irods_path)} ....")
         env_path = Path(get_last_ienv_path())
@@ -377,14 +451,16 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             ops = combine_operations(
                 [
                     upload(
-                        p,
+                        path,
                         self.irods_path,
                         overwrite=self.overwrite.isChecked(),
                         dry_run=True,
+                        **({"metadata": metadata} if metadata is not None else {})
                     )
-                    for p in lpaths
+                    for path, metadata in data if path is not None
                 ]
             )
+            ops.print_summary()
 
             if len(ops.upload) == 0:
                 self.error_label.setText("Data already present and up to date.")
