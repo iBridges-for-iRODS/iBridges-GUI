@@ -75,16 +75,14 @@ class Sync(PySide6.QtWidgets.QWidget, Ui_tabSync):
         self.local_fs_model = PySide6.QtWidgets.QFileSystemModel(self.local_fs_tree)
         self.local_fs_tree.setModel(self.local_fs_model)
 
-        # user home folder
-        # home_location = PySide6.QtCore.QStandardPaths.standardLocations(
-        #     PySide6.QtCore.QStandardPaths.StandardLocation.HomeLocation
-        # )[0]
+        user_home = PySide6.QtCore.QStandardPaths.standardLocations(
+            PySide6.QtCore.QStandardPaths.StandardLocation.HomeLocation
+        )[0]
 
-        # system root folder
-        home_location = os.path.abspath(os.sep)
+        system_root = os.path.abspath(os.sep)
 
-        self.local_fs_model.setRootPath(home_location)
-        self.local_fs_tree.setRootIndex(self.local_fs_model.index(home_location))
+        self.local_fs_model.setRootPath(system_root)
+        self.local_fs_tree.setCurrentIndex(self.local_fs_model.index(user_home))
         self.local_fs_tree.setSortingEnabled(True)
         self.local_fs_tree.sortByColumn(0, PySide6.QtCore.Qt.SortOrder())
 
