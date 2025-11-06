@@ -369,7 +369,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
                 self.table.item(row, 1).setText(file_path)
         except Exception as err:
             self.error_label.setText(repr(err))
-        
+
         self._resize_table_cols()
 
     def clear_metadata(self, row):
