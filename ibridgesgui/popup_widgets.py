@@ -353,7 +353,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         container.setLayout(button_layout)
         self.table.setCellWidget(row, 2, container)
 
-        self.table.resizeColumnsToContents()
+        self._resize_table_cols()
 
     def upload_metadata(self, row):
         """Open a file dialog and store the chosen file path in the Metadata column."""
@@ -369,6 +369,8 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
                 self.table.item(row, 1).setText(file_path)
         except Exception as err:
             self.error_label.setText(repr(err))
+        
+        self._resize_table_cols()
 
     def clear_metadata(self, row):
         """Clear the metadata path for the selected row."""
@@ -432,6 +434,18 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             return
         config_set_last_upload_path(path)
         self.add_row(path, "")
+
+    def _resize_table_cols(self):
+        self.table.resizeColumnsToContents()
+        max_widths = {
+            0: 300,  # column 0 ("Path")
+            1: 300,  # column 1 ("Metadata")
+        }
+
+        for col, max_w in max_widths.items():
+            if self.table.columnWidth(col) > max_w:
+                self.table.setColumnWidth(col, max_w)
+
 
     def _get_upload_params(self):
 
