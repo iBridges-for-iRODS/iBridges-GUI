@@ -10,13 +10,16 @@ import irods
 import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets
-from PySide6.QtWidgets import (
-    QApplication, QWidget, QTableWidget, QTableWidgetItem, QHBoxLayout,
-    QVBoxLayout, QPushButton, QFileDialog
-)
 from ibridges import IrodsPath, download, upload
 from ibridges.exception import DataObjectExistsError
 from ibridges.util import find_environment_provider, get_environment_providers
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QHBoxLayout,
+    QPushButton,
+    QTableWidgetItem,
+    QWidget,
+)
 
 from ibridgesgui.config import (
     _read_json,
@@ -28,7 +31,13 @@ from ibridgesgui.config import (
     get_last_ienv_path,
     save_irods_config,
 )
-from ibridgesgui.gui_utils import UI_FILE_DIR, combine_operations, load_ui, populate_textfield, validate_metadata
+from ibridgesgui.gui_utils import (
+    UI_FILE_DIR,
+    combine_operations,
+    load_ui,
+    populate_textfield,
+    validate_metadata,
+)
 from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.configCheck import Ui_configCheck
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
@@ -315,6 +324,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
 
 
     def add_row(self, path: str, metadata: str):
+        """Add row in the table that gathers all information."""
         if path == "":
             return
         row = self.table.rowCount()
@@ -353,7 +363,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             "",
             "Metadata Files (*.json *.yaml *.yml);;All Files (*)"
         )
-        
+
         try:
             if file_path and validate_metadata(Path(file_path)):
                 self.table.item(row, 1).setText(file_path)
@@ -424,7 +434,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         self.add_row(path, "")
 
     def _get_upload_params(self):
-        
+
         data = []
         for row in range(self.table.rowCount()):
             path_item = self.table.item(row, 0)

@@ -2,11 +2,10 @@
 # ruff: noqa: N802 # Overriding a pyside6 function that is not snake_case
 # pylint: disable=R0903, R1705, C0103
 
+import importlib.resources as pkg_resources
+import json
 import os
 import sys
-import json
-import importlib.resources as pkg_resources
-from jsonschema import validate, ValidationError
 from pathlib import Path
 from typing import Union
 
@@ -16,9 +15,10 @@ import PySide6.QtUiTools
 import PySide6.QtWidgets
 from ibridges import IrodsPath
 from ibridges.executor import Operations
+from jsonschema import ValidationError, validate
 
-from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 import ibridgesgui.md_schemas
+from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
 try:
     from importlib_metadata import entry_points
@@ -102,38 +102,43 @@ def populate_textfield(text_widget, text_by_row: Union[str, list]):
 
 # iBridges/iRODS utils
 def validate_metadata(md_path: Path) -> bool:
-    """
-    Validates a JSON metadata file against a JSON schema.
+    """Validate a JSON metadata file against a JSON schema.
 
     Args:
+    ----
         md_path (Path): Path to the JSON metadata file.
         schema (Path): Path to the JSON Schema file.
 
     Returns:
+    -------
         bool: True if JSON is valid.
 
     Raises:
+    ------
         ValueError: If JSON is invalid or files cannot be read.
+
     """
     if not md_path.exists() or not md_path.is_file():
         raise ValueError(f"Metadata file not found: {md_path}")
-
 
     try:
         with md_path.open("r", encoding="utf-8") as f:
             data = json.load(f)
     except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON in metadata file: {e}")
-
+        raise ValueError(f"Invalid JSON in metadata file: {e}") from e
 
     # Load the schema from the package
-    with pkg_resources.files(ibridgesgui.md_schemas).joinpath("ibridges_metadata_schema.json").open("r", encoding="utf-8") as f:
+    with (
+        pkg_resources.files(ibridgesgui.md_schemas)
+        .joinpath("ibridges_metadata_schema.json")
+        .open("r", encoding="utf-8") as f
+    ):
         schema_data = json.load(f)
 
     try:
         validate(instance=data, schema=schema_data)
     except ValidationError as e:
-        raise ValueError(f"Metadata validation failed: {e.message}")
+        raise ValueError(f"Metadata validation failed: {e.message}") from e
 
     return True
 
