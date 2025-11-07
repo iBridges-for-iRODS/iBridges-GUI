@@ -179,19 +179,33 @@ class TransferDataThread(PySide6.QtCore.QThread):
                     + f"\nTransfer failed, cannot download {str(irods_path)}: {repr(error)}"
                 )
             self.current_progress.emit(
-                [self.down_sizes, transferred_size, file_count, len(self.ops.download), file_failed, ""]
+                [
+                    self.down_sizes,
+                    transferred_size,
+                    file_count,
+                    len(self.ops.download),
+                    file_failed,
+                    "",
+                ]
             )
 
         try:
             self.ops.execute_meta_download()
         except Exception as error:
             self.current_progress.emit(
-                [self.down_sizes, transferred_size, file_count, len(self.ops.download), file_failed, f"Metadata download failed. {repr(error)}"]
+                [
+                    self.down_sizes,
+                    transferred_size,
+                    file_count,
+                    len(self.ops.download),
+                    file_failed,
+                    f"Metadata download failed. {repr(error)}",
+                ]
             )
             transfer_out["error"] = (
-                    transfer_out["error"]
-                    + f"\nTransfer failed, cannot get Metadata {str(irods_path)}: {repr(error)}"
-                )
+                transfer_out["error"]
+                + f"\nTransfer failed, cannot get Metadata {str(irods_path)}: {repr(error)}"
+            )
             self.logger.exception(
                 "Transfer data thread: Could not download metadata  %s --> %s; %s",
                 local_path,
@@ -202,12 +216,19 @@ class TransferDataThread(PySide6.QtCore.QThread):
             self.ops.execute_meta_upload()
         except Exception as error:
             self.current_progress.emit(
-                [self.down_sizes, transferred_size, file_count, len(self.ops.download), file_failed, f"Metadata upload failed. {repr(error)}"]
+                [
+                    self.down_sizes,
+                    transferred_size,
+                    file_count,
+                    len(self.ops.download),
+                    file_failed,
+                    f"Metadata upload failed. {repr(error)}",
+                ]
             )
             transfer_out["error"] = (
-                    transfer_out["error"]
-                    + f"\nTransfer failed, cannot add Metadata {str(irods_path)}: {repr(error)}"
-                )
+                transfer_out["error"]
+                + f"\nTransfer failed, cannot add Metadata {str(irods_path)}: {repr(error)}"
+            )
             self.logger.exception(
                 "Transfer data thread: Could not upload metadata  %s --> %s; %s",
                 local_path,
