@@ -463,7 +463,6 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             self.error_label.setText("Please select a file or folder to upload.")
             return
 
-        print(data)
         self._start_upload(data)
 
     def _start_upload(self, data):
@@ -518,10 +517,13 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         del self.upload_thread
 
     def _upload_status(self, state):
-        up_size, transferred_size, obj_count, num_objs, obj_failed = state
+        up_size, transferred_size, obj_count, num_objs, obj_failed, md_state = state
         if up_size > 0:
             self.progress_bar.setValue(int(transferred_size * 100 / up_size))
-        text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        if md_state == "":
+            text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        else:
+            text = f"{obj_count} of {num_objs} files; failed: {obj_failed}. {md_state}"
         self.error_label.setText(text)
 
     def _upload_fetch_result(self, thread_output: dict):
@@ -685,10 +687,13 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         del self.download_thread
 
     def _download_status(self, state):
-        down_size, transferred_size, obj_count, num_objs, obj_failed = state
+        down_size, transferred_size, obj_count, num_objs, obj_failed, md_state = state
         if down_size > 0:
             self.progress_bar.setValue(int(transferred_size * 100 / down_size))
-        text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        if md_state == "":
+            text = f"{obj_count} of {num_objs} files; failed: {obj_failed}."
+        else:
+            text = f"{obj_count} of {num_objs} files; failed: {obj_failed}. {md_state}"
         self.error_label.setText(text)
 
     def _download_fetch_result(self, thread_output: dict):
