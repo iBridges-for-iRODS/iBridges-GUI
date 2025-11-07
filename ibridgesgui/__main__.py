@@ -270,7 +270,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             release = version("ibridgesgui")
         except Exception:
             release = ""
-        welcome = Welcome()
+        welcome = Welcome(self.screen_dim)
         self.tab_widget.addTab(welcome, f"iBridges {release}")
 
     def init_info_tab(self):
