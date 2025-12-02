@@ -1,0 +1,34 @@
+# Frequently Asked Questions
+
+If you cannot find your question here, please also take a look at our [API and CLI FAQ](https://ibridges.readthedocs.io/en/latest/faq.html).
+
+## I found a bug or have a feature request, where do I go?
+
+Our development is done on [GitHub](https://github.com/iBridges-for-iRODS/iBridges-GUI).
+
+Look under the *Issues* section whether the bug or feature request has already been reported. If not, we heartily welcome creating a new issue. We try to get back to you as soon as possible, at least within a few days.
+
+## Help, I’m getting a “NetworkError” while trying to transfer (large) files
+
+This error is most likely to happen if you try to transfer a large file. The default timeout for iBridges is 25000 seconds, which translates to roughly 7 hours. This should not cause issues during the actual transfer. However, if the calculation of the checksum takes more than 7 hours (if the iRODS server is busy for example, or the file is many terabytes), then you will get a network error. The checksum itself should still be created.
+
+You can increase the timeout in your `irods_environment.json` file by adding a new entry with `"connection_timeout": <time in seconds>,`.
+
+Note, that the **maximum number equals 292 years**, i.e. `"connection_timeout": 9208512000,`.
+
+## My metadata with keys starting with `org_` do not show up in the iBridges metadata.
+
+By default, iBridges does not show metadata that contain a key starting with the prefix *org_*. This is due to data security reasons on Yoda systems.
+
+You can omit that only by using the [iBridges API](https://ibridges.readthedocs.io/en/latest/faq.html#my-metadata-with-keys-starting-with-org-do-not-show-up-in-the-ibridges-metadata).
+
+## How can I download files that follow a certain pattern but do not lie in the same collection?
+
+You can use the *Search* for this. With the search mask you can filter for specific data no matter where they are located. In the results table you can select those files you would like to download.
+
+## How do I find all the data I have access to?
+
+Shared data objects always needs to lie in a collection that you can access, it's an iRODS feature.
+
+So again the *Search* can help you out here. Direct the search to `/yourZone/home`, select `Obj/Coll name: %` and select `Collections` (unselect `Data Objects`).
+The result will show you all collections you have access to. 

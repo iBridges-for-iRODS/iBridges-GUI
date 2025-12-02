@@ -15,6 +15,8 @@ website:
         text: Documentation
       - href: docs/developers.qmd
         text: Contributing to iBridges
+      - href: docs/faq.qmd
+        text: FAQ
 
 format:
   html:
