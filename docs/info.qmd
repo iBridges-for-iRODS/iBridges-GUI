@@ -1,5 +1,5 @@
 ---
-title: "What is iBridges-GUI"
+title: "What is iBridges GUI"
 ---
 
 [iBridges-GUI](https://github.com/iBridges-for-iRODS/iBridges-GUI) is a graphical user interface to the python package [iBridges](https://github.com/UtrechtUniversity/iBridges), it provides users of *Windows, Linux and Mac* with a *graphical user interface* to interact with **iRODS** servers. 
@@ -39,7 +39,7 @@ pip install ibridges
 pip install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@develop
 ```
 
-Start the application by calling `ibridges-gui` on your commandline.
+Start the application by calling `ibridges gui` on your commandline.
 
 ## Authors
 **Christine Staiger (Maintainer) [ORCID](https://orcid.org/0000-0002-6754-7647)**
