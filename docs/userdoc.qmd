@@ -30,7 +30,7 @@ When you successfully logged into iRODS the first view you will see is the **Bro
 
 ### Navigation
 
-- The navigation shows an **editable field**, which contains your current iRODS path. When you just started iBridges-Gui it will point to your `irods_home` setting in the configuration file. 
+- The navigation shows an **editable field**, which contains your current iRODS path. When you just started iBridges GUI it will point to your `irods_home` setting in the configuration file. 
 You can **navigate to another part of the iRODS collection tree** by editing this field and hitting `<Enter>`.
 
 - The **three buttons** next to the editable navigation field are `Refresh` (circle arrows) to refresh the list below the navigation section , Navigate `one level up` (up arrow) and navigate to your `home` collection (little house).
