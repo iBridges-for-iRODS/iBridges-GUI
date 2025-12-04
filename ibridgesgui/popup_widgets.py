@@ -340,12 +340,11 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         path = self._fs_select(select_file)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
             return
-        print(path)
         config_set_last_upload_path(Path(path).parent)
         self.sources_list.append(path)
 
     def select_folder(self):
-        """Open folder selctor."""
+        """Open folder selector."""
         last_upload_path = config_get_last_upload_path()
         if not last_upload_path:
             last_upload_path = Path("~").expanduser()
@@ -355,7 +354,6 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         path = self._fs_select(select_dir)
         if path is None or str(path) == "." or path in self.sources_list.toPlainText():
             return
-        print(path)
         config_set_last_upload_path(path)
         self.sources_list.append(path)
 
@@ -474,6 +472,10 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         self.folder_button.clicked.connect(self.select_folder)
         self.download_button.clicked.connect(self._get_download_params)
         self.hide_button.clicked.connect(self.close_window)
+        # preset the download location if present in config
+        last_download_path = Path(config_get_last_download_path())
+        if last_download_path and last_download_path.is_dir():
+            self.destination_label.setText(str(last_download_path))
 
     def close_window(self):
         """Close window while data transfer stays in progress."""
@@ -512,12 +514,12 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         if not last_download_path:
             last_download_path = Path("~").expanduser()
         select_dir = Path(
-            PySide6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory", dir=str())
+            PySide6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory", dir=str(last_download_path))
         )
         if str(select_dir) == "" or str(select_dir) == ".":
             return
         self.destination_label.setText(str(select_dir))
-        config_set_last_download_path(last_download_path)
+        config_set_last_download_path(select_dir)
 
     def _get_download_params(self):
         """Retrieve and check all parameters for the dpwnload."""
