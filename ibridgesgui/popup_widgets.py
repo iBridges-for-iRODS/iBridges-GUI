@@ -514,7 +514,9 @@ class DownloadData(PySide6.QtWidgets.QDialog, Ui_downloadData):
         if not last_download_path:
             last_download_path = Path("~").expanduser()
         select_dir = Path(
-            PySide6.QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory", dir=str(last_download_path))
+            PySide6.QtWidgets.QFileDialog.getExistingDirectory(
+                self, "Select Directory", dir=str(last_download_path)
+            )
         )
         if str(select_dir) == "" or str(select_dir) == ".":
             return
