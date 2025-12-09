@@ -28,7 +28,9 @@ You can use the *Search* for this. With the search mask you can filter for speci
 
 ## How do I find all the data I have access to?
 
-Shared data objects always needs to lie in a collection that you can access, it's an iRODS feature.
+When data is shared in iRODS it is not always easy to know where the shared data lies as they are not visible from your "home" collection or project collection.
+
+However, shared data objects always need to lie in a collection that you can access, it's an iRODS feature.
 
 So again the *Search* can help you out here. Direct the search to `/yourZone/home`, select `Obj/Coll name: %` and select `Collections` (unselect `Data Objects`).
 The result will show you all collections you have access to. 
