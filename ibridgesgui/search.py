@@ -9,6 +9,7 @@ import PySide6.QtGui
 import PySide6.QtWidgets
 from ibridges import IrodsPath, download
 from ibridges.search import MetaSearch
+from PySide6.QtWidgets import QButtonGroup
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, combine_operations, load_ui
@@ -65,6 +66,10 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         ]
         self.search_path_field.setText(self.session.home)
         self.search_table.doubleClicked.connect(self.send_to_browser)
+        self.radio_group = QButtonGroup()
+        self.radio_group.addButton(self.objects_radio)
+        self.radio_group.addButton(self.collections_radio)
+        self.radio_group.addButton(self.all_radio)
 
     def hide_result_elements(self):
         """Hide the GUI elemnts that show and manipulate search results."""
@@ -91,13 +96,14 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.current_batch_num = 0
         self.results = None
         case_sensitive = self.case_sensitive_box.isChecked()
-        data_objects = self.object_box.isChecked()
-        collections = self.collection_box.isChecked()
-        if data_objects == collections:
-            # both True OR both False
-            item_type = None
+
+        checked = self.radio_group.checkedButton()
+        if "object" in checked.text().lower():
+            item_type = "data_object"
+        elif "collection" in checked.text().lower():
+            item_type = "collection"
         else:
-            item_type = "data_object" if data_objects else "collection"
+            item_type = None
 
         msg, search_path, path_pattern, meta_searches, checksum = self._validate_search_params()
         self.logger.debug(
