@@ -217,10 +217,10 @@ class TransferDataThread(PySide6.QtCore.QThread):
         except Exception as error:
             self.current_progress.emit(
                 [
-                    self.down_sizes,
+                    self.up_sizes,
                     transferred_size,
                     file_count,
-                    len(self.ops.download),
+                    len(self.ops.upload),
                     file_failed,
                     f"Metadata upload failed. {repr(error)}",
                 ]

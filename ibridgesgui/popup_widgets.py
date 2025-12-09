@@ -321,6 +321,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         self.file_button.clicked.connect(self.select_file)
         self.folder_button.clicked.connect(self.select_folder)
         self.hide_button.clicked.connect(self.close_window)
+        self.delete_row_button.clicked.connect(self.delete_row)
 
 
     def add_row(self, path: str, metadata: str):
@@ -334,26 +335,45 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         self.table.setItem(row, 0, QTableWidgetItem(path))
         self.table.setItem(row, 1, QTableWidgetItem(metadata))
 
-        # Create the buttons for the third column
-        upload_btn = QPushButton("Metadata JSON")
-        delete_btn = QPushButton("Delete")
+        # Create single toggle button
+        btn = QPushButton("Metadata JSON")
+        btn.state = "upload"   # custom attribute to track state
+        btn.row = row          # store the row index on the button
 
-        upload_btn.clicked.connect(lambda _, r=row: self.upload_metadata(r))
-        delete_btn.clicked.connect(lambda _, r=row: self.clear_metadata(r))
+        btn.clicked.connect(lambda _, b=btn: self.toggle_metadata_button(b))
 
-        # Layout for the buttons
+        # Layout for the button
         button_layout = QHBoxLayout()
-        button_layout.addWidget(upload_btn)
-        button_layout.addWidget(delete_btn)
+        button_layout.addWidget(btn)
         button_layout.setContentsMargins(0, 0, 0, 0)
         button_layout.setSpacing(5)
-
+        
         # Container widget for the buttons
         container = QWidget()
         container.setLayout(button_layout)
         self.table.setCellWidget(row, 2, container)
 
         self._resize_table_cols()
+
+    def delete_row(self):
+        rows = [idx.row() for idx in self.table.selectionModel().selectedRows()]
+        for row in rows:
+            self.table.removeRow(row)
+
+    def toggle_metadata_button(self, btn):
+        """Toggle between upload and delete mode."""
+        if btn.state == "upload":
+            # upload action
+            res = self.upload_metadata(btn.row)
+            if res:
+                btn.setText("❌")
+                btn.state = "delete"
+
+        else:  # delete mode
+            self.clear_metadata(btn.row)
+
+            btn.setText("Metadata JSON")
+            btn.state = "upload"
 
     def upload_metadata(self, row):
         """Open a file dialog and store the chosen file path in the Metadata column."""
@@ -367,10 +387,13 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         try:
             if file_path and validate_metadata(Path(file_path)):
                 self.table.item(row, 1).setText(file_path)
+                self._resize_table_cols()
+                return True
         except Exception as err:
             self.error_label.setText(repr(err))
+            return False
+        return False
 
-        self._resize_table_cols()
 
     def clear_metadata(self, row):
         """Clear the metadata path for the selected row."""
@@ -469,7 +492,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText(f"Uploading to {str(self.irods_path)} ....")
         env_path = Path(get_last_ienv_path())
-
+        
         try:
             ops = combine_operations(
                 [
@@ -483,8 +506,6 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
                     for path, metadata in data if path is not None
                 ]
             )
-            ops.print_summary()
-
             if len(ops.upload) == 0:
                 self.error_label.setText("Data already present and up to date.")
                 self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
