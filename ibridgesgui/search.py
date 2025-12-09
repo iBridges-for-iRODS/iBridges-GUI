@@ -9,6 +9,7 @@ import PySide6.QtGui
 import PySide6.QtWidgets
 from ibridges import IrodsPath, download
 from ibridges.search import MetaSearch
+from PySide6.QtWidgets import QButtonGroup
 
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, combine_operations, load_ui
@@ -65,6 +66,10 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         ]
         self.search_path_field.setText(self.session.home)
         self.search_table.doubleClicked.connect(self.send_to_browser)
+        self.radio_group = QButtonGroup()
+        self.radio_group.addButton(self.objects_radio)
+        self.radio_group.addButton(self.collections_radio)
+        self.radio_group.addButton(self.all_radio)
 
     def hide_result_elements(self):
         """Hide the GUI elemnts that show and manipulate search results."""
@@ -92,22 +97,33 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.results = None
         case_sensitive = self.case_sensitive_box.isChecked()
 
+        checked = self.radio_group.checkedButton()
+        if "object" in checked.text().lower():
+            item_type = "data_object"
+        elif "collection" in checked.text().lower():
+            item_type = "collection"
+        else:
+            item_type = None
+
         msg, search_path, path_pattern, meta_searches, checksum = self._validate_search_params()
         self.logger.debug(
-            "Search parameters %s, %s, %s, %s, %s, %s",
+            "Search parameters %s, %s, %s, %s, %s, %s, %s",
             msg,
             str(search_path),
             path_pattern,
             str(meta_searches),
             checksum,
             str(case_sensitive),
+            item_type,
         )
         if msg is not None:
             self.error_label.setText(msg)
             self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             return
 
-        self._start_search(search_path, path_pattern, meta_searches, checksum, case_sensitive)
+        self._start_search(
+            search_path, path_pattern, meta_searches, checksum, case_sensitive, item_type
+        )
 
     def next_batch(self):
         """Load next batch of results."""
@@ -299,7 +315,9 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
             self.error_label.setText("Errors occurred during download. Consult the logs.")
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
 
-    def _start_search(self, search_path, path_pattern, meta_searches, checksum, case_sensitive):
+    def _start_search(
+        self, search_path, path_pattern, meta_searches, checksum, case_sensitive, item_type
+    ):
         self.search_button.setEnabled(False)
         # check if session comes from env file in ibridges config
         if is_session_from_config(self.session):
@@ -319,6 +337,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
                 meta_searches,
                 checksum,
                 case_sensitive,
+                item_type,
             )
         except Exception:
             self.error_label.setText(
