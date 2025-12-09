@@ -379,8 +379,8 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             btn.state = "upload"
 
     def upload_metadata(self, row):
-        self.error_label.clear()
         """Open a file dialog and store the chosen file path in the Metadata column."""
+        self.error_label.clear()
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             "Select Metadata File",
