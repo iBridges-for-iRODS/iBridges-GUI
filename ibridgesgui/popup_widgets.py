@@ -326,6 +326,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
 
     def add_row(self, path: str, metadata: str):
         """Add row in the table that gathers all information."""
+        self.error_label.clear()
         if path == "":
             return
         row = self.table.rowCount()
@@ -347,7 +348,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         button_layout.addWidget(btn)
         button_layout.setContentsMargins(0, 0, 0, 0)
         button_layout.setSpacing(5)
-        
+
         # Container widget for the buttons
         container = QWidget()
         container.setLayout(button_layout)
@@ -356,6 +357,8 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         self._resize_table_cols()
 
     def delete_row(self):
+        """Delete rows and reset."""
+        self.error_label.clear()
         rows = [idx.row() for idx in self.table.selectionModel().selectedRows()]
         for row in rows:
             self.table.removeRow(row)
@@ -376,6 +379,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             btn.state = "upload"
 
     def upload_metadata(self, row):
+        self.error_label.clear()
         """Open a file dialog and store the chosen file path in the Metadata column."""
         file_path, _ = QFileDialog.getOpenFileName(
             self,
@@ -461,7 +465,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
     def _resize_table_cols(self):
         self.table.resizeColumnsToContents()
         max_widths = {
-            0: 300,  # column 0 ("Path")
+            0: 450,  # column 0 ("Path")
             1: 300,  # column 1 ("Metadata")
         }
 
@@ -492,7 +496,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
         self.error_label.setText(f"Uploading to {str(self.irods_path)} ....")
         env_path = Path(get_last_ienv_path())
-        
+
         try:
             ops = combine_operations(
                 [
