@@ -448,11 +448,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
                 continue
             config_set_last_upload_path(Path(path).parent)
             self.add_row(path, "")
-        #path = self._fs_select(select_file)
-        #if path is None or str(path) == "." or path in self.get_all_paths():
-        #    return
         config_set_last_upload_path(Path(path).parent)
-        self.add_row(path, "")
 
     def select_folder(self):
         """Open folder selctor."""
