@@ -197,7 +197,7 @@ class Ui_uploadData(object):
         self.destination_label.setText("")
         self.label_3.setText("")
         self.overwrite.setText(QCoreApplication.translate("uploadData", u"Overwrite existing data", None))
-        self.folder_button.setText(QCoreApplication.translate("uploadData", u"Select Folders", None))
+        self.folder_button.setText(QCoreApplication.translate("uploadData", u"Select Folder", None))
         self.file_button.setText(QCoreApplication.translate("uploadData", u"Select Files", None))
         self.delete_row_button.setText(QCoreApplication.translate("uploadData", u"Delete rows", None))
         self.error_label.setText("")

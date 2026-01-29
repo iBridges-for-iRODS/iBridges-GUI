@@ -318,7 +318,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         self.destination_label.setText(str(irods_path))
 
         self.upload_button.clicked.connect(self._get_upload_params)
-        self.file_button.clicked.connect(self.select_file)
+        self.file_button.clicked.connect(self.select_files)
         self.folder_button.clicked.connect(self.select_folder)
         self.hide_button.clicked.connect(self.close_window)
         self.delete_row_button.clicked.connect(self.delete_row)
@@ -434,17 +434,23 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         if self.active_upload:
             evnt.ignore()
 
-    def select_file(self):
+    def select_files(self):
         """Open file selector."""
         last_upload_path = config_get_last_upload_path()
         if not last_upload_path:
             last_upload_path = Path("~").expanduser()
-        select_file = PySide6.QtWidgets.QFileDialog.getOpenFileName(
+        select_files = PySide6.QtWidgets.QFileDialog.getOpenFileNames(
             self, "Open File", dir=str(last_upload_path)
         )
-        path = self._fs_select(select_file)
-        if path is None or str(path) == "." or path in self.get_all_paths():
-            return
+        for selected_file in select_files[0]:
+            path = self._fs_select(selected_file)
+            if path is None or str(path) == "." or path in self.get_all_paths():
+                continue
+            config_set_last_upload_path(Path(path).parent)
+            self.add_row(path, "")
+        #path = self._fs_select(select_file)
+        #if path is None or str(path) == "." or path in self.get_all_paths():
+        #    return
         config_set_last_upload_path(Path(path).parent)
         self.add_row(path, "")
 
