@@ -138,7 +138,7 @@ def validate_metadata(md_path: Path) -> bool:
     try:
         validate(instance=data, schema=schema_data)
     except ValidationError as e:
-        raise ValidaionError(f"Metadata validation failed: {e.message}") from e
+        raise ValidationError(f"Metadata validation failed: {e.message}") from e
 
     return True
 
