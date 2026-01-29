@@ -507,7 +507,8 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
                         self.irods_path,
                         overwrite=self.overwrite.isChecked(),
                         dry_run=True,
-                        **({"metadata": metadata} if metadata is not None else {})
+                        metadata=metadata
+                        #**({"metadata": metadata} if metadata is not None else {})
                     )
                     for path, metadata in data if path is not None
                 ]
