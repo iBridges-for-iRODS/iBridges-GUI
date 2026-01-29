@@ -128,15 +128,17 @@ def validate_metadata(md_path: Path) -> bool:
         raise ValueError(f"Invalid JSON in metadata file: {e}") from e
 
     # Load the schema from the package
-    try: # python package
+    try:  # python package
         with (
             pkg_resources.files(ibridgesgui.md_schemas)
             .joinpath("ibridges_metadata_schema.json")
             .open("r", encoding="utf-8") as f
         ):
             schema_data = json.load(f)
-    except FileNotFoundError: # executable built
-        md_schema_path = Path(__file__).parent.parent / "md_schemas" / "ibridges_metadata_schema.json" 
+    except FileNotFoundError:  # executable built
+        md_schema_path = (
+            Path(__file__).parent.parent / "md_schemas" / "ibridges_metadata_schema.json"
+        )
         print(md_schema_path, md_schema_path.exists())
         with md_schema_path.open("r", encoding="utf-8") as f:
             schema_data = json.load(f)
