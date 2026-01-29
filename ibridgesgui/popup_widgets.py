@@ -396,6 +396,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
         except Exception as err:
             self.error_label.setText(repr(err))
             return False
+        return False
 
     def clear_metadata(self, row):
         """Clear the metadata path for the selected row."""

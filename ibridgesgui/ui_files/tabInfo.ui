@@ -279,6 +279,11 @@ QTextEdit, QTableWidget
          <string>Free Space</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>Context</string>
+        </property>
+       </column>
       </widget>
      </item>
      <item row="7" column="2">
