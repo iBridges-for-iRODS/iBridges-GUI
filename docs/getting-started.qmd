@@ -1,7 +1,7 @@
-# Getting started with iBridges-Gui
+# Getting started with iBridges GUI
 
 
-## Install iBridges-gui
+## Install iBridges GUI
 
 ```
 pip install ibridgesgui
@@ -9,9 +9,9 @@ pip install ibridgesgui
 
 ## Start the program
 
-Please start **iBridges-Gui** by typing `ibridges gui` on your terminal and hit enter.
+Please start **iBridges GUI** by typing `ibridges gui` on your terminal and hit enter.
 
-## Configuring iBridges-Gui
+## Configuring iBridges GUI
 
 To connect to the server you need a configuration file, a so-called `irods_environment.json`. 
 You can create one for yourself using templates, editing default settings we provide for you or simply create such a file.
@@ -74,7 +74,7 @@ usage: build_script.py [-h] [--debug_exe] [--rem_venv]
                        [--code_folder CODE_FOLDER] [--ui_folder UI_FOLDER]
                        [--icons_folder ICONS_FOLDER] [--venv VENV]
 
-iBridges-Gui exe creator.
+iBridges-GUI exe creator.
 
 options:
   -h, --help            show this help message and exit

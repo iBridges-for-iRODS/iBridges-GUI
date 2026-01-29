@@ -22,6 +22,7 @@ class SearchThread(PySide6.QtCore.QThread):
         meta_searches: list,
         checksum: str,
         case_sensitive: bool,
+        item_type: str
     ):
         """Pass searh parameters."""
         super().__init__()
@@ -35,6 +36,7 @@ class SearchThread(PySide6.QtCore.QThread):
         self.checksum = checksum
         self.case_sensitive = case_sensitive
         self.ms = meta_searches
+        self.item_type = item_type
 
     def _delete_session(self):
         self.thread_session.close()
@@ -54,6 +56,7 @@ class SearchThread(PySide6.QtCore.QThread):
                 checksum=self.checksum,
                 metadata=self.ms,
                 case_sensitive=self.case_sensitive,
+                item_type = self.item_type
             )
             # convert IrodsPaths to strings, the session  will be destroyed at the end of the thread
             search_out["results"] = [str(ipath) for ipath in res]
