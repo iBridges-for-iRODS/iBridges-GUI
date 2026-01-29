@@ -395,6 +395,7 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
                 return True
         except Exception as err:
             self.error_label.setText(repr(err))
+            raise err
             return False
         return False
 
@@ -448,7 +449,8 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
                 continue
             config_set_last_upload_path(Path(path).parent)
             self.add_row(path, "")
-        config_set_last_upload_path(Path(path).parent)
+        if len(select_files[0]):
+            config_set_last_upload_path(Path(path).parent)
 
     def select_folder(self):
         """Open folder selector."""

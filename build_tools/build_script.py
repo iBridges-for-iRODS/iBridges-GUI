@@ -59,10 +59,14 @@ def create_exe(args):
         {args.code_folder.joinpath('__main__.py')} --quiet"
     uipy.run_cmd(cmd)
 
-    # Step 4, move the icons folder to the distribution folder
+    # Step 4, move the icons and mdschema folder to the distribution folder
+    print(f"Moving {args.icons_folder} --> {args.icons_folder.parent.parent.joinpath('__main__.dist', args.icons_folder)}")
     replace_folder(args.icons_folder,
                    args.icons_folder.parent.parent.joinpath('__main__.dist',
                                                             args.icons_folder.name))
+    replace_folder(args.mdschema_folder,
+                   args.mdschema_folder.parent.parent.joinpath('__main__.dist',
+                                                            args.mdschema_folder.name))
 
     # Step 5, rename the distribution folder and file
     shipping_folder = Path('ibridgesgui_dist')
@@ -86,6 +90,8 @@ if __name__ == "__main__":
     parser.add_argument('--ui_folder', default=default_code_folder.joinpath('ui_files'),
                         type=Path, required=False,
                         help='Full path to the directory with ui files')
+    parser.add_argument('--mdschema_folder', default=default_code_folder.joinpath('md_schemas'), type=Path,
+                        help='Full path to the directory with the valid metadata schemas.')
     parser.add_argument('--icons_folder', default=default_code_folder.joinpath('icons'),
                         type=Path, required=False,
                         help='Full path to the directory with the icons')
