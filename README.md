@@ -76,8 +76,8 @@ Please note, that this feature is still in experimental state.
 
 ### Prebuilt executables
 Go to the [Releases page](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases). In the latest releases you will find three zip-files, these contain the prebuilt application.
-Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file `ibridges_gui.[exe, sh]`
-For Windows simply click on the exe-file, for Mac and Linux open the file with a shell `bash ./ibridges_gui.sh`.
+Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file `ibridges_gui.[exe, bin]`
+For Windows simply click on the exe-file, for Mac and Linux open the file with a shell `bash ./ibridges_gui.bin`.
 
 
 ### Building Executables
