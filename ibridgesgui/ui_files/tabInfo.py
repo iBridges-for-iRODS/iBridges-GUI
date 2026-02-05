@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tabInfo.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -167,14 +167,16 @@ class Ui_tabInfo(object):
         self.gridLayout.addWidget(self.label_8, 8, 0, 1, 1)
 
         self.resc_table = QTableWidget(tabInfo)
-        if (self.resc_table.columnCount() < 3):
-            self.resc_table.setColumnCount(3)
+        if (self.resc_table.columnCount() < 4):
+            self.resc_table.setColumnCount(4)
         __qtablewidgetitem = QTableWidgetItem()
         self.resc_table.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
         self.resc_table.setHorizontalHeaderItem(1, __qtablewidgetitem1)
         __qtablewidgetitem2 = QTableWidgetItem()
         self.resc_table.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.resc_table.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         self.resc_table.setObjectName(u"resc_table")
         self.resc_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.resc_table.setSelectionMode(QAbstractItemView.NoSelection)
@@ -255,6 +257,8 @@ class Ui_tabInfo(object):
         ___qtablewidgetitem1.setText(QCoreApplication.translate("tabInfo", u"Status", None));
         ___qtablewidgetitem2 = self.resc_table.horizontalHeaderItem(2)
         ___qtablewidgetitem2.setText(QCoreApplication.translate("tabInfo", u"Free Space", None));
+        ___qtablewidgetitem3 = self.resc_table.horizontalHeaderItem(3)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("tabInfo", u"Context", None));
         self.label_3.setText(QCoreApplication.translate("tabInfo", u"Zone", None))
         self.label_9.setText(QCoreApplication.translate("tabInfo", u"Resources", None))
         self.version_label.setText("")
