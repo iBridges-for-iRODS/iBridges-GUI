@@ -62,7 +62,7 @@ def test_set_path_updates_model_and_ui(controller, ui, make_irods_path):
 
 def test_refresh_browser(controller, ui, service):
     controller._set_path = MagicMock()
-    controller.refresh_browser()
+    controller._refresh_browser()
     controller._set_path.assert_called_once_with(service.path_from_text.return_value)
 
 
@@ -102,10 +102,10 @@ def test_delete_data_success(controller, ui):
     ui.browser_table.currentRow.return_value = 0
 
     with patch("PySide6.QtWidgets.QMessageBox.critical", return_value=QMessageBox.Yes):
-        controller.refresh_browser = MagicMock()
+        controller._refresh_browser = MagicMock()
         controller.delete_data()
         path.remove.assert_called_once()
-        controller.refresh_browser.assert_called_once()
+        controller._refresh_browser.assert_called_once()
 
 
 def test_metadata_edit_add(controller, ui, service, make_irods_path):
@@ -135,6 +135,6 @@ def test_update_permission(controller, ui, service, make_irods_path):
 
     controller._fill_current_info_tab = MagicMock()
 
-    controller.update_permission()
+    controller._update_permission()
     service.set_acl.assert_called_once()
 
