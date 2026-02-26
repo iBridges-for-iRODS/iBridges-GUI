@@ -377,9 +377,20 @@ class BrowserController:
 
     # ---------- ACLs ----------
 
-    def edit_permission(self, index: PySide6.QtCore.QModelIndex) -> None:
-        # will be filled with original logic
-        pass
+    # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
+    def edit_permission(self, index: PySide6.QtCore.QModelIndex):
+        """Load selected acl into editing fields."""
+        self.ui.error_label.clear()
+        self.ui.acl_user_field.clear()
+        self.ui.acl_zone_field.clear()
+        self.ui.acl_box.setCurrentText("")
+        row = index.row()
+        user_name = self.ui.acl_table.item(row, 0).text()
+        user_zone = self.ui.acl_table.item(row, 1).text()
+        acc_name = self.ui.acl_table.item(row, 2).text()
+        self.ui.acl_user_field.setText(user_name)
+        self.ui.acl_zone_field.setText(user_zone)
+        self.ui.acl_box.setCurrentText(acc_name)
 
     def update_permission(self) -> None:
         """Apply ACL changes using the service."""
@@ -452,6 +463,7 @@ class BrowserController:
     
     def _fill_acls_tab(self, irods_path):
         """Populate the ACL table and update UI controls."""
+        print(irods_path)
         self.ui.acl_table.setRowCount(0)
         self.ui.acl_user_field.clear()
         self.ui.acl_zone_field.clear()
@@ -472,6 +484,8 @@ class BrowserController:
         elif irods_path.dataobject_exists():
             for item in obj_acl_items:
                 self.ui.acl_box.addItem(item)
+
+        self.ui.acl_box.setEnabled(True)
     
         # Load ACLs from service
         try:
