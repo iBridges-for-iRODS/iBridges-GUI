@@ -223,7 +223,7 @@ class SyncController:
         populate_table(self.view.diff_table, len(rows), rows)
 
         if not rows:
-            self.view.error_label.setText("Data is already synchronised.")
+            self.view.error_label.setText("Nothing to synchronise — everything is already up to date.")
             self.model.clear()
         else:
             self.view.sync_button.show()
@@ -232,7 +232,6 @@ class SyncController:
         self._enable_buttons(True)
         self._set_busy(False)
         self.sync_diff_thread = None
-        #self.view.error_label.clear()
 
     # ----------------------------------------------------------------------
     # Data sync
