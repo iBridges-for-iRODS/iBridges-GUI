@@ -1,6 +1,7 @@
 """GUI logic for browser."""
 
 import logging
+from typing import Union
 
 import irods.exception
 import PySide6.QtCore
@@ -463,7 +464,7 @@ class BrowserController:
         self.model.on_row_clicked(row)
         self._fill_current_info_tab()
 
-    def _item_path(self, row: int) -> IrodsPath | None:
+    def _item_path(self, row: int) -> Union[IrodsPath, None]:
         if row is None or row < 0:
             return None
         item = self.ui.browser_table.item(row, 1)
