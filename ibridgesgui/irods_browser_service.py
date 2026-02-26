@@ -37,10 +37,10 @@ class IrodsBrowserService:
     # -------- replicas --------
 
     def replicas_for(self, path: IrodsPath):
-        if path.dataobject_exists():
-            obj = path.dataobject
-            return obj_replicas(obj)
-        return []
+        if not path.dataobject_exists():
+            return []
+        obj = path.dataobject
+        return obj_replicas(obj)
 
     # -------- metadata --------
 

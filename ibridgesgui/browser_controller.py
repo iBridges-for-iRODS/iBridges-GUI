@@ -214,6 +214,19 @@ class BrowserController:
         # will be filled with original logic, but using service.permissions_for
         pass
 
+    # ---------- replicas ---------
+    def _fill_replicas_tab(self, irods_path):
+        """Populate the replicas tab using the service."""
+        self.ui.replica_table.setRowCount(0)
+    
+        rows = self.service.replicas_for(irods_path)
+    
+        if rows:
+            populate_table(self.ui.replica_table, len(rows), rows)
+    
+        self.ui.replica_table.resizeColumnsToContents()
+    
+
     # ---------- helpers ----------
 
     def _on_row_clicked(self) -> None:
