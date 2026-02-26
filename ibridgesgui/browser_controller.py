@@ -117,16 +117,17 @@ class BrowserController:
         if self._nothing_selected_error():
             return
         if self.ui.browser_table.item(self.ui.browser_table.currentRow(), 1) is not None:
-            item_name = self.browser_table.item(self.ui.browser_table.currentRow(), 1).text()
-            path = IrodsPath(self.session, "/", *self.ui.input_path.text().split("/"), item_name)
-            download_dialog = DownloadData(self.logger, self.session, path)
+            item_name = self.ui.browser_table.item(self.ui.browser_table.currentRow(), 1).text()
+            parent_path = self.service.path_from_text(self.ui.input_path.text())
+            path = parent_path / item_name
+            download_dialog = DownloadData(self.logger, path.session, path)
             download_dialog.exec()
 
     def upload_data(self) -> None:
         """Upload files or folders."""
-        path = IrodsPath(self.session, "/", *self.ui.input_path.text().split("/"))
+        path = self.service.path_from_text(self.ui.input_path.text())
         if path.collection_exists():
-            upload_dialog = UploadData(self.logger, self.session, path)
+            upload_dialog = UploadData(self.logger, path.session, path)
             upload_dialog.exec()
             self.refresh_browser()
         else:
