@@ -8,11 +8,14 @@ from functools import partial
 from pathlib import Path
 from typing import Optional
 
+import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtUiTools
 import PySide6.QtWidgets
 import setproctitle
 from ibridges import Session
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication
 
 from ibridgesgui.browser import Browser
 from ibridgesgui.config import (
@@ -45,17 +48,24 @@ THIS_APPLICATION = "ibridges-gui"
 # Application globals
 app = PySide6.QtWidgets.QApplication(sys.argv)
 
-
 class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
     """Set up the GUI Main Menu."""
 
     def __init__(self, app_name: str, session: Optional[Session] = None):
         """Initialise the main window."""
         super().__init__()
-        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-            super().setupUi(self)
-        else:
-            load_ui(UI_FILE_DIR / "MainMenu.ui", self)
+        # if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+        #     super().setupUi(self)
+        # else:
+        #     load_ui(UI_FILE_DIR / "MainMenu.ui", self)
+
+        rec = app.primaryScreen().availableGeometry()
+        self.screen_dim = {'w': rec.width(), 'h': rec.height()}
+
+        load_ui(
+            ui_file=UI_FILE_DIR / "MainMenu.ui",
+            base_instance=self,
+            screen_dim=self.screen_dim)
 
         app.aboutToQuit.connect(self.close_event)
         self.started_with_session = session is not None
@@ -64,6 +74,7 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
         self.irods_path = Path("~", ".irods").expanduser()
         self.app_name = app_name
         self.welcome_tab()
+        # self.showMaximized()
 
         # Plugin tabs
         self.prev_tabs = get_tabs()  # previously checked tabs
@@ -113,6 +124,16 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
                 raise
         else: # show only first page and menu bar
             self.tab_widget.setCurrentIndex(0)
+
+        # self.showMaximized()
+
+    def keyPressEvent(self, e):  # noqa: N802  pylint: disable=C0103
+        """Catch key press events."""
+        if e.key() == PySide6.QtCore.Qt.Key_F11:
+            if self.parent().isMaximized():
+                self.parent().showNormal()
+            else:
+                self.parent().showMaximized()
 
     def checked_tabs(self):
         """Retrieve names of checked third party tabs."""
@@ -175,9 +196,12 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             PySide6.QtWidgets.QMessageBox.about(self, "Information", "Please close session first.")
             return
 
+
         login_window = Login(self.session_dict, self.app_name)
         login_window.exec()
         # Trick to get the session object from the QDialog
+
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
         if "session" in self.session_dict:
             self.session = self.session_dict["session"]
@@ -189,6 +213,9 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
                 raise
         else:
             self.logger.exception("No session created. %s", self.session_dict)
+
+        QApplication.restoreOverrideCursor()
+
 
     def exit(self):
         """Quit program."""
@@ -243,12 +270,12 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
             release = version("ibridgesgui")
         except Exception:
             release = ""
-        welcome = Welcome()
+        welcome = Welcome(self.screen_dim)
         self.tab_widget.addTab(welcome, f"iBridges {release}")
 
     def init_info_tab(self):
         """Create info."""
-        irods_info = Info(self.session)
+        irods_info = Info(self.session, self.screen_dim)
         self.tab_widget.addTab(irods_info, "Info")
 
     def init_log_tab(self):
@@ -258,17 +285,17 @@ class MainMenu(PySide6.QtWidgets.QMainWindow, Ui_MainWindow):
 
     def init_browser_tab(self):
         """Create browser."""
-        self.irods_browser = Browser(self.session, self.app_name)
+        self.irods_browser = Browser(self.session, self.app_name, self.screen_dim)
         self.tab_widget.addTab(self.irods_browser, "Browser")
 
     def init_search_tab(self):
         """Create search. Depends on Browser."""
-        irods_search = Search(self.session, self.app_name, self.irods_browser)
+        irods_search = Search(self.session, self.app_name, self.irods_browser, self.screen_dim)
         self.tab_widget.addTab(irods_search, "Search")
 
     def init_sync_tab(self):
         """Create sync."""
-        irods_sync = Sync(self.session, self.app_name)
+        irods_sync = Sync(self.session, self.app_name, self.screen_dim)
         self.tab_widget.addTab(irods_sync, "Synchronise Data")
 
     def init_third_party_tab(self, tab_class: object):
@@ -312,7 +339,7 @@ def main(session: Optional[Session] = None):
         main_app = MainMenu(THIS_APPLICATION)
     main_widget.addWidget(main_app)
     main_widget.show()
-    app.exec()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     main(session=None)

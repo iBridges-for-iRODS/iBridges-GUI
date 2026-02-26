@@ -9,7 +9,8 @@ from ibridges import IrodsPath, Session
 from ibridges.resources import Resources
 from ibridges.session import LoginError, PasswordError
 from irods.exception import ResourceDoesNotExist
-from PySide6.QtWidgets import QDialog, QLineEdit
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QDialog, QLineEdit
 
 from ibridgesgui.config import (
     IRODSA,
@@ -124,6 +125,9 @@ class Login(QDialog, Ui_irodsLogin):
             return
 
         try:
+
+            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+
             if cached_pw and self.password_field.text() == "***********":
                 self.logger.debug("Login with %s and cached password.", env_file)
                 with open(IRODSA, "w", encoding="utf-8", opener=strictwrite) as f:
@@ -172,3 +176,5 @@ class Login(QDialog, Ui_irodsLogin):
             log_path = Path("~/.ibridges")
             self.logger.exception("Failed to login: %s", repr(err))
             self.error_label.setText(f"Login failed, consult the log file(s) in {log_path}")
+        finally:
+            QApplication.restoreOverrideCursor()

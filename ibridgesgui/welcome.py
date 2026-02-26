@@ -7,14 +7,14 @@ import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets
 
-from ibridgesgui.gui_utils import LOGO_DIR, UI_FILE_DIR, load_ui
+from ibridgesgui.gui_utils import LOGO_DIR, UI_FILE_DIR, load_ui, THRESHOLD_WIDTH
 from ibridgesgui.ui_files.welcome import Ui_Welcome
 
 
 class Welcome(PySide6.QtWidgets.QWidget, Ui_Welcome):
     """Welcome page."""
 
-    def __init__(self):
+    def __init__(self, screen_dim):
         """Initialize welcome tab."""
         super().__init__()
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
@@ -22,10 +22,15 @@ class Welcome(PySide6.QtWidgets.QWidget, Ui_Welcome):
         else:
             load_ui(UI_FILE_DIR / "welcome.ui", self)
 
-        if datetime.today().month == 12:
-            self.pixmap = PySide6.QtGui.QPixmap(str(LOGO_DIR / "christmas-logo.png"))
+        if screen_dim['w'] < THRESHOLD_WIDTH:
+            infix = '--small'
         else:
-            self.pixmap = PySide6.QtGui.QPixmap(str(LOGO_DIR / "logo.png"))
+            infix = ''
+
+        if datetime.today().month == 12:
+            self.pixmap = PySide6.QtGui.QPixmap(str(LOGO_DIR / f"christmas-logo{infix}.png"))
+        else:
+            self.pixmap = PySide6.QtGui.QPixmap(str(LOGO_DIR / f"logo{infix}.png"))
         self.logo = PySide6.QtWidgets.QLabel()
         self.logo.setPixmap(self.pixmap)
         self.logo.setAlignment(PySide6.QtCore.Qt.AlignmentFlag.AlignCenter)

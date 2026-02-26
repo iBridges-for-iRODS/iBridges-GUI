@@ -1,7 +1,6 @@
 """Browser tab."""
 
 import logging
-import sys
 from typing import Union
 
 import irods.exception
@@ -26,13 +25,14 @@ from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
     """Browser view for iRODS session."""
 
-    def __init__(self, session, app_name: str):
+    def __init__(self, session, app_name: str, screen_dim: dict):
         """Initialize an iRODS browser view."""
         super().__init__()
-        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-            super().setupUi(self)
-        else:
-            load_ui(UI_FILE_DIR / "tabBrowser.ui", self)
+
+        load_ui(
+            ui_file=UI_FILE_DIR / "tabBrowser.ui",
+            base_instance=self,
+            screen_dim=screen_dim)
 
         self.logger = logging.getLogger(app_name)
         self.session = session
@@ -41,6 +41,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.current_selected_row = -1
         self.updated_info_tabs = []
         self.init_browser()
+        self.showMaximized()
 
     def init_browser(self):
         """Initialize browser view GUI elements. Define the signals and slots."""
@@ -88,6 +89,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         # Manilpulate ACLs
         self.acl_table.clicked.connect(self.edit_permission)
         self.add_acl_button.clicked.connect(self.update_permission)
+
 
     def update_input_path(self, irods_path: Union[str, IrodsPath]):
         """Set the input path to a new path and loads the table."""
@@ -490,7 +492,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
             obj = irods_path.dataobject
             if "." in irods_path.parts[-1]:
                 file_type = irods_path.parts[-1].split(".")[1]
-            if file_type in ["txt", "json", "csv"]:
+            if file_type in ["txt", "json", "csv", "md", "yaml", "R", "py"]:
                 try:
                     with obj.open("r") as objfd:
                         content = [objfd.read(1024).decode("utf-8")]
