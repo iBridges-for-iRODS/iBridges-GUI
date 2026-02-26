@@ -56,14 +56,13 @@ jobs:
 
     - name: Set QT to offscreen mode to prevent GUI error
       run: |
-        if [ $RUNNER_OS == 'Linux' ]; then
-          export QT_QPA_PLATFORM=offscreen
-        elif [ $RUNNER_OS == 'macOS' ]; then
+        if [[ $RUNNER_OS == 'Linux' || $RUNNER_OS == 'macOS' ]]; then
           export QT_QPA_PLATFORM=offscreen
         elif [ $RUNNER_OS == 'Windows' ]; then
           $env:QT_QPA_PLATFORM="offscreen"
         fi
-    
+
+
     - name: Test with pytest
       run: |
         pytest tests
