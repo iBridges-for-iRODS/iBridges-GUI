@@ -378,6 +378,7 @@ class BrowserController:
         self.ui.acl_user_field.clear()
         self.ui.acl_zone_field.clear()
         self.ui.acl_box.setCurrentText("")
+        self.ui.recursive_box.setCurrentText("False")
         row = index.row()
         user_name = self.ui.acl_table.item(row, 0).text()
         user_zone = self.ui.acl_table.item(row, 1).text()
@@ -465,7 +466,6 @@ class BrowserController:
 
     def _fill_acls_tab(self, irods_path):
         """Populate the ACL table and update UI controls."""
-        print(irods_path)
         self.ui.acl_table.setRowCount(0)
         self.ui.acl_user_field.clear()
         self.ui.acl_zone_field.clear()
@@ -491,8 +491,14 @@ class BrowserController:
 
         # Load ACLs from service
         try:
-            acl_rows = self.service.get_acls(irods_path)
-            populate_table(self.ui.acl_table, len(acl_rows), acl_rows)
+            acls = self.service.get_acls(irods_path)
+            # Replace 'read_object' with 'read' and 'modify_object' with 'write'
+            clean_acls = [(user, zone,
+                  'read' if permission == 'read_object' else
+                  'write' if permission == 'modify_object' else permission,
+                  status)
+                 for user, zone, permission, status in acls]
+            populate_table(self.ui.acl_table, len(clean_acls), clean_acls)
             self.ui.acl_table.resizeColumnsToContents()
 
             # Owner label
