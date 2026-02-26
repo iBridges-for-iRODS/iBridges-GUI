@@ -1,4 +1,4 @@
-"""iRODS functionality fro browser."""
+"""iRODS functionality for browser."""
 import logging
 from typing import Iterable, Tuple
 
