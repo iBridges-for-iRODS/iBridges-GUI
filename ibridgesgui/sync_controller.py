@@ -7,6 +7,8 @@ from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
 from ibridgesgui.threads import SyncThread, TransferDataThread
 
+from .sync_model import SyncModel
+
 
 class SyncController:
     """Controller for the Sync tab."""
@@ -16,12 +18,12 @@ class SyncController:
         self.session = session
         self.logger = __import__("logging").getLogger(app_name)
 
-        self.sync_source = None
-        self.diffs = None
-        self.refresh_irods_index = None
+        self.model = SyncModel()
 
         self.sync_diff_thread = None
         self.sync_data_thread = None
+
+        self._last_update = 0
 
     # ----------------------------------------------------------------------
     # Initialization
@@ -63,7 +65,6 @@ class SyncController:
         for col in (1, 2, 3, 4, 5):
             self.view.irods_tree.setColumnHidden(col, True)
 
-        # NEW: expand tree to home
         self._expand_to_home()
 
     def _irods_root(self):
@@ -77,15 +78,11 @@ class SyncController:
     # ----------------------------------------------------------------------
 
     def _expand_to_home(self):
-        """Expand the iRODS tree down to the user's home collection."""
         home_path = IrodsPath(self.session, self.session.home)
-        # Expand step by step
         index = self._expand_path(home_path)
-    
-        # Select the home node
         if index.isValid():
             self.view.irods_tree.setCurrentIndex(index)
-    
+
     # ----------------------------------------------------------------------
     # Signal wiring
     # ----------------------------------------------------------------------
@@ -135,11 +132,11 @@ class SyncController:
     # ----------------------------------------------------------------------
 
     def local_to_irods(self):
-        self.sync_source = "local"
+        self.model.sync_source = "local"
         self._sync_diff()
 
     def irods_to_local(self):
-        self.sync_source = "irods"
+        self.model.sync_source = "irods"
         self._sync_diff()
 
     # ----------------------------------------------------------------------
@@ -152,9 +149,9 @@ class SyncController:
             return
 
         local_path, irods_path, _, irods_index = info
-        self.refresh_irods_index = irods_index
+        self.model.refresh_irods_index = irods_index
 
-        if self.sync_source == "local":
+        if self.model.sync_source == "local":
             source, target = local_path, irods_path
         else:
             source, target = irods_path, local_path
@@ -187,6 +184,7 @@ class SyncController:
             self.view.error_label.setText("Please select a collection, not a data object.")
             return None
 
+        self.model.set_paths(local_path, irods_path, irods_sel[0])
         return local_path, irods_path, fs_sel[0], irods_sel[0]
 
     def _start_sync_diff(self, source, target):
@@ -212,24 +210,21 @@ class SyncController:
     def _sync_diff_end(self, output):
         if output["error"]:
             self.view.error_label.setText(output["error"])
-            self.sync_source = None
-            self.refresh_irods_index = None
+            self.model.clear()
             return
 
-        result = output["result"]
-        self.diffs = result
+        self.model.diffs = output["result"]
 
         rows = [
             (src, dst, src.size if isinstance(src, IrodsPath) else src.stat().st_size)
-            for src, dst in result.upload + result.download
+            for src, dst in self.model.diffs.upload + self.model.diffs.download
         ]
 
         populate_table(self.view.diff_table, len(rows), rows)
 
         if not rows:
             self.view.error_label.setText("Data is already synchronised.")
-            self.sync_source = None
-            self.refresh_irods_index = None
+            self.model.clear()
         else:
             self.view.sync_button.show()
 
@@ -237,7 +232,7 @@ class SyncController:
         self._enable_buttons(True)
         self._set_busy(False)
         self.sync_diff_thread = None
-        self.view.error_label.clear()
+        #self.view.error_label.clear()
 
     # ----------------------------------------------------------------------
     # Data sync
@@ -254,30 +249,44 @@ class SyncController:
             self._finish_sync_data()
             return
 
-        self.sync_data_thread = TransferDataThread(env_path, self.logger, self.diffs, overwrite=True)
+        self.sync_data_thread = TransferDataThread(
+            env_path, self.logger, self.model.diffs, overwrite=True
+        )
+
         self.sync_data_thread.current_progress.connect(self._sync_data_status)
         self.sync_data_thread.result.connect(self._sync_data_end)
         self.sync_data_thread.finished.connect(self._finish_sync_data)
         self.sync_data_thread.start()
 
+    @QtCore.Slot(list)
     def _sync_data_status(self, state):
-        up_size, transferred, count, total, failed = state
-        if up_size > 0:
-            self.view.progress_bar.setValue(int(transferred * 100 / up_size))
+        now = QtCore.QTime.currentTime().msecsSinceStartOfDay()
+        if now - self._last_update < 100:
+            return
+        self._last_update = now
+
+        up_size, transferred, count, total, failed, msg = state
+
+        percent = int(transferred * 100 / up_size) if up_size else 0
+        self.view.progress_bar.setValue(percent)
         self.view.error_label.setText(f"{count} of {total} files; failed: {failed}.")
 
     def _sync_data_end(self, output):
         if output["error"]:
             self.view.error_label.setText(output["error"])
-            self.sync_source = None
-            self.refresh_irods_index = None
+            self.model.clear()
             return
-
-        if self.refresh_irods_index is not None:
-            self.irods_model.refresh_subtree(self.refresh_irods_index)
-
-        self.view.error_label.setText("Data synchronisation complete.")
-
+    
+        # Check if there was actually anything to sync
+        if self.model.diffs and not self.model.diffs.upload and not self.model.diffs.download:
+            self.view.error_label.setText("Nothing to synchronise.")
+        else:
+            if self.model.refresh_irods_index is not None:
+                self.irods_model.refresh_subtree(self.model.refresh_irods_index)
+            self.view.error_label.setText("Data synchronisation complete.")
+    
+        self.model.clear()
+    
     def _finish_sync_data(self):
         self._enable_buttons(True)
         self.view.sync_button.hide()
@@ -299,40 +308,33 @@ class SyncController:
         self.view.setCursor(QtGui.QCursor(cursor))
 
     def _expand_path(self, irods_path: IrodsPath):
-        """Expand the iRODS tree step by step down to irods_path."""
         parts = irods_path._path.parts[1:]
         current_path = "/" + irods_path._path.parts[0]
-    
-        # Start at root
+
         index = self.irods_model.index(0, 0)
         if not index.isValid():
             return QtCore.QModelIndex()
-    
-        # Expand root and load children
+
         self.view.irods_tree.expand(index)
         self.irods_model.refresh_subtree(index)
         QtWidgets.QApplication.processEvents()
 
         parent_index = index
-    
-        # Walk down the path component by component
+
         for part in parts:
             if not part:
                 continue
-    
+
             current_path = current_path.rstrip("/") + "/" + part
             target = IrodsPath(self.session, current_path)
-    
-            # Find the index for this level
+
             idx = self.irods_model.index_from_irods_path(target)
             if not idx.isValid():
-                return parent_index  # stop if something is missing
-    
-            # Expand and load children
+                return parent_index
+
             self.view.irods_tree.expand(idx)
             self.irods_model.refresh_subtree(idx)
-    
+
             parent_index = idx
-    
+
         return parent_index
-    
