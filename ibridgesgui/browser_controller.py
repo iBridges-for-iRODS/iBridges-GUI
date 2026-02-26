@@ -98,24 +98,71 @@ class BrowserController:
     # ---------- CRUD operations ----------
 
     def create_collection(self) -> None:
-        # will be filled with original logic
-        pass
+        """Create a new collection in current collection."""
+        self.ui.error_label.clear()
+        clean_cur_path = self.service.path_from_text(self.ui.input_path.text())
+        coll_widget = CreateCollection(clean_cur_path, self.logger)
+        coll_widget.exec()
+        self.update_input_path(clean_cur_path)
 
     def rename_item(self) -> None:
-        # will be filled with original logic
-        pass
+        """Rename/move a collection or data object."""
+        if self._nothing_selected_error():
+            return
+        item_name = self.ui.browser_table.item(self.browser_table.currentRow(), 1).text()
+        current_collection = IrodsPath(self.session, "/" + self.input_path.text().strip("/"))
+        irods_path = current_collection.joinpath(item_name)
+        rename_widget = Rename(irods_path, self.logger)
+        rename_widget.exec()
+        self.update_input_path(current_collection)
 
     def download_data(self) -> None:
-        # will be filled with original logic
-        pass
+        """Download collection or data object."""
+        if self._nothing_selected_error():
+            return
+        if self.ui.browser_table.item(self.ui.browser_table.currentRow(), 1) is not None:
+            item_name = self.browser_table.item(self.ui.browser_table.currentRow(), 1).text()
+            path = IrodsPath(self.session, "/", *self.ui.input_path.text().split("/"), item_name)
+            download_dialog = DownloadData(self.logger, self.session, path)
+            download_dialog.exec()
 
     def upload_data(self) -> None:
-        # will be filled with original logic
-        pass
+        """Upload files or folders."""
+        path = IrodsPath(self.session, "/", *self.ui.input_path.text().split("/"))
+        if path.collection_exists():
+            upload_dialog = UploadData(self.logger, self.session, path)
+            upload_dialog.exec()
+            self.refresh_browser()
+        else:
+            self.ui.error_label.setText(f"{path} is not a collection. Cannot upload data.")
 
     def delete_data(self) -> None:
-        # will be filled with original logic
-        pass
+        """Delete selected data in the delete_browser."""
+        if self._nothing_selected_error():
+            return
+
+        if self.ui.browser_table.item(self.ui.browser_table.currentRow(), 1) is not None:
+            item_name = self.ui.browser_table.item(self.ui.browser_table.currentRow(), 1).text()
+            parent_path = self.service.path_from_text(self.ui.input_path.text())
+            irods_path = parent_path / item_name
+            quit_msg = f"Are you sure you want to delete {str(irods_path)}?"
+            reply = PySide6.QtWidgets.QMessageBox.critical(
+                self,
+                "Message",
+                quit_msg,
+                PySide6.QtWidgets.QMessageBox.StandardButton.Yes,
+                PySide6.QtWidgets.QMessageBox.StandardButton.No,
+            )
+            if reply == PySide6.QtWidgets.QMessageBox.StandardButton.Yes:
+                try:
+                    irods_path.remove()
+                    self.logger.info("Delete data %s", str(irods_path))
+                    self.refresh_browser()
+                except (irods.exception.CAT_NO_ACCESS_PERMISSION, PermissionError):
+                    self.ui.error_label.setText(f"No permissions to delete {str(irods_path)}")
+                except Exception:
+                    self.logger.exception("FAILED: Delete data %s", irods_path)
+                    self.ui.error_label.setText(f"FAILED: Delete data {irods_path}. Consult the logs.")
 
     # ---------- main table ----------
 
