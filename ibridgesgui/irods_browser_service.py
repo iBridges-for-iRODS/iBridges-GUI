@@ -1,7 +1,7 @@
+"""iRODS functionality fro browser."""
 import logging
-from typing import Iterable, Tuple, List
+from typing import Iterable, Tuple
 
-import irods.exception
 from ibridges import IrodsPath
 from ibridges.permissions import Permissions
 from ibridges.util import obj_replicas
@@ -13,30 +13,40 @@ class IrodsBrowserService:
     """All iRODS-related operations used by the Browser tab."""
 
     def __init__(self, session, logger: logging.Logger):
+        """Init."""
         self.session = session
         self.logger = logger
 
     # -------- navigation / listing --------
 
     def path_from_text(self, text: str) -> IrodsPath:
+        """Convert to IrodsPath."""
         return IrodsPath(self.session, text)
 
     def home_path(self) -> IrodsPath:
+        """Get home path."""
         return IrodsPath(self.session)
 
     def parent_path(self, text: str) -> IrodsPath:
+        """Determine parent."""
         return IrodsPath(self.session, text).parent
 
-    def list_collection(
-        self, path: IrodsPath
-    ) -> Tuple[Iterable, Iterable]:
+    def list_collection(self, path: IrodsPath) -> Tuple[Iterable, Iterable]:
         """Return (subcollections, data_objects) for a collection."""
         coll = path.collection
         return coll.subcollections, coll.data_objects
 
+    def stream_obj(self, path: IrodsPath) -> str:
+        """Stream the first chars of a data object."""
+        with path.open("r") as stream:
+            content = [stream.read(1024).decode("utf-8")]
+        return content
+
+
     # -------- replicas --------
 
     def replicas_for(self, path: IrodsPath):
+        """Retrieve replicas."""
         if not path.dataobject_exists():
             return []
         obj = path.dataobject
@@ -44,26 +54,29 @@ class IrodsBrowserService:
 
     # -------- metadata --------
 
-    def metadata_for(self, path: IrodsPath):
-        return list(path.meta)
-
     def add_metadata(self, path: IrodsPath, key: str, value: str, units: str):
+        """Add metadata to coll or obj."""
         path.meta.add(key, value, units)
 
     def update_metadata(
         self,
         path: IrodsPath,
         old_key: str,
-        old_value: str,
-        old_units: str,
         new_key: str,
         new_value: str,
         new_units: str,
     ):
-        # will be filled later
-        pass
+        """Update metadata."""
+        if new_key == old_key:
+            path.meta[old_key] = new_value, new_units
+        else:
+            item = path.meta[old_key]
+            item.key = new_key
+            item.value = new_value
+            item.units = new_units
 
     def delete_metadata(self, path: IrodsPath, key: str, value: str, units: str):
+        """Delete metadata."""
         path.meta.delete(key, value, units)
 
     # -------- ACLs / permissions --------
@@ -73,12 +86,11 @@ class IrodsBrowserService:
         obj = get_irods_item(path)
         perms = Permissions(self.session, obj)
         inheritance = ""
-    
+
         if path.collection_exists():
             inheritance = f"{path.collection.inheritance}"
-    
-        return [(p.user_name, p.user_zone, p.access_name, inheritance) for p in perms]
 
+        return [(p.user_name, p.user_zone, p.access_name, inheritance) for p in perms]
 
     def set_acl(
         self,
@@ -98,17 +110,12 @@ class IrodsBrowserService:
             recursive=recursive,
         )
 
-    # -------- destructive operations --------
-
-    def delete_path(self, path: IrodsPath):
-        path.remove()
-
     # -------- main browser table --------
-    
+
     def list_table_rows(self, path: IrodsPath):
         """Return rows for the browser table (collections first, then data objects)."""
         coll = path.collection
-    
+
         coll_rows = [
             (
                 "C-",
@@ -120,7 +127,7 @@ class IrodsBrowserService:
             )
             for subcoll in coll.subcollections
         ]
-    
+
         obj_rows = [
             (
                 max(repl[4] for repl in obj_replicas(obj)),
@@ -132,6 +139,5 @@ class IrodsBrowserService:
             )
             for obj in coll.data_objects
         ]
-    
-        return coll_rows + obj_rows
 
+        return coll_rows + obj_rows
