@@ -47,7 +47,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y libegl1-mesa
+        sudo apt-get install -y mesa-utils
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
