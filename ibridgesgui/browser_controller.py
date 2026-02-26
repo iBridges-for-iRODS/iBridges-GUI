@@ -241,6 +241,26 @@ class BrowserController:
         # will be filled with original logic, but using service
         pass
 
+    def _fill_metadata_tab(self, irods_path: Union[IrodsPath, str]):
+        """Populate the table in the metadata tab.
+
+        Parameters
+        ----------
+        irods_path : str
+            Full name of iRODS collection or data object selected.
+
+        """
+        self.ui.meta_key_field.clear()
+        self.ui.meta_value_field.clear()
+        self.ui.meta_units_field.clear()
+        self.ui.no_meta_label.clear()
+        if irods_path.exists():
+            populate_table(self.ui.meta_table, len(list(irods_path.meta)), irods_path.meta)
+        if len(irods_path.meta) == 0:
+            self.ui.no_meta_label.setText(f"Metadata for {str(irods_path)} is empty.")
+        self.ui.meta_table.resizeColumnsToContents() 
+
+
     # ---------- ACLs ----------
 
     def edit_permission(self, index: PySide6.QtCore.QModelIndex) -> None:
