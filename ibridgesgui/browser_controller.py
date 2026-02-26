@@ -306,8 +306,8 @@ class BrowserController:
             ext = irods_path.name.split(".")[-1] if "." in irods_path.name else ""
             if ext in ("txt", "json", "csv"):
                 try:
-                    self.service.stream_obj(irods_path)
-                    return []
+                    content = self.service.stream_obj(irods_path)
+                    return content
                 except Exception as error:
                     return [
                         f"No Preview for: {irods_path}",
