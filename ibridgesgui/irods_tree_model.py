@@ -2,8 +2,8 @@
 
 import irods
 import irods.exception
-from PySide6 import QtCore, QtGui, QtWidgets
 from ibridges import IrodsPath
+from PySide6 import QtCore, QtGui, QtWidgets
 
 
 class IrodsTreeModel(QtGui.QStandardItemModel):
@@ -14,10 +14,11 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
     COL_LEVEL = 1
     COL_ID = 2
     COL_PARENT_ID = 3
-    COL_TYPE = 4       # "C" or "d"
-    COL_PATH = 5       # absolute iRODS path
+    COL_TYPE = 4  # "C" or "d"
+    COL_PATH = 5  # absolute iRODS path
 
     def __init__(self, tree_view, irods_root_path: IrodsPath):
+        """Init."""
         super().__init__()
         self.tree_view = tree_view
         self.session = irods_root_path.session
@@ -35,7 +36,9 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
         root_item = self.invisibleRootItem()
 
         root_coll = IrodsPath(self.session, self.irods_root_path).collection
-        root_row = self._tree_row_from_irods_item(root_coll, parent_id=-1, level=-1, display_path=True)
+        root_row = self._tree_row_from_irods_item(
+            root_coll, parent_id=-1, level=-1, display_path=True
+        )
         root_item.appendRow(root_row)
 
         # Add dummy child to enable lazy expansion
@@ -81,10 +84,7 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
         row = item.row()
 
         # Extract metadata from parent row
-        tree_item_data = [
-            parent.child(row, col).data(0)
-            for col in range(parent.columnCount())
-        ]
+        tree_item_data = [parent.child(row, col).data(0) for col in range(parent.columnCount())]
         abs_path = tree_item_data[self.COL_PATH]
         irods_path = IrodsPath(self.session, abs_path)
 
@@ -93,9 +93,11 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
             self.add_subtree(item, tree_item_data)
 
     def delete_subtree(self, tree_item):
+        """Crop the tree."""
         tree_item.removeRows(0, tree_item.rowCount())
 
     def add_subtree(self, tree_item, tree_item_data):
+        """Add a subtree."""
         _, level, _, _, _, abs_path = tree_item_data
         parent_coll = IrodsPath(self.session, abs_path).collection
 
@@ -123,12 +125,12 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
     def _find_index_recursively(self, index, target_path_str):
         if not index.isValid():
             return QtCore.QModelIndex()
-    
+
         # Compare COL_PATH of this row
         path_index = index.sibling(index.row(), self.COL_PATH)
         if path_index.data() == target_path_str:
             return index
-    
+
         # Recurse into children
         item = self.itemFromIndex(index)
         for row in range(item.rowCount()):
@@ -138,9 +140,9 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
             result = self._find_index_recursively(child.index(), target_path_str)
             if result.isValid():
                 return result
-    
+
         return QtCore.QModelIndex()
-    
+
     # ----------------------------------------------------------------------
     # Convenience
     # ----------------------------------------------------------------------

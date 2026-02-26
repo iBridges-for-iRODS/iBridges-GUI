@@ -1,5 +1,6 @@
-from pathlib import Path
+"""iRODS functionality for sync."""
 import logging
+from pathlib import Path
 
 from ibridges import IrodsPath
 
@@ -12,6 +13,7 @@ class SyncService:
     """Service layer for iRODS sync operations and threads."""
 
     def __init__(self, session, logger: logging.Logger):
+        """Init."""
         self.session = session
         self.logger = logger
 
@@ -48,7 +50,8 @@ class SyncService:
         except Exception:
             on_result(
                 {
-                    "error": f"Could not instantiate a new session from {env_path}. Check configuration.",
+                    "error": f"Could not instantiate a new session from {env_path}. "
+                              "Check configuration.",
                     "result": None,
                 }
             )
@@ -72,4 +75,3 @@ class SyncService:
         thread.finished.connect(on_finished)
         thread.start()
         return thread
-

@@ -1,8 +1,10 @@
+"""GUI logic for sync tab."""
 from pathlib import Path
-from PySide6 import QtWidgets, QtCore, QtGui
 
 from ibridges import IrodsPath
-from ibridgesgui.gui_utils import populate_table, prep_session_for_copy, get_last_ienv_path
+from PySide6 import QtCore, QtGui, QtWidgets
+
+from ibridgesgui.gui_utils import get_last_ienv_path, populate_table, prep_session_for_copy
 from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
 from ibridgesgui.threads import SyncThread, TransferDataThread
@@ -14,6 +16,7 @@ class SyncController:
     """Controller for the Sync tab."""
 
     def __init__(self, view, session, app_name):
+        """Init."""
         self.view = view
         self.session = session
         self.logger = __import__("logging").getLogger(app_name)
@@ -25,11 +28,16 @@ class SyncController:
 
         self._last_update = 0
 
+        self.local_fs_model = None
+        self.irods_model = None
+        self.init_sync()
+
     # ----------------------------------------------------------------------
     # Initialization
     # ----------------------------------------------------------------------
 
     def init_sync(self):
+        """Init GUI elements."""
         self._init_local_fs_tree()
         self._init_irods_tree()
         self._connect_signals()
@@ -46,9 +54,7 @@ class SyncController:
         self.local_fs_model = QtWidgets.QFileSystemModel(self.view.local_fs_tree)
         self.view.local_fs_tree.setModel(self.local_fs_model)
 
-        home = QtCore.QStandardPaths.writableLocation(
-            QtCore.QStandardPaths.HomeLocation
-        )
+        home = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.HomeLocation)
         index = self.local_fs_model.setRootPath(home)
         self.view.local_fs_tree.setCurrentIndex(index)
 
@@ -99,6 +105,7 @@ class SyncController:
     # ----------------------------------------------------------------------
 
     def create_collection(self):
+        """Call widget to create collection."""
         self.view.error_label.clear()
         indexes = self.view.irods_tree.selectedIndexes()
         if not indexes:
@@ -114,6 +121,7 @@ class SyncController:
             self.view.error_label.setText("Please select a collection, not a data object.")
 
     def create_dir(self):
+        """Call widget to create directory."""
         self.view.error_label.clear()
         indexes = self.view.local_fs_tree.selectedIndexes()
         if not indexes:
@@ -132,10 +140,12 @@ class SyncController:
     # ----------------------------------------------------------------------
 
     def local_to_irods(self):
+        """Set sync direction from local to irods."""
         self.model.sync_source = "local"
         self._sync_diff()
 
     def irods_to_local(self):
+        """Set sync direction from irods to local."""
         self.model.sync_source = "irods"
         self._sync_diff()
 
@@ -223,7 +233,9 @@ class SyncController:
         populate_table(self.view.diff_table, len(rows), rows)
 
         if not rows:
-            self.view.error_label.setText("Nothing to synchronise — everything is already up to date.")
+            self.view.error_label.setText(
+                "Nothing to synchronise — everything is already up to date."
+            )
             self.model.clear()
         else:
             self.view.sync_button.show()
@@ -264,7 +276,7 @@ class SyncController:
             return
         self._last_update = now
 
-        up_size, transferred, count, total, failed, msg = state
+        up_size, transferred, count, total, failed, _ = state
 
         percent = int(transferred * 100 / up_size) if up_size else 0
         self.view.progress_bar.setValue(percent)
@@ -275,7 +287,7 @@ class SyncController:
             self.view.error_label.setText(output["error"])
             self.model.clear()
             return
-    
+
         # Check if there was actually anything to sync
         if self.model.diffs and not self.model.diffs.upload and not self.model.diffs.download:
             self.view.error_label.setText("Nothing to synchronise.")
@@ -283,9 +295,9 @@ class SyncController:
             if self.model.refresh_irods_index is not None:
                 self.irods_model.refresh_subtree(self.model.refresh_irods_index)
             self.view.error_label.setText("Data synchronisation complete.")
-    
+
         self.model.clear()
-    
+
     def _finish_sync_data(self):
         self._enable_buttons(True)
         self.view.sync_button.hide()
@@ -306,6 +318,7 @@ class SyncController:
         cursor = QtCore.Qt.WaitCursor if busy else QtCore.Qt.ArrowCursor
         self.view.setCursor(QtGui.QCursor(cursor))
 
+    # pylint: disable=W0212
     def _expand_path(self, irods_path: IrodsPath):
         parts = irods_path._path.parts[1:]
         current_path = "/" + irods_path._path.parts[0]

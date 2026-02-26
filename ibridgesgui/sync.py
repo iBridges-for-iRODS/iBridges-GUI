@@ -1,6 +1,7 @@
 """Sync widget."""
 
 import sys
+
 from PySide6 import QtWidgets
 
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
@@ -13,6 +14,7 @@ class Sync(QtWidgets.QWidget, Ui_tabSync):
     """Sync view for iRODS session (UI only, logic in SyncController)."""
 
     def __init__(self, session, app_name: str):
+        """Init."""
         super().__init__()
 
         # Load UI (same pattern as Browser)
@@ -23,5 +25,3 @@ class Sync(QtWidgets.QWidget, Ui_tabSync):
 
         # Create controller and initialize logic
         self.controller = SyncController(self, session, app_name)
-        self.controller.init_sync()
-
