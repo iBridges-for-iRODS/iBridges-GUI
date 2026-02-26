@@ -1,4 +1,7 @@
+"""GUI logic for browser."""
+
 import logging
+
 import irods.exception
 import PySide6.QtCore
 import PySide6.QtWidgets
@@ -15,6 +18,7 @@ class BrowserController:
     """Orchestrates UI, model and iRODS service for the Browser tab."""
 
     def __init__(self, ui: PySide6.QtWidgets.QWidget, session, app_name: str):
+        """Init."""
         self.ui = ui
         self.logger = logging.getLogger(app_name)
         self.service = IrodsBrowserService(session, self.logger)
@@ -27,13 +31,14 @@ class BrowserController:
     # ----------------------------------------------------------------------
 
     def init_browser(self) -> None:
+        """Init buttons and signals."""
         self._connect_signals()
         self._set_path(self.model.current_path)
 
     def _connect_signals(self) -> None:
         # navigation
-        self.ui.input_path.returnPressed.connect(self.refresh_browser)
-        self.ui.refresh_button.clicked.connect(self.refresh_browser)
+        self.ui.input_path.returnPressed.connect(self._refresh_browser)
+        self.ui.refresh_button.clicked.connect(self._refresh_browser)
         self.ui.home_button.clicked.connect(lambda: self._set_path(self.service.home_path()))
         self.ui.parent_button.clicked.connect(self._go_to_parent)
 
@@ -50,14 +55,14 @@ class BrowserController:
         self.ui.info_tabs.currentChanged.connect(self._fill_current_info_tab)
 
         # metadata
-        self.ui.meta_table.clicked.connect(self.load_metadata_item)
+        self.ui.meta_table.clicked.connect(self._load_metadata_item)
         self.ui.add_meta_button.clicked.connect(lambda: self._metadata_edits("add"))
         self.ui.update_meta_button.clicked.connect(lambda: self._metadata_edits("update"))
         self.ui.delete_meta_button.clicked.connect(lambda: self._metadata_edits("delete"))
 
         # ACLs
-        self.ui.acl_table.clicked.connect(self.load_permission)
-        self.ui.add_acl_button.clicked.connect(self.update_permission)
+        self.ui.acl_table.clicked.connect(self._load_permission)
+        self.ui.add_acl_button.clicked.connect(self._update_permission)
 
     # ----------------------------------------------------------------------
     # Path handling
@@ -69,7 +74,7 @@ class BrowserController:
         self.ui.input_path.setText(str(irods_path))
         self._load_browser_table()
 
-    def refresh_browser(self) -> None:
+    def _refresh_browser(self) -> None:
         path = self.service.path_from_text(self.ui.input_path.text())
         self._set_path(path)
 
@@ -88,6 +93,7 @@ class BrowserController:
     # ----------------------------------------------------------------------
 
     def create_collection(self) -> None:
+        """Call widget to create new collection."""
         self.ui.error_label.clear()
         path = self.model.current_path
         dialog = CreateCollection(path, self.logger)
@@ -95,6 +101,7 @@ class BrowserController:
         self._set_path(path)
 
     def rename_item(self) -> None:
+        """Call widget to rename item."""
         if not self._validate_selection():
             return
         row = self.ui.browser_table.currentRow()
@@ -104,6 +111,7 @@ class BrowserController:
         self._set_path(self.model.current_path)
 
     def download_data(self) -> None:
+        """Call widget to download."""
         if not self._validate_selection():
             return
         row = self.ui.browser_table.currentRow()
@@ -112,15 +120,17 @@ class BrowserController:
         dialog.exec()
 
     def upload_data(self) -> None:
+        """Call widget to upload."""
         path = self.model.current_path
         if not path.collection_exists():
             self.ui.error_label.setText(f"{path} is not a collection. Cannot upload data.")
             return
         dialog = UploadData(self.logger, path.session, path)
         dialog.exec()
-        self.refresh_browser()
+        self._refresh_browser()
 
     def delete_data(self) -> None:
+        """Confirm delete."""
         if not self._validate_selection():
             return
         row = self.ui.browser_table.currentRow()
@@ -139,7 +149,7 @@ class BrowserController:
         try:
             irods_path.remove()
             self.logger.info("Deleted %s", irods_path)
-            self.refresh_browser()
+            self._refresh_browser()
         except (irods.exception.CAT_NO_ACCESS_PERMISSION, PermissionError):
             self.ui.error_label.setText(f"No permissions to delete {irods_path}")
         except Exception:
@@ -203,10 +213,16 @@ class BrowserController:
             if cached is None:
                 acls = self.service.get_acls(irods_path)
                 clean = [
-                    (user, zone,
-                     "read" if perm == "read_object" else
-                     "write" if perm == "modify_object" else perm,
-                     status)
+                    (
+                        user,
+                        zone,
+                        "read"
+                        if perm == "read_object"
+                        else "write"
+                        if perm == "modify_object"
+                        else perm,
+                        status,
+                    )
                     for user, zone, perm, status in acls
                 ]
                 self.model.cache_acls(row, clean)
@@ -260,7 +276,7 @@ class BrowserController:
             "Remove inheritance.",
         ]
 
-        for item in (coll_acl if irods_path.collection_exists() else obj_acl):
+        for item in coll_acl if irods_path.collection_exists() else obj_acl:
             self.ui.acl_box.addItem(item)
         self.ui.acl_box.setEnabled(True)
 
@@ -305,7 +321,7 @@ class BrowserController:
     # Metadata editing
     # ----------------------------------------------------------------------
 
-    def load_metadata_item(self, index: PySide6.QtCore.QModelIndex):
+    def _load_metadata_item(self, index: PySide6.QtCore.QModelIndex):
         self.ui.error_label.clear()
         row = index.row()
         key = self.ui.meta_table.item(row, 0).text()
@@ -330,18 +346,35 @@ class BrowserController:
         try:
             if operation == "add":
                 self.service.add_metadata(irods_path, new_key, new_val, new_units)
+                self.logger.info(
+                    "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
+                )
             elif operation == "update":
                 mrow = self.ui.meta_table.currentRow()
                 old_key = self.ui.meta_table.item(mrow, 0).text()
                 old_val = self.ui.meta_table.item(mrow, 1).text()
                 old_units = self.ui.meta_table.item(mrow, 2).text()
                 self.service.update_metadata(irods_path, old_key, new_key, new_val, new_units)
+                self.logger.info(
+                    "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
+                    irods_path,
+                    old_key,
+                    old_val,
+                    old_units,
+                    new_key,
+                    new_val,
+                    new_units,
+                )
             elif operation == "delete":
                 self.service.delete_metadata(irods_path, new_key, new_val, new_units)
+                self.logger.info(
+                    "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
+                )
 
             # invalidate cache for this row
             self.model.metadata_cache.pop(row, None)
-            self.model.updated_info_tabs.remove("metadata") if "metadata" in self.model.updated_info_tabs else None
+            if 'metadata' in self.model.updated_info_tabs:
+                self.model.updated_info_tabs.remove('metadata')
 
             self._fill_current_info_tab()
 
@@ -352,7 +385,7 @@ class BrowserController:
     # ACLs
     # ----------------------------------------------------------------------
 
-    def load_permission(self, index: PySide6.QtCore.QModelIndex):
+    def _load_permission(self, index: PySide6.QtCore.QModelIndex):
         self.ui.error_label.clear()
         row = index.row()
         user = self.ui.acl_table.item(row, 0).text()
@@ -364,7 +397,7 @@ class BrowserController:
         self.ui.acl_box.setCurrentText(acc)
         self.ui.recursive_box.setCurrentText("False")
 
-    def update_permission(self) -> None:
+    def _update_permission(self) -> None:
         if not self._validate_selection():
             return
 
@@ -452,4 +485,3 @@ class BrowserController:
         self.ui.replica_table.setRowCount(0)
         self.ui.preview_browser.clear()
         self.ui.no_meta_label.clear()
-

@@ -1,5 +1,7 @@
+"""Browser model."""
 import dataclasses
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 from ibridges import IrodsPath
 
 
@@ -35,6 +37,7 @@ class BrowserModel:
         self.clear_all_caches()
 
     def path_changed(self) -> bool:
+        """Test if new path is chosen."""
         return self.last_path is None or self.last_path != self.current_path
 
     # ----------------------------------------------------------------------
@@ -42,6 +45,7 @@ class BrowserModel:
     # ----------------------------------------------------------------------
 
     def reset_selection_cache(self) -> None:
+        """Restore inital state."""
         self.last_selected_row = -1
         self.current_selected_row = -1
         self.updated_info_tabs.clear()
@@ -53,6 +57,7 @@ class BrowserModel:
         self.updated_info_tabs.clear()
 
     def has_selection(self) -> bool:
+        """Test if row is selected in browser table.."""
         return self.current_selected_row >= 0
 
     # ----------------------------------------------------------------------
@@ -68,6 +73,7 @@ class BrowserModel:
         return tab_name not in self.updated_info_tabs
 
     def mark_tab_updated(self, tab_name: str) -> None:
+        """Update a selected info tab."""
         if tab_name not in self.updated_info_tabs:
             self.updated_info_tabs.append(tab_name)
 
@@ -76,32 +82,40 @@ class BrowserModel:
     # ----------------------------------------------------------------------
 
     def clear_all_caches(self) -> None:
+        """Clear."""
         self.metadata_cache.clear()
         self.acl_cache.clear()
         self.replica_cache.clear()
         self.preview_cache.clear()
 
     def cache_metadata(self, row: int, data: Any) -> None:
+        """Cache changes."""
         self.metadata_cache[row] = data
 
     def get_cached_metadata(self, row: int) -> Optional[Any]:
+        """Read cached info."""
         return self.metadata_cache.get(row)
 
     def cache_acls(self, row: int, data: Any) -> None:
+        """Cache changes."""
         self.acl_cache[row] = data
 
     def get_cached_acls(self, row: int) -> Optional[Any]:
+        """Read cached info."""
         return self.acl_cache.get(row)
 
     def cache_replicas(self, row: int, data: Any) -> None:
+        """Cache changes."""
         self.replica_cache[row] = data
 
     def get_cached_replicas(self, row: int) -> Optional[Any]:
+        """Read cached info."""
         return self.replica_cache.get(row)
 
     def cache_preview(self, row: int, data: Any) -> None:
+        """Cache changes."""
         self.preview_cache[row] = data
 
     def get_cached_preview(self, row: int) -> Optional[Any]:
+        """Read cached info."""
         return self.preview_cache.get(row)
-
