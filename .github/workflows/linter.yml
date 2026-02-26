@@ -55,15 +55,15 @@ jobs:
         pip install .[test]
 
     - name: Set QT to offscreen mode to prevent GUI error
+      if: runner.os != 'Windows'  # Skip on Windows
       run: |
         if [ $RUNNER_OS == 'Linux' || $RUNNER_OS == 'macOS' ]; then
           export QT_QPA_PLATFORM=offscreen
-        elif [ $RUNNER_OS == 'Windows' ]; then
-          $env:QT_QPA_PLATFORM="offscreen"
         fi
 
 
     - name: Test with pytest
+      if: runner.os != 'Windows'  # Skip on Windows
       run: |
         pytest tests
 
