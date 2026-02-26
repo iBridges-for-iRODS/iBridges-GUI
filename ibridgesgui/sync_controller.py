@@ -78,25 +78,14 @@ class SyncController:
 
     def _expand_to_home(self):
         """Expand the iRODS tree down to the user's home collection."""
-        home_path = IrodsPath(self.session)
-
-        # Ask the model for the index of the home path
-        index = self.irods_model.index_from_irods_path(home_path)
-        if not index.isValid():
-            return  # home not found (should not happen)
-
-        # Expand all parents
-        parent = index.parent()
-        while parent.isValid():
-            self.view.irods_tree.expand(parent)
-            parent = parent.parent()
-
-        # Expand the home node itself
-        self.view.irods_tree.expand(index)
-
-        # Select it
-        self.view.irods_tree.setCurrentIndex(index)
-
+        home_path = IrodsPath(self.session, self.session.home)
+        # Expand step by step
+        index = self._expand_path(home_path)
+    
+        # Select the home node
+        if index.isValid():
+            self.view.irods_tree.setCurrentIndex(index)
+    
     # ----------------------------------------------------------------------
     # Signal wiring
     # ----------------------------------------------------------------------
@@ -248,6 +237,7 @@ class SyncController:
         self._enable_buttons(True)
         self._set_busy(False)
         self.sync_diff_thread = None
+        self.view.error_label.clear()
 
     # ----------------------------------------------------------------------
     # Data sync
@@ -308,3 +298,41 @@ class SyncController:
         cursor = QtCore.Qt.WaitCursor if busy else QtCore.Qt.ArrowCursor
         self.view.setCursor(QtGui.QCursor(cursor))
 
+    def _expand_path(self, irods_path: IrodsPath):
+        """Expand the iRODS tree step by step down to irods_path."""
+        parts = irods_path._path.parts[1:]
+        current_path = "/" + irods_path._path.parts[0]
+    
+        # Start at root
+        index = self.irods_model.index(0, 0)
+        if not index.isValid():
+            return QtCore.QModelIndex()
+    
+        # Expand root and load children
+        self.view.irods_tree.expand(index)
+        self.irods_model.refresh_subtree(index)
+        QtWidgets.QApplication.processEvents()
+
+        parent_index = index
+    
+        # Walk down the path component by component
+        for part in parts:
+            if not part:
+                continue
+    
+            current_path = current_path.rstrip("/") + "/" + part
+            target = IrodsPath(self.session, current_path)
+    
+            # Find the index for this level
+            idx = self.irods_model.index_from_irods_path(target)
+            if not idx.isValid():
+                return parent_index  # stop if something is missing
+    
+            # Expand and load children
+            self.view.irods_tree.expand(idx)
+            self.irods_model.refresh_subtree(idx)
+    
+            parent_index = idx
+    
+        return parent_index
+    

@@ -121,27 +121,26 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
         return self._find_index_recursively(root_index, target_str)
 
     def _find_index_recursively(self, index, target_path_str):
-        """Depth-first search for the index whose COL_PATH matches target_path."""
         if not index.isValid():
             return QtCore.QModelIndex()
-
-        item = self.itemFromIndex(index)
-        path_item = item.sibling(index.row(), self.COL_PATH)
-        if path_item.data() == target_path_str:
+    
+        # Compare COL_PATH of this row
+        path_index = index.sibling(index.row(), self.COL_PATH)
+        if path_index.data() == target_path_str:
             return index
-
+    
         # Recurse into children
+        item = self.itemFromIndex(index)
         for row in range(item.rowCount()):
             child = item.child(row, 0)
             if child is None:
                 continue
-            child_index = child.index()
-            result = self._find_index_recursively(child_index, target_path_str)
+            result = self._find_index_recursively(child.index(), target_path_str)
             if result.isValid():
                 return result
-
+    
         return QtCore.QModelIndex()
-
+    
     # ----------------------------------------------------------------------
     # Convenience
     # ----------------------------------------------------------------------
@@ -153,4 +152,3 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
         parent = item.parent() or self.invisibleRootItem()
         abs_path = parent.child(row, self.COL_PATH).data(0)
         return IrodsPath(self.session, abs_path)
-
