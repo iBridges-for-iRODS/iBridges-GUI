@@ -147,7 +147,7 @@ class BrowserController:
             irods_path = parent_path / item_name
             quit_msg = f"Are you sure you want to delete {str(irods_path)}?"
             reply = PySide6.QtWidgets.QMessageBox.critical(
-                self,
+                self.ui,
                 "Message",
                 quit_msg,
                 PySide6.QtWidgets.QMessageBox.StandardButton.Yes,
