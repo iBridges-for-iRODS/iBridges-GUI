@@ -105,8 +105,8 @@ class BrowserController:
         """Rename/move a collection or data object."""
         if self._nothing_selected_error():
             return
-        item_name = self.ui.browser_table.item(self.browser_table.currentRow(), 1).text()
-        current_collection = IrodsPath(self.session, "/" + self.input_path.text().strip("/"))
+        item_name = self.ui.browser_table.item(self.ui.browser_table.currentRow(), 1).text()
+        current_collection = self.service.path_from_text(self.ui.input_path.text())
         irods_path = current_collection.joinpath(item_name)
         rename_widget = Rename(irods_path, self.logger)
         rename_widget.exec()
