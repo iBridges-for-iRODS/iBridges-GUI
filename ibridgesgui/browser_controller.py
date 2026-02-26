@@ -265,25 +265,95 @@ class BrowserController:
 
     # ---------- metadata ----------
 
-    def update_icat_meta(self) -> None:
-        # will call self._metadata_edits("update")
-        pass
+    def update_icat_meta(self):
+        """Button metadata set."""
+        if self.ui.meta_table.currentRow() < 0:
+            self.ui.error_label.setText("Select a metadata entry to update.")
+            return
+        try:
+            self._metadata_edits("update")
+        except Exception as error:
+            self.ui.error_label.setText(repr(error))
 
-    def add_icat_meta(self) -> None:
-        # will call self._metadata_edits("add")
-        pass
+    def add_icat_meta(self):
+        """Button metadata add."""
+        try:
+            self._metadata_edits("add")
+        except Exception as error:
+            self.ui.error_label.setText(repr(error))
 
-    def delete_icat_meta(self) -> None:
-        # will call self._metadata_edits("delete")
-        pass
+    def delete_icat_meta(self):
+        """Button metadata delete."""
+        try:
+            self._metadata_edits("delete")
+        except Exception as error:
+            self.ui.error_label.setText(repr(error))
 
-    def edit_metadata(self, index: PySide6.QtCore.QModelIndex) -> None:
-        # will be filled with original logic
-        pass
+    # @PyQt6.QtCore.pyqtSlot(PyQt6.QtCore.QModelIndex)
+    def edit_metadata(self, index: PySide6.QtCore.QModelIndex):
+        """Load selected metadata info edit fields."""
+        self.ui.error_label.clear()
+        self.ui.meta_key_field.clear()
+        self.ui.meta_value_field.clear()
+        self.ui.meta_units_field.clear()
+        row = index.row()
+        key = self.ui.meta_table.item(row, 0).text()
+        value = self.ui.meta_table.item(row, 1).text()
+        if self.ui.meta_table.item(row, 2):
+            units = self.ui.meta_table.item(row, 2).text()
+        else:
+            units = ""
+        self.ui.meta_key_field.setText(key)
+        self.ui.meta_value_field.setText(value)
+        self.ui.meta_units_field.setText(units)
 
-    def _metadata_edits(self, operation: str) -> None:
-        # will be filled with original logic, but using service
-        pass
+
+    def _metadata_edits(self, operation: str):
+        self.ui.error_label.clear()
+        if self._nothing_selected_error():
+            return
+
+        row = self.ui.browser_table.currentRow()
+        irods_path = self._get_item_path(row)
+        
+        new_key = self.ui.meta_key_field.text()
+        new_val = self.ui.meta_value_field.text()
+        new_units = self.ui.meta_units_field.text()
+        
+        if operation == "add":
+            irods_path.meta.add(new_key, new_val, new_units)
+            self.logger.info(
+                "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
+            )
+        elif operation == "update":
+            row = self.ui.meta_table.currentRow()
+            old_key = self.ui.meta_table.item(row, 0).text()
+            old_val = self.ui.meta_table.item(row, 1).text()
+            old_units = self.ui.meta_table.item(row, 2).text()
+            self.logger.info(
+                "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
+                irods_path,
+                old_key,
+                old_val,
+                old_units,
+                new_key,
+                new_val,
+                new_units,
+            )
+            if new_key == old_key:
+                irods_path.meta[old_key] = new_val, new_units
+            else:
+                item = irods_path.meta[old_key]
+                item.key = new_key
+                item.value = new_val
+                item.units = new_units
+        elif operation == "delete":
+            irods_path.meta.delete(new_key, new_val, new_units)
+            self.logger.info(
+                "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
+            )
+        self._fill_metadata_tab(irods_path)
+
 
     def _fill_metadata_tab(self, irods_path: Union[IrodsPath, str]):
         """Populate the table in the metadata tab.
