@@ -11,6 +11,7 @@ from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, Up
 from .browser_model import BrowserModel
 from .irods_browser_service import IrodsBrowserService
 
+import traceback
 
 class BrowserController:
     """Orchestrates UI, model and iRODS service for the Browser tab."""
@@ -33,12 +34,6 @@ class BrowserController:
         """Wire signals and set initial state."""
         self._connect_signals()
         self.set_input_path_to_home()
-        self.ui.refresh_button.clicked.connect(self.refresh_browser)
-        self.ui.input_path.returnPressed.connect(self.refresh_browser)
-        self.ui.home_button.clicked.connect(self.set_input_path_to_home)
-        self.ui.parent_button.clicked.connect(self.set_input_path_to_parent)
-        self.ui.browser_table.doubleClicked.connect(self.load_path)
-
 
     def _connect_signals(self) -> None:
         # navigation
@@ -71,11 +66,12 @@ class BrowserController:
 
     # ---------- path / navigation ----------
 
-    def update_input_path(self, irods_path: Union[str, IrodsPath]) -> None:
+    def update_input_path(self, irods_path):
+        """Update path."""
         self.ui.input_path.setText(str(irods_path))
         self.model.reset_selection_cache()
         self.load_browser_table()
-
+    
     def set_input_path_to_home(self) -> None:
         self.update_input_path(self.model.current_path)
 
@@ -83,10 +79,10 @@ class BrowserController:
         parent = self.service.parent_path(self.ui.input_path.text())
         self.update_input_path(parent)
 
-    def refresh_browser(self) -> None:
+    def refresh_browser(self):
         path = self.service.path_from_text(self.ui.input_path.text())
         self.update_input_path(path)
-
+    
     def load_path(self) -> None:
         row = self.ui.browser_table.currentRow()
         irods_path = self._get_item_path(row)
