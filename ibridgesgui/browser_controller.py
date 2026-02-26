@@ -6,7 +6,7 @@ import PySide6.QtWidgets
 import irods.exception
 from ibridges import IrodsPath
 
-from ibridgesgui.gui_utils import populate_table, populate_textfield
+from ibridgesgui.gui_utils import populate_table, populate_textfield, get_irods_item
 from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
 from .browser_model import BrowserModel
 from .irods_browser_service import IrodsBrowserService
@@ -182,6 +182,43 @@ class BrowserController:
         self.ui.preview_browser.clear()
         self.ui.no_meta_label.clear()
 
+    # ---------- preview ----------
+    def _fill_preview_tab(self, irods_path):
+        """Populate the table in the metadata tab.
+
+        Parameters
+        ----------
+        irods_path : str
+            Full name of iRODS collection or data object selected.
+
+        """
+        if irods_path.collection_exists():
+            obj = irods_path.collection
+            content = ["Collections:", "-----------------"]
+            content.extend([sc.name for sc in obj.subcollections])
+            content.extend(["\n", "DataObjects:", "-----------------"])
+            content.extend([do.name for do in obj.data_objects])
+        elif irods_path.dataobject_exists():
+            file_type = ""
+            obj = irods_path.dataobject
+            if "." in irods_path.parts[-1]:
+                file_type = irods_path.parts[-1].split(".")[1]
+            if file_type in ["txt", "json", "csv"]:
+                try:
+                    with obj.open("r") as objfd:
+                        content = [objfd.read(1024).decode("utf-8")]
+                except Exception as error:
+                    content = [
+                        f"No Preview for: {irods_path}",
+                        repr(error),
+                        "Storage resource might be down.",
+                    ]
+            else:
+                content = [f"No Preview for: {irods_path}"]
+        else:
+            content = [f"No Preview for: {irods_path}"]
+        populate_textfield(self.ui.preview_browser, content)
+
     # ---------- metadata ----------
 
     def update_icat_meta(self) -> None:
@@ -211,8 +248,111 @@ class BrowserController:
         pass
 
     def update_permission(self) -> None:
-        # will be filled with original logic, but using service.permissions_for
-        pass
+        """Apply ACL changes using the service."""
+        if self._nothing_selected_error():
+            return
+    
+        row = self.ui.browser_table.currentRow()
+        irods_path = self._get_item_path(row)
+        if irods_path is None:
+            return
+    
+        user_name = self.ui.acl_user_field.text()
+        user_zone = self.ui.acl_zone_field.text()
+        acc_name = self.ui.acl_box.currentText()
+        recursive = self.ui.recursive_box.currentText() == "True"
+    
+        # Map UI labels to iRODS ACL keywords
+        label_to_acl = {
+            "Newly added items to collection will inherit permissions": "inherit",
+            "Remove inheritance.": "noinherit",
+            "delete": "null",
+        }
+        acl_value = label_to_acl.get(acc_name, acc_name)
+    
+        # Validation
+        if acl_value in ("inherit", "noinherit") and irods_path.dataobject_exists():
+            self.ui.error_label.setText("WARNING: (no)inherit is not applicable to data objects.")
+            return
+    
+        if acl_value not in ("inherit", "noinherit") and user_name == "":
+            self.ui.error_label.setText("Please provide a user.")
+            return
+    
+        if acc_name == "":
+            self.ui.error_label.setText("Please provide an access level from the menu.")
+            return
+    
+        # Apply ACL
+        try:
+            self.service.set_acl(
+                irods_path,
+                user_name=user_name,
+                user_zone=user_zone,
+                access=acl_value,
+                recursive=recursive,
+            )
+    
+            # Logging
+            if acl_value == "null":
+                self.logger.info(
+                    "Delete access (%s, %s, %s, %s) for %s",
+                    acl_value, user_name, user_zone, recursive, irods_path
+                )
+            else:
+                self.logger.info(
+                    "Add/change access of %s to (%s, %s, %s, %s)",
+                    irods_path, acl_value, user_name, user_zone, recursive
+                )
+    
+            # Refresh tab
+            self._fill_acls_tab(irods_path)
+    
+        except (irods.exception.CAT_INVALID_USER, irods.exception.SYS_NOT_ALLOWED):
+            self.ui.error_label.setText(f"Cannot update ACLs. {user_name}#{user_zone} not known.")
+        except irods.exception.MSI_OPERATION_NOT_ALLOWED:
+            self.ui.error_label.setText("iRODS server does not allow editing permissions.")
+        except Exception as err:
+            self.logger.exception("Permissions error for %s", irods_path)
+            self.ui.error_label.setText(f"Error editing permissions: {repr(err)}")
+    
+    def _fill_acls_tab(self, irods_path):
+        """Populate the ACL table and update UI controls."""
+        self.ui.acl_table.setRowCount(0)
+        self.ui.acl_user_field.clear()
+        self.ui.acl_zone_field.clear()
+        self.ui.acl_box.clear()
+        self.ui.recursive_box.setEnabled(False)
+    
+        # Determine available ACL options
+        obj_acl_items = ["read", "write", "own", "delete"]
+        coll_acl_items = obj_acl_items + [
+            "Newly added items to collection will inherit permissions",
+            "Remove inheritance.",
+        ]
+    
+        if irods_path.collection_exists():
+            self.ui.recursive_box.setEnabled(True)
+            for item in coll_acl_items:
+                self.ui.acl_box.addItem(item)
+        elif irods_path.dataobject_exists():
+            for item in obj_acl_items:
+                self.ui.acl_box.addItem(item)
+    
+        # Load ACLs from service
+        try:
+            acl_rows = self.service.get_acls(irods_path)
+            populate_table(self.ui.acl_table, len(acl_rows), acl_rows)
+            self.ui.acl_table.resizeColumnsToContents()
+    
+            # Owner label
+            obj = get_irods_item(irods_path)
+            self.ui.owner_label.setText(f"{obj.owner_name}")
+    
+        except Exception as err:
+            self.logger.exception("Error loading ACLs for %s", irods_path)
+            self.ui.error_label.setText(f"Error loading ACLs: {repr(err)}")
+    
 
     # ---------- replicas ---------
     def _fill_replicas_tab(self, irods_path):

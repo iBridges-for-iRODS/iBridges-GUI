@@ -68,9 +68,35 @@ class IrodsBrowserService:
 
     # -------- ACLs / permissions --------
 
-    def permissions_for(self, path: IrodsPath):
+    def get_acls(self, path: IrodsPath):
+        """Return a list of (user_name, user_zone, access_name, inheritance_flag)."""
         obj = get_irods_item(path)
-        return Permissions(self.session, obj)
+        perms = Permissions(self.session, obj)
+        inheritance = ""
+    
+        if path.collection_exists():
+            inheritance = f"{path.collection.inheritance}"
+    
+        return [(p.user_name, p.user_zone, p.access_name, inheritance) for p in perms]
+
+
+    def set_acl(
+        self,
+        path: IrodsPath,
+        user_name: str,
+        user_zone: str,
+        access: str,
+        recursive: bool,
+    ):
+        """Apply an ACL change to a collection or data object."""
+        obj = get_irods_item(path)
+        perms = Permissions(self.session, obj)
+        perms.set(
+            perm=access,
+            user=user_name,
+            zone=user_zone,
+            recursive=recursive,
+        )
 
     # -------- destructive operations --------
 
