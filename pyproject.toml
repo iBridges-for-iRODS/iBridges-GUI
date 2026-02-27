@@ -42,6 +42,7 @@ test = [
     "pytest-cov",
     "ruff",
     "mypy",
+    "pytest-qt",
 ]
 
 deploy = [
