@@ -12,9 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version:
-          ubuntu-latest: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-          macos-latest: ["3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,7 +67,10 @@ jobs:
         run: |
             pytest tests
 
+      # -----------------------------
+      # Run tests (macOS only for Python 3.13)
+      # -----------------------------
       - name: Run tests (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && matrix.python-version == '3.13'
         run: |
           pytest tests
