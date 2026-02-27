@@ -43,6 +43,7 @@ test = [
     "ruff",
     "mypy",
     "pytest-qt",
+    "PySide6-Essentials",
 ]
 
 deploy = [
