@@ -97,6 +97,7 @@ lint.ignore = ["D203", "D213"]
 omit = [
     "ibridgesgui/ui_files/*",
 ]
+source = ["ibridgesgui"]
 
 [tool.coverage.report]
 omit = [
