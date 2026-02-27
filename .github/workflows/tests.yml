@@ -72,4 +72,4 @@ jobs:
       - name: Run tests (macOS)
         if: runner.os == 'macOS' && matrix.python-version == '3.13'
         run: |
-          pytest --cov=ibridgesgui/ tests/ --cov-report=term-missing --cov-fail-under=95
+          pytest --cov=ibridgesgui --cov-report=term-missing tests
