@@ -64,7 +64,7 @@ jobs:
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
         run: |
-            python -m pytest tests
+            python -m pytest --cov=ibridgesgui --cov-report=term-missing tests
 
       # -----------------------------
       # Run tests (macOS only for Python 3.13)
