@@ -64,7 +64,7 @@ jobs:
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
         run: |
-            pytest tests
+            python -m pytest tests
 
       # -----------------------------
       # Run tests (macOS only for Python 3.13)
