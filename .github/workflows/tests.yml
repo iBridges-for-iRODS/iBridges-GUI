@@ -4,15 +4,16 @@ on:
   pull_request:
 
 jobs:
-  tests:
-    runs-on: ${{ matrix.os }}
-
+  build:
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-
+        include:
+          - os: macos-latest
+            python-version: "3.13"
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,25 +58,15 @@ jobs:
       - name: Configure Qt for headless mode
         run: |
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
-
-      # -----------------------------
-      # Run tests (Linux uses Xvfb)
-      # -----------------------------
-      - name: Run tests (Linux)
-        if: runner.os == 'Linux'
-        run: |
-            python -m pytest --cov=ibridgesgui --cov-report=term-missing tests
-
-      # -----------------------------
-      # Run tests (macOS only for Python 3.13)
-      # -----------------------------
       - name: Configure Qt for headless mode (macOS)
         if: runner.os == 'macOS'
         run: |
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
           echo "QT_MAC_WANTS_LAYER=1" >> $GITHUB_ENV
 
-      - name: Run tests (macOS)
-        if: runner.os == 'macOS' && matrix.python-version == '3.13'
+      # -----------------------------
+      # Run tests 
+      # -----------------------------
+      - name: Run tests and coverage
         run: |
-          python -m pytest --cov=ibridgesgui --cov-report=term-missing tests
+            python -m pytest --cov=ibridgesgui --cov-report=term-missing tests
