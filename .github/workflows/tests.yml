@@ -69,6 +69,12 @@ jobs:
       # -----------------------------
       # Run tests (macOS only for Python 3.13)
       # -----------------------------
+      - name: Configure Qt for headless mode (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
+          echo "QT_MAC_WANTS_LAYER=1" >> $GITHUB_ENV
+
       - name: Run tests (macOS)
         if: runner.os == 'macOS' && matrix.python-version == '3.13'
         run: |
