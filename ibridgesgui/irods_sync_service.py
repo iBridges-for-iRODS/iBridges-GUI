@@ -1,7 +1,7 @@
 """iRODS functionality for sync."""
 import logging
-from typing import Union
 from pathlib import Path
+from typing import Union
 
 from ibridges import IrodsPath
 
