@@ -2,11 +2,16 @@
 
 from unittest.mock import MagicMock, patch
 from ibridgesgui.sync_controller import SyncController
-from ibridgesgui.sync_model import SyncModel
+
+
+def make_controller(fake_view):
+    # Prevent GUI initialization (QFileSystemModel, IrodsTreeModel, signals)
+    with patch.object(SyncController, "init_sync", return_value=None):
+        return SyncController(fake_view, session=MagicMock(), app_name="test")
 
 
 def test_direction_local_to_irods(fake_view):
-    controller = SyncController(fake_view, session=MagicMock(), app_name="test")
+    controller = make_controller(fake_view)
     controller._sync_diff = MagicMock()
 
     controller.local_to_irods()
@@ -16,7 +21,7 @@ def test_direction_local_to_irods(fake_view):
 
 
 def test_direction_irods_to_local(fake_view):
-    controller = SyncController(fake_view, session=MagicMock(), app_name="test")
+    controller = make_controller(fake_view)
     controller._sync_diff = MagicMock()
 
     controller.irods_to_local()
@@ -24,8 +29,9 @@ def test_direction_irods_to_local(fake_view):
     assert controller.model.sync_source == "irods"
     controller._sync_diff.assert_called_once()
 
+
 def test_sync_diff_end_nothing_to_sync(fake_view):
-    controller = SyncController(fake_view, session=MagicMock(), app_name="test")
+    controller = make_controller(fake_view)
 
     fake_output = {
         "error": "",
@@ -40,8 +46,9 @@ def test_sync_diff_end_nothing_to_sync(fake_view):
     assert controller.model.sync_source is None
     assert controller.model.diffs is None
 
+
 def test_sync_diff_end_with_diffs(fake_view):
-    controller = SyncController(fake_view, session=MagicMock(), app_name="test")
+    controller = make_controller(fake_view)
 
     fake_src = MagicMock()
     fake_dst = MagicMock()
@@ -55,8 +62,9 @@ def test_sync_diff_end_with_diffs(fake_view):
     fake_view.sync_button.show.assert_called_once()
     assert controller.model.diffs is not None
 
+
 def test_sync_data_status_updates_progress(fake_view, qtbot):
-    controller = SyncController(fake_view, session=MagicMock(), app_name="test")
+    controller = make_controller(fake_view)
 
     state = [100, 50, 1, 2, 0, ""]
 
@@ -67,7 +75,7 @@ def test_sync_data_status_updates_progress(fake_view, qtbot):
 
 
 def test_sync_data_end_success(fake_view):
-    controller = SyncController(fake_view, session=MagicMock(), app_name="test")
+    controller = make_controller(fake_view)
     controller.model.refresh_irods_index = MagicMock()
     controller.irods_model = MagicMock()
 
@@ -78,12 +86,10 @@ def test_sync_data_end_success(fake_view):
 
 
 def test_sync_data_end_error(fake_view):
-    controller = SyncController(fake_view, session=MagicMock(), app_name="test")
+    controller = make_controller(fake_view)
 
     controller._sync_data_end({"error": "boom"})
 
     fake_view.error_label.setText.assert_called_with("boom")
     assert controller.model.sync_source is None
-
-
 
