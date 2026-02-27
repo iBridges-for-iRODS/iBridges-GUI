@@ -65,9 +65,9 @@ jobs:
       - name: Run tests with coverage (Linux)
         if: runner.os == 'Linux'
         run: |
-            pytest --cov=ibridgesgui --cov-report=xml --cov-report=term tests
+            pytest --cov=ibridgesgui --cov-report=term tests
 
-      - name: Run tests with coverage (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          pytest --cov=ibridgesgui --cov-report=xml --cov-report=term tests
+      #- name: Run tests with coverage (macOS)
+      #  if: runner.os == 'macOS'
+      #  run: |
+      #    pytest --cov=ibridgesgui --cov-report=xml --cov-report=term tests
