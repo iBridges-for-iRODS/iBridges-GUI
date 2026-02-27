@@ -1,5 +1,6 @@
 """iRODS functionality for sync."""
 import logging
+from typing import Union
 from pathlib import Path
 
 from ibridges import IrodsPath
@@ -24,14 +25,14 @@ class SyncService:
             lowest = lowest.parent
         return lowest
 
-    def prepare_env_for_diff(self, error_label) -> Path | None:
+    def prepare_env_for_diff(self, error_label) -> Union[Path, None]:
         """Prepare environment for diff (uses existing session)."""
         env_path = prep_session_for_copy(self.session, error_label)
         if env_path is None:
             return None
         return Path(env_path)
 
-    def prepare_env_for_sync(self, error_label) -> Path | None:
+    def prepare_env_for_sync(self, error_label) -> Union[Path, None]:
         """Prepare environment for data sync (uses last ienv path)."""
         env_path_str = get_last_ienv_path()
         if not env_path_str:
