@@ -75,6 +75,20 @@ jobs:
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
           echo "QT_MAC_WANTS_LAYER=1" >> $GITHUB_ENV
 
+      - name: Debug import of ibridgesgui
+        if: runner.os == 'macOS' && matrix.python-version == '3.13'
+        run: |
+          python - << 'EOF'
+          import traceback
+          try:
+            import ibridgesgui
+            print("Imported ibridgesgui from:", ibridgesgui.__file__)
+          except Exception as e:
+            print("IMPORT FAILED:")
+            traceback.print_exc()
+          EOF
+
+
       - name: Run tests (macOS)
         if: runner.os == 'macOS' && matrix.python-version == '3.13'
         run: |
