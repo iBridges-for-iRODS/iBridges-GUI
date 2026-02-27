@@ -73,4 +73,4 @@ jobs:
       - name: Run tests (macOS)
         if: runner.os == 'macOS' && matrix.python-version == '3.13'
         run: |
-          pytest tests
+          pytest --cov=src/pfas tests/ --cov-report=term-missing --cov-fail-under=95
