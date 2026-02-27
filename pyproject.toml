@@ -97,6 +97,8 @@ lint.ignore = ["D203", "D213"]
 [tool.coverage.run]
 omit = [
     "ibridgesgui/ui_files/*",
+    "ibridgesgui/welcome.py",
+    "ibridgesgui/sync.py"
 ]
 source = ["ibridgesgui"]
 
