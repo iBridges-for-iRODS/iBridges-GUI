@@ -35,6 +35,7 @@ def fake_view(qtbot):
             self.error_label = MagicMock()
             self.progress_bar = MagicMock()
             self.diff_table = MagicMock()
+            self.setCursor = MagicMock()
 
     view = FakeView()
     qtbot.addWidget(view)
