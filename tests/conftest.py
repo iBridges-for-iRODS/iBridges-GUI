@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import MagicMock
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QApplication
+from ibridges import IrodsPath
 
 # ---------------------------------------------------------
 # Ensure a QApplication exists (required for pytest-qt)
@@ -40,4 +41,29 @@ def fake_view(qtbot):
     view = FakeView()
     qtbot.addWidget(view)
     return view
+
+
+
+class DummyCollections:
+    def exists(self, path: str) -> bool:
+        return True   # pretend all collections exist
+
+
+class DummyIrodsSession:
+    def __init__(self):
+        self.collections = DummyCollections()
+
+
+class DummySession:
+    def __init__(self):
+        self.irods_session = DummyIrodsSession()
+
+
+def make_path(path: str) -> IrodsPath:
+    return IrodsPath(DummySession(), path)
+
+
+@pytest.fixture
+def make_irods_path():
+    return make_path
 
