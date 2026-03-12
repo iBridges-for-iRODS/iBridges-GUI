@@ -91,3 +91,15 @@ exclude = ["_version.py", "ui_files"]
 line-length = 100
 lint.select = ["D", "E", "F", "W", "I", "N"]
 lint.ignore = ["D203", "D213"]
+
+[tool.coverage.run]
+omit = [
+    "ibridgesgui/ui_files/*",
+    "ibridgesgui/browser.py"
+]
+source = ["ibridgesgui"]
+
+[tool.coverage.report]
+omit = [
+    "ibridgesgui/ui_files/*",
+]

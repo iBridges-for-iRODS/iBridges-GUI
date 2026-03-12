@@ -1,0 +1,72 @@
+name: Tests
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        include:
+          - os: macos-latest
+            python-version: "3.13"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # -----------------------------
+      # Linux-only Qt dependencies
+      # -----------------------------
+      - name: Install Qt system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libegl1 \
+            libgl1-mesa-dev \
+            libxkbcommon-x11-0 \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-xinerama0 \
+            libxcb-xfixes0 \
+            xvfb
+
+      # -----------------------------
+      # Install Python dependencies
+      # -----------------------------
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test]
+          python -m pip install pytest pytest-cov
+
+      # -----------------------------
+      # Set Qt to offscreen mode
+      # -----------------------------
+      - name: Configure Qt for headless mode
+        run: |
+          echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
+      - name: Configure Qt for headless mode (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
+          echo "QT_MAC_WANTS_LAYER=1" >> $GITHUB_ENV
+
+      # -----------------------------
+      # Run tests 
+      # -----------------------------
+      - name: Run tests and coverage
+        run: |
+            python -m pytest --cov=ibridgesgui --cov-report=term-missing tests
