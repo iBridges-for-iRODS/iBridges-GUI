@@ -42,6 +42,8 @@ test = [
     "pytest-cov",
     "ruff",
     "mypy",
+    "pytest-qt",
+    "PySide6-Essentials",
 ]
 
 deploy = [
@@ -95,7 +97,9 @@ lint.ignore = ["D203", "D213"]
 [tool.coverage.run]
 omit = [
     "ibridgesgui/ui_files/*",
-    "ibridgesgui/browser.py"
+    "ibridgesgui/welcome.py",
+    "ibridgesgui/sync.py",
+    "ibridgesgui/browser.py",
 ]
 source = ["ibridgesgui"]
 
@@ -103,3 +107,4 @@ source = ["ibridgesgui"]
 omit = [
     "ibridgesgui/ui_files/*",
 ]
+
