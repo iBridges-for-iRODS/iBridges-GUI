@@ -47,13 +47,13 @@ class SearchController:
     # Search logic
     # ---------------------------------------------------------
     def on_search(self):
-        # Hide results elements in UI
-        self.ui.hide_result_elements()
         if self.busy:
-            print("busy")
             return
         self.busy = True
         self._set_busy(True)
+
+        self.ui.hide_result_elements()
+        self.ui.set_wait_cursor()
 
         # Extract raw values from UI
         meta_fields = [
@@ -122,14 +122,9 @@ class SearchController:
         self._search_results_data = data
 
     def _on_search_finished(self):
-        self.busy = False
-        self._set_busy(False)
         data = self._search_results_data
         self._search_results_data = None
-        
         self.search_thread = None
-        self.ui.search_button.setEnabled(True)
-        self._set_busy(False)
 
         if "error" in data:
             self.ui.error_label.setText(data["error"])
@@ -155,7 +150,9 @@ class SearchController:
         self._update_load_more_visibility()
     
         self.ui.error_label.setText("Search complete.")
-
+        self.ui.set_normal_cursor()
+        self.busy = False
+        self._set_busy(False)
 
     # ---------------------------------------------------------
     # Download logic
@@ -165,7 +162,8 @@ class SearchController:
             return
         self.busy = True
         self._set_busy(True)
-        
+
+        self.ui.hide_result_elements() 
         self.ui.error_label.clear()
         self.ui.set_wait_cursor()
        
@@ -222,21 +220,17 @@ class SearchController:
         self._download_result = data
 
     def _on_download_finished_cleanup(self):
-        self.busy = False
-        self._set_busy(False)
-        self.ui.set_normal_cursor()
-        
         data = self._download_result
         self._download_result = None
-        
-        self.download_thread = None
-        self.ui.set_normal_cursor()
-        self._set_busy(False)
         
         if "error" in data:
             self.ui.error_label.setText(data["error"])
         else:
             self.ui.error_label.setText("Download complete.")
+
+        self.download_thread = None
+        self.ui.set_normal_cursor()
+        self._set_busy(False)
 
     # ---------------------------------------------------------
     # Table batching
