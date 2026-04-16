@@ -1,6 +1,7 @@
 # search_controller.py
 
 import logging
+from PySide6.QtCore import QTimer
 from ibridges import IrodsPath, download
 from ibridges.executor import Operations
 from ibridgesgui.threads import SearchThread, TransferDataThread
@@ -51,9 +52,8 @@ class SearchController:
             return
         self.busy = True
         self._set_busy(True)
-
-        self.ui.hide_result_elements()
         self.ui.set_wait_cursor()
+        self.ui.hide_result_elements()
 
         # Extract raw values from UI
         meta_fields = [
@@ -81,10 +81,13 @@ class SearchController:
             meta_fields=meta_fields,
         )
 
-    
         if msg:
             self.ui.error_label.setText(msg)
+            self.busy = False
+            self._set_busy(False)
+            self.ui.set_normal_cursor()
             return
+ 
         # Convert validated params into SearchThread arguments
         search_path = IrodsPath(self.session, params["search_path"])
         path_pattern = params["path_pattern"]
@@ -96,6 +99,9 @@ class SearchController:
         # Create the thread directly
         env_path = prep_session_for_copy(self.session, self.ui.error_label)
         if env_path is None:
+            self.busy = False
+            self._set_busy(False)
+            self.ui.set_normal_cursor()
             return
         self.search_thread = SearchThread(
             logger=self.logger,
@@ -122,17 +128,20 @@ class SearchController:
         self._search_results_data = data
 
     def _on_search_finished(self):
+
         data = self._search_results_data
         self._search_results_data = None
         self.search_thread = None
 
         if "error" in data:
             self.ui.error_label.setText(data["error"])
+            QTimer.singleShot(0, self._unlock_ui)
             return
     
         results = data["results"]
         if not results:
             self.ui.error_label.setText("No objects or collections found.")
+            QTimer.singleShot(0, self._unlock_ui)
             return
         
         # Store all results in model
@@ -143,16 +152,14 @@ class SearchController:
 
         # Get first batch
         batch = self.model.next_batch()
-        rows = self._format_batch(batch)
 
         self.ui.search_table.setRowCount(0)
         self.ui.display_results(self._format_batch(batch))
         self._update_load_more_visibility()
     
         self.ui.error_label.setText("Search complete.")
-        self.ui.set_normal_cursor()
-        self.busy = False
-        self._set_busy(False)
+        # re-enable buttons only when table is rendered.
+        QTimer.singleShot(50, self._unlock_ui)
 
     # ---------------------------------------------------------
     # Download logic
@@ -163,7 +170,6 @@ class SearchController:
         self.busy = True
         self._set_busy(True)
 
-        self.ui.hide_result_elements() 
         self.ui.error_label.clear()
         self.ui.set_wait_cursor()
        
@@ -171,15 +177,16 @@ class SearchController:
         selected = self.ui.get_selected_paths()
         if not selected:
             self.ui.error_label.setText("No data selected.")
-            self.ui.set_normal_cursor()
+            QTimer.singleShot(0, self._unlock_ui)
             return
 
         # Determine download destination
         folder, overwrite = self.ui.ask_download_destination(selected)
         if folder is None:
-            self.ui.set_normal_cursor()
+            QTimer.singleShot(0, self._unlock_ui)
             return
         if not overwrite:
+            QTimer.singleShot(0, self._unlock_ui)
             return
 
         # Convert UI strings to iRODS paths
@@ -195,6 +202,7 @@ class SearchController:
         env_path = prep_session_for_copy(self.session, self.ui.error_label)
         if env_path is None:
             self.ui.error_label.setText("No donwload. Cannot create new irods session.")
+            QTimer.singleShot(0, self._unlock_ui)
             return
 
         self.download_thread=TransferDataThread(
@@ -220,17 +228,17 @@ class SearchController:
         self._download_result = data
 
     def _on_download_finished_cleanup(self):
+        QTimer.singleShot(0, self._unlock_ui)
+
         data = self._download_result
         self._download_result = None
+        self.download_thread = None 
         
         if "error" in data:
             self.ui.error_label.setText(data["error"])
         else:
             self.ui.error_label.setText("Download complete.")
 
-        self.download_thread = None
-        self.ui.set_normal_cursor()
-        self._set_busy(False)
 
     # ---------------------------------------------------------
     # Table batching
@@ -308,3 +316,7 @@ class SearchController:
         self.ui.clear_button.setEnabled(not busy)
         self.ui.load_more_button.setEnabled(not busy)
 
+    def _unlock_ui(self):
+        self.busy = False
+        self._set_busy(False)
+        self.ui.set_normal_cursor()
