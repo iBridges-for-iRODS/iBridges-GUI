@@ -40,6 +40,9 @@ class SearchController:
     # Search logic
     # ---------------------------------------------------------
     def on_search(self):
+        # Hide results elements in UI
+        self.ui.hide_result_elements()
+
         # Extract raw values from UI
         meta_fields = [
             (self.ui.key1.text(), self.ui.val1.text(), self.ui.units1.text()),
@@ -66,20 +69,19 @@ class SearchController:
             meta_fields=meta_fields,
         )
 
-        print(params)
     
         if msg:
             self.ui.error_label.setText(msg)
             return
     
         # Start search thread
-        thread = self.service.start_search_thread(params)
-        thread.result.connect(self._on_search_results)
-        thread.finished.connect(lambda: self.ui.search_button.setEnabled(True))
+        self.search_thread = self.service.start_search_thread(params)
+        self.search_thread.result.connect(self._on_search_results)
+        self.search_thread.finished.connect(lambda: self.ui.search_button.setEnabled(True))
     
         self.ui.search_button.setEnabled(False)
         self.ui.error_label.setText("Searching ...")
-        thread.start()
+        self.search_thread.start()
     
     def _on_search_results(self, data):
         if "error" in data:
@@ -90,13 +92,23 @@ class SearchController:
         if not results:
             self.ui.error_label.setText("No objects or collections found.")
             return
-    
+        
+        # Store all results in model
         self.model.set_results(results)
+
+        # Show UI elements for results
+        self.ui.show_result_elements()
+
+        # Get first batch
         batch = self.model.next_batch()
+        rows = self._format_batch(batch)
+
         self.ui.search_table.setRowCount(0)
         self.ui.display_results(self._format_batch(batch))
+        self._update_load_more_visibility()
     
         self.ui.error_label.setText("Search complete.")
+
 
     # ---------------------------------------------------------
     # Download logic
@@ -135,11 +147,30 @@ class SearchController:
     # ---------------------------------------------------------
     def on_load_more(self):
         batch = self.model.next_batch()
-        self.ui.append_results(self._format_batch(batch))
+        rows = self._format_batch(batch)
+    
+        self.ui.append_results(rows)
+        self._update_load_more_visibility()
+    
+    def _update_load_more_visibility(self, batch_size=25):
+        total = len(self.model.results)
+        loaded_batches = self.model.current_batch  # incremented by next_batch()
+    
+        if total > batch_size * loaded_batches:
+            self.ui.load_more_button.show()
+            remaining = total - batch_size * loaded_batches
+            self.ui.load_more_button.setText(
+                f"Load next {min(batch_size, remaining)} of {total} results."
+            )
+        else:
+            self.ui.load_more_button.hide()
+    
+
 
     def _format_batch(self, batch):
         rows = []
-        for ipath in batch:
+        for path in batch:
+            ipath = IrodsPath(self.session, path) 
             if ipath.dataobject_exists():
                 rows.append((
                     "-d",
