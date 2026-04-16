@@ -2,9 +2,9 @@
 from pathlib import Path
 
 from ibridges import IrodsPath
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
-from ibridgesgui.gui_utils import get_last_ienv_path, populate_table, prep_session_for_copy
+from ibridgesgui.gui_utils import get_last_ienv_path, prep_session_for_copy
 from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory
 from ibridgesgui.threads import SyncThread, TransferDataThread
@@ -123,7 +123,7 @@ class SyncController:
 
     def create_dir(self):
         """Call widget to create directory."""
-        self.view.cllear_error()
+        self.view.clear_error()
         indexes = self.view.local_fs_tree.selectedIndexes()
         if not indexes:
             self.view.show_error("Please select a parent directory.")
@@ -158,96 +158,96 @@ class SyncController:
         info = self._gather_paths()
         if info is None:
             return
-    
+
         local_path, irods_path, _, irods_index = info
         self.model.refresh_irods_index = irods_index
-    
+
         source, target = (
             (local_path, irods_path)
             if self.model.sync_source == "local"
             else (irods_path, local_path)
         )
-    
+
         self._start_sync_diff(source, target)
-    
-    
+
+
     def _gather_paths(self):
         self.view.clear_error()
         self.view.clear_diff_table()
-    
+
         # Local
         fs_sel = self.view.local_fs_tree.selectedIndexes()
         if not fs_sel:
             self.view.show_error("Please select a directory.")
             return None
-    
+
         local_path = Path(self.local_fs_model.filePath(fs_sel[0]))
         if local_path.is_file():
             self.view.show_error("Please select a directory, not a file.")
             return None
-    
+
         # iRODS
         irods_sel = self.view.irods_tree.selectedIndexes()
         if not irods_sel:
             self.view.show_error("Please select a collection.")
             return None
-    
+
         irods_path = self.irods_model.irods_path_from_tree_index(irods_sel[0])
         if irods_path.dataobject_exists():
             self.view.show_error("Please select a collection, not a data object.")
             return None
-    
+
         self.model.set_paths(local_path, irods_path, irods_sel[0])
         return local_path, irods_path, fs_sel[0], irods_sel[0]
-    
-    
+
+
     def _start_sync_diff(self, source, target):
         self.view.hide_sync_button()
         self.view.clear_error()
         self.view.clear_diff_table()
         self.view.update_progress(0)
-    
+
         self._set_ui_busy(True)
         self.view.show_error("Calculating differences...")
-    
+
         env_path = prep_session_for_copy(self.session, self.view.error_label)
         if env_path is None:
             self._finish_sync_diff()
             return
-    
+
         self.sync_diff_thread = SyncThread(env_path, self.logger, source, target, dry_run=True)
         self.sync_diff_thread.result.connect(self._sync_diff_end)
         self.sync_diff_thread.finished.connect(self._finish_sync_diff)
         self.sync_diff_thread.start()
-    
-    
+
+
     def _sync_diff_end(self, output):
         self.view.clear_error()
         if output["error"]:
             self.view.show_error(output["error"])
             self.model.clear()
             return
-    
+
         self.model.diffs = output["result"]
-    
+
         rows = [
             (src, dst, src.size if isinstance(src, IrodsPath) else src.stat().st_size)
             for src, dst in self.model.diffs.upload + self.model.diffs.download
         ]
-    
+
         self.view.display_diff_rows(rows)
-    
+
         if not rows:
             self.view.show_error("Nothing to synchronise — everything is already up to date.")
             self.model.clear()
         else:
             self.view.show_sync_button()
-    
-    
+
+
     def _finish_sync_diff(self):
         self._set_ui_busy(False)
         self.sync_diff_thread = None
-    
+
     # ----------------------------------------------------------------------
     # Data sync
     # ----------------------------------------------------------------------
@@ -310,7 +310,7 @@ class SyncController:
     # ----------------------------------------------------------------------
 
     def _set_ui_busy(self, busy: bool):
-        self.view.set_ui_busy(busy) 
+        self.view.set_ui_busy(busy)
 
     # pylint: disable=W0212
     def _expand_path(self, irods_path: IrodsPath):
