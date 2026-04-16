@@ -207,7 +207,7 @@ class SyncController:
         self.view.clear_diff_table()
         self.view.update_progress(0)
 
-        self._set_ui_busy(True)
+        self.view.set_ui_busy(True)
         self.view.show_error("Calculating differences...")
 
         env_path = prep_session_for_copy(self.session, self.view.error_label)
@@ -245,7 +245,7 @@ class SyncController:
 
 
     def _finish_sync_diff(self):
-        self._set_ui_busy(False)
+        self.view.set_ui_busy(False)
         self.sync_diff_thread = None
 
     # ----------------------------------------------------------------------
@@ -253,7 +253,7 @@ class SyncController:
     # ----------------------------------------------------------------------
 
     def _start_data_sync(self):
-        self._set_ui_busy(True)
+        self.view.set_ui_busy(True)
         self.view.show_error("Synchronising data...")
 
         env_path = Path(get_last_ienv_path())
@@ -302,15 +302,12 @@ class SyncController:
 
     def _finish_sync_data(self):
         self.view.sync_button.hide()
-        self._set_ui_busy(False)
+        self.view.set_ui_busy(False)
         self.sync_data_thread = None
 
     # ----------------------------------------------------------------------
     # Helpers
     # ----------------------------------------------------------------------
-
-    def _set_ui_busy(self, busy: bool):
-        self.view.set_ui_busy(busy)
 
     # pylint: disable=W0212
     def _expand_path(self, irods_path: IrodsPath):

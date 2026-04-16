@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
 
-from ibridgesgui.irods_sync_service import SyncService
+from ibridgesgui.synctab.irods_sync_service import SyncService
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ def test_irods_root_stops_at_first_non_existing_parent(service):
     p1.__str__.return_value = "/zone/home"
     p2.__str__.return_value = "/zone"
 
-    with patch("ibridgesgui.irods_sync_service.IrodsPath", return_value=p0):
+    with patch("ibridgesgui.synctab.irods_sync_service.IrodsPath", return_value=p0):
         root = service.irods_root()
 
     # Should stop at p1, because p2.exists() is False
@@ -49,14 +49,14 @@ def test_irods_root_stops_at_first_non_existing_parent(service):
 # -------------------------
 
 def test_prepare_env_for_diff_success(service):
-    with patch("ibridgesgui.irods_sync_service.prep_session_for_copy", return_value="/tmp/env"):
+    with patch("ibridgesgui.synctab.irods_sync_service.prep_session_for_copy", return_value="/tmp/env"):
         result = service.prepare_env_for_diff(error_label=MagicMock())
         assert isinstance(result, Path)
         assert str(result) == "/tmp/env"
 
 
 def test_prepare_env_for_diff_failure(service):
-    with patch("ibridgesgui.irods_sync_service.prep_session_for_copy", return_value=None):
+    with patch("ibridgesgui.synctab.irods_sync_service.prep_session_for_copy", return_value=None):
         result = service.prepare_env_for_diff(error_label=MagicMock())
         assert result is None
 
@@ -68,7 +68,7 @@ def test_prepare_env_for_diff_failure(service):
 def test_prepare_env_for_sync_missing_env_path(service):
     error_label = MagicMock()
 
-    with patch("ibridgesgui.irods_sync_service.get_last_ienv_path", return_value=""):
+    with patch("ibridgesgui.synctab.irods_sync_service.get_last_ienv_path", return_value=""):
         result = service.prepare_env_for_sync(error_label)
 
     assert result is None
@@ -78,7 +78,7 @@ def test_prepare_env_for_sync_missing_env_path(service):
 def test_prepare_env_for_sync_file_not_found(service):
     error_label = MagicMock()
 
-    with patch("ibridgesgui.irods_sync_service.get_last_ienv_path", return_value="/nope"):
+    with patch("ibridgesgui.synctab.irods_sync_service.get_last_ienv_path", return_value="/nope"):
         with patch("pathlib.Path.exists", return_value=False):
             result = service.prepare_env_for_sync(error_label)
 
@@ -87,7 +87,7 @@ def test_prepare_env_for_sync_file_not_found(service):
 
 
 def test_prepare_env_for_sync_success(service):
-    with patch("ibridgesgui.irods_sync_service.get_last_ienv_path", return_value="/tmp/env"):
+    with patch("ibridgesgui.synctab.irods_sync_service.get_last_ienv_path", return_value="/tmp/env"):
         with patch("pathlib.Path.exists", return_value=True):
             result = service.prepare_env_for_sync(error_label=MagicMock())
 
@@ -102,7 +102,7 @@ def test_prepare_env_for_sync_success(service):
 def test_start_diff_thread_success(service):
     fake_thread = MagicMock()
 
-    with patch("ibridgesgui.irods_sync_service.SyncThread", return_value=fake_thread):
+    with patch("ibridgesgui.synctab.irods_sync_service.SyncThread", return_value=fake_thread):
         result = service.start_diff_thread(
             env_path="/tmp/env",
             source="src",
@@ -116,7 +116,7 @@ def test_start_diff_thread_success(service):
 
 
 def test_start_diff_thread_instantiation_error(service):
-    with patch("ibridgesgui.irods_sync_service.SyncThread", side_effect=Exception("boom")):
+    with patch("ibridgesgui.synctab.irods_sync_service.SyncThread", side_effect=Exception("boom")):
         on_result = MagicMock()
         result = service.start_diff_thread(
             env_path="/tmp/env",
@@ -138,7 +138,7 @@ def test_start_diff_thread_instantiation_error(service):
 def test_start_sync_thread_success(service):
     fake_thread = MagicMock()
 
-    with patch("ibridgesgui.irods_sync_service.TransferDataThread", return_value=fake_thread):
+    with patch("ibridgesgui.synctab.irods_sync_service.TransferDataThread", return_value=fake_thread):
         result = service.start_sync_thread(
             env_path="/tmp/env",
             diffs=MagicMock(),
@@ -152,7 +152,7 @@ def test_start_sync_thread_success(service):
 
 
 def test_start_sync_thread_instantiation_error(service):
-    with patch("ibridgesgui.irods_sync_service.TransferDataThread", side_effect=Exception("boom")):
+    with patch("ibridgesgui.synctab.irods_sync_service.TransferDataThread", side_effect=Exception("boom")):
         on_result = MagicMock()
         result = service.start_sync_thread(
             env_path="/tmp/env",
