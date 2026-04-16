@@ -2,6 +2,7 @@
 
 import logging
 from ibridges import IrodsPath, download
+from ibridges.executor import Operations
 from ibridgesgui.threads import SearchThread, TransferDataThread
 from ibridgesgui.gui_utils import prep_session_for_copy, combine_operations
 from pathlib import Path
@@ -29,6 +30,7 @@ class SearchController:
         self.ui.search_path_field.setText(self.session.home)
         self.ui.error_label.clear()
         self.ui.search_table.setRowCount(0)
+        self.ui.hide_result_elements()
 
     # ---------------------------------------------------------
     # Signal wiring
@@ -106,18 +108,23 @@ class SearchController:
         self.search_thread.finished.connect(self._on_search_finished)
     
         # Update UI
-        self.ui.search_button.setEnabled(False)
+        self._set_busy(True)
         self.ui.error_label.setText("Searching ...")
     
         # Start thread
         self.search_thread.start()
 
+    def _on_search_results(self, data):
+        self._search_results_data = data
+
     def _on_search_finished(self):
+        data = self._search_results_data
+        self._search_results_data = None
+        
         self.search_thread = None
         self.ui.search_button.setEnabled(True)
-    
+        self._set_busy(False)
 
-    def _on_search_results(self, data):
         if "error" in data:
             self.ui.error_label.setText(data["error"])
             return
@@ -160,7 +167,6 @@ class SearchController:
 
         # Determine download destination
         folder, overwrite = self.ui.ask_download_destination(selected)
-        print(folder, overwrite)
         if folder is None:
             self.ui.set_normal_cursor()
             return
@@ -190,25 +196,33 @@ class SearchController:
         )
         self.download_thread.result.connect(self._on_download_finished)
         self.download_thread.finished.connect(self._on_download_finished_cleanup)
+        self.download_thread.current_progress.connect(self._on_download_progress)
+
         
         self.ui.error_label.setText("Downloading ...")
+        self._set_busy(True)
         self.download_thread.start()
 
     def _on_download_progress(self, state):
-        _, _, done, total, failed = state
+        _, _, done, total, failed, _ = state
         self.ui.error_label.setText(f"{done} of {total} files; failed: {failed}.")
 
 
     def _on_download_finished(self, data):
+        self._download_result = data
+
+    def _on_download_finished_cleanup(self):
+        data = self._download_result
+        self._download_result = None
+        
+        self.download_thread = None
+        self.ui.set_normal_cursor()
+        self._set_busy(False)
+        
         if "error" in data:
             self.ui.error_label.setText(data["error"])
         else:
             self.ui.error_label.setText("Download complete.")
-
-    def _on_download_finished_cleanup(self):
-        self.download_thread = None
-        self.ui.set_normal_cursor()
-
 
     # ---------------------------------------------------------
     # Table batching
@@ -279,3 +293,10 @@ class SearchController:
         target = ipath if ipath.collection_exists() else ipath.parent
         self.browser.input_path.setText(str(target))
         self.browser.load_browser_table()
+    
+    def _set_busy(self, busy: bool):
+        self.ui.search_button.setEnabled(not busy)
+        self.ui.download_button.setEnabled(not busy)
+        self.ui.clear_button.setEnabled(not busy)
+        self.ui.load_more_button.setEnabled(not busy)
+

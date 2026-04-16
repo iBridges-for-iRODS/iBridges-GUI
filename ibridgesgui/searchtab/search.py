@@ -62,10 +62,10 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
 
     def get_selected_paths(self):
         """Return a list of selected iRODS paths from the table."""
+        rows = {item.row() for item in self.search_table.selectedItems()}
         selected = []
-        for item in self.search_table.selectedItems():
-            row = item.row()
-            # Assuming column 1 contains the path (same as old code)
+
+        for row in rows:
             path_item = self.search_table.item(row, 1)
             if path_item:
                 selected.append(path_item.text())
