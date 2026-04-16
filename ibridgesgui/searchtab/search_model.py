@@ -5,6 +5,7 @@ from ibridges.search import MetaSearch
 
 class SearchModel:
     """Model for search view."""
+
     def __init__(self, session):
         """Init."""
         self.session = session
