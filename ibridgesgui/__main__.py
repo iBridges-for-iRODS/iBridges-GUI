@@ -29,7 +29,7 @@ from ibridgesgui.info import Info
 from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
 from ibridgesgui.popup_widgets import CheckConfig
-from ibridgesgui.search import Search
+from ibridgesgui.searchtab.search import Search
 from ibridgesgui.sync import Sync
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.welcome import Welcome
