@@ -1,10 +1,12 @@
-# search_model.py
+"""Search model."""
 from ibridges import IrodsPath
 from ibridges.search import MetaSearch
 
 
 class SearchModel:
+    """Model for search view."""
     def __init__(self, session):
+        """Init."""
         self.session = session
         self.results = []
         self.current_batch = 0
@@ -18,12 +20,13 @@ class SearchModel:
         item_type: str,
         meta_fields: list[tuple[str, str, str]],
     ):
-        """
-        Validate raw search parameters (no UI dependency).
-        Returns:
-            (msg, params_dict)
-        """
+        """Validate raw search parameters (no UI dependency).
 
+        Returns
+        -------
+            (msg, params_dict)
+
+        """
         # Convert to IrodsPath
         search_path_obj = IrodsPath(self.session, search_path)
 
@@ -59,10 +62,12 @@ class SearchModel:
     # ---------------- RESULTS ---------------- #
 
     def set_results(self, results):
+        """Cache all results from search."""
         self.results = results
         self.current_batch = 0
 
     def next_batch(self, batch_size=25):
+        """Get next batch of results."""
         start = self.current_batch * batch_size
         end = start + batch_size
         self.current_batch += 1

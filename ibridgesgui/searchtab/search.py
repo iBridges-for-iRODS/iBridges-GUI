@@ -1,15 +1,14 @@
-# search.py
+"""Search tab."""
 import sys
-from PySide6.QtWidgets import QFileDialog, QMessageBox
 from pathlib import Path
-import PySide6.QtWidgets
-from PySide6.QtWidgets import QButtonGroup
-from PySide6.QtGui import QCursor
-from PySide6.QtCore import Qt
 
-from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
+import PySide6.QtWidgets
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QCursor
+from PySide6.QtWidgets import QButtonGroup, QFileDialog, QMessageBox
+
+from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, load_ui
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
-from ibridgesgui.gui_utils import append_table
 
 from .search_controller import SearchController
 
@@ -18,6 +17,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
     """Search view for iRODS session (UI only, logic in SearchController)."""
 
     def __init__(self, session, app_name: str, browser):
+        """Init."""
         super().__init__()
 
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
@@ -30,7 +30,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.radio_group.addButton(self.objects_radio)
         self.radio_group.addButton(self.collections_radio)
         self.radio_group.addButton(self.all_radio)
-        
+
         # Create controller (same pattern as Browser)
         self.controller = SearchController(self, session, app_name, browser)
         self.controller.init_search()
@@ -38,7 +38,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
     def display_results(self, rows):
         """Replace table contents with new rows."""
         append_table(self.search_table, self.search_table.rowCount(), rows)
-    
+
     def append_results(self, rows):
         """Append rows to the existing table."""
         append_table(self.search_table, self.search_table.rowCount(), rows)
@@ -52,7 +52,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.load_more_button.hide()
         self.clear_button.hide()
         self.search_table.setRowCount(0)
-    
+
     def show_result_elements(self):
         """Show the GUI elements that show and manipulate search results."""
         self.search_table.show()
@@ -70,8 +70,8 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
             if path_item:
                 selected.append(path_item.text())
         return selected
-    
-    
+
+
     def ask_download_destination(self, selected_paths):
         """Determine download location and get ok to download."""
         overwrite = True
@@ -81,17 +81,17 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
             str(Path("~").expanduser()),
             QFileDialog.ShowDirsOnly
         )
-   
+
         if not folder:
             return None, False
-    
+
         folder = Path(folder)
-    
+
         # Check for existing files
         exists = []
         for p in selected_paths:
             exists.append(folder.joinpath(Path(p).name).exists())
-    
+
         if any(exists):
             reply = QMessageBox.question(
                 self,
@@ -101,16 +101,17 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
             )
             if reply == QMessageBox.Cancel:
                 return None, False
-            overwrite = (reply == QMessageBox.Yes)
+            overwrite = reply == QMessageBox.Yes
         else:
             overwrite = True
-    
+
         return folder, overwrite
 
 
     def set_wait_cursor(self):
+        """Set cursor to wait."""
         self.setCursor(QCursor(Qt.WaitCursor))
 
     def set_normal_cursor(self):
+        """Set cursor to normal."""
         self.setCursor(QCursor(Qt.ArrowCursor))
-

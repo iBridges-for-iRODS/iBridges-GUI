@@ -1,0 +1,1 @@
+"""Searchtab functionality."""

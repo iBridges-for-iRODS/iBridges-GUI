@@ -1,13 +1,15 @@
-# search_controller.py
+"""Search controller."""
 
 import logging
-from PySide6.QtCore import QTimer
+
 from ibridges import IrodsPath, download
-from ibridges.executor import Operations
+from PySide6.QtCore import QTimer
+
+from ibridgesgui.gui_utils import combine_operations, prep_session_for_copy
 from ibridgesgui.threads import SearchThread, TransferDataThread
-from ibridgesgui.gui_utils import prep_session_for_copy, combine_operations
-from pathlib import Path
+
 from .search_model import SearchModel
+
 #from .irods_search_service import IrodsSearchService
 
 
@@ -15,18 +17,25 @@ class SearchController:
     """Controller for the Search tab."""
 
     def __init__(self, ui, session, app_name, browser):
+        """Init."""
         self.ui = ui
         self.session = session
         self.browser = browser
         self.logger = logging.getLogger(app_name)
 
         self.model = SearchModel(session)
+
         self.busy = False
+        self.search_thread = None
+        self.download_thread = None
+        self._search_results_data = None
+        self._download_result = None
 
     # ---------------------------------------------------------
     # Initialization (called from Search.__init__)
     # ---------------------------------------------------------
     def init_search(self):
+        """Connect signals and init interactive elements."""
         self._connect_signals()
         self.ui.search_path_field.setText(self.session.home)
         self.ui.error_label.clear()
@@ -48,6 +57,7 @@ class SearchController:
     # Search logic
     # ---------------------------------------------------------
     def on_search(self):
+        """Fetch parameters and start irods search."""
         if self.busy:
             return
         self.busy = True
@@ -62,7 +72,7 @@ class SearchController:
             (self.ui.key3.text(), self.ui.val3.text(), self.ui.units3.text()),
             (self.ui.key4.text(), self.ui.val4.text(), self.ui.units4.text()),
         ]
-   
+
         # Extract item types to search for
         checked = self.ui.radio_group.checkedButton()
         if "object" in checked.text().lower():
@@ -71,7 +81,7 @@ class SearchController:
             item_type = "collection"
         else:
             item_type = None
-        
+
         msg, params = self.model.validate(
             search_path=self.ui.search_path_field.text(),
             path_pattern=self.ui.path_pattern_field.text(),
@@ -87,7 +97,7 @@ class SearchController:
             self._set_busy(False)
             self.ui.set_normal_cursor()
             return
- 
+
         # Convert validated params into SearchThread arguments
         search_path = IrodsPath(self.session, params["search_path"])
         path_pattern = params["path_pattern"]
@@ -95,7 +105,7 @@ class SearchController:
         case_sensitive = params["case_sensitive"]
         item_type = params["item_type"]
         meta_searches = params["meta_searches"]
-    
+
         # Create the thread directly
         env_path = prep_session_for_copy(self.session, self.ui.error_label)
         if env_path is None:
@@ -112,15 +122,15 @@ class SearchController:
             checksum=checksum,
             case_sensitive=case_sensitive,
             item_type=item_type,
-        ) 
-   
+        )
+
         # Connect signals
         self.search_thread.result.connect(self._on_search_results)
         self.search_thread.finished.connect(self._on_search_finished)
-    
+
         # Update UI
         self.ui.error_label.setText("Searching ...")
-    
+
         # Start thread
         self.search_thread.start()
 
@@ -137,13 +147,13 @@ class SearchController:
             self.ui.error_label.setText(data["error"])
             QTimer.singleShot(0, self._unlock_ui)
             return
-    
+
         results = data["results"]
         if not results:
             self.ui.error_label.setText("No objects or collections found.")
             QTimer.singleShot(0, self._unlock_ui)
             return
-        
+
         # Store all results in model
         self.model.set_results(results)
 
@@ -156,7 +166,7 @@ class SearchController:
         self.ui.search_table.setRowCount(0)
         self.ui.display_results(self._format_batch(batch))
         self._update_load_more_visibility()
-    
+
         self.ui.error_label.setText("Search complete.")
         # re-enable buttons only when table is rendered.
         QTimer.singleShot(50, self._unlock_ui)
@@ -165,6 +175,7 @@ class SearchController:
     # Download logic
     # ---------------------------------------------------------
     def on_download(self):
+        """Fetch marked items from table and start download."""
         if self.busy:
             return
         self.busy = True
@@ -172,7 +183,7 @@ class SearchController:
 
         self.ui.error_label.clear()
         self.ui.set_wait_cursor()
-       
+
         # Retrieve selected paths (coll or obj)
         selected = self.ui.get_selected_paths()
         if not selected:
@@ -215,7 +226,7 @@ class SearchController:
         self.download_thread.finished.connect(self._on_download_finished_cleanup)
         self.download_thread.current_progress.connect(self._on_download_progress)
 
-        
+
         self.ui.error_label.setText("Downloading ...")
         self.download_thread.start()
 
@@ -232,8 +243,8 @@ class SearchController:
 
         data = self._download_result
         self._download_result = None
-        self.download_thread = None 
-        
+        self.download_thread = None
+
         if "error" in data:
             self.ui.error_label.setText(data["error"])
         else:
@@ -244,16 +255,17 @@ class SearchController:
     # Table batching
     # ---------------------------------------------------------
     def on_load_more(self):
+        """Fetch next results batch."""
         batch = self.model.next_batch()
         rows = self._format_batch(batch)
-    
+
         self.ui.append_results(rows)
         self._update_load_more_visibility()
-    
+
     def _update_load_more_visibility(self, batch_size=25):
         total = len(self.model.results)
         loaded_batches = self.model.current_batch  # incremented by next_batch()
-    
+
         if total > batch_size * loaded_batches:
             self.ui.load_more_button.show()
             remaining = total - batch_size * loaded_batches
@@ -262,13 +274,13 @@ class SearchController:
             )
         else:
             self.ui.load_more_button.hide()
-    
+
 
 
     def _format_batch(self, batch):
         rows = []
         for path in batch:
-            ipath = IrodsPath(self.session, path) 
+            ipath = IrodsPath(self.session, path)
             if ipath.dataobject_exists():
                 rows.append((
                     "-d",
@@ -291,10 +303,12 @@ class SearchController:
     # Misc UI actions
     # ---------------------------------------------------------
     def on_clear(self):
+        """Clear search results."""
         self.ui.search_table.setRowCount(0)
         self.ui.error_label.clear()
 
     def on_select_all(self):
+        """Select all search results on table."""
         if self.ui.select_all_box.isChecked():
             for row in range(self.ui.search_table.rowCount()):
                 self.ui.search_table.selectRow(row)
@@ -302,6 +316,7 @@ class SearchController:
             self.ui.search_table.clearSelection()
 
     def on_send_to_browser(self):
+        """Open browser tab on location from results table."""
         row = self.ui.search_table.currentIndex().row()
         path = self.ui.search_table.item(row, 1).text()
         ipath = IrodsPath(self.session, path)
