@@ -21,7 +21,7 @@ def qapp():
 # ---------------------------------------------------------
 @pytest.fixture
 def fake_view(qtbot):
-    """Creates a minimal fake view with the widgets the controller expects."""
+    """Creates a minimal fake view for the synctab."""
 
     class FakeView(QtWidgets.QWidget):
         def __init__(self):
@@ -41,8 +41,6 @@ def fake_view(qtbot):
     view = FakeView()
     qtbot.addWidget(view)
     return view
-
-
 
 class DummyCollections:
     def exists(self, path: str) -> bool:
