@@ -20,7 +20,7 @@ class SearchController:
         self.logger = logging.getLogger(app_name)
 
         self.model = SearchModel(session)
-        #self.service = IrodsSearchService(session, app_name)
+        self.busy = False
 
     # ---------------------------------------------------------
     # Initialization (called from Search.__init__)
@@ -49,6 +49,11 @@ class SearchController:
     def on_search(self):
         # Hide results elements in UI
         self.ui.hide_result_elements()
+        if self.busy:
+            print("busy")
+            return
+        self.busy = True
+        self._set_busy(True)
 
         # Extract raw values from UI
         meta_fields = [
@@ -108,7 +113,6 @@ class SearchController:
         self.search_thread.finished.connect(self._on_search_finished)
     
         # Update UI
-        self._set_busy(True)
         self.ui.error_label.setText("Searching ...")
     
         # Start thread
@@ -118,6 +122,8 @@ class SearchController:
         self._search_results_data = data
 
     def _on_search_finished(self):
+        self.busy = False
+        self._set_busy(False)
         data = self._search_results_data
         self._search_results_data = None
         
@@ -155,6 +161,11 @@ class SearchController:
     # Download logic
     # ---------------------------------------------------------
     def on_download(self):
+        if self.busy:
+            return
+        self.busy = True
+        self._set_busy(True)
+        
         self.ui.error_label.clear()
         self.ui.set_wait_cursor()
        
@@ -200,7 +211,6 @@ class SearchController:
 
         
         self.ui.error_label.setText("Downloading ...")
-        self._set_busy(True)
         self.download_thread.start()
 
     def _on_download_progress(self, state):
@@ -212,6 +222,10 @@ class SearchController:
         self._download_result = data
 
     def _on_download_finished_cleanup(self):
+        self.busy = False
+        self._set_busy(False)
+        self.ui.set_normal_cursor()
+        
         data = self._download_result
         self._download_result = None
         
@@ -293,7 +307,7 @@ class SearchController:
         target = ipath if ipath.collection_exists() else ipath.parent
         self.browser.input_path.setText(str(target))
         self.browser.load_browser_table()
-    
+
     def _set_busy(self, busy: bool):
         self.ui.search_button.setEnabled(not busy)
         self.ui.download_button.setEnabled(not busy)
