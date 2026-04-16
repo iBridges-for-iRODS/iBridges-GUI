@@ -201,9 +201,8 @@ class SyncController:
         self.view.sync_button.hide()
         self.view.error_label.clear()
         self.view.diff_table.setRowCount(0)
-        self._enable_buttons(False)
         self.view.progress_bar.setValue(0)
-        self._set_busy(True)
+        self._set_ui_busy(True)
 
         self.view.error_label.setText("Calculating differences...")
 
@@ -241,8 +240,7 @@ class SyncController:
             self.view.sync_button.show()
 
     def _finish_sync_diff(self):
-        self._enable_buttons(True)
-        self._set_busy(False)
+        self._set_ui_busy(False)
         self.sync_diff_thread = None
 
     # ----------------------------------------------------------------------
@@ -250,8 +248,7 @@ class SyncController:
     # ----------------------------------------------------------------------
 
     def _start_data_sync(self):
-        self._enable_buttons(False)
-        self._set_busy(True)
+        self._set_ui_busy(True)
         self.view.error_label.setText("Synchronising data...")
 
         env_path = Path(get_last_ienv_path())
@@ -299,9 +296,8 @@ class SyncController:
         self.model.clear()
 
     def _finish_sync_data(self):
-        self._enable_buttons(True)
         self.view.sync_button.hide()
-        self._set_busy(False)
+        self._set_ui_busy(False)
         self.sync_data_thread = None
 
     # ----------------------------------------------------------------------
@@ -317,6 +313,17 @@ class SyncController:
     def _set_busy(self, busy):
         cursor = QtCore.Qt.WaitCursor if busy else QtCore.Qt.ArrowCursor
         self.view.setCursor(QtGui.QCursor(cursor))
+
+    def _set_ui_busy(self, busy: bool):
+        # Disable/enable all interactive buttons
+        self._enable_buttons(not busy)
+    
+        # Disable sync button too
+        self.view.sync_button.setEnabled(not busy)
+    
+        # Change cursor
+        self._set_busy(busy)
+    
 
     # pylint: disable=W0212
     def _expand_path(self, irods_path: IrodsPath):
