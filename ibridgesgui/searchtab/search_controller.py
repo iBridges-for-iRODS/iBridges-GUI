@@ -1,8 +1,12 @@
 # search_controller.py
-from ibridges import IrodsPath
 
+import logging
+from ibridges import IrodsPath, download
+from ibridgesgui.threads import SearchThread, TransferDataThread
+from ibridgesgui.gui_utils import prep_session_for_copy, combine_operations
+from pathlib import Path
 from .search_model import SearchModel
-from .irods_search_service import IrodsSearchService
+#from .irods_search_service import IrodsSearchService
 
 
 class SearchController:
@@ -12,9 +16,10 @@ class SearchController:
         self.ui = ui
         self.session = session
         self.browser = browser
+        self.logger = logging.getLogger(app_name)
 
         self.model = SearchModel(session)
-        self.service = IrodsSearchService(session, app_name)
+        #self.service = IrodsSearchService(session, app_name)
 
     # ---------------------------------------------------------
     # Initialization (called from Search.__init__)
@@ -73,16 +78,45 @@ class SearchController:
         if msg:
             self.ui.error_label.setText(msg)
             return
+        # Convert validated params into SearchThread arguments
+        search_path = IrodsPath(self.session, params["search_path"])
+        path_pattern = params["path_pattern"]
+        checksum = params["checksum"]
+        case_sensitive = params["case_sensitive"]
+        item_type = params["item_type"]
+        meta_searches = params["meta_searches"]
     
-        # Start search thread
-        self.search_thread = self.service.start_search_thread(params)
+        # Create the thread directly
+        env_path = prep_session_for_copy(self.session, self.ui.error_label)
+        if env_path is None:
+            return
+        self.search_thread = SearchThread(
+            logger=self.logger,
+            ienv_path=env_path,
+            search_path=search_path,
+            path_pattern=path_pattern,
+            meta_searches=meta_searches,
+            checksum=checksum,
+            case_sensitive=case_sensitive,
+            item_type=item_type,
+        ) 
+   
+        # Connect signals
         self.search_thread.result.connect(self._on_search_results)
-        self.search_thread.finished.connect(lambda: self.ui.search_button.setEnabled(True))
+        self.search_thread.finished.connect(self._on_search_finished)
     
+        # Update UI
         self.ui.search_button.setEnabled(False)
         self.ui.error_label.setText("Searching ...")
-        self.search_thread.start()
     
+        # Start thread
+        self.search_thread.start()
+
+    def _on_search_finished(self):
+        self.search_thread = None
+        self.ui.search_button.setEnabled(True)
+    
+
     def _on_search_results(self, data):
         if "error" in data:
             self.ui.error_label.setText(data["error"])
@@ -114,33 +148,67 @@ class SearchController:
     # Download logic
     # ---------------------------------------------------------
     def on_download(self):
+        self.ui.error_label.clear()
+        self.ui.set_wait_cursor()
+       
+        # Retrieve selected paths (coll or obj)
         selected = self.ui.get_selected_paths()
         if not selected:
             self.ui.error_label.setText("No data selected.")
+            self.ui.set_normal_cursor()
             return
 
+        # Determine download destination
         folder, overwrite = self.ui.ask_download_destination(selected)
+        print(folder, overwrite)
         if folder is None:
+            self.ui.set_normal_cursor()
+            return
+        if not overwrite:
             return
 
+        # Convert UI strings to iRODS paths
         irods_paths = [IrodsPath(self.session, p) for p in selected]
-        thread = self.service.start_download_thread(irods_paths, folder, overwrite)
 
-        thread.result.connect(self._on_download_finished)
-        thread.current_progress.connect(self._on_download_progress)
+        # Combine several downloads in one ibridges operations object
+        ops = combine_operations([
+            download(p, folder, overwrite=True, dry_run=True)
+            for p in irods_paths
+        ])
 
+        # Start download
+        env_path = prep_session_for_copy(self.session, self.ui.error_label)
+        if env_path is None:
+            self.ui.error_label.setText("No donwload. Cannot create new irods session.")
+            return
+
+        self.download_thread=TransferDataThread(
+            ienv_path=env_path,
+            logger=self.logger,
+            ops=ops,
+            overwrite=overwrite
+        )
+        self.download_thread.result.connect(self._on_download_finished)
+        self.download_thread.finished.connect(self._on_download_finished_cleanup)
+        
         self.ui.error_label.setText("Downloading ...")
-        thread.start()
+        self.download_thread.start()
 
     def _on_download_progress(self, state):
         _, _, done, total, failed = state
         self.ui.error_label.setText(f"{done} of {total} files; failed: {failed}.")
 
-    def _on_download_finished(self, result):
-        if result["error"]:
-            self.ui.error_label.setText("Errors occurred during download.")
+
+    def _on_download_finished(self, data):
+        if "error" in data:
+            self.ui.error_label.setText(data["error"])
         else:
-            self.ui.error_label.setText("Download finished.")
+            self.ui.error_label.setText("Download complete.")
+
+    def _on_download_finished_cleanup(self):
+        self.download_thread = None
+        self.ui.set_normal_cursor()
+
 
     # ---------------------------------------------------------
     # Table batching

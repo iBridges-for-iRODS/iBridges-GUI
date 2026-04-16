@@ -1,7 +1,11 @@
 # search.py
 import sys
+from PySide6.QtWidgets import QFileDialog, QMessageBox
+from pathlib import Path
 import PySide6.QtWidgets
 from PySide6.QtWidgets import QButtonGroup
+from PySide6.QtGui import QCursor
+from PySide6.QtCore import Qt
 
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
@@ -55,4 +59,58 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.select_all_box.show()
         self.download_button.show()
         self.clear_button.show()
+
+    def get_selected_paths(self):
+        """Return a list of selected iRODS paths from the table."""
+        selected = []
+        for item in self.search_table.selectedItems():
+            row = item.row()
+            # Assuming column 1 contains the path (same as old code)
+            path_item = self.search_table.item(row, 1)
+            if path_item:
+                selected.append(path_item.text())
+        return selected
+    
+    
+    def ask_download_destination(self, selected_paths):
+        """Determine download location and get ok to download."""
+        overwrite = True
+        folder = QFileDialog.getExistingDirectory(
+            self,
+            "Select download folder",
+            str(Path("~").expanduser()),
+            QFileDialog.ShowDirsOnly
+        )
+   
+        if not folder:
+            return None, False
+    
+        folder = Path(folder)
+    
+        # Check for existing files
+        exists = []
+        for p in selected_paths:
+            exists.append(folder.joinpath(Path(p).name).exists())
+    
+        if any(exists):
+            reply = QMessageBox.question(
+                self,
+                "Overwrite?",
+                f"Some files already exist in:\n{folder}\n\nOverwrite?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+            )
+            if reply == QMessageBox.Cancel:
+                return None, False
+            overwrite = (reply == QMessageBox.Yes)
+        else:
+            overwrite = True
+    
+        return folder, overwrite
+
+
+    def set_wait_cursor(self):
+        self.setCursor(QCursor(Qt.WaitCursor))
+
+    def set_normal_cursor(self):
+        self.setCursor(QCursor(Qt.ArrowCursor))
 
