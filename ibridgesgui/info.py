@@ -91,6 +91,7 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
     def _wait_cursor():
         class CursorContext:
             """Helper class to steer cursor appearance."""
+
             def __enter__(self):
                 QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
