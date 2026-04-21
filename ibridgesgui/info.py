@@ -1,11 +1,12 @@
 """Info tab."""
+
 import sys
-from PySide6 import QtWidgets, QtGui, QtCore
+
 from ibridges.resources import Resources
+from PySide6 import QtCore, QtWidgets
+
 from ibridgesgui.config import CONFIG_DIR
-from ibridgesgui.gui_utils import (
-    UI_FILE_DIR, load_ui, populate_table, populate_textfield
-)
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, populate_table, populate_textfield
 from ibridgesgui.ui_files.tabInfo import Ui_tabInfo
 
 
@@ -69,7 +70,6 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
         self.server_label.setText(info["server"])
         self.version_label.setText(info["version"])
 
-        rescs = info["resources"]
         resources = [
             tuple("" if v is None else v for v in row)
             for row in info["resources"]
@@ -90,6 +90,7 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
     @staticmethod
     def _wait_cursor():
         class CursorContext:
+            """Helper class to steer cursor appearance."""
             def __enter__(self):
                 QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 

@@ -1,7 +1,9 @@
-# logviewer.py
+"""Log tab."""
 import logging
 import sys
-from PySide6 import QtWidgets, QtCore
+
+from PySide6 import QtCore, QtWidgets
+
 from ibridgesgui.config import CONFIG_DIR
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.tabLogging import Ui_tabLogging
@@ -11,11 +13,13 @@ class QPlainTextEditLogger(logging.Handler):
     """Logging handler that writes to a QPlainTextEdit."""
 
     def __init__(self, widget):
+        """Init."""
         super().__init__()
         self.widget = widget
         self.widget.setReadOnly(True)
 
     def emit(self, record):
+        """Append to current text in Editor."""
         msg = self.format(record)
         QtCore.QMetaObject.invokeMethod(
             self.widget,
@@ -29,6 +33,7 @@ class LogViewer(QtWidgets.QWidget, Ui_tabLogging):
     """Logging tab."""
 
     def __init__(self, logger):
+        """Init."""
         super().__init__()
         self._load_ui()
 
@@ -51,4 +56,3 @@ class LogViewer(QtWidgets.QWidget, Ui_tabLogging):
         self.logger.addHandler(handler)
         self.logger.setLevel(logging.DEBUG)
         self._handler = handler
-

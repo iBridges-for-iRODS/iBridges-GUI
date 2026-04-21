@@ -2,6 +2,7 @@
 
 import sys
 from datetime import datetime
+
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from ibridgesgui.gui_utils import LOGO_DIR, UI_FILE_DIR, load_ui
@@ -12,6 +13,7 @@ class Welcome(QtWidgets.QWidget, Ui_Welcome):
     """Welcome page."""
 
     def __init__(self):
+        """Init."""
         super().__init__()
         self._load_ui()
         self._setup_logo()
