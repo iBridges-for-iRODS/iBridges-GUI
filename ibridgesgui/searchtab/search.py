@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QButtonGroup, QFileDialog, QMessageBox
 from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, load_ui
 from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
-from .search_controller import SearchController
+from ibridgesgui.searchtab.search_controller import SearchController
 
 
 class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
@@ -88,10 +88,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         folder = Path(folder)
 
         # Check for existing files
-        exists = []
-        for p in selected_paths:
-            exists.append(folder.joinpath(Path(p).name).exists())
-
+        exists = [folder.joinpath(Path(p).name).exists() for p in selected_paths]
         if any(exists):
             reply = QMessageBox.question(
                 self,
