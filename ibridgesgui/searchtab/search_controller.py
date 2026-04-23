@@ -211,7 +211,7 @@ class SearchController:
         # Start download
         env_path = prep_session_for_copy(self.session, self.ui.error_label)
         if env_path is None:
-            self.ui.error_label.setText("No donwload. Cannot create new irods session.")
+            self.ui.error_label.setText("No download. Cannot create new irods session.")
             QTimer.singleShot(0, self._unlock_ui)
             return
 
