@@ -1,4 +1,5 @@
 """Search tab."""
+
 import sys
 from pathlib import Path
 
@@ -8,9 +9,8 @@ from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QButtonGroup, QFileDialog, QMessageBox
 
 from ibridgesgui.gui_utils import UI_FILE_DIR, append_table, load_ui
-from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
-
 from ibridgesgui.searchtab.search_controller import SearchController
+from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 
 
 class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
@@ -71,15 +71,11 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
                 selected.append(path_item.text())
         return selected
 
-
     def ask_download_destination(self, selected_paths):
         """Determine download location and get ok to download."""
         overwrite = True
         folder = QFileDialog.getExistingDirectory(
-            self,
-            "Select download folder",
-            str(Path("~").expanduser()),
-            QFileDialog.ShowDirsOnly
+            self, "Select download folder", str(Path("~").expanduser()), QFileDialog.ShowDirsOnly
         )
 
         if not folder:
@@ -94,7 +90,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
                 self,
                 "Overwrite?",
                 f"Some files already exist in:\n{folder}\n\nOverwrite?",
-                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
             )
             if reply == QMessageBox.Cancel:
                 return None, False
@@ -103,7 +99,6 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
             overwrite = True
 
         return folder, overwrite
-
 
     def set_wait_cursor(self):
         """Set cursor to wait."""

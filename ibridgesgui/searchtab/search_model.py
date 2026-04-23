@@ -1,4 +1,5 @@
 """Search model."""
+
 from ibridges import IrodsPath
 from ibridges.search import MetaSearch
 
@@ -35,9 +36,7 @@ class SearchModel:
         meta_searches = []
         for key, value, units in meta_fields:
             if key or value or units:
-                meta_searches.append(
-                    MetaSearch(key or "%", value or "%", units or "%")
-                )
+                meta_searches.append(MetaSearch(key or "%", value or "%", units or "%"))
 
         # Validation
         if not search_path_obj.collection_exists():

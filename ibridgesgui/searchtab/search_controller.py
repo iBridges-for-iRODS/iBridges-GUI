@@ -6,15 +6,13 @@ from ibridges import IrodsPath, download
 from PySide6.QtCore import QTimer
 
 from ibridgesgui.gui_utils import combine_operations, prep_session_for_copy
-from ibridgesgui.threads import SearchThread, TransferDataThread
-
 from ibridgesgui.searchtab.search_model import SearchModel
+from ibridgesgui.threads import SearchThread, TransferDataThread
 
 
 class SearchController:
-    """
-    Controller for the Search tab.
-    
+    """Controller for the Search tab.
+
     Responsibilities
     ----------------
     -  Initialize UI elements and connect signals.
@@ -138,7 +136,6 @@ class SearchController:
         self._search_results_data = data
 
     def _on_search_finished(self):
-
         data = self._search_results_data
         self._search_results_data = None
         self.search_thread = None
@@ -201,10 +198,9 @@ class SearchController:
         irods_paths = [IrodsPath(self.session, p) for p in selected]
 
         # Combine several downloads in one ibridges operations object
-        ops = combine_operations([
-            download(p, folder, overwrite=True, dry_run=True)
-            for p in irods_paths
-        ])
+        ops = combine_operations(
+            [download(p, folder, overwrite=True, dry_run=True) for p in irods_paths]
+        )
 
         # Start download
         env_path = prep_session_for_copy(self.session, self.ui.error_label)
@@ -213,16 +209,12 @@ class SearchController:
             QTimer.singleShot(0, self._unlock_ui)
             return
 
-        self.download_thread=TransferDataThread(
-            ienv_path=env_path,
-            logger=self.logger,
-            ops=ops,
-            overwrite=overwrite
+        self.download_thread = TransferDataThread(
+            ienv_path=env_path, logger=self.logger, ops=ops, overwrite=overwrite
         )
         self.download_thread.result.connect(self._on_download_finished)
         self.download_thread.finished.connect(self._on_download_finished_cleanup)
         self.download_thread.current_progress.connect(self._on_download_progress)
-
 
         self.ui.error_label.setText("Downloading ...")
         self.download_thread.start()
@@ -230,7 +222,6 @@ class SearchController:
     def _on_download_progress(self, state):
         _, _, done, total, failed, _ = state
         self.ui.error_label.setText(f"{done} of {total} files; failed: {failed}.")
-
 
     def _on_download_finished(self, data):
         self._download_result = data
@@ -246,7 +237,6 @@ class SearchController:
             self.ui.error_label.setText(data["error"])
         else:
             self.ui.error_label.setText("Download complete.")
-
 
     def on_load_more(self):
         """Fetch next results batch."""
@@ -269,27 +259,30 @@ class SearchController:
         else:
             self.ui.load_more_button.hide()
 
-
     def _format_batch(self, batch):
         rows = []
         for path in batch:
             ipath = IrodsPath(self.session, path)
             if ipath.dataobject_exists():
-                rows.append((
-                    "-d",
-                    str(ipath),
-                    ipath.size,
-                    ipath.dataobject.create_time.strftime("%d-%m-%Y"),
-                    ipath.dataobject.modify_time.strftime("%d-%m-%Y"),
-                ))
+                rows.append(
+                    (
+                        "-d",
+                        str(ipath),
+                        ipath.size,
+                        ipath.dataobject.create_time.strftime("%d-%m-%Y"),
+                        ipath.dataobject.modify_time.strftime("%d-%m-%Y"),
+                    )
+                )
             else:
-                rows.append((
-                    "-C",
-                    str(ipath),
-                    "",
-                    ipath.collection.create_time.strftime("%d-%m-%Y"),
-                    ipath.collection.modify_time.strftime("%d-%m-%Y"),
-                ))
+                rows.append(
+                    (
+                        "-C",
+                        str(ipath),
+                        "",
+                        ipath.collection.create_time.strftime("%d-%m-%Y"),
+                        ipath.collection.modify_time.strftime("%d-%m-%Y"),
+                    )
+                )
         return rows
 
     def on_clear(self):
