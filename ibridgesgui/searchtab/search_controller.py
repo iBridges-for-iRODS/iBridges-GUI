@@ -8,12 +8,22 @@ from PySide6.QtCore import QTimer
 from ibridgesgui.gui_utils import combine_operations, prep_session_for_copy
 from ibridgesgui.threads import SearchThread, TransferDataThread
 
-from .search_model import SearchModel
-
+from ibridgesgui.searchtab.search_model import SearchModel
 
 
 class SearchController:
-    """Controller for the Search tab."""
+    """
+    Controller for the Search tab.
+    
+    Responsibilities
+    ----------------
+    -  Initialize UI elements and connect signals.
+    -  Run iRODS searches via SearchThread and display results.
+    -  Handle downloads using TransferDataThread.
+    -  Manage result batching and table updates.
+    -  Provide basic UI actions (clear, select all, open in browser).
+
+    """
 
     def __init__(self, ui, session, app_name, browser):
         """Init."""
@@ -30,9 +40,6 @@ class SearchController:
         self._search_results_data = None
         self._download_result = None
 
-    # ---------------------------------------------------------
-    # Initialization (called from Search.__init__)
-    # ---------------------------------------------------------
     def init_search(self):
         """Connect signals and init interactive elements."""
         self._connect_signals()
@@ -41,9 +48,6 @@ class SearchController:
         self.ui.search_table.setRowCount(0)
         self.ui.hide_result_elements()
 
-    # ---------------------------------------------------------
-    # Signal wiring
-    # ---------------------------------------------------------
     def _connect_signals(self):
         self.ui.search_button.clicked.connect(self.on_search)
         self.ui.clear_button.clicked.connect(self.on_clear)
@@ -52,9 +56,6 @@ class SearchController:
         self.ui.select_all_box.clicked.connect(self.on_select_all)
         self.ui.search_table.doubleClicked.connect(self.on_send_to_browser)
 
-    # ---------------------------------------------------------
-    # Search logic
-    # ---------------------------------------------------------
     def on_search(self):
         """Fetch parameters and start irods search."""
         if self.busy:
@@ -170,9 +171,6 @@ class SearchController:
         # re-enable buttons only when table is rendered.
         QTimer.singleShot(50, self._unlock_ui)
 
-    # ---------------------------------------------------------
-    # Download logic
-    # ---------------------------------------------------------
     def on_download(self):
         """Fetch marked items from table and start download."""
         if self.busy:
@@ -250,9 +248,6 @@ class SearchController:
             self.ui.error_label.setText("Download complete.")
 
 
-    # ---------------------------------------------------------
-    # Table batching
-    # ---------------------------------------------------------
     def on_load_more(self):
         """Fetch next results batch."""
         batch = self.model.next_batch()
@@ -273,7 +268,6 @@ class SearchController:
             )
         else:
             self.ui.load_more_button.hide()
-
 
 
     def _format_batch(self, batch):
@@ -298,9 +292,6 @@ class SearchController:
                 ))
         return rows
 
-    # ---------------------------------------------------------
-    # Misc UI actions
-    # ---------------------------------------------------------
     def on_clear(self):
         """Clear search results."""
         self.ui.search_table.setRowCount(0)
