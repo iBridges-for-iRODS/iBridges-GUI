@@ -1,1 +1,1 @@
-"""Searchtab functionality."""
+"""Search tab functionality."""
