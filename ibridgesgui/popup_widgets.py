@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+import textwrap
 from datetime import datetime
 from pathlib import Path
 
@@ -532,6 +533,9 @@ class UploadData(PySide6.QtWidgets.QDialog, Ui_uploadData):
             self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
             self._enable_buttons(True)
             return
+        except ValueError as err:
+            msg = textwrap.fill(repr(err), width=80)
+            self.error_label.setText(f"{msg}")
         except Exception as err:
             self.error_label.setText(
                 f"Could not instantiate a new session from {env_path}: {repr(err)}."
