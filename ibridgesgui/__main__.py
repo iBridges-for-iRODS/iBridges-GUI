@@ -30,7 +30,7 @@ from ibridgesgui.login import Login
 from ibridgesgui.logviewer import LogViewer
 from ibridgesgui.popup_widgets import CheckConfig
 from ibridgesgui.searchtab.search import Search
-from ibridgesgui.sync import Sync
+from ibridgesgui.synctab.sync import Sync
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.welcome import Welcome
 
