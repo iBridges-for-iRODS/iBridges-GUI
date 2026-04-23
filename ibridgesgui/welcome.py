@@ -19,9 +19,6 @@ class Welcome(QtWidgets.QWidget, Ui_Welcome):
         self._setup_logo()
         self._setup_layout()
 
-    # ------------------------------
-    # UI loading
-    # ------------------------------
     def _load_ui(self):
         """Load UI from .ui file or compiled version."""
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
@@ -29,9 +26,6 @@ class Welcome(QtWidgets.QWidget, Ui_Welcome):
         else:
             load_ui(UI_FILE_DIR / "welcome.ui", self)
 
-    # ------------------------------
-    # Logo selection
-    # ------------------------------
     def _setup_logo(self):
         """Choose seasonal or default logo."""
         logo_file = (
@@ -50,9 +44,6 @@ class Welcome(QtWidgets.QWidget, Ui_Welcome):
         )
         self.tag_label.setAlignment(QtCore.Qt.AlignCenter)
 
-    # ------------------------------
-    # Layout
-    # ------------------------------
     def _setup_layout(self):
         """Build the layout for the welcome screen."""
         layout = QtWidgets.QVBoxLayout()

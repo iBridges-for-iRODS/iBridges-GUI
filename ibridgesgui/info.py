@@ -22,27 +22,18 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
         self.refresh_button.clicked.connect(self.refresh_info)
         self.refresh_info()
 
-    # ------------------------------
-    # UI loading
-    # ------------------------------
     def _load_ui(self):
         if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
             super().setupUi(self)
         else:
             load_ui(UI_FILE_DIR / "tabInfo.ui", self)
 
-    # ------------------------------
-    # Public API
-    # ------------------------------
     def refresh_info(self):
         """Refetch infor from iRODS."""
         with self._wait_cursor():
             info = self._collect_info()
             self._update_ui(info)
 
-    # ------------------------------
-    # Data collection
-    # ------------------------------
     def _collect_info(self):
         user_type, user_groups = self.session.get_user_info()
         return {
@@ -57,9 +48,6 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
             "resources": Resources(self.session).root_resources,
         }
 
-    # ------------------------------
-    # UI update
-    # ------------------------------
     def _update_ui(self, info):
         self.zone_label.setText(info["zone"])
         self.user_label.setText(info["username"])
@@ -79,9 +67,6 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
 
         self._autosize_columns(self.resc_table)
 
-    # ------------------------------
-    # Helpers
-    # ------------------------------
     def _autosize_columns(self, table):
         header = table.horizontalHeader()
         for col in range(header.count()):
