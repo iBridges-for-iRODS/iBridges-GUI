@@ -10,7 +10,6 @@ from ibridgesgui.threads import SearchThread, TransferDataThread
 
 from .search_model import SearchModel
 
-#from .irods_search_service import IrodsSearchService
 
 
 class SearchController:
