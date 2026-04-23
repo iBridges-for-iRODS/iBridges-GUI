@@ -217,7 +217,7 @@ def test_on_download_env_path_none(controller, fake_view_search, monkeypatch):
 
     assert controller.busy is False
     fake_view_search.error_label.setText.assert_called_with(
-        "No donwload. Cannot create new irods session."
+        "No download. Cannot create new irods session."
     )
 
 
