@@ -1,7 +1,7 @@
 # tests/test_sync_controller.py
 
 from unittest.mock import MagicMock, patch
-from ibridgesgui.sync_controller import SyncController
+from ibridgesgui.synctab.sync_controller import SyncController
 
 
 def make_controller(fake_view):
@@ -116,8 +116,8 @@ def test_sync_diff_irods_source(fake_view):
 
     controller._start_sync_diff.assert_called_once_with(irods, local)
 
-@patch("ibridgesgui.sync_controller.SyncThread")
-@patch("ibridgesgui.sync_controller.prep_session_for_copy")
+@patch("ibridgesgui.synctab.sync_controller.SyncThread")
+@patch("ibridgesgui.synctab.sync_controller.prep_session_for_copy")
 def test_start_sync_diff_starts_thread(mock_prep, mock_thread, fake_view):
     controller = make_controller(fake_view)
     mock_prep.return_value = "/tmp/ienv"
@@ -135,7 +135,7 @@ def test_start_sync_diff_starts_thread(mock_prep, mock_thread, fake_view):
 def test_start_sync_diff_env_missing(fake_view):
     controller = make_controller(fake_view)
 
-    with patch("ibridgesgui.sync_controller.prep_session_for_copy", return_value=None):
+    with patch("ibridgesgui.synctab.sync_controller.prep_session_for_copy", return_value=None):
         controller._finish_sync_diff = MagicMock()
         controller._start_sync_diff("src", "dst")
 
@@ -150,7 +150,7 @@ def test_finish_sync_diff_resets_ui(fake_view):
     fake_view.irods_to_local_button.setEnabled.assert_called_with(True)
     fake_view.create_coll_button.setEnabled.assert_called_with(True)
     fake_view.create_dir_button.setEnabled.assert_called_with(True)
-    fake_view.setCursor.assert_called()
+    fake_view.assert_cursor_called()
 
 def test_sync_diff_end_nothing_to_sync(fake_view):
     controller = make_controller(fake_view)
@@ -174,7 +174,7 @@ def test_sync_diff_end_nothing_to_sync(fake_view):
 def test_start_data_sync_env_missing(fake_view):
     controller = make_controller(fake_view)
 
-    with patch("ibridgesgui.sync_controller.get_last_ienv_path", return_value="/nope"):
+    with patch("ibridgesgui.synctab.sync_controller.get_last_ienv_path", return_value="/nope"):
         with patch("pathlib.Path.exists", return_value=False):
             controller._finish_sync_data = MagicMock()
             controller._start_data_sync()
@@ -184,8 +184,8 @@ def test_start_data_sync_env_missing(fake_view):
             )
             controller._finish_sync_data.assert_called_once()
 
-@patch("ibridgesgui.sync_controller.TransferDataThread")
-@patch("ibridgesgui.sync_controller.get_last_ienv_path")
+@patch("ibridgesgui.synctab.sync_controller.TransferDataThread")
+@patch("ibridgesgui.synctab.sync_controller.get_last_ienv_path")
 def test_start_data_sync_starts_thread(mock_get_env, mock_thread, fake_view):
     controller = make_controller(fake_view)
     mock_get_env.return_value = "/tmp/ienv"
@@ -291,7 +291,7 @@ def test_finish_sync_data_resets_ui(fake_view):
     controller._finish_sync_data()
 
     fake_view.sync_button.hide.assert_called_once()
-    fake_view.setCursor.assert_called()
+    fake_view.assert_cursor_called()
 
 # create collection button
 
@@ -349,7 +349,7 @@ def test_create_dir_wrong_type(fake_view):
 # helper function to enable and disable buttons
 def test_enable_buttons(fake_view):
     controller = make_controller(fake_view)
-    controller._enable_buttons(False)
+    fake_view.set_ui_busy(True)
 
     fake_view.local_to_irods_button.setEnabled.assert_called_with(False)
 

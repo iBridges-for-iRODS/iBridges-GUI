@@ -98,13 +98,13 @@ class CreateDirectory(PySide6.QtWidgets.QDialog, Ui_createCollection):
         self.setWindowTitle("Create Directory")
         self.setWindowFlags(PySide6.QtCore.Qt.WindowType.WindowStaysOnTopHint)
         self.parent = parent
-        self.label.setText(self.parent + os.sep)
+        self.label.setText(str(self.parent) + os.sep)
         self.buttonBox.accepted.connect(self.accept)
 
     def accept(self):
         """Create folder."""
         if self.coll_path_input.text() != "":
-            new_dir_path = self.parent + os.sep + self.coll_path_input.text()
+            new_dir_path = str(self.parent) + os.sep + self.coll_path_input.text()
             try:
                 os.makedirs(new_dir_path)
                 self.done(1)

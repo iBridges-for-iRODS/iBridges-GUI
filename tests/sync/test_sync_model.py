@@ -1,7 +1,7 @@
 # tests/test_sync_model.py
 
 from pathlib import Path
-from ibridgesgui.sync_model import SyncModel
+from ibridgesgui.synctab.sync_model import SyncModel
 
 
 def test_model_initial_state():
