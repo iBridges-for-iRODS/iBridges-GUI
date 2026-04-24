@@ -24,6 +24,7 @@ class BrowserController:
 
         home = self.service.home_path()
         self.model = BrowserModel(home)
+        self.ui.error_label.setWordWrap(True)
 
     def init_browser(self) -> None:
         """Init buttons and signals."""
@@ -75,6 +76,8 @@ class BrowserController:
 
     def _open_selected_path(self) -> None:
         _, irods_path = self._current_selection()
+        if irods_path is None:
+            return
         if irods_path.collection_exists():
             self._set_path(irods_path)
 
@@ -107,7 +110,7 @@ class BrowserController:
         """Call widget to upload."""
         path = self.model.current_path
         if not path.collection_exists():
-            self.ui.error_label.setWordWrap(f"{path} is not a collection. Cannot upload data.")
+            self.ui.error_label.setText(f"{path} is not a collection. Cannot upload data.")
             return
         dialog = UploadData(self.logger, path.session, path)
         dialog.exec()
@@ -134,10 +137,10 @@ class BrowserController:
             self.logger.info("Deleted %s", irods_path)
             self._refresh_browser()
         except (irods.exception.CAT_NO_ACCESS_PERMISSION, PermissionError):
-            self.ui.error_label.setWordWrap(f"No permissions to delete {irods_path}")
+            self.ui.error_label.setText(f"No permissions to delete {irods_path}")
         except Exception:
             self.logger.exception("FAILED: Delete %s", irods_path)
-            self.ui.error_label.setWordWrap(f"FAILED: Delete {irods_path}. Consult logs.")
+            self.ui.error_label.setText(f"FAILED: Delete {irods_path}. Consult logs.")
 
     def _load_browser_table(self) -> None:
         self.ui.error_label.clear()
@@ -146,7 +149,7 @@ class BrowserController:
         path = self.model.current_path
         if not path.collection_exists():
             self.ui.browser_table.setRowCount(0)
-            self.ui.error_label.setWordWrap(f"Collection does not exist: {path}")
+            self.ui.error_label.setText(f"Collection does not exist: {path}")
             return
 
         try:
@@ -155,7 +158,7 @@ class BrowserController:
         except Exception as err:
             self.logger.exception("Cannot load browser.")
             self.ui.browser_table.setRowCount(0)
-            self.ui.error_label.setWordWrap(f"Cannot load browser table for {path}: {err}")
+            self.ui.error_label.setText(f"Cannot load browser table for {path}: {err}")
 
     def _fill_current_info_tab(self) -> None:
         if not self._validate_selection():
@@ -171,7 +174,7 @@ class BrowserController:
                 self.model.mark_tab_updated(tab_name)
             except Exception as err:
                 self.logger.exception("Error loading %s of %s", tab_name, irods_path)
-                self.ui.error_label.setWordWrap(f"Error loading {tab_name}: {err!r}")
+                self.ui.error_label.setText(f"Error loading {tab_name}: {err!r}")
 
     def _fill_tab(self, tab_name):
         row, irods_path = self._current_selection()
@@ -243,17 +246,17 @@ class BrowserController:
         acl_value = label_to_acl.get(acc_label, acc_label)
 
         if acl_value in ("inherit", "noinherit") and irods_path.dataobject_exists():
-            self.ui.error_label.setWordWrap(
+            self.ui.error_label.setText(
                 "WARNING: (no)inherit is not applicable to data objects."
             )
             return
 
         if acl_value not in ("inherit", "noinherit") and not user:
-            self.ui.error_label.setWordWrap("Please provide a user.")
+            self.ui.error_label.setText("Please provide a user.")
             return
 
         if not acc_label:
-            self.ui.error_label.setWordWrap("Please provide an access level.")
+            self.ui.error_label.setText("Please provide an access level.")
             return
 
         try:
@@ -271,12 +274,12 @@ class BrowserController:
             self._fill_current_info_tab()
 
         except (irods.exception.CAT_INVALID_USER, irods.exception.SYS_NOT_ALLOWED):
-            self.ui.error_label.setWordWrap(f"Cannot update ACLs. {user}#{zone} not known.")
+            self.ui.error_label.setText(f"Cannot update ACLs. {user}#{zone} not known.")
         except irods.exception.MSI_OPERATION_NOT_ALLOWED:
-            self.ui.error_label.setWordWrap("iRODS server does not allow editing permissions.")
+            self.ui.error_label.setText("iRODS server does not allow editing permissions.")
         except Exception as err:
             self.logger.exception("Permissions error for %s", irods_path)
-            self.ui.error_label.setWordWrap(f"Error editing permissions: {err!r}")
+            self.ui.error_label.setText(f"Error editing permissions: {err!r}")
 
     def _metadata_edits(self, operation: str):
         self.ui.error_label.clear()
@@ -331,7 +334,7 @@ class BrowserController:
 
         except Exception as err:
             self.logger.exception("Metadata error for %s", irods_path)
-            self.ui.error_label.setWordWrap(f"Metadata error: {err!r}")
+            self.ui.error_label.setText(f"Metadata error: {err!r}")
 
     def _on_row_clicked(self) -> None:
         row = self.ui.browser_table.currentRow()
@@ -352,7 +355,7 @@ class BrowserController:
     def _validate_selection(self) -> bool:
         self.ui.error_label.clear()
         if self.ui.browser_table.currentRow() == -1:
-            self.ui.error_label.setWordWrap("Please select an item from the table.")
+            self.ui.error_label.setText("Please select an item from the table.")
             return False
         return True
 
