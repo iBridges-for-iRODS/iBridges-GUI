@@ -81,10 +81,6 @@ class BrowserController:
         if irods_path and irods_path.collection_exists():
             self._set_path(irods_path)
 
-    # ----------------------------------------------------------------------
-    # CRUD operations
-    # ----------------------------------------------------------------------
-
     def create_collection(self) -> None:
         """Call widget to create new collection."""
         self.ui.error_label.clear()
