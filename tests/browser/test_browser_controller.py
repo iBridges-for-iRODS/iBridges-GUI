@@ -6,59 +6,9 @@ from ibridgesgui.browsertab.browser_controller import BrowserController
 from ibridges import IrodsPath
 
 
-@pytest.fixture
-def make_irods_path():
-    def _make(path_str):
-        p = MagicMock(spec=IrodsPath)
-        p.__str__.return_value = path_str
-        p.__truediv__.side_effect = lambda name: _make(f"{path_str}/{name}")
-        p.collection_exists.return_value = False
-        p.dataobject_exists.return_value = False
-        p.session = MagicMock()
-        return p
-    return _make
-
 
 @pytest.fixture
-def ui():
-    ui = MagicMock()
-
-    # path input
-    ui.input_path.text.return_value = "/tempZone/home/user"
-    ui.input_path.setText = MagicMock()
-
-    # browser table
-    ui.browser_table.currentRow.return_value = 0
-    ui.browser_table.item.return_value.text.return_value = "file.txt"
-
-    # info tabs
-    tab = MagicMock()
-    tab.objectName.return_value = "metadata"
-    ui.info_tabs.currentWidget.return_value = tab
-
-    # metadata widgets
-    ui.meta_table.currentRow.return_value = 0
-    ui.meta_table.item.return_value.text.return_value = "meta"
-    ui.meta_key_field.text.return_value = "k"
-    ui.meta_value_field.text.return_value = "v"
-    ui.meta_units_field.text.return_value = "u"
-
-    # ACL widgets
-    ui.acl_table.currentRow.return_value = 0
-    ui.acl_table.item.return_value.text.return_value = "user"
-    ui.acl_user_field.text.return_value = "user"
-    ui.acl_zone_field.text.return_value = "zone"
-    ui.acl_box.currentText.return_value = "read"
-    ui.recursive_box.currentText.return_value = "False"
-
-    ui.error_label = MagicMock()
-    ui.error_label.setText = MagicMock()
-
-    return ui
-
-
-@pytest.fixture
-def service(make_irods_path):
+def mock_service(make_irods_path):
     service = MagicMock()
     service.home_path.return_value = make_irods_path("/tempZone/home/user")
     service.path_from_text.return_value = make_irods_path("/tempZone/home/user")
@@ -73,14 +23,12 @@ def service(make_irods_path):
 
 
 @pytest.fixture
-def controller(ui, service):
+def controller(ui, session, mock_service):
     with patch(
         "ibridgesgui.browsertab.browser_controller.IrodsBrowserService",
-        return_value=service,
+        return_value=mock_service,
     ):
-        c = BrowserController(ui, session=MagicMock(), app_name="test")
-        return c
-
+        return BrowserController(ui, session, "test")
 
 # --- init / navigation -------------------------------------------------------
 
@@ -101,21 +49,21 @@ def test_set_path_updates_model_and_ui(controller, ui, make_irods_path):
     controller._load_browser_table.assert_called_once()
 
 
-def test_refresh_browser(controller, ui, service):
+def test_refresh_browser(controller, ui, mock_service):
     controller._set_path = MagicMock()
     controller._refresh_browser()
-    controller._set_path.assert_called_once_with(service.path_from_text.return_value)
+    controller._set_path.assert_called_once_with(mock_service.path_from_text.return_value)
 
 
-def test_go_to_parent(controller, ui, service):
+def test_go_to_parent(controller, ui, mock_service):
     controller._set_path = MagicMock()
     controller._go_to_parent()
-    controller._set_path.assert_called_once_with(service.parent_path.return_value)
+    controller._set_path.assert_called_once_with(mock_service.parent_path.return_value)
 
 
 # --- browser table loading ---------------------------------------------------
 
-def test_load_browser_table_success(controller, ui, service):
+def test_load_browser_table_success(controller, ui, mock_service):
     # Ensure the path is treated as a collection
     controller.model.current_path.collection_exists.return_value = True
 
@@ -134,8 +82,8 @@ def test_load_browser_table_non_collection(controller, ui, make_irods_path):
     ui.error_label.setText.assert_called()
 
 
-def test_load_browser_table_exception(controller, ui, service):
-    service.list_table_rows.side_effect = Exception("boom")
+def test_load_browser_table_exception(controller, ui, mock_service):
+    mock_service.list_table_rows.side_effect = Exception("boom")
     controller._load_browser_table()
     ui.browser_table.setRowCount.assert_called_with(0)
     ui.error_label.setText.assert_called()
@@ -249,7 +197,7 @@ def test_fill_current_info_tab_calls_fill_tab_when_needed(controller, ui):
     controller._fill_tab.assert_called_once()
 
 
-def test_fill_tab_metadata(controller, ui, service):
+def test_fill_tab_metadata(controller, ui, mock_service):
     row = 0
     path = MagicMock()
     controller._item_path = MagicMock(return_value=path)
@@ -257,11 +205,11 @@ def test_fill_tab_metadata(controller, ui, service):
 
     controller._fill_tab("metadata")
 
-    service.get_metadata.assert_called_once_with(path)
+    mock_service.get_metadata.assert_called_once_with(path)
     ui.render_metadata.assert_called_once()
 
 
-def test_fill_tab_permissions(controller, ui, service):
+def test_fill_tab_permissions(controller, ui, mock_service):
     row = 0
     path = MagicMock()
     controller._item_path = MagicMock(return_value=path)
@@ -269,36 +217,36 @@ def test_fill_tab_permissions(controller, ui, service):
 
     controller._fill_tab("permissions")
 
-    service.get_acls.assert_called_once_with(path)
-    service.normalize_acls.assert_called_once()
+    mock_service.get_acls.assert_called_once_with(path)
+    mock_service.normalize_acls.assert_called_once()
     ui.render_acls.assert_called_once()
 
 
-def test_fill_tab_replicas(controller, ui, service):
+def test_fill_tab_replicas(controller, ui, mock_service):
     path = MagicMock()
     controller._item_path = MagicMock(return_value=path)
     controller.model.replica_cache = {}
 
     controller._fill_tab("replicas")
 
-    service.get_replicas.assert_called_once_with(path)
+    mock_service.get_replicas.assert_called_once_with(path)
     ui.render_replicas.assert_called_once()
 
 
-def test_fill_tab_preview(controller, ui, service):
+def test_fill_tab_preview(controller, ui, mock_service):
     path = MagicMock()
     controller._item_path = MagicMock(return_value=path)
     controller.model.preview_cache = {}
 
     controller._fill_tab("preview")
 
-    service.compute_preview.assert_called_once_with(path)
+    mock_service.compute_preview.assert_called_once_with(path)
     ui.preview_browser.setText.assert_called_once()
 
 
 # --- metadata edits ----------------------------------------------------------
 
-def test_metadata_edit_add(controller, ui, service, make_irods_path):
+def test_metadata_edit_add(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock(return_value=make_irods_path("/x"))
     controller.model.invalidate_metadata = MagicMock()
@@ -309,12 +257,12 @@ def test_metadata_edit_add(controller, ui, service, make_irods_path):
     ui.meta_units_field.text.return_value = "u"
 
     controller._metadata_edits("add")
-    service.add_metadata.assert_called_once()
+    mock_service.add_metadata.assert_called_once()
     controller.model.invalidate_metadata.assert_called_once()
     controller._fill_current_info_tab.assert_called_once()
 
 
-def test_metadata_edit_update(controller, ui, service, make_irods_path):
+def test_metadata_edit_update(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock(return_value=make_irods_path("/x"))
     controller.model.invalidate_metadata = MagicMock()
@@ -332,12 +280,12 @@ def test_metadata_edit_update(controller, ui, service, make_irods_path):
     ]
 
     controller._metadata_edits("update")
-    service.update_metadata.assert_called_once()
+    mock_service.update_metadata.assert_called_once()
     controller.model.invalidate_metadata.assert_called_once()
     controller._fill_current_info_tab.assert_called_once()
 
 
-def test_metadata_edit_delete(controller, ui, service, make_irods_path):
+def test_metadata_edit_delete(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock(return_value=make_irods_path("/x"))
     controller.model.invalidate_metadata = MagicMock()
@@ -348,7 +296,7 @@ def test_metadata_edit_delete(controller, ui, service, make_irods_path):
     ui.meta_units_field.text.return_value = "u"
 
     controller._metadata_edits("delete")
-    service.delete_metadata.assert_called_once()
+    mock_service.delete_metadata.assert_called_once()
     controller.model.invalidate_metadata.assert_called_once()
     controller._fill_current_info_tab.assert_called_once()
 
@@ -359,10 +307,10 @@ def test_metadata_edit_invalid_selection(controller, ui):
     ui.error_label.setText.assert_not_called()
 
 
-def test_metadata_edit_exception(controller, ui, service, make_irods_path):
+def test_metadata_edit_exception(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock(return_value=make_irods_path("/x"))
-    service.add_metadata.side_effect = Exception("fail")
+    mock_service.add_metadata.side_effect = Exception("fail")
 
     ui.meta_key_field.text.return_value = "k"
     ui.meta_value_field.text.return_value = "v"
@@ -374,7 +322,7 @@ def test_metadata_edit_exception(controller, ui, service, make_irods_path):
 
 # --- ACL updates -------------------------------------------------------------
 
-def test_update_permission_success(controller, ui, service, make_irods_path):
+def test_update_permission_success(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     path = make_irods_path("/x")
     controller._item_path = MagicMock(return_value=path)
@@ -388,7 +336,7 @@ def test_update_permission_success(controller, ui, service, make_irods_path):
 
     controller._update_permission()
 
-    service.set_acl.assert_called_once()
+    mock_service.set_acl.assert_called_once()
     controller.model.invalidate_acls.assert_called_once()
     controller._fill_current_info_tab.assert_called_once()
 
@@ -428,12 +376,12 @@ def test_update_permission_missing_access(controller, ui, make_irods_path):
     ui.error_label.setText.assert_called()
 
 
-def test_update_permission_exception(controller, ui, service, make_irods_path):
+def test_update_permission_exception(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     path = make_irods_path("/x")
     controller._item_path = MagicMock(return_value=path)
 
-    service.set_acl.side_effect = Exception("boom")
+    mock_service.set_acl.side_effect = Exception("boom")
 
     controller._update_permission()
     ui.error_label.setText.assert_called()
@@ -449,4 +397,52 @@ def test_on_row_clicked_updates_model_and_fills_tab(controller, ui):
 
     controller.model.on_row_clicked.assert_called_once()
     controller._fill_current_info_tab.assert_called_once()
+
+def test_invalidate_metadata(model):
+    model.metadata_cache = {0: "x", 1: "y"}
+    model.invalidate_metadata(row=0)
+    assert 0 not in model.metadata_cache
+    assert 1 in model.metadata_cache
+
+def test_invalidate_acls(model):
+    model.acl_cache = {0: "x", 1: "y"}
+    model.invalidate_acls(row=0)
+    assert 0 not in model.acl_cache
+    assert 1 in model.acl_cache
+
+def test_invalidate_replicas(model):
+    model.replica_cache = {0: "x", 1: "y"}
+    model.invalidate_replicas(row=0)
+    assert 0 not in model.replica_cache
+    assert 1 in model.replica_cache
+
+def test_invalidate_preview(model):
+    model.preview_cache = {0: "x", 1: "y"}
+    model.invalidate_preview(row=0)
+    assert 0 not in model.preview_cache
+    assert 1 in model.preview_cache
+
+def test_needs_tab_update_true(model):
+    model.last_row = 0
+    model.current_row = 1
+    assert model.needs_tab_update("metadata") is True
+
+
+def test_needs_tab_update_false(model):
+    model.last_selected_row = 0
+    model.current_selected_row = 0
+    model.last_path = model.current_path
+    model.updated_info_tabs.add("metadata")
+
+    assert model.needs_tab_update("metadata") is False
+
+def test_on_row_clicked(model):
+    model.current_selected_row = -1
+    model.last_selected_row = -1
+
+    model.on_row_clicked(5)
+
+    assert model.current_selected_row == 5
+    assert model.last_selected_row == -1
+
 
