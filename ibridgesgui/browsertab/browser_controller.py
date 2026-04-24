@@ -27,10 +27,6 @@ class BrowserController:
         home = self.service.home_path()
         self.model = BrowserModel(home)
 
-    # ----------------------------------------------------------------------
-    # Initialization
-    # ----------------------------------------------------------------------
-
     def init_browser(self) -> None:
         """Init buttons and signals."""
         self._connect_signals()
@@ -64,10 +60,6 @@ class BrowserController:
         # ACLs
         self.ui.acl_table.clicked.connect(self._load_permission)
         self.ui.add_acl_button.clicked.connect(self._update_permission)
-
-    # ----------------------------------------------------------------------
-    # Path handling
-    # ----------------------------------------------------------------------
 
     def _set_path(self, irods_path: IrodsPath) -> None:
         """Central path setter using the model."""
@@ -157,10 +149,6 @@ class BrowserController:
             self.logger.exception("FAILED: Delete %s", irods_path)
             self.ui.error_label.setText(f"FAILED: Delete {irods_path}. Consult logs.")
 
-    # ----------------------------------------------------------------------
-    # Browser table
-    # ----------------------------------------------------------------------
-
     def _load_browser_table(self) -> None:
         self.ui.error_label.clear()
         self._clear_info_tabs()
@@ -178,10 +166,6 @@ class BrowserController:
             self.logger.exception("Cannot load browser.")
             self.ui.browser_table.setRowCount(0)
             self.ui.error_label.setText(f"Cannot load browser table for {path}: {err}")
-
-    # ----------------------------------------------------------------------
-    # Info tabs (with caching)
-    # ----------------------------------------------------------------------
 
     def _fill_current_info_tab(self) -> None:
         if not self._validate_selection():
@@ -249,10 +233,6 @@ class BrowserController:
                 content = cached
             populate_textfield(self.ui.preview_browser, content)
 
-    # ----------------------------------------------------------------------
-    # Rendering helpers
-    # ----------------------------------------------------------------------
-
     def _render_metadata(self, data, irods_path):
         self.ui.meta_key_field.clear()
         self.ui.meta_value_field.clear()
@@ -318,10 +298,6 @@ class BrowserController:
 
         return [f"No Preview for: {irods_path}"]
 
-    # ----------------------------------------------------------------------
-    # Metadata editing
-    # ----------------------------------------------------------------------
-
     def _load_metadata_item(self, index: PySide6.QtCore.QModelIndex):
         self.ui.error_label.clear()
         row = index.row()
@@ -381,10 +357,6 @@ class BrowserController:
 
         except Exception as error:
             self.ui.error_label.setText(repr(error))
-
-    # ----------------------------------------------------------------------
-    # ACLs
-    # ----------------------------------------------------------------------
 
     def _load_permission(self, index: PySide6.QtCore.QModelIndex):
         self.ui.error_label.clear()
@@ -452,10 +424,6 @@ class BrowserController:
         except Exception as err:
             self.logger.exception("Permissions error for %s", irods_path)
             self.ui.error_label.setText(f"Error editing permissions: {err!r}")
-
-    # ----------------------------------------------------------------------
-    # Helpers
-    # ----------------------------------------------------------------------
 
     def _on_row_clicked(self) -> None:
         row = self.ui.browser_table.currentRow()
