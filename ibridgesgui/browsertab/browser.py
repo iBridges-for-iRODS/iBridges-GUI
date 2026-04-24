@@ -37,7 +37,6 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
             self.no_meta_label.setText(f"Metadata for {irods_path} is empty.")
         self.meta_table.resizeColumnsToContents()
 
-
     def render_acls(self, clean, irods_path):
         self.acl_table.setRowCount(0)
         self.acl_user_field.clear()
@@ -61,13 +60,11 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         obj = get_irods_item(irods_path)
         self.owner_label.setText(obj.owner_name)
 
-
     def render_replicas(self, rows):
         self.replica_table.setRowCount(0)
         if rows:
             populate_table(self.replica_table, len(rows), rows)
         self.replica_table.resizeColumnsToContents()
-
 
     def clear_info_tabs(self):
         self.acl_table.setRowCount(0)
@@ -75,7 +72,6 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.replica_table.setRowCount(0)
         self.preview_browser.clear()
         self.no_meta_label.clear()
-
 
     def load_metadata_item(self, index):
         row = index.row()
@@ -85,7 +81,6 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_key_field.setText(key)
         self.meta_value_field.setText(val)
         self.meta_units_field.setText(units)
-
 
     def load_permission(self, index):
         row = index.row()
@@ -97,4 +92,3 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_zone_field.setText(zone)
         self.acl_box.setCurrentText(acc)
         self.recursive_box.setCurrentText("False")
-

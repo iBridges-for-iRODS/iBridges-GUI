@@ -1,4 +1,5 @@
 """iRODS functionality for browser."""
+
 import logging
 from typing import Iterable, Tuple
 
@@ -71,8 +72,6 @@ class IrodsBrowserService:
 
         return [f"No Preview for: {irods_path}"]
 
-
-
     # -------- replicas --------
 
     def get_replicas(self, path: IrodsPath):
@@ -90,7 +89,6 @@ class IrodsBrowserService:
             return [(avu.name, avu.value, avu.units) for avu in irods_path.meta]
         except Exception as err:
             raise RuntimeError(f"Failed to load metadata for {irods_path}: {err}")
-    
 
     def add_metadata(self, path: IrodsPath, key: str, value: str, units: str):
         """Add metadata to coll or obj."""
@@ -131,7 +129,6 @@ class IrodsBrowserService:
                 perm = "write"
             clean.append((user, zone, perm, status))
         return clean
-
 
     def get_acls(self, path: IrodsPath):
         """Return a list of (user_name, user_zone, access_name, inheritance_flag)."""

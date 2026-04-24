@@ -143,4 +143,3 @@ class BrowserModel:
 
     def get_cached_preview(self, row: int) -> Optional[Any]:
         return self._cache_get(self.preview_cache, row)
-

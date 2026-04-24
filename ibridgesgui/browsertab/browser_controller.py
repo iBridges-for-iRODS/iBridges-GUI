@@ -1,16 +1,15 @@
 """GUI logic for browser."""
 
 import logging
-from typing import Union
+from typing import Optional
 
 import irods.exception
-import PySide6.QtCore
 import PySide6.QtWidgets
 from ibridges import IrodsPath
 
 from ibridgesgui.browsertab.browser_model import BrowserModel
 from ibridgesgui.browsertab.irods_browser_service import IrodsBrowserService
-from ibridgesgui.gui_utils import get_irods_item, populate_table
+from ibridgesgui.gui_utils import populate_table
 from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
 
 
@@ -77,7 +76,7 @@ class BrowserController:
     def _open_selected_path(self) -> None:
         row = self.ui.browser_table.currentRow()
         irods_path = self._item_path(row)
-        if irods_path and irods_path.collection_exists():
+        if irods_path.collection_exists():
             self._set_path(irods_path)
 
     def create_collection(self) -> None:
@@ -228,8 +227,6 @@ class BrowserController:
 
         self.ui.preview_browser.setText("\n".join(content))
 
-
-
     def _update_permission(self) -> None:
         if not self._validate_selection():
             return
@@ -240,7 +237,13 @@ class BrowserController:
         user = self.ui.acl_user_field.text()
         zone = self.ui.acl_zone_field.text()
         acc_label = self.ui.acl_box.currentText()
-        recursive = self.ui.recursive_box.currentText() == "True"
+
+        recursive_map = {
+            "True": True,
+            "False": False,
+        }        
+        recursive = recursive_map.get(self.ui.recursive_box.currentText(), False)
+
 
         label_to_acl = {
             "Newly added items to collection will inherit permissions": "inherit",
@@ -282,57 +285,6 @@ class BrowserController:
         except Exception as err:
             self.logger.exception("Permissions error for %s", irods_path)
             self.ui.error_label.setText(f"Error editing permissions: {err!r}")
-
-
-    def _render_metadata(self, data, irods_path):
-        self.ui.meta_key_field.clear()
-        self.ui.meta_value_field.clear()
-        self.ui.meta_units_field.clear()
-        self.ui.no_meta_label.clear()
-
-        populate_table(self.ui.meta_table, len(data), data)
-        if len(data) == 0:
-            self.ui.no_meta_label.setText(f"Metadata for {irods_path} is empty.")
-        self.ui.meta_table.resizeColumnsToContents()
-
-    def _render_acls(self, clean, irods_path):
-        self.ui.acl_table.setRowCount(0)
-        self.ui.acl_user_field.clear()
-        self.ui.acl_zone_field.clear()
-        self.ui.acl_box.clear()
-        self.ui.recursive_box.setEnabled(irods_path.collection_exists())
-
-        obj_acl = ["read", "write", "own", "delete"]
-        coll_acl = obj_acl + [
-            "Newly added items to collection will inherit permissions",
-            "Remove inheritance.",
-        ]
-
-        for item in coll_acl if irods_path.collection_exists() else obj_acl:
-            self.ui.acl_box.addItem(item)
-        self.ui.acl_box.setEnabled(True)
-
-        populate_table(self.ui.acl_table, len(clean), clean)
-        self.ui.acl_table.resizeColumnsToContents()
-
-        obj = get_irods_item(irods_path)
-        self.ui.owner_label.setText(obj.owner_name)
-
-    def _render_replicas(self, rows):
-        self.ui.replica_table.setRowCount(0)
-        if rows:
-            populate_table(self.ui.replica_table, len(rows), rows)
-        self.ui.replica_table.resizeColumnsToContents()
-
-    def _load_metadata_item(self, index: PySide6.QtCore.QModelIndex):
-        self.ui.error_label.clear()
-        row = index.row()
-        key = self.ui.meta_table.item(row, 0).text()
-        val = self.ui.meta_table.item(row, 1).text()
-        units = self.ui.meta_table.item(row, 2).text() if self.ui.meta_table.item(row, 2) else ""
-        self.ui.meta_key_field.setText(key)
-        self.ui.meta_value_field.setText(val)
-        self.ui.meta_units_field.setText(units)
 
     def _metadata_edits(self, operation: str):
         self.ui.error_label.clear()
@@ -398,8 +350,8 @@ class BrowserController:
         self.model.on_row_clicked(row)
         self._fill_current_info_tab()
 
-    def _item_path(self, row: int) -> Union[IrodsPath, None]:
-        if row is None or row < 0:
+    def _item_path(self, row: int) -> Optional[IrodsPath]:
+        if row < 0:
             return None
         item = self.ui.browser_table.item(row, 1)
         if not item:
@@ -413,10 +365,3 @@ class BrowserController:
             self.ui.error_label.setText("Please select an item from the table.")
             return False
         return True
-
-    def _clear_info_tabs(self) -> None:
-        self.ui.acl_table.setRowCount(0)
-        self.ui.meta_table.setRowCount(0)
-        self.ui.replica_table.setRowCount(0)
-        self.ui.preview_browser.clear()
-        self.ui.no_meta_label.clear()
