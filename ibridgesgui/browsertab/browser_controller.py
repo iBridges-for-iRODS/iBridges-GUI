@@ -11,8 +11,8 @@ from ibridges import IrodsPath
 from ibridgesgui.gui_utils import get_irods_item, populate_table, populate_textfield
 from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
 
-from .browser_model import BrowserModel
-from .irods_browser_service import IrodsBrowserService
+from ibridgesgui.browsertab.browser_model import BrowserModel
+from ibridgesgui.browsertab.irods_browser_service import IrodsBrowserService
 
 
 class BrowserController:

@@ -7,7 +7,7 @@ import PySide6.QtWidgets
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.ui_files.tabBrowser import Ui_tabBrowser
 
-from .browser_controller import BrowserController
+from ibridgesgui.browsertab.browser_controller import BrowserController
 
 
 class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
