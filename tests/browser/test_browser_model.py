@@ -22,7 +22,7 @@ def test_set_path_resets_state(model):
     assert model.last_path == old_path
     assert model.current_selected_row == -1
     assert model.last_selected_row == -1
-    assert model.updated_info_tabs == []
+    assert model.updated_info_tabs == set()
     assert model.metadata_cache == {}
     assert model.acl_cache == {}
     assert model.replica_cache == {}
@@ -30,16 +30,16 @@ def test_set_path_resets_state(model):
 
 
 def test_path_changed(model):
-    assert model.path_changed() is True  # last_path is None initially
+    assert model.has_path_changed() is True  # last_path is None initially
     model.last_path = model.current_path
-    assert model.path_changed() is False
+    assert model.has_path_changed() is False
 
 
 def test_on_row_clicked_updates_selection(model):
     model.on_row_clicked(3)
     assert model.current_selected_row == 3
     assert model.last_selected_row == -1
-    assert model.updated_info_tabs == []
+    assert model.updated_info_tabs == set()
 
     model.on_row_clicked(5)
     assert model.last_selected_row == 3
