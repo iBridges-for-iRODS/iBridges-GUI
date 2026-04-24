@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 from PySide6.QtWidgets import QMessageBox
-from ibridgesgui.browser_controller import BrowserController
+from ibridgesgui.browsertab.browser_controller import BrowserController
 
 
 @pytest.fixture

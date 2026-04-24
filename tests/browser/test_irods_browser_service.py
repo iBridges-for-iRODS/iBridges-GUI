@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from ibridgesgui.irods_browser_service import IrodsBrowserService
+from ibridgesgui.browsertab.irods_browser_service import IrodsBrowserService
 
 
 @pytest.fixture

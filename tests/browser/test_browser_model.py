@@ -2,7 +2,7 @@
 import pytest
 from unittest.mock import MagicMock
 from ibridges import IrodsPath
-from ibridgesgui.browser_model import BrowserModel
+from ibridgesgui.browsertab.browser_model import BrowserModel
 
 class DummySession:
     irods_session = True
