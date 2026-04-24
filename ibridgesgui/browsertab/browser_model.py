@@ -89,18 +89,22 @@ class BrowserModel:
     # --- Cache invalidation helpers ---
 
     def invalidate_metadata(self, row: int) -> None:
+        """Discard metadata info."""
         self.metadata_cache.pop(row, None)
         self.updated_info_tabs.discard("metadata")
 
     def invalidate_acls(self, row: int) -> None:
+        """Discard acl info."""
         self.acl_cache.pop(row, None)
         self.updated_info_tabs.discard("permissions")
 
     def invalidate_replicas(self, row: int) -> None:
+        """Discard replicas info."""
         self.replica_cache.pop(row, None)
         self.updated_info_tabs.discard("replicas")
 
     def invalidate_preview(self, row: int) -> None:
+        """Discard preview info."""
         self.preview_cache.pop(row, None)
         self.updated_info_tabs.discard("preview")
 
@@ -115,31 +119,39 @@ class BrowserModel:
     # Metadata cache
 
     def cache_metadata(self, row: int, data: Any) -> None:
+        """Cache metadata info."""
         self._cache_set(self.metadata_cache, row, data)
 
     def get_cached_metadata(self, row: int) -> Optional[Any]:
+        """Retrieve cahced metadata info."""
         return self._cache_get(self.metadata_cache, row)
 
     # ACL cache
 
     def cache_acls(self, row: int, data: Any) -> None:
+        """Cache acl info."""
         self._cache_set(self.acl_cache, row, data)
 
     def get_cached_acls(self, row: int) -> Optional[Any]:
+        """Retrieve cached acl info."""
         return self._cache_get(self.acl_cache, row)
 
     # Replica cache
 
     def cache_replicas(self, row: int, data: Any) -> None:
+        """Cache replicas info."""
         self._cache_set(self.replica_cache, row, data)
 
     def get_cached_replicas(self, row: int) -> Optional[Any]:
+        """Retrieve cached replicas info."""
         return self._cache_get(self.replica_cache, row)
 
     # Preview cache
 
     def cache_preview(self, row: int, data: Any) -> None:
+        """Cache preview info."""
         self._cache_set(self.preview_cache, row, data)
 
     def get_cached_preview(self, row: int) -> Optional[Any]:
+        """Retrieve cahced preview info."""
         return self._cache_get(self.preview_cache, row)

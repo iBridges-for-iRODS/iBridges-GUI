@@ -27,6 +27,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
     # --- Rendering helpers moved from controller ---
 
     def render_metadata(self, data, irods_path):
+        """Render metadata table."""
         self.meta_key_field.clear()
         self.meta_value_field.clear()
         self.meta_units_field.clear()
@@ -38,6 +39,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_table.resizeColumnsToContents()
 
     def render_acls(self, clean, irods_path):
+        """Render ACL table."""
         self.acl_table.setRowCount(0)
         self.acl_user_field.clear()
         self.acl_zone_field.clear()
@@ -61,12 +63,14 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.owner_label.setText(obj.owner_name)
 
     def render_replicas(self, rows):
+        """Render replicas table."""
         self.replica_table.setRowCount(0)
         if rows:
             populate_table(self.replica_table, len(rows), rows)
         self.replica_table.resizeColumnsToContents()
 
     def clear_info_tabs(self):
+        """Creal all info tabs."""
         self.acl_table.setRowCount(0)
         self.meta_table.setRowCount(0)
         self.replica_table.setRowCount(0)
@@ -74,6 +78,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.no_meta_label.clear()
 
     def load_metadata_item(self, index):
+        """Load selected metadata row into edit fields."""
         row = index.row()
         key = self.meta_table.item(row, 0).text()
         val = self.meta_table.item(row, 1).text()
@@ -83,6 +88,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_units_field.setText(units)
 
     def load_permission(self, index):
+        """Load selected ACL row into edit fields."""
         row = index.row()
         user = self.acl_table.item(row, 0).text()
         zone = self.acl_table.item(row, 1).text()

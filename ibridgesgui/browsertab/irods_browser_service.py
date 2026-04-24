@@ -88,7 +88,7 @@ class IrodsBrowserService:
         try:
             return [(avu.name, avu.value, avu.units) for avu in irods_path.meta]
         except Exception as err:
-            raise RuntimeError(f"Failed to load metadata for {irods_path}: {err}")
+            raise RuntimeError(f"Failed to load metadata for {irods_path}: {err}") from err
 
     def add_metadata(self, path: IrodsPath, key: str, value: str, units: str):
         """Add metadata to coll or obj."""
