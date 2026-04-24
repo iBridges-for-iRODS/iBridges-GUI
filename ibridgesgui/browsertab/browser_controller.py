@@ -8,11 +8,10 @@ import PySide6.QtCore
 import PySide6.QtWidgets
 from ibridges import IrodsPath
 
-from ibridgesgui.gui_utils import get_irods_item, populate_table, populate_textfield
-from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
-
 from ibridgesgui.browsertab.browser_model import BrowserModel
 from ibridgesgui.browsertab.irods_browser_service import IrodsBrowserService
+from ibridgesgui.gui_utils import get_irods_item, populate_table
+from ibridgesgui.popup_widgets import CreateCollection, DownloadData, Rename, UploadData
 
 
 class BrowserController:
@@ -52,13 +51,13 @@ class BrowserController:
         self.ui.info_tabs.currentChanged.connect(self._fill_current_info_tab)
 
         # metadata
-        self.ui.meta_table.clicked.connect(self._load_metadata_item)
+        self.ui.meta_table.clicked.connect(self.ui.load_metadata_item)
         self.ui.add_meta_button.clicked.connect(lambda: self._metadata_edits("add"))
         self.ui.update_meta_button.clicked.connect(lambda: self._metadata_edits("update"))
         self.ui.delete_meta_button.clicked.connect(lambda: self._metadata_edits("delete"))
 
         # ACLs
-        self.ui.acl_table.clicked.connect(self._load_permission)
+        self.ui.acl_table.clicked.connect(self.ui.load_permission)
         self.ui.add_acl_button.clicked.connect(self._update_permission)
 
     def _set_path(self, irods_path: IrodsPath) -> None:
@@ -147,7 +146,7 @@ class BrowserController:
 
     def _load_browser_table(self) -> None:
         self.ui.error_label.clear()
-        self._clear_info_tabs()
+        self.ui.clear_info_tabs()
 
         path = self.model.current_path
         if not path.collection_exists():
@@ -173,198 +172,63 @@ class BrowserController:
 
         if self.model.needs_tab_update(tab_name):
             try:
-                self._fill_tab(tab_name, irods_path, row)
+                self._fill_tab(tab_name)
                 self.model.mark_tab_updated(tab_name)
             except Exception as err:
                 self.logger.exception("Error loading %s of %s", tab_name, irods_path)
                 self.ui.error_label.setText(f"Error loading {tab_name}: {err!r}")
 
-    def _fill_tab(self, tab_name: str, irods_path: IrodsPath, row: int) -> None:
-        if tab_name == "metadata":
-            cached = self.model.get_cached_metadata(row)
-            if cached is None:
-                data = list(irods_path.meta)
-                self.model.cache_metadata(row, data)
-            else:
-                data = cached
-            self._render_metadata(data, irods_path)
-
-        elif tab_name == "permissions":
-            cached = self.model.get_cached_acls(row)
-            if cached is None:
-                acls = self.service.get_acls(irods_path)
-                clean = [
-                    (
-                        user,
-                        zone,
-                        "read"
-                        if perm == "read_object"
-                        else "write"
-                        if perm == "modify_object"
-                        else perm,
-                        status,
-                    )
-                    for user, zone, perm, status in acls
-                ]
-                self.model.cache_acls(row, clean)
-            else:
-                clean = cached
-            self._render_acls(clean, irods_path)
-
-        elif tab_name == "replicas":
-            cached = self.model.get_cached_replicas(row)
-            if cached is None:
-                rows = self.service.replicas_for(irods_path)
-                self.model.cache_replicas(row, rows)
-            else:
-                rows = cached
-            self._render_replicas(rows)
-
-        elif tab_name == "preview":
-            cached = self.model.get_cached_preview(row)
-            if cached is None:
-                content = self._compute_preview(irods_path)
-                self.model.cache_preview(row, content)
-            else:
-                content = cached
-            populate_textfield(self.ui.preview_browser, content)
-
-    def _render_metadata(self, data, irods_path):
-        self.ui.meta_key_field.clear()
-        self.ui.meta_value_field.clear()
-        self.ui.meta_units_field.clear()
-        self.ui.no_meta_label.clear()
-
-        populate_table(self.ui.meta_table, len(data), data)
-        if len(data) == 0:
-            self.ui.no_meta_label.setText(f"Metadata for {irods_path} is empty.")
-        self.ui.meta_table.resizeColumnsToContents()
-
-    def _render_acls(self, clean, irods_path):
-        self.ui.acl_table.setRowCount(0)
-        self.ui.acl_user_field.clear()
-        self.ui.acl_zone_field.clear()
-        self.ui.acl_box.clear()
-        self.ui.recursive_box.setEnabled(irods_path.collection_exists())
-
-        obj_acl = ["read", "write", "own", "delete"]
-        coll_acl = obj_acl + [
-            "Newly added items to collection will inherit permissions",
-            "Remove inheritance.",
-        ]
-
-        for item in coll_acl if irods_path.collection_exists() else obj_acl:
-            self.ui.acl_box.addItem(item)
-        self.ui.acl_box.setEnabled(True)
-
-        populate_table(self.ui.acl_table, len(clean), clean)
-        self.ui.acl_table.resizeColumnsToContents()
-
-        obj = get_irods_item(irods_path)
-        self.ui.owner_label.setText(obj.owner_name)
-
-    def _render_replicas(self, rows):
-        self.ui.replica_table.setRowCount(0)
-        if rows:
-            populate_table(self.ui.replica_table, len(rows), rows)
-        self.ui.replica_table.resizeColumnsToContents()
-
-    def _compute_preview(self, irods_path):
-        if irods_path.collection_exists():
-            subcolls, objs = self.service.list_collection(irods_path)
-            content = ["Collections:", "-----------------"]
-            content.extend([sc.name for sc in subcolls])
-            content.extend(["", "DataObjects:", "-----------------"])
-            content.extend([do.name for do in objs])
-            return content
-
-        if irods_path.dataobject_exists():
-            ext = irods_path.name.split(".")[-1] if "." in irods_path.name else ""
-            if ext in ("txt", "json", "csv"):
-                try:
-                    content = self.service.stream_obj(irods_path)
-                    return content
-                except Exception as error:
-                    return [
-                        f"No Preview for: {irods_path}",
-                        repr(error),
-                        "Storage resource might be down.",
-                    ]
-            return [f"No Preview for: {irods_path}"]
-
-        return [f"No Preview for: {irods_path}"]
-
-    def _load_metadata_item(self, index: PySide6.QtCore.QModelIndex):
-        self.ui.error_label.clear()
-        row = index.row()
-        key = self.ui.meta_table.item(row, 0).text()
-        val = self.ui.meta_table.item(row, 1).text()
-        units = self.ui.meta_table.item(row, 2).text() if self.ui.meta_table.item(row, 2) else ""
-        self.ui.meta_key_field.setText(key)
-        self.ui.meta_value_field.setText(val)
-        self.ui.meta_units_field.setText(units)
-
-    def _metadata_edits(self, operation: str):
-        self.ui.error_label.clear()
-        if not self._validate_selection():
-            return
-
+    def _fill_tab(self, tab_name):
         row = self.ui.browser_table.currentRow()
         irods_path = self._item_path(row)
 
-        new_key = self.ui.meta_key_field.text()
-        new_val = self.ui.meta_value_field.text()
-        new_units = self.ui.meta_units_field.text()
+        if tab_name == "metadata":
+            self._fill_metadata_tab(irods_path, row)
+        elif tab_name == "permissions":
+            self._fill_acl_tab(irods_path, row)
+        elif tab_name == "replicas":
+            self._fill_replicas_tab(irods_path, row)
+        elif tab_name == "preview":
+            self._fill_preview_tab(irods_path, row)
 
-        try:
-            if operation == "add":
-                self.service.add_metadata(irods_path, new_key, new_val, new_units)
-                self.logger.info(
-                    "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
-                )
-            elif operation == "update":
-                mrow = self.ui.meta_table.currentRow()
-                old_key = self.ui.meta_table.item(mrow, 0).text()
-                old_val = self.ui.meta_table.item(mrow, 1).text()
-                old_units = self.ui.meta_table.item(mrow, 2).text()
-                self.service.update_metadata(irods_path, old_key, new_key, new_val, new_units)
-                self.logger.info(
-                    "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
-                    irods_path,
-                    old_key,
-                    old_val,
-                    old_units,
-                    new_key,
-                    new_val,
-                    new_units,
-                )
-            elif operation == "delete":
-                self.service.delete_metadata(irods_path, new_key, new_val, new_units)
-                self.logger.info(
-                    "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
-                )
+    def _fill_metadata_tab(self, irods_path, row):
+        if row not in self.model.metadata_cache:
+            data = self.service.get_metadata(irods_path)
+            self.model.cache_metadata(row, data)
+        else:
+            data = self.model.metadata_cache[row]
 
-            # invalidate cache for this row
-            self.model.metadata_cache.pop(row, None)
-            if 'metadata' in self.model.updated_info_tabs:
-                self.model.updated_info_tabs.remove('metadata')
+        self.ui.render_metadata(data, irods_path)
 
-            self._fill_current_info_tab()
+    def _fill_acl_tab(self, irods_path, row):
+        if row not in self.model.acl_cache:
+            acls = self.service.get_acls(irods_path)
+            clean = self.service.normalize_acls(acls)
+            self.model.cache_acls(row, clean)
+        else:
+            clean = self.model.acl_cache[row]
 
-        except Exception as error:
-            self.ui.error_label.setText(repr(error))
+        self.ui.render_acls(clean, irods_path)
 
-    def _load_permission(self, index: PySide6.QtCore.QModelIndex):
-        self.ui.error_label.clear()
-        row = index.row()
-        user = self.ui.acl_table.item(row, 0).text()
-        zone = self.ui.acl_table.item(row, 1).text()
-        acc = self.ui.acl_table.item(row, 2).text()
+    def _fill_replicas_tab(self, irods_path, row):
+        if row not in self.model.replica_cache:
+            replicas = self.service.get_replicas(irods_path)
+            self.model.cache_replicas(row, replicas)
+        else:
+            replicas = self.model.replica_cache[row]
 
-        self.ui.acl_user_field.setText(user)
-        self.ui.acl_zone_field.setText(zone)
-        self.ui.acl_box.setCurrentText(acc)
-        self.ui.recursive_box.setCurrentText("False")
+        self.ui.render_replicas(replicas)
+
+    def _fill_preview_tab(self, irods_path, row):
+        if row not in self.model.preview_cache:
+            content = self.service.compute_preview(irods_path)
+            self.model.cache_preview(row, content)
+        else:
+            content = self.model.preview_cache[row]
+
+        self.ui.preview_browser.setText("\n".join(content))
+
+
 
     def _update_permission(self) -> None:
         if not self._validate_selection():
@@ -406,10 +270,8 @@ class BrowserController:
                 recursive=recursive,
             )
 
-            # invalidate cache for this row
-            self.model.acl_cache.pop(row, None)
-            if "permissions" in self.model.updated_info_tabs:
-                self.model.updated_info_tabs.remove("permissions")
+            # NEW: use model helper instead of manual cache manipulation
+            self.model.invalidate_acls(row)
 
             self._fill_current_info_tab()
 
@@ -420,6 +282,114 @@ class BrowserController:
         except Exception as err:
             self.logger.exception("Permissions error for %s", irods_path)
             self.ui.error_label.setText(f"Error editing permissions: {err!r}")
+
+
+    def _render_metadata(self, data, irods_path):
+        self.ui.meta_key_field.clear()
+        self.ui.meta_value_field.clear()
+        self.ui.meta_units_field.clear()
+        self.ui.no_meta_label.clear()
+
+        populate_table(self.ui.meta_table, len(data), data)
+        if len(data) == 0:
+            self.ui.no_meta_label.setText(f"Metadata for {irods_path} is empty.")
+        self.ui.meta_table.resizeColumnsToContents()
+
+    def _render_acls(self, clean, irods_path):
+        self.ui.acl_table.setRowCount(0)
+        self.ui.acl_user_field.clear()
+        self.ui.acl_zone_field.clear()
+        self.ui.acl_box.clear()
+        self.ui.recursive_box.setEnabled(irods_path.collection_exists())
+
+        obj_acl = ["read", "write", "own", "delete"]
+        coll_acl = obj_acl + [
+            "Newly added items to collection will inherit permissions",
+            "Remove inheritance.",
+        ]
+
+        for item in coll_acl if irods_path.collection_exists() else obj_acl:
+            self.ui.acl_box.addItem(item)
+        self.ui.acl_box.setEnabled(True)
+
+        populate_table(self.ui.acl_table, len(clean), clean)
+        self.ui.acl_table.resizeColumnsToContents()
+
+        obj = get_irods_item(irods_path)
+        self.ui.owner_label.setText(obj.owner_name)
+
+    def _render_replicas(self, rows):
+        self.ui.replica_table.setRowCount(0)
+        if rows:
+            populate_table(self.ui.replica_table, len(rows), rows)
+        self.ui.replica_table.resizeColumnsToContents()
+
+    def _load_metadata_item(self, index: PySide6.QtCore.QModelIndex):
+        self.ui.error_label.clear()
+        row = index.row()
+        key = self.ui.meta_table.item(row, 0).text()
+        val = self.ui.meta_table.item(row, 1).text()
+        units = self.ui.meta_table.item(row, 2).text() if self.ui.meta_table.item(row, 2) else ""
+        self.ui.meta_key_field.setText(key)
+        self.ui.meta_value_field.setText(val)
+        self.ui.meta_units_field.setText(units)
+
+    def _metadata_edits(self, operation: str):
+        self.ui.error_label.clear()
+        if not self._validate_selection():
+            return
+
+        row = self.ui.browser_table.currentRow()
+        irods_path = self._item_path(row)
+
+        new_key = self.ui.meta_key_field.text()
+        new_val = self.ui.meta_value_field.text()
+        new_units = self.ui.meta_units_field.text()
+
+        try:
+            if operation == "add":
+                self.service.add_metadata(irods_path, new_key, new_val, new_units)
+                self.logger.info(
+                    "Add metadata (%s, %s, %s) to %s", new_key, new_val, new_units, irods_path
+                )
+            elif operation == "update":
+                mrow = self.ui.meta_table.currentRow()
+                old_key = self.ui.meta_table.item(mrow, 0).text()
+                old_val = self.ui.meta_table.item(mrow, 1).text()
+                old_units = self.ui.meta_table.item(mrow, 2).text()
+                self.service.update_metadata(
+                    irods_path,
+                    old_key,
+                    old_val,
+                    old_units,
+                    new_key,
+                    new_val,
+                    new_units,
+                )
+
+                self.logger.info(
+                    "Update metadata of %s from (%s, %s, %s) to (%s, %s, %s)",
+                    irods_path,
+                    old_key,
+                    old_val,
+                    old_units,
+                    new_key,
+                    new_val,
+                    new_units,
+                )
+            elif operation == "delete":
+                self.service.delete_metadata(irods_path, new_key, new_val, new_units)
+                self.logger.info(
+                    "Delete metadata (%s, %s, %s) from %s", new_key, new_val, new_units, irods_path
+                )
+
+            # invalidate cache for this row
+            self.model.invalidate_metadata(row)
+            self._fill_current_info_tab()
+
+        except Exception as err:
+            self.logger.exception("Metadata error for %s", irods_path)
+            self.ui.error_label.setText(f"Metadata error: {err!r}")
 
     def _on_row_clicked(self) -> None:
         row = self.ui.browser_table.currentRow()

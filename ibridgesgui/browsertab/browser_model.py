@@ -8,8 +8,7 @@ from ibridges import IrodsPath
 
 @dataclasses.dataclass
 class BrowserModel:
-    """
-    State container for the Browser tab.
+    """State container for the Browser tab.
 
     This model tracks all non‑UI state required by the browser view and
     controller. It acts as a lightweight state machine that records:
@@ -86,6 +85,24 @@ class BrowserModel:
         self.acl_cache.clear()
         self.replica_cache.clear()
         self.preview_cache.clear()
+
+    # --- Cache invalidation helpers ---
+
+    def invalidate_metadata(self, row: int) -> None:
+        self.metadata_cache.pop(row, None)
+        self.updated_info_tabs.discard("metadata")
+
+    def invalidate_acls(self, row: int) -> None:
+        self.acl_cache.pop(row, None)
+        self.updated_info_tabs.discard("permissions")
+
+    def invalidate_replicas(self, row: int) -> None:
+        self.replica_cache.pop(row, None)
+        self.updated_info_tabs.discard("replicas")
+
+    def invalidate_preview(self, row: int) -> None:
+        self.preview_cache.pop(row, None)
+        self.updated_info_tabs.discard("preview")
 
     # Generic helpers
 
