@@ -68,7 +68,6 @@ def test_save_env_valid_json(dialog, patch_config, monkeypatch):
     assert "example.org" in called["data"]["host"]
     assert "Configuration saved as" in dialog.error_label.text()
 
-
 def test_save_env_invalid_json(dialog, patch_config):
     dialog.envbox.setCurrentText("test_env.json")
     dialog.env_field.setPlainText("not json")
@@ -84,4 +83,52 @@ def test_save_env_no_file_selected(dialog):
     dialog.save_env()
 
     assert dialog.error_label.text() == "Choose 'Save as' to save"
+
+def test_save_env_as_cancel(dialog, monkeypatch):
+    monkeypatch.setattr(
+        "PySide6.QtWidgets.QFileDialog.getSaveFileName",
+        lambda *a, **k: ("", "")
+    )
+
+    dialog.env_field.setPlainText('{"host": "example.org"}')
+    dialog.save_env_as()
+
+    assert dialog.error_label.text() == ""
+
+def test_save_env_as_wrong_extension(dialog, monkeypatch):
+    monkeypatch.setattr(
+        "PySide6.QtWidgets.QFileDialog.getSaveFileName",
+        lambda *a, **k: ("/tmp/test_env", "")
+    )
+
+    dialog.env_field.setPlainText('{"host": "example.org"}')
+    dialog.save_env_as()
+
+    assert dialog.error_label.text() == "ERROR: File must have .json extension."
+
+def test_save_env_as_valid(dialog, monkeypatch):
+    called = {}
+
+    def fake_save(path, data):
+        called["path"] = path
+        called["data"] = data
+
+    monkeypatch.setattr(
+        "ibridgesgui.popup_widgets.check_config.save_irods_config",
+        fake_save
+    )
+
+    monkeypatch.setattr(
+        "PySide6.QtWidgets.QFileDialog.getSaveFileName",
+        lambda *a, **k: ("/tmp/test_env.json", "")
+    )
+
+    dialog.env_field.setPlainText('{"host": "example.org"}')
+    dialog.save_env_as()
+
+    assert called["path"] == "/tmp/test_env.json"
+    assert called["data"]["host"] == "example.org"
+    assert "Configuration saved as" in dialog.error_label.text()
+
+
 
