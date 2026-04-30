@@ -120,8 +120,8 @@ def test_hide_button_calls_close(dialog):
     assert dialog.isVisible()
 
 
-def test_start_download_sets_active_transfer(dialog):
-    dialog.destination_label.setText(str(Path.cwd()))
+def test_start_download_sets_active_transfer(dialog, tmp_path):
+    dialog.destination_label.setText(str(tmp_path))
     dialog._collect_download_params()
     assert dialog.active_transfer is True
 

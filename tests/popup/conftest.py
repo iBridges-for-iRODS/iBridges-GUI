@@ -136,29 +136,37 @@ def fake_irods_path():
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def patch_env_path(monkeypatch):
-    """Patch get_last_ienv_path() to avoid touching real config."""
+def patch_env_path(monkeypatch, tmp_path):
+    """Patch config lookups so CI does not crash."""
+    fake_config = {"last_download_path": str(tmp_path)}
+
+    # Patch the config loader used by config_get_last_download_path()
+    monkeypatch.setattr(
+        "ibridgesgui.config._get_config",
+        lambda: fake_config,
+        raising=False,
+    )
+
+    # Keep your existing patches
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.download_data.get_last_ienv_path",
-        lambda: str(Path.cwd()),
+        lambda: str(tmp_path),
         raising=False,
     )
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.upload_data.get_last_ienv_path",
-        lambda: str(Path.cwd()),
+        lambda: str(tmp_path),
         raising=False,
     )
 
+    return fake_config
 
-# ---------------------------------------------------------------------------
-# Dummy ops object for dry-run upload/download
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def dummy_ops():
     class DummyOps:
-        upload = True
-        download = True
-        meta_download = False
+        def __init__(self):
+            self.download = ["file1"]      # MUST be non-empty
+            self.meta_download = []        # list, not bool
     return DummyOps()
 
