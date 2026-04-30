@@ -94,25 +94,6 @@ def fake_logger():
     return FakeLogger()
 
 
-#@pytest.fixture
-#def fake_irods_path():
-#    class FakeIrodsPath:
-#        def __init__(self, name="test_item"):
-#            self.name = name
-#            self.session = FakeSession()
-#            self.collection = self
-#            self.subcollections = []
-#            self.data_objects = []
-#
-#        def collection_exists(self):
-#            return True
-#
-#    return FakeIrodsPath()
-
-import types
-import sys
-import pytest
-
 @pytest.fixture
 def fake_irods_path():
     class FakeSession:
