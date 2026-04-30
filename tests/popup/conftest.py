@@ -135,24 +135,23 @@ def fake_irods_path():
 # Patch environment path lookups
 # ---------------------------------------------------------------------------
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def patch_env_path(monkeypatch, tmp_path):
     """Patch config lookups so CI does not crash."""
     fake_config = {"last_download_path": str(tmp_path)}
 
-    # Patch the config loader used by config_get_last_download_path()
     monkeypatch.setattr(
         "ibridgesgui.config._get_config",
         lambda: fake_config,
         raising=False,
     )
 
-    # Keep your existing patches
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.download_data.get_last_ienv_path",
         lambda: str(tmp_path),
         raising=False,
     )
+
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.upload_data.get_last_ienv_path",
         lambda: str(tmp_path),
