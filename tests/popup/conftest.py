@@ -94,20 +94,61 @@ def fake_logger():
     return FakeLogger()
 
 
+#@pytest.fixture
+#def fake_irods_path():
+#    class FakeIrodsPath:
+#        def __init__(self, name="test_item"):
+#            self.name = name
+#            self.session = FakeSession()
+#            self.collection = self
+#            self.subcollections = []
+#            self.data_objects = []
+#
+#        def collection_exists(self):
+#            return True
+#
+#    return FakeIrodsPath()
+
+import types
+import sys
+import pytest
+
 @pytest.fixture
 def fake_irods_path():
+    class FakeSession:
+        def __init__(self):
+            # IrodsPath expects session.irods_session
+            self.irods_session = self
+
+            # Required by IrodsPath.exists()
+            self.data_objects = type("X", (), {"exists": lambda self, p: False})()
+            self.collections = type("Y", (), {"exists": lambda self, p: False})()
+
+            # Required by IrodsPath.absolute()
+            self.zone = "tempZone"
+            self.home = "/tempZone/home"
+            self.cwd = "/tempZone/home/testuser"
+
+    class FakeObj:
+        def __init__(self, name):
+            self.name = name
+
+    class FakeCollection:
+        def __init__(self):
+            self.subcollections = [FakeObj("sub1"), FakeObj("sub2")]
+            self.data_objects = [FakeObj("file1"), FakeObj("file2")]
+
     class FakeIrodsPath:
         def __init__(self, name="test_item"):
             self.name = name
             self.session = FakeSession()
-            self.collection = self
-            self.subcollections = []
-            self.data_objects = []
+            self.collection = FakeCollection()
 
         def collection_exists(self):
             return True
 
     return FakeIrodsPath()
+
 
 # ---------------------------------------------------------------------------
 # Patch environment path lookups
