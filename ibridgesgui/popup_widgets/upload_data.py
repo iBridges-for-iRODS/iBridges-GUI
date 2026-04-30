@@ -265,4 +265,4 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
         self.file_button.setEnabled(enable)
         self.hide_button.setEnabled(enable)
         self.overwrite.setEnabled(enable)
-        self.delete_row_button(enable)
+        self.delete_row_button.setEnabled(enable)

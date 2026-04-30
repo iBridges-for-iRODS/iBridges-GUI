@@ -159,4 +159,5 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
         self.download_button.setEnabled(enable)
         self.folder_button.setEnabled(enable)
         self.overwrite.setEnabled(enable)
+        self.hide_button.setEnabled(enable)
         self.metadata.setEnabled(enable)
