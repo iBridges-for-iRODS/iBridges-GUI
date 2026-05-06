@@ -91,10 +91,6 @@ def manager(patched_config):
 # Tests
 # ---------------------------------------------------------------------------
 
-def test_get_cached_password(manager):
-    pw = manager.get_cached_password(Path("/tmp/env1.json"))
-    assert pw == "pw1"
-
 
 def test_save_current_settings(manager, patched_config):
     manager.save_current_settings(Path("/tmp/env1.json"))

@@ -205,37 +205,3 @@ def test_combine_operations():
     assert combined.meta_upload == {"m1", "m2"}
     assert combined.download == [1, 2]
     assert combined.upload == [10, 20]
-
-
-# ---------------------------------------------------------------------------
-# TAB PROVIDERS
-# ---------------------------------------------------------------------------
-
-def test_get_tab_providers(monkeypatch):
-    fake_entry = MagicMock()
-    fake_entry.load.return_value = "PROVIDER"
-
-    monkeypatch.setattr(
-        gui_utils,
-        "entry_points",
-        lambda group: [fake_entry] if group == "ibridges.gui_tab" else [],
-    )
-
-    providers = gui_utils.get_tab_providers()
-    assert providers == ["PROVIDER"]
-
-
-def test_find_tab_provider_found():
-    provider = MagicMock(name="TestTab")
-    provider.name = "MyTab"
-
-    assert gui_utils.find_tab_provider([provider], "MyTab") is provider
-
-
-def test_find_tab_provider_not_found():
-    provider = MagicMock(name="OtherTab")
-    provider.name = "Other"
-
-    with pytest.raises(ValueError):
-        gui_utils.find_tab_provider([provider], "Missing")
-

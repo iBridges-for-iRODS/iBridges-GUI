@@ -28,11 +28,6 @@ class ConfigManager:
         """Init."""
         self._config = _get_config() or {}
 
-    def get_cached_password(self, env_path: Path) -> str | None:
-        """Password caching get from config."""
-        cached = self._config.get("cached_passwords", {})
-        return cached.get(str(env_path))
-
     def save_current_settings(self, env_path: Path) -> None:
         """Delegate to the existing function."""
         save_current_settings(env_path)

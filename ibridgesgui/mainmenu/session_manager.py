@@ -48,8 +48,6 @@ class SessionManager(QObject):
 
             # Reset session manager state
             if hasattr(self, "session_manager"):
-                self.session_manager.current_session = None
-                self.session_manager.active_session = None
                 self.session_manager.session = None
     
             # Emit signal so GUI components reset themselves

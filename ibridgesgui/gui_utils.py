@@ -203,24 +203,3 @@ def combine_operations(operations: list[Operations]) -> Operations:
         base.upload.extend(op.upload)
 
     return base
-
-
-# ---------------------------------------------------------------------------
-# Plugin utilities
-# ---------------------------------------------------------------------------
-
-
-def get_tab_providers() -> list:
-    """Return all installed tab providers."""
-    return [entry.load() for entry in entry_points(group="ibridges.gui_tab")]
-
-
-def find_tab_provider(tab_providers: list, tab_name: str):
-    """Return the provider matching the given tab name."""
-    for provider in tab_providers:
-        if provider.name == tab_name:
-            return provider
-
-    raise ValueError(
-        f"Cannot find provider with name '{tab_name}'. Ensure the plugin is installed."
-    )
