@@ -1,53 +1,86 @@
-"""Provide the GUI with iRODS information."""
+"""Info tab."""
 
 import sys
 
-import PySide6.QtWidgets
 from ibridges.resources import Resources
+from PySide6 import QtCore, QtWidgets
 
 from ibridgesgui.config import CONFIG_DIR
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, populate_table, populate_textfield
 from ibridgesgui.ui_files.tabInfo import Ui_tabInfo
 
 
-class Info(PySide6.QtWidgets.QWidget, Ui_tabInfo):
-    """Set iRODS information in the GUI."""
+class Info(QtWidgets.QWidget, Ui_tabInfo):
+    """Tab showing iRODS system information."""
 
     def __init__(self, session):
-        """Initialise the tab."""
+        """Init."""
         super().__init__()
-        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
-            super().setupUi(self)
-        else:
-            load_ui(UI_FILE_DIR / "tabInfo.ui", self)
+        self._load_ui()
         self.session = session
 
         self.refresh_button.clicked.connect(self.refresh_info)
         self.refresh_info()
 
+    def _load_ui(self):
+        if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+            super().setupUi(self)
+        else:
+            load_ui(UI_FILE_DIR / "tabInfo.ui", self)
+
     def refresh_info(self):
-        """Find and set the information of the connected iRODS system."""
-        self.resc_table.setRowCount(0)
-        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.WaitCursor))
-        # irods Zone
-        self.zone_label.setText(self.session.zone)
-        # irods user
-        self.user_label.setText(self.session.username)
-        # irods user type and groups
+        """Refetch infor from iRODS."""
+        with self._wait_cursor():
+            info = self._collect_info()
+            self._update_ui(info)
+
+    def _collect_info(self):
         user_type, user_groups = self.session.get_user_info()
-        self.type_label.setText(user_type)
-        populate_textfield(self.groups_browser, user_groups)
-        # ibridges log location
-        self.log_label.setText(str(CONFIG_DIR))
-        # default resource
-        self.resc_label.setText(self.session.default_resc)
-        # irods server and version
-        self.server_label.setText(self.session.host)
-        self.version_label.setText(".".join((str(num) for num in self.session.server_version)))
-        # irods resources
-        resc_info = Resources(self.session).root_resources
-        populate_table(self.resc_table, len(resc_info), resc_info)
-        header = self.resc_table.horizontalHeader()
+        return {
+            "zone": self.session.zone,
+            "username": self.session.username,
+            "user_type": user_type,
+            "groups": user_groups,
+            "log_dir": str(CONFIG_DIR),
+            "default_resc": self.session.default_resc,
+            "server": self.session.host,
+            "version": ".".join(map(str, self.session.server_version)),
+            "resources": Resources(self.session).root_resources,
+        }
+
+    def _update_ui(self, info):
+        self.zone_label.setText(info["zone"])
+        self.user_label.setText(info["username"])
+        self.type_label.setText(info["user_type"])
+        populate_textfield(self.groups_browser, info["groups"])
+        self.log_label.setText(info["log_dir"])
+        self.resc_label.setText(info["default_resc"])
+        self.server_label.setText(info["server"])
+        self.version_label.setText(info["version"])
+
+        resources = [
+            tuple("" if v is None else v for v in row)
+            for row in info["resources"]
+        ]
+
+        populate_table(self.resc_table, len(resources), resources)
+
+        self._autosize_columns(self.resc_table)
+
+    def _autosize_columns(self, table):
+        header = table.horizontalHeader()
         for col in range(header.count()):
-            header.setSectionResizeMode(col, PySide6.QtWidgets.QHeaderView.ResizeToContents)
-        self.setCursor(PySide6.QtGui.QCursor(PySide6.QtCore.Qt.CursorShape.ArrowCursor))
+            header.setSectionResizeMode(col, QtWidgets.QHeaderView.ResizeToContents)
+
+    @staticmethod
+    def _wait_cursor():
+        class CursorContext:
+            """Helper class to steer cursor appearance."""
+
+            def __enter__(self):
+                QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+
+            def __exit__(self, exc_type, exc, tb):
+                QtWidgets.QApplication.restoreOverrideCursor()
+
+        return CursorContext()
