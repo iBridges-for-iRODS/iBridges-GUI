@@ -8,7 +8,9 @@ import setproctitle
 from PySide6.QtWidgets import QApplication, QStackedWidget
 
 from ibridgesgui import config as config_module
-from ibridgesgui.mainmenu import ConfigManager, MainWindow
+from ibridgesgui.mainmenu import ConfigManager
+from ibridgesgui.mainmenu.main_window import MainWindow
+
 
 THIS_APPLICATION = "ibridges-gui"
 
