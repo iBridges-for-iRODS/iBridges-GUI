@@ -55,4 +55,3 @@ class SessionManager(QObject):
             return not resc.parent
         except Exception:
             return False
-

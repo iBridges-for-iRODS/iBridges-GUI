@@ -47,51 +47,49 @@ class TabManager:
     def load_tab(self, name: str, session, app_name: str, logger) -> None:
         if name in self.loaded_tabs:
             return
-    
+
         if name in self.standard_tabs:
             widget = self.standard_tabs[name](session, app_name, logger)
         else:
             provider = self.plugin_manager.get_provider(name)
             widget = provider(session, app_name, logger)
-    
+
         self.tab_widget.addTab(widget, name)
         self.update_plugin_menu()
         self.loaded_tabs[name] = widget
-    
+
         self.config.save_tabs(list(self.loaded_tabs.keys()))
-    
+
     def unload_tab(self, name: str) -> None:
         widget = self.loaded_tabs.get(name)
         if widget is None:
             return
-    
+
         index = self.tab_widget.indexOf(widget)
         if index >= 0:
             self.tab_widget.removeTab(index)
-    
+
         del self.loaded_tabs[name]
         self.update_plugin_menu()
-    
+
         self.config.save_tabs(list(self.loaded_tabs.keys()))
 
     def restore_tabs(self, session, app_name: str, logger) -> None:
         saved = self.config.load_tabs()
         if not saved:
             saved = list(self.standard_tabs)
-    
+
         # Standard tabs in correct order
         ordered_standard = [name for name in self.standard_tabs if name in saved]
-    
+
         # Third‑party tabs in saved order
         third_party = [name for name in saved if name not in self.standard_tabs]
-    
+
         for name in ordered_standard + third_party:
             self.load_tab(name, session, app_name, logger)
-    
+
     def update_plugin_menu(self):
         for name, action in self.main_window.plugin_actions.items():
             action.blockSignals(True)
             action.setChecked(name in self.loaded_tabs)
             action.blockSignals(False)
-
-

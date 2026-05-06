@@ -89,6 +89,7 @@ def load_ui(ui_file: str, base_instance=None):
         # Restore original working directory
         os.chdir(old_cwd)
 
+
 # ---------------------------------------------------------------------------
 # Widget utilities
 # ---------------------------------------------------------------------------

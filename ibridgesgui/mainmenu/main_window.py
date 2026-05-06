@@ -30,12 +30,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.config = config_manager
         self.plugin_manager = PluginManager()
         self.session_manager = SessionManager(self.config, self.logger)
-        self.tab_manager = TabManager(
-            self.tab_widget,
-            self.plugin_manager,
-            self.config,
-            self
-        )
+        self.tab_manager = TabManager(self.tab_widget, self.plugin_manager, self.config, self)
 
         self.session_manager.session_changed.connect(self.on_session_changed)
 
@@ -48,7 +43,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_exit.triggered.connect(self._on_exit)
         self.action_add_configuration.triggered.connect(self._on_create_env)
         self.action_check_configuration.triggered.connect(self._on_check_env)
-
 
         if session is not None:
             self.on_session_changed(session)
@@ -75,6 +69,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _make_toggle_handler(self, name: str):
         def handler() -> None:
             self._toggle_tab(name)
+
         return handler
 
     def _toggle_tab(self, name: str) -> None:
@@ -93,21 +88,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _on_connect(self) -> None:
         self.session_manager.connect(self)
-    
+
     def _on_disconnect(self) -> None:
         self.session_manager.disconnect()
-    
+
     def _on_exit(self) -> None:
         self.close()
-    
+
     def _on_create_env(self) -> None:
         widget = CheckConfig(self.logger, Path("~/.irods").expanduser())
         widget.exec()
-    
+
     def _on_check_env(self) -> None:
         widget = CheckConfig(self.logger, Path("~/.irods").expanduser())
         widget.exec()
-    
 
     def on_session_changed(self, session) -> None:
         self.tab_widget.clear()
@@ -123,4 +117,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _show_welcome_tab(self) -> None:
         welcome = Welcome()
         self.tab_widget.addTab(welcome, "Welcome")
-

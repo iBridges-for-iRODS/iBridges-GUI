@@ -176,6 +176,7 @@ def set_last_ienv(alias: str | None, path: str) -> None:
 
     _save_config(config)
 
+
 # ---------------------------------------------------------------------------
 # GUI config: log level
 # ---------------------------------------------------------------------------
@@ -268,6 +269,7 @@ def config_get_last_download_path() -> Path:
         return Path(raw).expanduser()
 
     return Path.home()
+
 
 # ---------------------------------------------------------------------------
 # GUI config: settings
@@ -430,6 +432,7 @@ def save_irods_config(env_path: Union[Path, str], conf: dict) -> None:
 # ---------------------------------------------------------------------------
 # CLI environments + extra files ~/.irods
 # ---------------------------------------------------------------------------
+
 
 def load_envs_from_cli_and_fs(irods_config_dir: Path) -> dict[str, tuple[Path, dict]]:
     """
