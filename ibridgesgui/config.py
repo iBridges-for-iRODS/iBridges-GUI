@@ -145,25 +145,36 @@ def _save_config(conf: dict) -> None:
 
 
 def get_last_ienv_name() -> str | None:
-    """Get last used irods_environment."""
-    config = _get_config()
-    return config.get("gui_last_env") if config else None
+    raw = _get_config().get("gui_last_env")
+    if not raw:
+        return None
+
+    parts = raw.split(" - ", 1)
+    alias = parts[0].strip()
+    return alias or None
 
 
 def get_last_ienv_path() -> str | None:
-    """Get path from  last used environoment."""
-    name = get_last_ienv_name()
-    if name:
-        return name.split(" - ")[1]
-    return None
+    raw = _get_config().get("gui_last_env")
+    if not raw:
+        return None
+
+    parts = raw.split(" - ", 1)
+    if len(parts) < 2:
+        return None
+
+    path = parts[1].strip()
+    return path or None
 
 
-def set_last_ienv(ienv: str) -> None:
-    """Update info about last used environment."""
+def set_last_ienv(alias: str | None, path: str) -> None:
+    """Save last used environment in the format '<alias> - <path>'."""
     config = _get_config() or {}
-    config["gui_last_env"] = ienv
-    _save_config(config)
 
+    alias = alias or ""  # allow empty alias
+    config["gui_last_env"] = f"{alias} - {path}"
+
+    _save_config(config)
 
 # ---------------------------------------------------------------------------
 # GUI config: log level
@@ -248,11 +259,15 @@ def config_set_last_download_path(path: Path) -> None:
     _save_config(config)
 
 
-def config_get_last_download_path() -> str | None:
-    """Get the last download destination."""
+def config_get_last_download_path() -> Path:
+    """Return last download path as a Path object, or Path.home() if missing."""
     config = _get_config() or {}
-    return config.get("last_download_path")
+    raw = config.get("last_download_path")
 
+    if raw:
+        return Path(raw).expanduser()
+
+    return Path.home()
 
 # ---------------------------------------------------------------------------
 # GUI config: settings
@@ -413,32 +428,33 @@ def save_irods_config(env_path: Union[Path, str], conf: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Combining GUI + CLI environments
+# CLI environments + extra files ~/.irods
 # ---------------------------------------------------------------------------
 
+def load_envs_from_cli_and_fs(irods_config_dir: Path) -> dict[str, tuple[Path, dict]]:
+    """
+    Load all server environments from the CLI config,
+    and extend them with any .json files found in ~/.irods.
+    """
 
-def combine_envs_gui_cli() -> dict[str, tuple[Path, str | None]]:
-    """Combine CLI and GUI environment aliases."""
-    cli_servers = IbridgesConf(None).servers
-    gui = get_prev_settings()
-    aliases: dict[str, tuple[Path, str | None]] = {}
+    conf = IbridgesConf(None)
+    cli_servers = conf.servers  # dict: env_path_str → entry_dict
 
-    # GUI environments
-    for env_path, gui_pw in gui.items():
-        if env_path in cli_servers:
-            cli_entry = cli_servers[env_path]
-            alias = cli_entry.get("alias", Path(env_path).name)
-            cli_pw = cli_entry.get("irodsa_backup")
-            pw = gui_pw if cli_pw != gui_pw else cli_pw
-            aliases[alias] = (Path(env_path), pw)
-        else:
-            aliases[Path(env_path).name] = (Path(env_path), gui_pw)
+    aliases_envs: dict[str, tuple[Path, dict]] = {}
 
-    # CLI-only environments
-    for env_path, cli_entry in cli_servers.items():
-        if env_path not in gui:
-            alias = cli_entry.get("alias", Path(env_path).name)
-            pw = cli_entry.get("irodsa_backup")
-            aliases[alias] = (Path(env_path), pw)
+    # 1. Load all CLI-defined servers
+    for env_path_str, entry in cli_servers.items():
+        env_path = Path(env_path_str).expanduser()
+        alias = entry.get("alias", env_path.name)
+        aliases_envs[alias] = (env_path, entry)
 
-    return aliases
+    # 2. Add any .json env files in ~/.irods that are NOT in CLI config
+    for env_file in irods_config_dir.glob("*.json"):
+        env_file = env_file.expanduser()
+
+        # Check if this file is already represented in CLI config
+        if not any(env_file == p for (p, _) in aliases_envs.values()):
+            alias = env_file.name  # fallback alias
+            aliases_envs[alias] = (env_file, {"alias": alias})
+
+    return aliases_envs
