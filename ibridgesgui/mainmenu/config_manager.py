@@ -81,7 +81,6 @@ class ConfigManager:
     def get_last_upload_path(self) -> Path:
         return config_get_last_upload_path()
 
-
     def set_last_download_path(self, path: Path) -> None:
         config_set_last_download_path(path)
         self._config = _get_config() or {}

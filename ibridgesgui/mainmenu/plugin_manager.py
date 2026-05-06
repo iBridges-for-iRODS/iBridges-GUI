@@ -24,8 +24,7 @@ class PluginManager:
                 return provider
 
         raise ValueError(
-            f"Cannot find provider with name {name!r}. "
-            "Ensure the plugin is installed."
+            f"Cannot find provider with name {name!r}. " "Ensure the plugin is installed."
         )
 
     def list_providers(self) -> list[Any]:
