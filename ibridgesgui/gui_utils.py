@@ -23,7 +23,7 @@ from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 try:
     from importlib_metadata import entry_points
 except ImportError:
-    from importlib.metadata import entry_points  # type: ignore
+    pass  # type: ignore
 
 try:
     from importlib.resources import files

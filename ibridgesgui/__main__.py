@@ -11,7 +11,6 @@ from ibridgesgui import config as config_module
 from ibridgesgui.mainmenu import ConfigManager
 from ibridgesgui.mainmenu.main_window import MainWindow
 
-
 THIS_APPLICATION = "ibridges-gui"
 
 
