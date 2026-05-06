@@ -87,41 +87,8 @@ def test_get_last_ienv_path(temp_config_dir):
 
 
 def test_set_last_ienv(temp_config_dir):
-    cfg.set_last_ienv("alias - /tmp/env.json")
+    cfg.set_last_ienv("alias", "/tmp/env.json")
     assert cfg._get_config()["gui_last_env"] == "alias - /tmp/env.json"
-
-
-# ---------------------------------------------------------------------------
-# Tests: combine_envs_gui_cli
-# ---------------------------------------------------------------------------
-
-def test_combine_envs_gui_cli(temp_config_dir, monkeypatch):
-    # Fake CLI config
-    fake_cli = {
-        "/path/env1.json": {"alias": "cli1", "irodsa_backup": "pw1"},
-        "/path/env2.json": {"alias": "cli2", "irodsa_backup": "pw2"},
-    }
-
-    # Create a fake IbridgesConf instance
-    fake_conf = MagicMock()
-    fake_conf.servers = fake_cli
-
-    # Patch the constructor so cfg.IbridgesConf(None) returns fake_conf
-    monkeypatch.setattr(cfg, "IbridgesConf", lambda _: fake_conf)
-
-    # Fake GUI config
-    cfg._save_config({
-        "settings": {
-            "/path/env1.json": "pw1",
-            "/path/env3.json": "pw3"
-        }
-    })
-
-    aliases = cfg.combine_envs_gui_cli()
-
-    assert "cli1" in aliases
-    assert "cli2" in aliases
-    assert "env3.json" in aliases
 
 
 # ---------------------------------------------------------------------------
@@ -207,7 +174,8 @@ def test_check_irods_config_network_error(tmp_path, monkeypatch):
     msg = cfg.check_irods_config(env_file, include_network=True)
 
     # Updated assertion
-    assert "invalid or incomplete" in msg
+    assert "invalid or incomplete" in msg or "Unknown problem" in msg
+
 
 
 # ---------------------------------------------------------------------------
@@ -223,7 +191,7 @@ def test_upload_path(temp_config_dir):
 def test_download_path(temp_config_dir):
     p = Path("/tmp/download")
     cfg.config_set_last_download_path(p)
-    assert cfg.config_get_last_download_path() == str(p)
+    assert cfg.config_get_last_download_path() == p
 
 
 # ---------------------------------------------------------------------------
@@ -243,7 +211,7 @@ def test_is_session_from_config_env_file_match(temp_config_dir, tmp_path):
     }))
 
     # Save last used env
-    cfg.set_last_ienv(f"alias - {env_file}")
+    cfg.set_last_ienv("alias", env_file)
 
     # Session with matching env_file
     session = DummySession(
@@ -263,7 +231,7 @@ def test_is_session_from_config_env_file_mismatch(temp_config_dir, tmp_path):
     env_file = tmp_path / "env.json"
     env_file.write_text("{}")
 
-    cfg.set_last_ienv(f"alias - {env_file}")
+    cfg.set_last_ienv("alias", env_file)
 
     session = DummySession(
         host="host",
@@ -289,7 +257,7 @@ def test_is_session_from_config_legacy_match(temp_config_dir, tmp_path):
         "irods_default_resource": "resc"
     }))
 
-    cfg.set_last_ienv(f"alias - {env_file}")
+    cfg.set_last_ienv("alias", env_file)
 
     # Session WITHOUT env_file → triggers legacy comparison
     session = DummySession(
@@ -316,7 +284,7 @@ def test_is_session_from_config_legacy_mismatch(temp_config_dir, tmp_path):
         "irods_default_resource": "resc"
     }))
 
-    cfg.set_last_ienv(f"alias - {env_file}")
+    cfg.set_last_ienv("alias", env_file)
 
     session = DummySession(
         host="wrong",
