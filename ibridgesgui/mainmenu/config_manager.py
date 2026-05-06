@@ -1,4 +1,5 @@
 """Wrapper around config.py."""
+from typing import Optional, List
 from pathlib import Path
 
 from ibridgesgui.config import (
@@ -33,17 +34,17 @@ class ConfigManager:
         save_current_settings(env_path)
         self._config = _get_config() or {}
 
-    def get_last_env(self) -> str | None:
+    def get_last_env(self) -> Optional[str]:
         """Delegate to existing function."""
         return get_last_ienv_name()
 
-    def set_last_ienv(self, alias: str | None, path: str) -> None:
+    def set_last_ienv(self, alias: Optional[str], path: str) -> None:
         """Save last used environment in the format '<alias> - <path>'."""
         set_last_ienv(alias, path)
         self._config = _get_config() or {}
 
     # Log level
-    def get_log_level(self) -> str | None:
+    def get_log_level(self) -> Optional[str]:
         """Delegate to existing function."""
         return get_log_level()
 
@@ -53,11 +54,11 @@ class ConfigManager:
         self._config = _get_config() or {}
 
     # Tabs
-    def load_tabs(self) -> list[str]:
+    def load_tabs(self) -> List[str]:
         """Return list of tabs that should be restored."""
         return self._config.get("tabs", [])
 
-    def save_tabs(self, tabs: list[str]) -> None:
+    def save_tabs(self, tabs: List[str]) -> None:
         """Persist list of open tabs."""
         self._config["tabs"] = tabs
         _save_config(self._config)
@@ -77,7 +78,7 @@ class ConfigManager:
         config_set_last_download_path(path)
         self._config = _get_config() or {}
 
-    def get_last_download_path(self) -> str | None:
+    def get_last_download_path(self) -> Optional[str]:
         """Delegate to existing function."""
         return config_get_last_download_path()
 

@@ -8,7 +8,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Optional, Iterable, Union
 
 import PySide6.QtCore
 import PySide6.QtUiTools
@@ -174,7 +174,7 @@ def get_irods_item(irods_path: IrodsPath):
     return irods_path.collection if irods_path.collection_exists() else irods_path.dataobject
 
 
-def prep_session_for_copy(session, error_label) -> Path | None:
+def prep_session_for_copy(session, error_label) -> Optional[Path]:
     """Return a save path or set an error message."""
     if is_session_from_config(session):
         return Path.home() / ".irods" / get_last_ienv_path()
