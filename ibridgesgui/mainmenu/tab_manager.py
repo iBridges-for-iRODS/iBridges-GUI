@@ -93,6 +93,7 @@ class TabManager:
         for name in ordered_standard + third_party:
             self.load_tab(name, session, app_name, logger)
 
+
     def update_plugin_menu(self):
         """Check and uncheck tab names in main menu."""
         for name, action in self.main_window.plugin_actions.items():

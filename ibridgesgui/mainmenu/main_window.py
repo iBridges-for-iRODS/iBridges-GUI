@@ -89,6 +89,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tab_manager.update_plugin_menu()
 
     def _on_connect(self) -> None:
+        if self.session_manager.session is not None:
+            QMessageBox.information(self, "Already connected", "You are already logged in.")
+            return
         self.session_manager.connect(self)
 
     def _on_disconnect(self) -> None:
@@ -108,6 +111,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_session_changed(self, session) -> None:
         """Reset when session changes."""
         self.tab_widget.clear()
+        self.tab_manager.loaded_tabs.clear()
 
         if session is None:
             self.menuPlugins.setEnabled(False)

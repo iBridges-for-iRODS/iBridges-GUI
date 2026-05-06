@@ -123,8 +123,8 @@ class LoginDialog(QDialog, Ui_irodsLogin):
         return True
 
 
-    def _create_session(self, env_path, password):
-        if password == "***********":
+    def _create_session(self, env_path, typed_pw, password):
+        if typed_pw == "***********":
             with open(IRODSA, "w", encoding="utf-8", opener=self.strictwrite) as f:
                 f.write(password)
             return Session(irods_env=env_path)
@@ -154,9 +154,7 @@ class LoginDialog(QDialog, Ui_irodsLogin):
             return
 
         try:
-            # Create session
-            session = self._create_session(env_path, password)
-
+            session = self._create_session(env_path, typed_pw, password)
             # Validate home
             if not self.session_manager.check_home(session):
                 self.error_label.setText(f'"irods_home": "{session.home}" does not exist.')

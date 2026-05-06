@@ -1,14 +1,12 @@
-import json
+import logging
 from pathlib import Path
+import json
 import pytest
 from unittest.mock import MagicMock, patch
+
+
 import ibridgesgui.config as cfg
 
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 class DummySession:
     """A minimal fake iBridges Session object."""
@@ -27,10 +25,6 @@ class DummySession:
 
         self.irods_session = DummyIRODSSession(env_file)
 
-
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def temp_config_dir(tmp_path, monkeypatch):
@@ -54,32 +48,54 @@ def temp_irods_dir(tmp_path, monkeypatch):
 
     return irods_dir
 
+
 # ---------------------------------------------------------------------------
-# Tests: config file error handling
+# Tests: _get_config / config loading
 # ---------------------------------------------------------------------------
 
 def test_get_config_file_not_found(temp_config_dir):
+    # No config file present → returns None
+    assert cfg._get_config() is None
+
+
+def test_load_config_valid(temp_config_dir):
+    cfg_file = temp_config_dir / "ibridges_gui.json"
+    cfg_file.write_text('{"tabs": ["Browser"]}')
+
+    result = cfg._get_config()
+    assert result["tabs"] == ["Browser"]
+
+
+def test_get_config_empty_file(temp_config_dir):
+    cfg.CONFIG_FILE.write_text("")
+    # Empty file → JSONDecodeError with msg "Expecting value" → returns None
     assert cfg._get_config() is None
 
 
 def test_get_config_json_decode_error(temp_config_dir):
     cfg.CONFIG_FILE.write_text("{not valid json")
+    # Invalid JSON (non‑empty) → sys.exit(1)
     with pytest.raises(SystemExit):
         cfg._get_config()
 
+
+# ---------------------------------------------------------------------------
+# Tests: saving config
+# ---------------------------------------------------------------------------
 
 def test_save_config_creates_file(temp_config_dir):
     cfg._save_config({"x": 1})
     assert cfg.CONFIG_FILE.exists()
 
-# ---------------------------------------------------------------------------
-# Tests: config read/write
-# ---------------------------------------------------------------------------
 
 def test_save_and_load_config(temp_config_dir):
     cfg._save_config({"a": 1})
     assert cfg._get_config() == {"a": 1}
 
+
+# ---------------------------------------------------------------------------
+# Tests: last ienv helpers
+# ---------------------------------------------------------------------------
 
 def test_get_last_ienv_path(temp_config_dir):
     cfg._save_config({"gui_last_env": "alias - /tmp/env.json"})
@@ -112,17 +128,21 @@ def test_save_current_settings(temp_config_dir, temp_irods_dir, monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Tests: check_irods_config (network mode)
+# Tests: check_irods_config
 # ---------------------------------------------------------------------------
 
-def test_check_irods_config_network_unreachable(tmp_path, monkeypatch):
-    env_file = tmp_path / "env.json"
+def _write_basic_env(env_file: Path):
     env_file.write_text(json.dumps({
         "irods_host": "host",
         "irods_port": 1247,
         "irods_home": "/home",
-        "irods_default_resource": "resc"
+        "irods_default_resource": "resc",
     }))
+
+
+def test_check_irods_config_network_unreachable(tmp_path, monkeypatch):
+    env_file = tmp_path / "env.json"
+    _write_basic_env(env_file)
 
     monkeypatch.setattr(cfg.Session, "network_check", lambda host, port: False)
 
@@ -132,12 +152,7 @@ def test_check_irods_config_network_unreachable(tmp_path, monkeypatch):
 
 def test_check_irods_config_network_success(tmp_path, monkeypatch):
     env_file = tmp_path / "env.json"
-    env_file.write_text(json.dumps({
-        "irods_host": "host",
-        "irods_port": 1247,
-        "irods_home": "/home",
-        "irods_default_resource": "resc"
-    }))
+    _write_basic_env(env_file)
 
     monkeypatch.setattr(cfg.Session, "network_check", lambda h, p: True)
 
@@ -156,12 +171,7 @@ def test_check_irods_config_network_success(tmp_path, monkeypatch):
 
 def test_check_irods_config_network_error(tmp_path, monkeypatch):
     env_file = tmp_path / "env.json"
-    env_file.write_text(json.dumps({
-        "irods_host": "host",
-        "irods_port": 1247,
-        "irods_home": "/home",
-        "irods_default_resource": "resc"
-    }))
+    _write_basic_env(env_file)
 
     monkeypatch.setattr(cfg.Session, "network_check", lambda h, p: True)
 
@@ -172,10 +182,7 @@ def test_check_irods_config_network_error(tmp_path, monkeypatch):
     monkeypatch.setattr(cfg, "iRODSSession", fake_session)
 
     msg = cfg.check_irods_config(env_file, include_network=True)
-
-    # Updated assertion
     assert "invalid or incomplete" in msg or "Unknown problem" in msg
-
 
 
 # ---------------------------------------------------------------------------
@@ -198,22 +205,23 @@ def test_download_path(temp_config_dir):
 # Tests: is_session_from_config
 # ---------------------------------------------------------------------------
 
-def test_is_session_from_config_env_file_match(temp_config_dir, tmp_path):
-    # Create fake env file
-    env_file = tmp_path / "env.json"
+def _write_full_env(env_file: Path):
     env_file.write_text(json.dumps({
         "irods_host": "host",
         "irods_port": 1247,
         "irods_zone_name": "zone",
         "irods_user_name": "user",
         "irods_home": "/zone/home/user",
-        "irods_default_resource": "resc"
+        "irods_default_resource": "resc",
     }))
 
-    # Save last used env
+
+def test_is_session_from_config_env_file_match(temp_config_dir, tmp_path):
+    env_file = tmp_path / "env.json"
+    _write_full_env(env_file)
+
     cfg.set_last_ienv("alias", env_file)
 
-    # Session with matching env_file
     session = DummySession(
         host="host",
         port=1247,
@@ -221,7 +229,7 @@ def test_is_session_from_config_env_file_match(temp_config_dir, tmp_path):
         username="user",
         home="/zone/home/user",
         default_resc="resc",
-        env_file=str(env_file)
+        env_file=str(env_file),
     )
 
     assert cfg.is_session_from_config(session) is True
@@ -240,7 +248,7 @@ def test_is_session_from_config_env_file_mismatch(temp_config_dir, tmp_path):
         username="user",
         home="/zone/home/user",
         default_resc="resc",
-        env_file=str(tmp_path / "other.json")
+        env_file=str(tmp_path / "other.json"),
     )
 
     assert cfg.is_session_from_config(session) is False
@@ -248,14 +256,7 @@ def test_is_session_from_config_env_file_mismatch(temp_config_dir, tmp_path):
 
 def test_is_session_from_config_legacy_match(temp_config_dir, tmp_path):
     env_file = tmp_path / "env.json"
-    env_file.write_text(json.dumps({
-        "irods_host": "host",
-        "irods_port": 1247,
-        "irods_zone_name": "zone",
-        "irods_user_name": "user",
-        "irods_home": "/zone/home/user",
-        "irods_default_resource": "resc"
-    }))
+    _write_full_env(env_file)
 
     cfg.set_last_ienv("alias", env_file)
 
@@ -267,48 +268,136 @@ def test_is_session_from_config_legacy_match(temp_config_dir, tmp_path):
         username="user",
         home="/zone/home/user",
         default_resc="resc",
-        env_file=None
+        env_file=None,
     )
 
     assert cfg.is_session_from_config(session) is True
 
+def test_ensure_log_config_location(temp_config_dir, monkeypatch):
+    # CONFIG_DIR is already patched to temp_config_dir by the fixture
+    cfg.ensure_log_config_location()
+    assert cfg.CONFIG_DIR.exists()
+    assert cfg.CONFIG_DIR == temp_config_dir
 
-def test_is_session_from_config_legacy_mismatch(temp_config_dir, tmp_path):
-    env_file = tmp_path / "env.json"
-    env_file.write_text(json.dumps({
-        "irods_host": "host",
-        "irods_port": 1247,
-        "irods_zone_name": "zone",
-        "irods_user_name": "user",
-        "irods_home": "/zone/home/user",
-        "irods_default_resource": "resc"
-    }))
 
-    cfg.set_last_ienv("alias", env_file)
+def test_ensure_irods_location(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    cfg.ensure_irods_location()
+    assert (tmp_path / ".irods").exists()
 
-    session = DummySession(
-        host="wrong",
-        port=1247,
-        zone="zone",
-        username="user",
-        home="/zone/home/user",
-        default_resc="resc",
-        env_file=None
-    )
 
+def test_init_logger_creates_logfile(temp_config_dir, monkeypatch):
+    # Make sure we write logs into the temp CONFIG_DIR
+    monkeypatch.setattr(cfg, "CONFIG_DIR", temp_config_dir)
+
+    # Avoid crashing if version() fails
+    monkeypatch.setattr(cfg, "version", lambda _: "1.0.0")
+
+    logger = cfg.init_logger("testapp", "debug")
+    assert isinstance(logger, logging.Logger)
+    assert logger.level == logging.DEBUG
+
+    logfile = temp_config_dir / "testapp.log"
+    assert logfile.exists()
+    content = logfile.read_text(encoding="utf-8")
+    assert "Starting iBridges-GUI 1.0.0" in content
+
+
+def test_get_and_set_log_level(temp_config_dir):
+    assert cfg.get_log_level() is None
+
+    cfg.set_log_level("debug")
+    assert cfg.get_log_level() == "debug"
+
+
+def test_get_tabs_default_empty(temp_config_dir):
+    cfg._save_config({})
+    assert cfg.get_tabs() == []
+
+
+def test_get_tabs_from_config(temp_config_dir):
+    cfg._save_config({"tabs": ["Browser", "Search"]})
+    assert cfg.get_tabs() == ["Browser", "Search"]
+
+def test_upload_path_default_home(temp_config_dir, monkeypatch, tmp_path):
+    # No upload path set → falls back to Path.home()
+    monkeypatch.setenv("HOME", str(tmp_path))
+    assert cfg.config_get_last_upload_path() == Path.home()
+
+
+def test_download_path_default_home(temp_config_dir, monkeypatch, tmp_path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    assert cfg.config_get_last_download_path() == Path.home()
+
+def test_get_prev_settings_default_empty(temp_config_dir):
+    cfg._save_config({})
+    assert cfg.get_prev_settings() == {}
+
+
+def test_get_prev_settings_from_config(temp_config_dir):
+    cfg._save_config({"settings": {"env1": {"x": 1}}})
+    assert cfg.get_prev_settings() == {"env1": {"x": 1}}
+
+def test_save_current_settings_removes_legacy_settings(temp_config_dir, temp_irods_dir, monkeypatch):
+    # Write fake .irodsA password
+    cfg.IRODSA.write_text("mypw")
+
+    # Fake CLI config object
+    fake_conf = MagicMock()
+    fake_conf.get_entry.side_effect = KeyError
+    fake_conf.servers = {}
+    monkeypatch.setattr(cfg, "IbridgesConf", lambda _: fake_conf)
+
+    env_path = Path("/tmp/env.json")
+
+    # Legacy GUI-stored password
+    cfg._save_config({"settings": {str(env_path): {"irodsa_backup": "old"}}})
+
+    cfg.save_current_settings(env_path)
+
+    # Legacy entry removed from config
+    conf = cfg._get_config()
+    assert "settings" not in conf or str(env_path) not in conf.get("settings", {})
+
+def test_is_session_from_config_no_last_env(temp_config_dir):
+    # No gui_last_env stored
+    session = MagicMock()
     assert cfg.is_session_from_config(session) is False
 
 
-# ---------------------------------------------------------------------------
-# Tests: check_irods_config (non-network)
-# ---------------------------------------------------------------------------
-
-def test_check_irods_config_missing_key(tmp_path):
+def test_is_session_from_config_env_read_error(temp_config_dir, tmp_path, monkeypatch):
     env_file = tmp_path / "env.json"
-    env_file.write_text(json.dumps({"irods_host": "host"}))
+    cfg.set_last_ienv("alias", env_file)
 
+    def fake_read_json(path):
+        # Break ONLY when reading the env file
+        if path == env_file:
+            raise RuntimeError("boom")
+        # Allow config file reads to succeed
+        return {}
+
+    monkeypatch.setattr(cfg, "_read_json", fake_read_json)
+    session = MagicMock()
+    assert cfg.is_session_from_config(session) is False
+
+def test_check_irods_config_file_not_found(tmp_path):
+    env_file = tmp_path / "missing.json"
     msg = cfg.check_irods_config(env_file, include_network=False)
-    assert "irods_port" in msg
+    assert "not found" in msg
+
+
+def test_check_irods_config_malformed_file(tmp_path):
+    env_file = tmp_path / "env.json"
+    env_file.write_text("{not-json}")
+    msg = cfg.check_irods_config(env_file, include_network=False)
+    assert "not well formatted" in msg
+
+
+def test_check_irods_config_missing_required_field(tmp_path):
+    env_file = tmp_path / "env.json"
+    env_file.write_text(json.dumps({"irods_port": 1247}))
+    msg = cfg.check_irods_config(env_file, include_network=False)
+    assert '"irods_host" is missing' in msg
 
 
 def test_check_irods_config_port_not_int(tmp_path):
@@ -317,22 +406,26 @@ def test_check_irods_config_port_not_int(tmp_path):
         "irods_host": "host",
         "irods_port": "1247",
         "irods_home": "/home",
-        "irods_default_resource": "resc"
+        "irods_default_resource": "resc",
     }))
-
     msg = cfg.check_irods_config(env_file, include_network=False)
     assert "must be a number" in msg
 
-
-def test_check_irods_config_success_no_network(tmp_path):
+def test_check_irods_config_skip_network(tmp_path):
     env_file = tmp_path / "env.json"
     env_file.write_text(json.dumps({
         "irods_host": "host",
         "irods_port": 1247,
         "irods_home": "/home",
-        "irods_default_resource": "resc"
+        "irods_default_resource": "resc",
     }))
-
     msg = cfg.check_irods_config(env_file, include_network=False)
     assert msg == "All checks passed successfully."
+
+
+def test_save_irods_config_invalid_suffix(tmp_path):
+    with pytest.raises(ValueError):
+        cfg.save_irods_config(tmp_path / "env.txt", {})
+
+
 

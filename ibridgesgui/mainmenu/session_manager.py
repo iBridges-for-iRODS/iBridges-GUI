@@ -34,13 +34,31 @@ class SessionManager(QObject):
         self.session_changed.emit(session)
 
     def disconnect(self) -> None:
-        """Close connecion."""
+        """Fully close the session and reset GUI + session manager state."""
         if self.session is not None:
             self.logger.info("Closing session.")
-            self.session.close()
+    
+            try:
+                self.session.close()
+            except Exception as err:
+                self.logger.warning("Error closing session: %s", err)
+    
+            # Remove session from this object
             self.session = None
-            self.session_changed.emit(None)
 
+            # Reset session manager state
+            if hasattr(self, "session_manager"):
+                self.session_manager.current_session = None
+                self.session_manager.active_session = None
+                self.session_manager.session = None
+    
+            # Emit signal so GUI components reset themselves
+            self.session_changed.emit(None)
+    
+            # Optional: force GUI refresh
+            if hasattr(self, "refresh"):
+                self.refresh()
+    
     # Validation helpers
     def check_home(self, session: Session) -> bool:
         """Check home path exists."""
