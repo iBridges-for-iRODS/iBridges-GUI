@@ -21,11 +21,6 @@ import ibridgesgui.md_schemas
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
 try:
-    from importlib_metadata import entry_points
-except ImportError:
-    pass  # type: ignore
-
-try:
     from importlib.resources import files
 except ImportError:
     from importlib_resources import files
