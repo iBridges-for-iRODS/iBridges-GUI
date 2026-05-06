@@ -1,3 +1,4 @@
+"""Manage gui plugins."""
 from __future__ import annotations
 
 from importlib.metadata import entry_points
@@ -10,6 +11,7 @@ class PluginManager:
     GROUP_NAME = "ibridges.gui_tab"
 
     def __init__(self) -> None:
+        """Init."""
         self.providers = self._load_providers()
 
     def _load_providers(self) -> list[Any]:

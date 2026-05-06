@@ -38,10 +38,6 @@ except ImportError:
     from importlib.metadata import version  # type: ignore
 
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
 LOG_LEVEL = {
     "fulldebug": logging.DEBUG - 5,
     "debug": logging.DEBUG,
@@ -56,11 +52,7 @@ CONFIG_FILE = CONFIG_DIR / "ibridges_gui.json"
 IRODSA = Path.home() / ".irods" / ".irodsA"
 
 
-# ---------------------------------------------------------------------------
 # Filesystem helpers
-# ---------------------------------------------------------------------------
-
-
 def ensure_log_config_location() -> None:
     """Ensure the location for logs and config files exists."""
     CONFIG_DIR.mkdir(parents=True, mode=0o700, exist_ok=True)
@@ -72,11 +64,7 @@ def ensure_irods_location() -> None:
     irods_loc.mkdir(mode=0o700, exist_ok=True)
 
 
-# ---------------------------------------------------------------------------
 # Logging
-# ---------------------------------------------------------------------------
-
-
 def init_logger(app_name: str, log_level: str) -> logging.Logger:
     """Create and configure a logger for the application."""
     ensure_log_config_location()
@@ -106,11 +94,7 @@ def init_logger(app_name: str, log_level: str) -> logging.Logger:
     return logger
 
 
-# ---------------------------------------------------------------------------
 # Config file I/O
-# ---------------------------------------------------------------------------
-
-
 def _read_json(file_path: Path) -> dict:
     with file_path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
@@ -139,12 +123,9 @@ def _save_config(conf: dict) -> None:
     _write_json(CONFIG_FILE, conf)
 
 
-# ---------------------------------------------------------------------------
 # GUI config: last environment
-# ---------------------------------------------------------------------------
-
-
 def get_last_ienv_name() -> str | None:
+    """Get last env file name from config."""
     config = _get_config() or {}
     raw = config.get("gui_last_env")
     if not raw:
@@ -156,6 +137,7 @@ def get_last_ienv_name() -> str | None:
 
 
 def get_last_ienv_path() -> str | None:
+    """Get last env path from config."""
     config = _get_config() or {}
     raw = config.get("gui_last_env")
     if not raw:
@@ -179,11 +161,7 @@ def set_last_ienv(alias: str | None, path: str) -> None:
     _save_config(config)
 
 
-# ---------------------------------------------------------------------------
 # GUI config: log level
-# ---------------------------------------------------------------------------
-
-
 def get_log_level() -> str | None:
     """Return log level."""
     config = _get_config()
@@ -197,21 +175,14 @@ def set_log_level(level: str) -> None:
     _save_config(config)
 
 
-# ---------------------------------------------------------------------------
 # GUI config: tabs
-# ---------------------------------------------------------------------------
-
 def get_tabs() -> list:
     """List all tab names."""
     config = _get_config() or {}
     return config.get("tabs", [])
 
 
-# ---------------------------------------------------------------------------
 # GUI config: upload/download paths
-# ---------------------------------------------------------------------------
-
-
 def config_set_last_upload_path(path: Path) -> None:
     """Save the last location from which data was uploaded."""
     config = _get_config() or {}
@@ -220,6 +191,7 @@ def config_set_last_upload_path(path: Path) -> None:
 
 
 def config_get_last_upload_path() -> Path:
+    """Last upload path."""
     config = _get_config() or {}
     raw = config.get("last_upload_path")
     return Path(raw).expanduser() if raw else Path.home()
@@ -243,11 +215,7 @@ def config_get_last_download_path() -> Path:
     return Path.home()
 
 
-# ---------------------------------------------------------------------------
 # GUI config: settings
-# ---------------------------------------------------------------------------
-
-
 def get_prev_settings() -> dict:
     """Get previous settings."""
     config = _get_config() or {}
@@ -279,11 +247,7 @@ def save_current_settings(env_path_name: Path) -> None:
         _save_config(config)
 
 
-# ---------------------------------------------------------------------------
 # iRODS session origin detection (hybrid method)
-# ---------------------------------------------------------------------------
-
-
 def is_session_from_config(session: Session) -> bool:
     """Determine whether the given session was created from the last-used iRODS environment file.
 
@@ -311,11 +275,7 @@ def is_session_from_config(session: Session) -> bool:
     )
 
 
-# ---------------------------------------------------------------------------
 # iRODS environment validation
-# ---------------------------------------------------------------------------
-
-
 def check_irods_config(ienv: Union[Path, dict], include_network: bool = True) -> str:
     """Validate an iRODS environment file or dict."""
     if isinstance(ienv, Path):
@@ -388,11 +348,7 @@ def check_irods_config(ienv: Union[Path, dict], include_network: bool = True) ->
     return "All checks passed successfully."
 
 
-# ---------------------------------------------------------------------------
 # Saving iRODS environment files
-# ---------------------------------------------------------------------------
-
-
 def save_irods_config(env_path: Union[Path, str], conf: dict) -> None:
     """Save current settings."""
     env_path = Path(env_path)
@@ -401,17 +357,9 @@ def save_irods_config(env_path: Union[Path, str], conf: dict) -> None:
     _write_json(env_path, conf)
 
 
-# ---------------------------------------------------------------------------
 # CLI environments + extra files ~/.irods
-# ---------------------------------------------------------------------------
-
-
 def load_envs_from_cli_and_fs(irods_config_dir: Path) -> dict[str, tuple[Path, dict]]:
-    """
-    Load all server environments from the CLI config,
-    and extend them with any .json files found in ~/.irods.
-    """
-
+    """Load all server environments from the CLI config and .json files in ~/.irods."""
     conf = IbridgesConf(None)
     cli_servers = conf.servers  # dict: env_path_str → entry_dict
 

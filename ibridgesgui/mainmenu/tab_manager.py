@@ -1,3 +1,4 @@
+"""Load and unload tabs."""
 from __future__ import annotations
 
 from typing import Callable
@@ -13,6 +14,7 @@ class TabManager:
     """Handles loading, unloading, and restoring tabs."""
 
     def __init__(self, tab_widget, plugin_manager, config, main_window) -> None:
+        """Init."""
         self.tab_widget = tab_widget
         self.plugin_manager = plugin_manager
         self.config = config
@@ -28,23 +30,24 @@ class TabManager:
         }
 
     # --- Standard tab factories ---
-    def _create_browser(self, session, app_name: str, logger) -> Browser:
+    def _create_browser(self, session, app_name: str, _logger) -> Browser:
         return Browser(session, app_name)
 
-    def _create_sync(self, session, app_name: str, logger) -> Sync:
+    def _create_sync(self, session, app_name: str, _logger) -> Sync:
         return Sync(session, app_name)
 
-    def _create_search(self, session, app_name: str, logger) -> Search:
+    def _create_search(self, session, app_name: str, _logger) -> Search:
         browser = self.loaded_tabs.get("Browser")
         return Search(session, app_name, browser)
 
-    def _create_info(self, session, app_name: str, logger) -> Info:
+    def _create_info(self, session, _app_name, _logger) -> Info:
         return Info(session)
 
-    def _create_logs(self, session, app_name: str, logger) -> LogViewer:
+    def _create_logs(self, _session, _app_name, logger) -> LogViewer:
         return LogViewer(logger)
 
     def load_tab(self, name: str, session, app_name: str, logger) -> None:
+        """Load tab."""
         if name in self.loaded_tabs:
             return
 
@@ -61,6 +64,7 @@ class TabManager:
         self.config.save_tabs(list(self.loaded_tabs.keys()))
 
     def unload_tab(self, name: str) -> None:
+        """Remove tab from app."""
         widget = self.loaded_tabs.get(name)
         if widget is None:
             return
@@ -75,6 +79,7 @@ class TabManager:
         self.config.save_tabs(list(self.loaded_tabs.keys()))
 
     def restore_tabs(self, session, app_name: str, logger) -> None:
+        """Load all tabs from config."""
         saved = self.config.load_tabs()
         if not saved:
             saved = list(self.standard_tabs)
@@ -89,6 +94,7 @@ class TabManager:
             self.load_tab(name, session, app_name, logger)
 
     def update_plugin_menu(self):
+        """Check and uncheck tab names in main menu."""
         for name, action in self.main_window.plugin_actions.items():
             action.blockSignals(True)
             action.setChecked(name in self.loaded_tabs)

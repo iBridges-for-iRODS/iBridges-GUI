@@ -1,53 +1,45 @@
+"""Wrapper around config.py."""
 from pathlib import Path
 
 from ibridgesgui.config import (
     _get_config,
     _save_config,
-    save_current_settings,
-    set_last_ienv,
-    get_last_ienv_name,
-    get_log_level,
-    set_log_level,
-    get_tabs,
-    config_set_last_upload_path,
+    config_get_last_download_path,
     config_get_last_upload_path,
     config_set_last_download_path,
-    config_get_last_download_path,
+    config_set_last_upload_path,
+    get_last_ienv_name,
+    get_log_level,
     get_prev_settings,
+    save_current_settings,
+    set_last_ienv,
+    set_log_level,
 )
 
 
 class ConfigManager:
-    """
-    Thin wrapper around the existing functional config system.
+    """Thin wrapper around the existing functional config system.
 
     This class exposes a clean API for SessionManager while internally
     delegating to the existing functions in config.py.
     """
 
     def __init__(self):
-        # Load full config
+        """Init."""
         self._config = _get_config() or {}
 
-    # ------------------------------------------------------------
-    # Password caching (required by SessionManager)
-    # ------------------------------------------------------------
     def get_cached_password(self, env_path: Path) -> str | None:
+        """Password caching get from config."""
         cached = self._config.get("cached_passwords", {})
         return cached.get(str(env_path))
 
-    # ------------------------------------------------------------
-    # Last used environment (required by SessionManager)
-    # ------------------------------------------------------------
     def save_current_settings(self, env_path: Path) -> None:
-        """
-        Delegate to the existing save_current_settings() function,
-        which writes the PAM password backup into IbridgesConf.
-        """
+        """Delegate to the existing function."""
         save_current_settings(env_path)
         self._config = _get_config() or {}
 
     def get_last_env(self) -> str | None:
+        """Delegate to existing function."""
         return get_last_ienv_name()
 
     def set_last_ienv(self, alias: str | None, path: str) -> None:
@@ -57,9 +49,11 @@ class ConfigManager:
 
     # Log level
     def get_log_level(self) -> str | None:
+        """Delegate to existing function."""
         return get_log_level()
 
     def set_log_level(self, level: str) -> None:
+        """Delegate to existing function."""
         set_log_level(level)
         self._config = _get_config() or {}
 
@@ -75,27 +69,27 @@ class ConfigManager:
 
     # Upload/download paths
     def set_last_upload_path(self, path: Path) -> None:
+        """Delegate to existing function."""
         config_set_last_upload_path(path)
         self._config = _get_config() or {}
 
     def get_last_upload_path(self) -> Path:
+        """Delegate to existing function."""
         return config_get_last_upload_path()
 
     def set_last_download_path(self, path: Path) -> None:
+        """Delegate to existing function."""
         config_set_last_download_path(path)
         self._config = _get_config() or {}
 
     def get_last_download_path(self) -> str | None:
+        """Delegate to existing function."""
         return config_get_last_download_path()
 
-    # ------------------------------------------------------------
-    # Settings (optional)
-    # ------------------------------------------------------------
     def get_prev_settings(self) -> dict:
+        """Delegate to existing function."""
         return get_prev_settings()
 
-    # ------------------------------------------------------------
-    # Reload config from disk
-    # ------------------------------------------------------------
     def reload(self) -> None:
+        """Reload config settings."""
         self._config = _get_config() or {}

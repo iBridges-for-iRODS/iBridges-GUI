@@ -1,3 +1,4 @@
+"""main app."""
 from __future__ import annotations
 
 import os
@@ -6,13 +7,14 @@ import sys
 import setproctitle
 from PySide6.QtWidgets import QApplication, QStackedWidget
 
-from ibridgesgui.mainmenu import ConfigManager, MainWindow
 from ibridgesgui import config as config_module
+from ibridgesgui.mainmenu import ConfigManager, MainWindow
 
 THIS_APPLICATION = "ibridges-gui"
 
 
 def main(session=None) -> None:
+    """Start app."""
     setproctitle.setproctitle(THIS_APPLICATION)
 
     # Load GUI config
@@ -23,6 +25,7 @@ def main(session=None) -> None:
 
     # IMPORTANT: call init_logger from the MODULE, not the ConfigManager
     logger = config_module.init_logger(THIS_APPLICATION, level)
+    logger.info("Starting application")
 
     # Ensure ~/.irods exists
     config_module.ensure_irods_location()

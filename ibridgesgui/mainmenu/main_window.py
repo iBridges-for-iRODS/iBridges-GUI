@@ -1,27 +1,28 @@
+"""Main window."""
 from __future__ import annotations
 
 import logging
-
-from PySide6.QtWidgets import QMainWindow, QMessageBox
-from PySide6.QtGui import QAction
-
-from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
-from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
-from ibridgesgui.welcome import Welcome
-from ibridgesgui.popup_widgets import CheckConfig
 from pathlib import Path
 
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMainWindow, QMessageBox
+
+from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.mainmenu import (
-    ConfigManager,
     PluginManager,
     SessionManager,
     TabManager,
 )
+from ibridgesgui.popup_widgets import CheckConfig
+from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
+from ibridgesgui.welcome import Welcome
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """Main application window."""
 
     def __init__(self, app_name: str, session=None, config_manager=None) -> None:
+        """Init."""
         super().__init__()
         load_ui(UI_FILE_DIR / "MainMenu.ui", self)
 
@@ -105,6 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         widget.exec()
 
     def on_session_changed(self, session) -> None:
+        """Reset when session changes."""
         self.tab_widget.clear()
 
         if session is None:

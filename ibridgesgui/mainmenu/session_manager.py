@@ -1,14 +1,10 @@
+"""Manage ibridges connection."""
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any
-
-from PySide6.QtCore import QObject, Signal
-from PySide6.QtWidgets import QDialog, QMessageBox
-from irods.exception import ResourceDoesNotExist
-from ibridges.session import LoginError, PasswordError
-from ibridges import Session, IrodsPath
+from ibridges import IrodsPath, Session
 from ibridges.resources import Resources
+from PySide6.QtCore import QObject, Signal
+from PySide6.QtWidgets import QDialog
 
 from ibridgesgui.login import LoginDialog
 
@@ -19,12 +15,14 @@ class SessionManager(QObject):
     session_changed = Signal(object)
 
     def __init__(self, config_manager, logger):
+        """Init."""
         super().__init__()
         self.config_manager = config_manager
         self.logger = logger
         self.session: Session | None = None
 
     def connect(self, parent=None):
+        """Get session from Login."""
         dialog = LoginDialog(parent, self.logger, self)
         if dialog.exec() != QDialog.Accepted:
             return
@@ -36,6 +34,7 @@ class SessionManager(QObject):
         self.session_changed.emit(session)
 
     def disconnect(self) -> None:
+        """Close connecion."""
         if self.session is not None:
             self.logger.info("Closing session.")
             self.session.close()
@@ -43,13 +42,15 @@ class SessionManager(QObject):
             self.session_changed.emit(None)
 
     # Validation helpers
-    def _check_home(self, session: Session) -> bool:
+    def check_home(self, session: Session) -> bool:
+        """Check home path exists."""
         try:
             return IrodsPath(session, session.home).collection_exists()
         except Exception:
             return False
 
-    def _check_resource(self, session: Session) -> bool:
+    def check_resource(self, session: Session) -> bool:
+        """Check default resource exists."""
         try:
             resc = Resources(session).get_resource(session.default_resc)
             return not resc.parent
