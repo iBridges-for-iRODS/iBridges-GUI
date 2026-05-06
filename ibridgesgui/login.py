@@ -143,19 +143,28 @@ class LoginDialog(QDialog, Ui_irodsLogin):
  
             self.accept()
     
-        except LoginError:
+        except LoginError as err:
+            self.logger.error("LoginError: %s", err)
             self.error_label.setText("irods_environment.json not setup correctly.")
-        except PasswordError:
+        
+        except PasswordError as err:
+            self.logger.warning("PasswordError: wrong password")
             self.error_label.setText("Wrong password!")
-        except ConnectionError:
+        
+        except ConnectionError as err:
+            self.logger.error("ConnectionError: %s", err)
             self.error_label.setText(
                 "Cannot connect to server. Check Internet, host name and port."
             )
-        except ResourceDoesNotExist:
-            self.error_label.setText('"irods_default_resource" does not exist.')
-        except Exception as err:
-            self.error_label.setText(f"Login failed: {err!r}")
         
+        except ResourceDoesNotExist as err:
+            self.logger.error("ResourceDoesNotExist: %s", err)
+            self.error_label.setText('"irods_default_resource" does not exist.')
+        
+        except Exception as err:
+            self.logger.exception("Unexpected error during login")
+            self.error_label.setText(f"Login failed: {err!r}")
+         
 
     def _parse_envbox_text(self) -> tuple[str | None, Path] | None:
         """
