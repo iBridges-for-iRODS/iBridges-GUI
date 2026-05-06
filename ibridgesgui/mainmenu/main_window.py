@@ -11,11 +11,12 @@ from ibridgesgui.welcome import Welcome
 from ibridgesgui.popup_widgets import CheckConfig
 from pathlib import Path
 
-from .config_manager import ConfigManager
-from .plugin_manager import PluginManager
-from .session_manager import SessionManager
-from .tab_manager import TabManager
-
+from ibridgesgui.mainmenu import (
+    ConfigManager,
+    PluginManager,
+    SessionManager,
+    TabManager,
+)
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """Main application window."""
