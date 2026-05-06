@@ -44,13 +44,12 @@ class LoginDialog(QDialog, Ui_irodsLogin):
     
         last = get_last_ienv_name()
         if last:
-            # Find the matching entry
             for item in items:
-                if item.endswith(str(last)):
+                if item.startswith(f"{last} - "):
                     items.remove(item)
                     items.insert(0, item)
                     break
-    
+ 
         self.envbox.clear()
         self.envbox.addItems(items)
     
@@ -96,7 +95,7 @@ class LoginDialog(QDialog, Ui_irodsLogin):
         # Find entry
         entry = None
         for a, (p, e) in self.aliases_envs.items():
-            if p.resolve() == env_path:
+            if Path(p).expanduser().resolve() == env_path:
                 entry = e
                 break
     
@@ -175,6 +174,7 @@ class LoginDialog(QDialog, Ui_irodsLogin):
             # Case 2: "/path/to/env.json"
             alias = None
             path_str = env_text
+        path_str = path_str.strip()
     
         return alias, Path(path_str).expanduser()
 
