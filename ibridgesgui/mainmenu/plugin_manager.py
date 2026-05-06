@@ -23,8 +23,10 @@ class PluginManager:
             if getattr(provider, "name", None) == name:
                 return provider
 
-        msg = f"Cannot find provider with name {name!r}. " "Ensure the plugin is installed."
-        raise ValueError(msg)
+        raise ValueError(
+            f"Cannot find provider with name {name!r}. "
+            "Ensure the plugin is installed."
+        )
 
     def list_providers(self) -> list[Any]:
         """Return all discovered provider classes."""
