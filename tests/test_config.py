@@ -1,8 +1,9 @@
 import json
 from pathlib import Path
 import pytest
-
+from unittest.mock import MagicMock, patch
 import ibridgesgui.config as cfg
+
 
 
 # ---------------------------------------------------------------------------
@@ -53,6 +54,23 @@ def temp_irods_dir(tmp_path, monkeypatch):
 
     return irods_dir
 
+# ---------------------------------------------------------------------------
+# Tests: config file error handling
+# ---------------------------------------------------------------------------
+
+def test_get_config_file_not_found(temp_config_dir):
+    assert cfg._get_config() is None
+
+
+def test_get_config_json_decode_error(temp_config_dir):
+    cfg.CONFIG_FILE.write_text("{not valid json")
+    with pytest.raises(SystemExit):
+        cfg._get_config()
+
+
+def test_save_config_creates_file(temp_config_dir):
+    cfg._save_config({"x": 1})
+    assert cfg.CONFIG_FILE.exists()
 
 # ---------------------------------------------------------------------------
 # Tests: config read/write
@@ -71,6 +89,125 @@ def test_get_last_ienv_path(temp_config_dir):
 def test_set_last_ienv(temp_config_dir):
     cfg.set_last_ienv("alias - /tmp/env.json")
     assert cfg._get_config()["gui_last_env"] == "alias - /tmp/env.json"
+
+
+# ---------------------------------------------------------------------------
+# Tests: combine_envs_gui_cli
+# ---------------------------------------------------------------------------
+
+def test_combine_envs_gui_cli(temp_config_dir, monkeypatch):
+    # Fake CLI config
+    fake_cli = {
+        "/path/env1.json": {"alias": "cli1", "irodsa_backup": "pw1"},
+        "/path/env2.json": {"alias": "cli2", "irodsa_backup": "pw2"},
+    }
+
+    # Create a fake IbridgesConf instance
+    fake_conf = MagicMock()
+    fake_conf.servers = fake_cli
+
+    # Patch the constructor so cfg.IbridgesConf(None) returns fake_conf
+    monkeypatch.setattr(cfg, "IbridgesConf", lambda _: fake_conf)
+
+    # Fake GUI config
+    cfg._save_config({
+        "settings": {
+            "/path/env1.json": "pw1",
+            "/path/env3.json": "pw3"
+        }
+    })
+
+    aliases = cfg.combine_envs_gui_cli()
+
+    assert "cli1" in aliases
+    assert "cli2" in aliases
+    assert "env3.json" in aliases
+
+
+# ---------------------------------------------------------------------------
+# Tests: save_current_settings
+# ---------------------------------------------------------------------------
+
+def test_save_current_settings(temp_config_dir, temp_irods_dir, monkeypatch):
+    # Write fake .irodsA password
+    cfg.IRODSA.write_text("mypw")
+
+    # Fake CLI config object
+    fake_conf = MagicMock()
+    fake_conf.get_entry.side_effect = KeyError
+    fake_conf.servers = {}
+    monkeypatch.setattr(cfg, "IbridgesConf", lambda _: fake_conf)
+
+    cfg.save_current_settings(Path("/tmp/env.json"))
+
+    assert fake_conf.servers["/tmp/env.json"]["irodsa_backup"] == "mypw"
+    fake_conf.save.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# Tests: check_irods_config (network mode)
+# ---------------------------------------------------------------------------
+
+def test_check_irods_config_network_unreachable(tmp_path, monkeypatch):
+    env_file = tmp_path / "env.json"
+    env_file.write_text(json.dumps({
+        "irods_host": "host",
+        "irods_port": 1247,
+        "irods_home": "/home",
+        "irods_default_resource": "resc"
+    }))
+
+    monkeypatch.setattr(cfg.Session, "network_check", lambda host, port: False)
+
+    msg = cfg.check_irods_config(env_file, include_network=True)
+    assert "Unable to connect" in msg
+
+
+def test_check_irods_config_network_success(tmp_path, monkeypatch):
+    env_file = tmp_path / "env.json"
+    env_file.write_text(json.dumps({
+        "irods_host": "host",
+        "irods_port": 1247,
+        "irods_home": "/home",
+        "irods_default_resource": "resc"
+    }))
+
+    monkeypatch.setattr(cfg.Session, "network_check", lambda h, p: True)
+
+    # Mock iRODSSession to simulate successful connection
+    class FakeSess:
+        server_version = "4.3.0"
+
+        def __init__(self, **kwargs):
+            pass
+
+    monkeypatch.setattr(cfg, "iRODSSession", FakeSess)
+
+    msg = cfg.check_irods_config(env_file, include_network=True)
+    assert msg == "All checks passed successfully."
+
+
+def test_check_irods_config_network_error(tmp_path, monkeypatch):
+    env_file = tmp_path / "env.json"
+    env_file.write_text(json.dumps({
+        "irods_host": "host",
+        "irods_port": 1247,
+        "irods_home": "/home",
+        "irods_default_resource": "resc"
+    }))
+
+    monkeypatch.setattr(cfg.Session, "network_check", lambda h, p: True)
+
+    # Simulate an exception inside iRODSSession
+    def fake_session(**kwargs):
+        raise AttributeError("boom")
+
+    monkeypatch.setattr(cfg, "iRODSSession", fake_session)
+
+    msg = cfg.check_irods_config(env_file, include_network=True)
+
+    # Updated assertion
+    assert "invalid or incomplete" in msg
 
 
 # ---------------------------------------------------------------------------
