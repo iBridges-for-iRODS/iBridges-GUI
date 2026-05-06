@@ -8,7 +8,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Optional, Iterable, Union
+from typing import Iterable, Optional, Union
 
 import PySide6.QtCore
 import PySide6.QtUiTools
@@ -26,21 +26,12 @@ except ImportError:
     from importlib_resources import files
 
 
-# ---------------------------------------------------------------------------
-# UI / Resource paths
-# ---------------------------------------------------------------------------
-
 if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
     UI_FILE_DIR = Path("ui_files")
     LOGO_DIR = Path("icons")
 else:
     UI_FILE_DIR = files(__package__) / "ui_files"
     LOGO_DIR = files(__package__) / "icons"
-
-
-# ---------------------------------------------------------------------------
-# UI Loader
-# ---------------------------------------------------------------------------
 
 
 class UiLoader(PySide6.QtUiTools.QUiLoader):
@@ -85,11 +76,6 @@ def load_ui(ui_file: str, base_instance=None):
         os.chdir(old_cwd)
 
 
-# ---------------------------------------------------------------------------
-# Widget utilities
-# ---------------------------------------------------------------------------
-
-
 def populate_table(table_widget, rows: int, data_by_row: Iterable[Iterable]):
     """Fill a QTableWidget with data."""
     table_widget.setRowCount(rows)
@@ -123,11 +109,6 @@ def populate_textfield(text_widget, text_by_row: Union[str, Iterable[str]]):
     else:
         for row in text_by_row:
             text_widget.append(row)
-
-
-# ---------------------------------------------------------------------------
-# iBridges / iRODS utilities
-# ---------------------------------------------------------------------------
 
 
 def load_schema() -> dict:

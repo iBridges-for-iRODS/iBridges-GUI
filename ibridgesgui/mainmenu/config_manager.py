@@ -1,6 +1,6 @@
 """Wrapper around config.py."""
-from typing import Optional, List
 from pathlib import Path
+from typing import List, Optional
 
 from ibridgesgui.config import (
     _get_config,
