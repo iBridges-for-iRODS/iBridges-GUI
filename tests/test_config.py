@@ -185,7 +185,7 @@ def test_check_irods_config_network_error(tmp_path, monkeypatch):
 def test_upload_path(temp_config_dir):
     p = Path("/tmp/upload")
     cfg.config_set_last_upload_path(p)
-    assert cfg.config_get_last_upload_path() == str(p)
+    assert cfg.config_get_last_upload_path() == p
 
 
 def test_download_path(temp_config_dir):
