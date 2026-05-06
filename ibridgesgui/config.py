@@ -145,7 +145,8 @@ def _save_config(conf: dict) -> None:
 
 
 def get_last_ienv_name() -> str | None:
-    raw = _get_config().get("gui_last_env")
+    config = _get_config() or {}
+    raw = config.get("gui_last_env")
     if not raw:
         return None
 
@@ -155,7 +156,8 @@ def get_last_ienv_name() -> str | None:
 
 
 def get_last_ienv_path() -> str | None:
-    raw = _get_config().get("gui_last_env")
+    config = _get_config() or {}
+    raw = config.get("gui_last_env")
     if not raw:
         return None
 
@@ -199,36 +201,6 @@ def set_log_level(level: str) -> None:
 # GUI config: tabs
 # ---------------------------------------------------------------------------
 
-
-def config_add_tab(tab_provider: object) -> None:
-    """Add a new tab name to the config."""
-    try:
-        obj_str = str(tab_provider).split("'")[1]
-    except IndexError:
-        obj_str = tab_provider
-
-    config = _get_config() or {}
-    tabs = set(config.get("tabs", []))
-    tabs.add(obj_str)
-    config["tabs"] = list(tabs)
-    _save_config(config)
-
-
-def config_remove_tab(tab_provider: object) -> None:
-    """Remove a tab name from he config."""
-    try:
-        obj_str = str(tab_provider).split("'")[1]
-    except IndexError:
-        obj_str = tab_provider
-
-    config = _get_config() or {}
-    tabs = config.get("tabs", [])
-    if obj_str in tabs:
-        tabs.remove(obj_str)
-        config["tabs"] = tabs
-        _save_config(config)
-
-
 def get_tabs() -> list:
     """List all tab names."""
     config = _get_config() or {}
@@ -247,10 +219,10 @@ def config_set_last_upload_path(path: Path) -> None:
     _save_config(config)
 
 
-def config_get_last_upload_path() -> str | None:
-    """Get the last location from which data was uploaded."""
+def config_get_last_upload_path() -> Path:
     config = _get_config() or {}
-    return config.get("last_upload_path")
+    raw = config.get("last_upload_path")
+    return Path(raw).expanduser() if raw else Path.home()
 
 
 def config_set_last_download_path(path: Path) -> None:
