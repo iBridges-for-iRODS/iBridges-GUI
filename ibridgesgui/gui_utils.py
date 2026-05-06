@@ -3,13 +3,13 @@
 # ruff: noqa: N802
 # pylint: disable=R0903, R1705, C0103
 
+import importlib.resources as pkg_resources
 import json
 import os
 import sys
 from pathlib import Path
 from typing import Iterable, Union
 
-import irods
 import PySide6.QtCore
 import PySide6.QtUiTools
 import PySide6.QtWidgets
@@ -17,7 +17,6 @@ from ibridges import IrodsPath
 from ibridges.executor import Operations
 from jsonschema import ValidationError, validate
 
-import importlib.resources as pkg_resources
 import ibridgesgui.md_schemas
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
@@ -53,10 +52,12 @@ class UiLoader(PySide6.QtUiTools.QUiLoader):
     """UILoader that supports custom widgets and attribute binding."""
 
     def __init__(self, base_instance=None):
+        """Init."""
         super().__init__(base_instance)
         self.base_instance = base_instance
 
     def createWidget(self, class_name, parent=None, name=""):
+        """Create Widget from ui."""
         if parent is None and self.base_instance:
             return self.base_instance
 
@@ -183,7 +184,7 @@ def prep_session_for_copy(session, error_label) -> Path | None:
         return Path.home() / ".irods" / get_last_ienv_path()
 
     error_label.setText(
-        "The ibridges config changed during the session. " "Please reset or restart the session."
+        "The ibridges config changed during the session. Please reset or restart the session."
     )
     return None
 
