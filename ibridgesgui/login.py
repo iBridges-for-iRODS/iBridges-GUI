@@ -96,7 +96,7 @@ class LoginDialog(QDialog, Ui_irodsLogin):
 
 
     def _find_entry_for_env(self, env_path):
-        for _, (p, entry) in self.aliases_envs.items():
+        for p, entry in self.aliases_envs.values():
             if Path(p).expanduser().resolve() == env_path:
                 return entry
         return None

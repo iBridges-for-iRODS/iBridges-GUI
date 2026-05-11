@@ -43,7 +43,7 @@ class UiLoader(PySide6.QtUiTools.QUiLoader):
         self.base_instance = base_instance
 
     def createWidget(self, class_name, parent=None, name=""):
-        """Create Widget from ui."""
+        """Create a widget from the UI loader."""
         if parent is None and self.base_instance:
             return self.base_instance
 
