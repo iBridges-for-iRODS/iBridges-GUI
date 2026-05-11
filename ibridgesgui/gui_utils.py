@@ -168,14 +168,16 @@ def prep_session_for_copy(session, error_label) -> Optional[Path]:
 
 def combine_operations(operations: list[Operations]) -> Operations:
     """Merge multiple Operations objects into one."""
+    print(operations)
     base = operations[0]
 
     base.create_dir = set().union(*(op.create_dir for op in operations))
     base.create_collection = set().union(*(op.create_collection for op in operations))
-    base.meta_upload = set().union(*(op.meta_upload for op in operations))
+    #base.meta_upload = set().union(*(op.meta_upload for op in operations))
 
     for op in operations[1:]:
         base.download.extend(op.download)
         base.upload.extend(op.upload)
+        base.meta_upload.extend(op.meta_upload)
 
     return base
