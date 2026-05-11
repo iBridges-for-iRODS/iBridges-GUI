@@ -80,7 +80,7 @@ def manager(monkeypatch, fake_tab_widget, fake_plugin_manager, fake_config, fake
         lambda *args, **kwargs: "SEARCH_WIDGET"
     )
     monkeypatch.setattr(
-        "ibridgesgui.browser.Browser",
+        "ibridgesgui.browsertab.browser.Browser",
         lambda *args, **kwargs: "BROWSER_WIDGET"
     )
     monkeypatch.setattr(

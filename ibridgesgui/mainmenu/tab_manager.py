@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Callable
 
-from ibridgesgui.browser import Browser
+from ibridgesgui.browsertab.browser import Browser
 from ibridgesgui.info import Info
 from ibridgesgui.logviewer import LogViewer
 from ibridgesgui.searchtab.search import Search

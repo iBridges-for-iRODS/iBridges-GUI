@@ -1,4 +1,5 @@
 """iRODS functionality for browser."""
+
 import logging
 from typing import Iterable, Tuple
 
@@ -42,10 +43,38 @@ class IrodsBrowserService:
             content = [stream.read(1024).decode("utf-8")]
         return content
 
+    # -------- preview ---------
+
+    def compute_preview(self, irods_path: IrodsPath):
+        """Return preview content for a collection or data object."""
+        # Collections: list subcollections + objects
+        if irods_path.collection_exists():
+            subcolls, objs = self.list_collection(irods_path)
+            content = ["Collections:", "-----------------"]
+            content.extend([sc.name for sc in subcolls])
+            content.extend(["", "DataObjects:", "-----------------"])
+            content.extend([do.name for do in objs])
+            return content
+
+        # Data objects: preview text-like files
+        if irods_path.dataobject_exists():
+            ext = irods_path.name.split(".")[-1] if "." in irods_path.name else ""
+            if ext in ("txt", "json", "csv"):
+                try:
+                    return self.stream_obj(irods_path)
+                except Exception as error:
+                    return [
+                        f"No Preview for: {irods_path}",
+                        repr(error),
+                        "Storage resource might be down.",
+                    ]
+            return [f"No Preview for: {irods_path}"]
+
+        return [f"No Preview for: {irods_path}"]
 
     # -------- replicas --------
 
-    def replicas_for(self, path: IrodsPath):
+    def get_replicas(self, path: IrodsPath):
         """Retrieve replicas."""
         if not path.dataobject_exists():
             return []
@@ -53,6 +82,13 @@ class IrodsBrowserService:
         return obj_replicas(obj)
 
     # -------- metadata --------
+
+    def get_metadata(self, irods_path):
+        """Return metadata as a list of (key, value, units) tuples."""
+        try:
+            return [(avu.name, avu.value, avu.units) for avu in irods_path.meta]
+        except Exception as err:
+            raise RuntimeError(f"Failed to load metadata for {irods_path}: {err}") from err
 
     def add_metadata(self, path: IrodsPath, key: str, value: str, units: str):
         """Add metadata to coll or obj."""
@@ -62,24 +98,37 @@ class IrodsBrowserService:
         self,
         path: IrodsPath,
         old_key: str,
+        old_value: str,
+        old_units: str,
         new_key: str,
         new_value: str,
         new_units: str,
     ):
-        """Update metadata."""
-        if new_key == old_key:
-            path.meta[old_key] = new_value, new_units
-        else:
-            item = path.meta[old_key]
-            item.key = new_key
-            item.value = new_value
-            item.units = new_units
+        """Update a single AVU on a path."""
+        # Retrieve the specific AVU
+        avu = path.meta[old_key, old_value, old_units]
+
+        # Mutate it in place
+        avu.key = new_key
+        avu.value = new_value
+        avu.units = new_units
 
     def delete_metadata(self, path: IrodsPath, key: str, value: str, units: str):
         """Delete metadata."""
         path.meta.delete(key, value, units)
 
     # -------- ACLs / permissions --------
+
+    def normalize_acls(self, acls):
+        """Normalize iRODS ACLs into UI-friendly form."""
+        clean = []
+        for user, zone, perm, status in acls:
+            if perm == "read_object":
+                perm = "read"
+            elif perm == "modify_object":
+                perm = "write"
+            clean.append((user, zone, perm, status))
+        return clean
 
     def get_acls(self, path: IrodsPath):
         """Return a list of (user_name, user_zone, access_name, inheritance_flag)."""

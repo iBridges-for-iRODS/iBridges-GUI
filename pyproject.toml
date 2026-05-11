@@ -101,6 +101,9 @@ omit = [
     "ibridgesgui/sync.py",
     "ibridgesgui/browser.py",
     "_version.py",
+    "ibridgesgui/synctab/sync.py",
+    "ibridgesgui/browsertab/browser.py",
+    "ibridgesgui/searchtab/search.py",
 ]
 source = ["ibridgesgui"]
 
