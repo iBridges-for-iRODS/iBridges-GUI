@@ -153,6 +153,7 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
             self.error_label.setText("Download finished.")
         else:
             self.error_label.setText("Errors occurred during download. Consult the logs.")
+        self.hide_button.setEnabled(True)
 
     def _enable_buttons(self, enable: bool) -> None:
         """Enable or disable UI buttons."""
