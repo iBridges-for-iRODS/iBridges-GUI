@@ -186,14 +186,14 @@ def test_combine_operations():
     op1 = MagicMock(
         create_dir={"a"},
         create_collection={"x"},
-        meta_upload={"m1"},
+        meta_upload=["m1"],
         download=[1],
         upload=[10],
     )
     op2 = MagicMock(
         create_dir={"b"},
         create_collection={"y"},
-        meta_upload={"m2"},
+        meta_upload=["m2"],
         download=[2],
         upload=[20],
     )
@@ -202,6 +202,6 @@ def test_combine_operations():
 
     assert combined.create_dir == {"a", "b"}
     assert combined.create_collection == {"x", "y"}
-    assert combined.meta_upload == {"m1", "m2"}
+    assert combined.meta_upload == ["m1", "m2"]
     assert combined.download == [1, 2]
     assert combined.upload == [10, 20]
