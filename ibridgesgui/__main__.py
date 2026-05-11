@@ -14,7 +14,7 @@ import PySide6.QtWidgets
 import setproctitle
 from ibridges import Session
 
-from ibridgesgui.browser import Browser
+from ibridgesgui.browsertab.browser import Browser
 from ibridgesgui.config import (
     config_add_tab,
     config_remove_tab,

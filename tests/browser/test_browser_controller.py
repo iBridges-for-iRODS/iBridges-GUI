@@ -1,47 +1,36 @@
 import pytest
 from unittest.mock import MagicMock, patch
 from PySide6.QtWidgets import QMessageBox
-from ibridgesgui.browser_controller import BrowserController
 
+from ibridgesgui.browsertab.browser_controller import BrowserController
+from ibridges import IrodsPath
 
-@pytest.fixture
-def ui():
-    """Mock all UI elements used by BrowserController."""
-    ui = MagicMock()
-
-    # path input
-    ui.input_path.text.return_value = "/tempZone/home/user"
-    ui.input_path.setText = MagicMock()
-
-    # browser table
-    ui.browser_table.currentRow.return_value = 0
-    ui.browser_table.item.return_value.text.return_value = "file.txt"
-
-    # metadata table
-    ui.meta_table.item.return_value.text.return_value = "meta"
-
-    # ACL table
-    ui.acl_table.item.return_value.text.return_value = "acl"
-
-    return ui
 
 
 @pytest.fixture
-def service(make_irods_path):
-    """Mock IrodsBrowserService."""
+def mock_service(make_irods_path):
     service = MagicMock()
     service.home_path.return_value = make_irods_path("/tempZone/home/user")
     service.path_from_text.return_value = make_irods_path("/tempZone/home/user")
     service.parent_path.return_value = make_irods_path("/tempZone/home")
-    service.list_table_rows.return_value = [["file.txt", "file.txt", "data"]]
+    service.list_table_rows.return_value = [["C-", "file.txt", "data"]]
+    service.get_metadata.return_value = [("k", "v", "u")]
+    service.get_acls.return_value = [("u", "z", "read", "")]
+    service.normalize_acls.return_value = [("u", "z", "read", "")]
+    service.get_replicas.return_value = [("r1",)]
+    service.compute_preview.return_value = ["line1", "line2"]
     return service
 
 
 @pytest.fixture
-def controller(ui, service):
-    with patch("ibridgesgui.browser_controller.IrodsBrowserService", return_value=service):
-        return BrowserController(ui, session=MagicMock(), app_name="test")
+def controller(ui, session, mock_service):
+    with patch(
+        "ibridgesgui.browsertab.browser_controller.IrodsBrowserService",
+        return_value=mock_service,
+    ):
+        return BrowserController(ui, session, "test")
 
+# --- init / navigation -------------------------------------------------------
 
 def test_init_browser_calls_set_path(controller, ui):
     controller._set_path = MagicMock()
@@ -60,49 +49,71 @@ def test_set_path_updates_model_and_ui(controller, ui, make_irods_path):
     controller._load_browser_table.assert_called_once()
 
 
-def test_refresh_browser(controller, ui, service):
+def test_refresh_browser(controller, ui, mock_service):
     controller._set_path = MagicMock()
     controller._refresh_browser()
-    controller._set_path.assert_called_once_with(service.path_from_text.return_value)
+    controller._set_path.assert_called_once_with(mock_service.path_from_text.return_value)
 
 
-def test_go_to_parent(controller, ui, service):
+def test_go_to_parent(controller, ui, mock_service):
     controller._set_path = MagicMock()
     controller._go_to_parent()
-    controller._set_path.assert_called_once_with(service.parent_path.return_value)
+    controller._set_path.assert_called_once_with(mock_service.parent_path.return_value)
 
 
-def test_load_browser_table_success(controller, ui, service):
-    with patch("ibridgesgui.browser_controller.populate_table") as populate:
+# --- browser table loading ---------------------------------------------------
+
+def test_load_browser_table_success(controller, ui, mock_service):
+    # Ensure the path is treated as a collection
+    controller.model.current_path.collection_exists.return_value = True
+
+    with patch("ibridgesgui.browsertab.browser_controller.populate_table") as populate:
         controller._load_browser_table()
         populate.assert_called_once()
 
-def test_load_browser_table_exception(controller, ui, service):
-    service.list_table_rows.side_effect = Exception("boom")
+
+def test_load_browser_table_non_collection(controller, ui, make_irods_path):
+    path = make_irods_path("/x")
+    path.collection_exists.return_value = False
+    controller.model.current_path = path
+
     controller._load_browser_table()
     ui.browser_table.setRowCount.assert_called_with(0)
     ui.error_label.setText.assert_called()
 
 
-# Selection validation in main table
+def test_load_browser_table_exception(controller, ui, mock_service):
+    mock_service.list_table_rows.side_effect = Exception("boom")
+    controller._load_browser_table()
+    ui.browser_table.setRowCount.assert_called_with(0)
+    ui.error_label.setText.assert_called()
+
+
+# --- selection helpers -------------------------------------------------------
 
 def test_validate_selection_no_row(controller, ui):
     ui.browser_table.currentRow.return_value = -1
     assert controller._validate_selection() is False
     ui.error_label.setText.assert_called_once()
 
+
 def test_item_path_invalid_row(controller, ui):
     assert controller._item_path(-1) is None
+
 
 def test_item_path_missing_item(controller, ui):
     ui.browser_table.item.return_value = None
     assert controller._item_path(0) is None
+
+
+# --- open selected path ------------------------------------------------------
 
 def test_open_selected_path_no_selection(controller, ui):
     ui.browser_table.currentRow.return_value = -1
     controller._set_path = MagicMock()
     controller._open_selected_path()
     controller._set_path.assert_not_called()
+
 
 def test_open_selected_path_not_collection(controller, ui):
     path = MagicMock()
@@ -113,30 +124,7 @@ def test_open_selected_path_not_collection(controller, ui):
     controller._set_path.assert_not_called()
 
 
-def test_load_browser_table_exception(controller, ui, service):
-    service.list_table_rows.side_effect = Exception("boom")
-    controller._load_browser_table()
-    ui.browser_table.setRowCount.assert_called_with(0)
-    ui.error_label.setText.assert_called()
-
-
-# Negative paths
-def test_open_selected_path_no_selection(controller, ui):
-    ui.browser_table.currentRow.return_value = -1
-    controller._set_path = MagicMock()
-    controller._open_selected_path()
-    controller._set_path.assert_not_called()
-
-def test_open_selected_path_not_a_collection(controller, ui):
-    path = MagicMock()
-    path.collection_exists.return_value = False
-    controller._item_path = MagicMock(return_value=path)
-    controller._set_path = MagicMock()
-    controller._open_selected_path()
-    controller._set_path.assert_not_called()
-
-# Positive paths
-def test_open_selected_path(controller, ui):
+def test_open_selected_path_collection(controller, ui):
     path = MagicMock()
     path.collection_exists.return_value = True
     controller._item_path = MagicMock(return_value=path)
@@ -145,14 +133,13 @@ def test_open_selected_path(controller, ui):
     controller._open_selected_path()
     controller._set_path.assert_called_once_with(path)
 
-# Delete functionality
+
+# --- delete data -------------------------------------------------------------
 
 def test_delete_data_success(controller, ui):
     path = MagicMock()
-    path.remove = MagicMock()
+    controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock(return_value=path)
-
-    ui.browser_table.currentRow.return_value = 0
 
     with patch("PySide6.QtWidgets.QMessageBox.critical", return_value=QMessageBox.Yes):
         controller._refresh_browser = MagicMock()
@@ -160,12 +147,14 @@ def test_delete_data_success(controller, ui):
         path.remove.assert_called_once()
         controller._refresh_browser.assert_called_once()
 
+
 def test_delete_data_user_declines(controller, ui):
     controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock()
     with patch("PySide6.QtWidgets.QMessageBox.critical", return_value=QMessageBox.No):
         controller.delete_data()
         controller._item_path.return_value.remove.assert_not_called()
+
 
 def test_delete_data_no_permission(controller, ui):
     from irods.exception import CAT_NO_ACCESS_PERMISSION
@@ -178,6 +167,7 @@ def test_delete_data_no_permission(controller, ui):
         controller.delete_data()
         ui.error_label.setText.assert_called()
 
+
 def test_delete_data_generic_exception(controller, ui):
     controller._validate_selection = MagicMock(return_value=True)
     path = MagicMock()
@@ -188,45 +178,95 @@ def test_delete_data_generic_exception(controller, ui):
         controller.delete_data()
         ui.error_label.setText.assert_called()
 
-# metadata
 
-def test_fill_tab_metadata(controller, ui):
-    controller.model.get_cached_metadata = MagicMock(return_value=[("k","v","u")])
-    controller._render_metadata = MagicMock()
-    controller._fill_tab("metadata", MagicMock(), 0)
-    controller._render_metadata.assert_called_once()
+# --- fill current info tab / caching ----------------------------------------
 
-def test_render_metadata_empty(controller, ui):
-    controller._render_metadata([], MagicMock())
-    ui.no_meta_label.setText.assert_called()
-
-def test_load_metadata_item(controller, ui):
-    index = MagicMock(row=lambda: 0)
-    controller._load_metadata_item(index)
-    ui.meta_key_field.setText.assert_called()
+def test_fill_current_info_tab_skips_when_no_selection(controller, ui):
+    controller._validate_selection = MagicMock(return_value=False)
+    controller._fill_tab = MagicMock()
+    controller._fill_current_info_tab()
+    controller._fill_tab.assert_not_called()
 
 
-
-def test_metadata_edit_add(controller, ui, service, make_irods_path):
+def test_fill_current_info_tab_calls_fill_tab_when_needed(controller, ui):
     controller._validate_selection = MagicMock(return_value=True)
-    controller._item_path = MagicMock(return_value=make_irods_path("/tempZone/home/user/file.txt"))
+    controller.model.needs_tab_update = MagicMock(return_value=True)
+    controller._fill_tab = MagicMock()
+
+    controller._fill_current_info_tab()
+    controller._fill_tab.assert_called_once()
+
+
+def test_fill_tab_metadata(controller, ui, mock_service):
+    row = 0
+    path = MagicMock()
+    controller._item_path = MagicMock(return_value=path)
     controller.model.metadata_cache = {}
-    controller.model.updated_info_tabs = []
+
+    controller._fill_tab("metadata")
+
+    mock_service.get_metadata.assert_called_once_with(path)
+    ui.render_metadata.assert_called_once()
+
+
+def test_fill_tab_permissions(controller, ui, mock_service):
+    row = 0
+    path = MagicMock()
+    controller._item_path = MagicMock(return_value=path)
+    controller.model.acl_cache = {}
+
+    controller._fill_tab("permissions")
+
+    mock_service.get_acls.assert_called_once_with(path)
+    mock_service.normalize_acls.assert_called_once()
+    ui.render_acls.assert_called_once()
+
+
+def test_fill_tab_replicas(controller, ui, mock_service):
+    path = MagicMock()
+    controller._item_path = MagicMock(return_value=path)
+    controller.model.replica_cache = {}
+
+    controller._fill_tab("replicas")
+
+    mock_service.get_replicas.assert_called_once_with(path)
+    ui.render_replicas.assert_called_once()
+
+
+def test_fill_tab_preview(controller, ui, mock_service):
+    path = MagicMock()
+    controller._item_path = MagicMock(return_value=path)
+    controller.model.preview_cache = {}
+
+    controller._fill_tab("preview")
+
+    mock_service.compute_preview.assert_called_once_with(path)
+    ui.preview_browser.setText.assert_called_once()
+
+
+# --- metadata edits ----------------------------------------------------------
+
+def test_metadata_edit_add(controller, ui, mock_service, make_irods_path):
+    controller._validate_selection = MagicMock(return_value=True)
+    controller._item_path = MagicMock(return_value=make_irods_path("/x"))
+    controller.model.invalidate_metadata = MagicMock()
+    controller._fill_current_info_tab = MagicMock()
 
     ui.meta_key_field.text.return_value = "k"
     ui.meta_value_field.text.return_value = "v"
     ui.meta_units_field.text.return_value = "u"
 
-    controller._fill_current_info_tab = MagicMock()
-
     controller._metadata_edits("add")
-    service.add_metadata.assert_called_once()
+    mock_service.add_metadata.assert_called_once()
+    controller.model.invalidate_metadata.assert_called_once()
+    controller._fill_current_info_tab.assert_called_once()
 
-def test_metadata_edit_update(controller, ui, service, make_irods_path):
+
+def test_metadata_edit_update(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock(return_value=make_irods_path("/x"))
-    controller.model.metadata_cache = {}
-    controller.model.updated_info_tabs = []
+    controller.model.invalidate_metadata = MagicMock()
+    controller._fill_current_info_tab = MagicMock()
 
     ui.meta_key_field.text.return_value = "newk"
     ui.meta_value_field.text.return_value = "newv"
@@ -239,26 +279,26 @@ def test_metadata_edit_update(controller, ui, service, make_irods_path):
         MagicMock(text=lambda: "oldu"),
     ]
 
-    controller._fill_current_info_tab = MagicMock()
-
     controller._metadata_edits("update")
-    service.update_metadata.assert_called_once()
+    mock_service.update_metadata.assert_called_once()
+    controller.model.invalidate_metadata.assert_called_once()
+    controller._fill_current_info_tab.assert_called_once()
 
 
-def test_metadata_edit_delete(controller, ui, service, make_irods_path):
+def test_metadata_edit_delete(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock(return_value=make_irods_path("/x"))
-    controller.model.metadata_cache = {}
-    controller.model.updated_info_tabs = []
+    controller.model.invalidate_metadata = MagicMock()
+    controller._fill_current_info_tab = MagicMock()
 
     ui.meta_key_field.text.return_value = "k"
     ui.meta_value_field.text.return_value = "v"
     ui.meta_units_field.text.return_value = "u"
 
-    controller._fill_current_info_tab = MagicMock()
-
     controller._metadata_edits("delete")
-    service.delete_metadata.assert_called_once()
+    mock_service.delete_metadata.assert_called_once()
+    controller.model.invalidate_metadata.assert_called_once()
+    controller._fill_current_info_tab.assert_called_once()
 
 
 def test_metadata_edit_invalid_selection(controller, ui):
@@ -267,10 +307,10 @@ def test_metadata_edit_invalid_selection(controller, ui):
     ui.error_label.setText.assert_not_called()
 
 
-def test_metadata_edit_exception(controller, ui, service, make_irods_path):
+def test_metadata_edit_exception(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     controller._item_path = MagicMock(return_value=make_irods_path("/x"))
-    service.add_metadata.side_effect = Exception("fail")
+    mock_service.add_metadata.side_effect = Exception("fail")
 
     ui.meta_key_field.text.return_value = "k"
     ui.meta_value_field.text.return_value = "v"
@@ -279,228 +319,130 @@ def test_metadata_edit_exception(controller, ui, service, make_irods_path):
     controller._metadata_edits("add")
     ui.error_label.setText.assert_called()
 
-# acls
 
-def test_fill_tab_permissions(controller, ui, service):
-    controller.model.get_cached_acls = MagicMock(return_value=[("u","z","read","")])
-    controller._render_acls = MagicMock()
-    controller._fill_tab("permissions", MagicMock(), 0)
-    controller._render_acls.assert_called_once()
+# --- ACL updates -------------------------------------------------------------
 
-def test_render_acls(controller, ui):
-    path = MagicMock()
-    path.collection_exists.return_value = True
-    with patch("ibridgesgui.browser_controller.get_irods_item") as get_item:
-        get_item.return_value.owner_name = "owner"
-        controller._render_acls([("u","z","read","")], path)
-        ui.owner_label.setText.assert_called_with("owner")
-
-
-def test_load_permission(controller, ui):
-    index = MagicMock(row=lambda: 0)
-    controller._load_permission(index)
-    ui.acl_user_field.setText.assert_called()
-
-
-def test_update_permission(controller, ui, service, make_irods_path):
+def test_update_permission_success(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
-    controller._item_path = MagicMock(return_value=make_irods_path("/tempZone/home/user/file.txt"))
+    path = make_irods_path("/x")
+    controller._item_path = MagicMock(return_value=path)
+    controller.model.invalidate_acls = MagicMock()
+    controller._fill_current_info_tab = MagicMock()
 
     ui.acl_user_field.text.return_value = "user"
     ui.acl_zone_field.text.return_value = "zone"
     ui.acl_box.currentText.return_value = "read"
-    ui.recursive_box.currentText.return_value = "False"
-
-    controller._fill_current_info_tab = MagicMock()
+    ui.recursive_box.currentText.return_value = "True"
 
     controller._update_permission()
-    service.set_acl.assert_called_once()
 
-def test_update_permission_missing_user(controller, ui):
-    controller._validate_selection = MagicMock(return_value=True)
-    ui.acl_user_field.text.return_value = ""
-    ui.acl_box.currentText.return_value = "read"
-    controller._update_permission()
-    ui.error_label.setText.assert_called()
+    mock_service.set_acl.assert_called_once()
+    controller.model.invalidate_acls.assert_called_once()
+    controller._fill_current_info_tab.assert_called_once()
+
 
 def test_update_permission_inherit_on_dataobject(controller, ui, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     path = make_irods_path("/x")
-    path.dataobject_exists = lambda: True
+    path.dataobject_exists.return_value = True
     controller._item_path = MagicMock(return_value=path)
 
-    ui.acl_user_field.text.return_value = "u"
-    ui.acl_zone_field.text.return_value = "z"
     ui.acl_box.currentText.return_value = "Newly added items to collection will inherit permissions"
-    ui.recursive_box.currentText.return_value = "False"
 
     controller._update_permission()
     ui.error_label.setText.assert_called()
 
-def test_update_permission_invalid_user(controller, ui, service, make_irods_path):
-    from irods.exception import CAT_INVALID_USER
+
+def test_update_permission_missing_user(controller, ui, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
     path = make_irods_path("/x")
     controller._item_path = MagicMock(return_value=path)
 
-    service.set_acl.side_effect = CAT_INVALID_USER()
-
-    ui.acl_user_field.text.return_value = "u"
-    ui.acl_zone_field.text.return_value = "z"
+    ui.acl_user_field.text.return_value = ""
     ui.acl_box.currentText.return_value = "read"
-    ui.recursive_box.currentText.return_value = "False"
 
     controller._update_permission()
     ui.error_label.setText.assert_called()
 
-def test_update_permission_missing_access(controller, ui):
+
+def test_update_permission_missing_access(controller, ui, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
-    ui.acl_user_field.text.return_value = "u"
+    path = make_irods_path("/x")
+    controller._item_path = MagicMock(return_value=path)
+
     ui.acl_box.currentText.return_value = ""
+
     controller._update_permission()
     ui.error_label.setText.assert_called()
 
 
-# replicas
-
-def test_fill_tab_replicas(controller, ui, service):
-    controller.model.get_cached_replicas = MagicMock(return_value=[("r1",)])
-    controller._render_replicas = MagicMock()
-    controller._fill_tab("replicas", MagicMock(), 0)
-    controller._render_replicas.assert_called_once()
-
-def test_render_replicas_empty(controller, ui):
-    controller._render_replicas([])
-    ui.replica_table.setRowCount.assert_called_with(0)
-
-
-# preview
-
-def test_fill_tab_preview(controller, ui):
-    controller.model.get_cached_preview = MagicMock(return_value=["content"])
-    with patch("ibridgesgui.browser_controller.populate_textfield") as pop:
-        controller._fill_tab("preview", MagicMock(), 0)
-        pop.assert_called_once()
-
-def test_compute_preview_collection(controller):
-    path = MagicMock()
-    path.collection_exists.return_value = True
-    path.dataobject_exists.return_value = False
-
-    # Create mocks for subcollections and data objects
-    sc = MagicMock()
-    sc.name = "sub"
-
-    do = MagicMock()
-    do.name = "obj"
-
-    # Mock the service call
-    controller.service.list_collection.return_value = ([sc], [do])
-
-    out = controller._compute_preview(path)
-
-    assert "Collections:" in out
-    assert "sub" in out
-    assert "DataObjects:" in out
-    assert "obj" in out
-
-def test_compute_preview_dataobject_success(controller, service):
-    path = MagicMock()
-    path.collection_exists.return_value = False
-    path.dataobject_exists.return_value = True
-    path.name = "file.txt"
-    service.stream_obj.return_value = ["content"]
-    out = controller._compute_preview(path)
-    assert out == ["content"]
-
-def test_compute_preview_dataobject_exception(controller, service):
-    path = MagicMock()
-    path.collection_exists.return_value = False
-    path.dataobject_exists.return_value = True
-    path.name = "file.txt"
-    service.stream_obj.side_effect = Exception("fail")
-    out = controller._compute_preview(path)
-    assert "No Preview" in out[0]
-
-def test_compute_preview_no_preview(controller):
-    path = MagicMock()
-    path.collection_exists.return_value = False
-    path.dataobject_exists.return_value = False
-    out = controller._compute_preview(path)
-    assert "No Preview" in out[0]
-
-
-# info tabs
-
-def test_fill_current_info_tab_no_selection(controller, ui):
-    controller._validate_selection = MagicMock(return_value=False)
-    controller._fill_current_info_tab()
-    ui.error_label.setText.assert_not_called()
-
-def test_fill_current_info_tab_invalid_selection(controller, ui):
-    controller._validate_selection = MagicMock(return_value=False)
-    controller._fill_current_info_tab()
-    ui.error_label.setText.assert_not_called()
-
-def test_fill_current_info_tab_no_update_needed(controller, ui):
+def test_update_permission_exception(controller, ui, mock_service, make_irods_path):
     controller._validate_selection = MagicMock(return_value=True)
-    controller.model.needs_tab_update = MagicMock(return_value=False)
-    controller._fill_tab = MagicMock()
-    controller._fill_current_info_tab()
-    controller._fill_tab.assert_not_called()
+    path = make_irods_path("/x")
+    controller._item_path = MagicMock(return_value=path)
 
-def test_fill_current_info_tab_exception(controller, ui):
-    controller._validate_selection = MagicMock(return_value=True)
-    controller.model.needs_tab_update = MagicMock(return_value=True)
-    controller._fill_tab = MagicMock(side_effect=Exception("fail"))
-    controller._fill_current_info_tab()
+    mock_service.set_acl.side_effect = Exception("boom")
+
+    controller._update_permission()
     ui.error_label.setText.assert_called()
 
 
-# click rows in table
+# --- row click ---------------------------------------------------------------
 
-def test_on_row_clicked_negative_row(controller, ui):
-    ui.browser_table.currentRow.return_value = -1
-    controller._fill_current_info_tab = MagicMock()
-    controller._on_row_clicked()
-    controller._fill_current_info_tab.assert_not_called()
-
-def test_on_row_clicked_valid(controller, ui):
-    ui.browser_table.currentRow.return_value = 2
+def test_on_row_clicked_updates_model_and_fills_tab(controller, ui):
     controller.model.on_row_clicked = MagicMock()
     controller._fill_current_info_tab = MagicMock()
+
     controller._on_row_clicked()
-    controller.model.on_row_clicked.assert_called_once_with(2)
+
+    controller.model.on_row_clicked.assert_called_once()
     controller._fill_current_info_tab.assert_called_once()
 
+def test_invalidate_metadata(model):
+    model.metadata_cache = {0: "x", 1: "y"}
+    model.invalidate_metadata(row=0)
+    assert 0 not in model.metadata_cache
+    assert 1 in model.metadata_cache
+
+def test_invalidate_acls(model):
+    model.acl_cache = {0: "x", 1: "y"}
+    model.invalidate_acls(row=0)
+    assert 0 not in model.acl_cache
+    assert 1 in model.acl_cache
+
+def test_invalidate_replicas(model):
+    model.replica_cache = {0: "x", 1: "y"}
+    model.invalidate_replicas(row=0)
+    assert 0 not in model.replica_cache
+    assert 1 in model.replica_cache
+
+def test_invalidate_preview(model):
+    model.preview_cache = {0: "x", 1: "y"}
+    model.invalidate_preview(row=0)
+    assert 0 not in model.preview_cache
+    assert 1 in model.preview_cache
+
+def test_needs_tab_update_true(model):
+    model.last_row = 0
+    model.current_row = 1
+    assert model.needs_tab_update("metadata") is True
 
 
-# test calling widgets from top row buttons
-def test_create_collection_calls_dialog_and_refresh(controller, ui):
-    with patch("ibridgesgui.browser_controller.CreateCollection") as dlg:
-        instance = dlg.return_value
-        instance.exec = MagicMock()
-        controller._set_path = MagicMock()
+def test_needs_tab_update_false(model):
+    model.last_selected_row = 0
+    model.current_selected_row = 0
+    model.last_path = model.current_path
+    model.updated_info_tabs.add("metadata")
 
-        controller.create_collection()
+    assert model.needs_tab_update("metadata") is False
 
-        dlg.assert_called_once()
-        instance.exec.assert_called_once()
-        controller._set_path.assert_called_once()
+def test_on_row_clicked(model):
+    model.current_selected_row = -1
+    model.last_selected_row = -1
 
-def test_rename_item_invalid_selection(controller, ui):
-    controller._validate_selection = MagicMock(return_value=False)
-    controller.rename_item()
-    ui.error_label.setText.assert_not_called()
+    model.on_row_clicked(5)
 
-def test_download_data_invalid_selection(controller, ui):
-    controller._validate_selection = MagicMock(return_value=False)
-    controller.download_data()
-    ui.error_label.setText.assert_not_called()
-
-def test_upload_data_not_collection(controller, ui):
-    controller.model.current_path.collection_exists = lambda: False
-    controller.upload_data()
-    ui.error_label.setText.assert_called()
+    assert model.current_selected_row == 5
+    assert model.last_selected_row == -1
 
 

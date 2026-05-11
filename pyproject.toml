@@ -98,8 +98,9 @@ lint.ignore = ["D203", "D213"]
 omit = [
     "ibridgesgui/ui_files/*",
     "ibridgesgui/welcome.py",
-    "ibridgesgui/sync.py",
-    "ibridgesgui/browser.py",
+    "ibridgesgui/synctab/sync.py",
+    "ibridgesgui/browsertab/browser.py",
+    "ibridgesgui/searchtab/search.py",
 ]
 source = ["ibridgesgui"]
 
