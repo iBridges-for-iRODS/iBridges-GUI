@@ -153,5 +153,5 @@ class BrowserModel:
         self._cache_set(self.preview_cache, row, data)
 
     def get_cached_preview(self, row: int) -> Optional[Any]:
-        """Retrieve cahced preview info."""
+        """Retrieve cached preview info."""
         return self._cache_get(self.preview_cache, row)
