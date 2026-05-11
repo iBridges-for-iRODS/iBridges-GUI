@@ -21,6 +21,7 @@ from typing import Union
 
 from ibridges.cli.config import IbridgesConf
 from ibridges.session import Session, _translate_irods_error
+from ibridges.util import open_irodsa
 from irods.auth.pam import PamLoginException
 from irods.connection import PlainTextPAMPasswordError
 from irods.exception import (
@@ -226,7 +227,7 @@ def save_current_settings(env_path_name: Path) -> None:
     """Store the environment with the currently scrambled password in irodsA."""
     ibridges_conf = IbridgesConf(None)
 
-    with IRODSA.open("r", encoding="utf-8") as f:
+    with open_irodsa(IRODSA"r", encoding="utf-8") as f:
         pw = f.read()
 
     try:
