@@ -227,7 +227,7 @@ def save_current_settings(env_path_name: Path) -> None:
     """Store the environment with the currently scrambled password in irodsA."""
     ibridges_conf = IbridgesConf(None)
 
-    with open_irodsa(IRODSA"r", encoding="utf-8") as f:
+    with open_irodsa(IRODSA, "r", encoding="utf-8") as f:
         pw = f.read()
 
     try:

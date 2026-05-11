@@ -228,7 +228,6 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
             self._enable_buttons(True)
         except Exception as err:  # noqa: BLE001
             self.error_label.setText(f"Could not start upload: {err}")
-            raise err
             self.set_arrow_cursor()
             self._enable_buttons(True)
 
