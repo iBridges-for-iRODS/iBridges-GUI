@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Tuple
 from ibridges import IrodsPath, Session, search_data, sync
 from ibridges.executor import Operations, _obj_get, _obj_put
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal, QTimer
 from ibridgesgui.config import is_session_from_config
 
 
@@ -34,19 +34,24 @@ class BaseIrodsThread(QThread):
         self.thread_session: Session = Session(irods_env=ienv_path)
 
         if not is_session_from_config(self.thread_session):
-            self.logger.error(f"{self.__class__.__name__}: Session does not match saved environment")
-        
+            self.logger.error(
+                    f"{self.__class__.__name__}: Session does not match saved environment")
+            QTimer.singleShot(0, lambda: self.result.emit({
+        "error": "The iRODS session does not match the saved configuration. "
+                 "Please reset or restart the session."
+            }))
+            self.invalid_session = True
             return
-        
+ 
         self.logger.debug(f"{self.__class__.__name__}: Created new session")
 
     def cleanup_session(self) -> None:
         """Close the iRODS session and log whether cleanup succeeded."""
-        self.thread_session.close()
-        if self.thread_session.irods_session is None:
-            self.logger.debug(f"{self.__class__.__name__}: Session successfully deleted.")
-        else:
-            self.logger.debug(f"{self.__class__.__name__}: Session still exists.")
+        try:
+            self.thread_session.close()
+            self.logger.debug(f"{self.__class__.__name__}: Session closed.")
+        except Exception as exc:
+            self.logger.error(f"{self.__class__.__name__}: Failed to close session: {exc}")
 
     def emit_error(self, message: str) -> None:
         """Emit an error result dictionary."""
@@ -55,9 +60,6 @@ class BaseIrodsThread(QThread):
 
 class SearchThread(BaseIrodsThread):
     """Thread that performs an iRODS search operation."""
-
-    result: Signal = Signal(dict)
-
     def __init__(
         self,
         logger: Logger,
@@ -80,6 +82,9 @@ class SearchThread(BaseIrodsThread):
 
     def run(self) -> None:
         """Execute the search operation."""
+        if getattr(self, "invalid_session", False):
+            return
+
         try:
             results = search_data(
                 self.thread_session,
@@ -107,8 +112,6 @@ class SearchThread(BaseIrodsThread):
 
 class TransferDataThread(BaseIrodsThread):
     """Thread that uploads, downloads, and transfers metadata."""
-
-    result: Signal = Signal(dict)
     current_progress: Signal = Signal(list)
 
     def __init__(
@@ -195,16 +198,11 @@ class TransferDataThread(BaseIrodsThread):
             self.logger.exception(msg)
             transfer_out["error"] += "\n" + msg
 
-        try:
-            self.ops.execute_meta_upload()
-        except Exception as exc:
-            msg = f"Metadata upload failed: {repr(exc)}"
-            self.logger.exception(msg)
-            transfer_out["error"] += "\n" + msg
-
     def run(self) -> None:
         """Execute upload, download, and metadata operations."""
         transfer_out: Dict[str, str] = {"error": ""}
+        if getattr(self, "invalid_session", False):
+            return
 
         try:
             self.ops.execute_create_coll(self.thread_session)
@@ -221,9 +219,6 @@ class TransferDataThread(BaseIrodsThread):
 
 class SyncThread(BaseIrodsThread):
     """Thread that performs iRODS/local filesystem synchronization."""
-
-    result: Signal = Signal(dict)
-
     def __init__(
         self,
         ienv_path: Path,
@@ -241,6 +236,9 @@ class SyncThread(BaseIrodsThread):
     def run(self) -> None:
         """Execute the sync operation."""
         sync_out: Dict[str, Any] = {"error": ""}
+        if getattr(self, "invalid_session", False):
+            return
+
 
         try:
             result = sync(
