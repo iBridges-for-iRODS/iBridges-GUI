@@ -50,17 +50,8 @@ class CheckConfig(UiDialogMixin, QtWidgets.QDialog, Ui_configCheck):
         self.save_as_button.clicked.connect(self.save_env_as)
         self.close_button.clicked.connect(self.close)
 
-    def _init_env_box(self) -> None:
-        """Populate the environment selection box."""
-        self.envbox.clear()
-        env_files = [""] + [p.name for p in self.env_path.glob("*.json")]
-        self.envbox.addItems(env_files)
-        self.envbox.addItems(self.templates.keys())
-        self.envbox.setCurrentIndex(0)
-
-    def _enable_buttons(self, enable: bool) -> None:
-        """Enable or disable all action buttons safely."""
-        buttons = [
+    def _all_action_widgets(self):
+        return [
             self.envbox,
             self.new_button,
             self.check_button,
@@ -69,20 +60,14 @@ class CheckConfig(UiDialogMixin, QtWidgets.QDialog, Ui_configCheck):
             self.close_button,
         ]
 
-        if not enable:
-            # Disable immediately and block signals
-            for btn in buttons:
-                btn.blockSignals(True)
-                btn.setEnabled(False)
-            return
 
-        # Re-enable AFTER the UI has finished updating
-        def _reenable():
-            for btn in buttons:
-                btn.setEnabled(True)
-                btn.blockSignals(False)
-
-        QtCore.QTimer.singleShot(0, _reenable)
+    def _init_env_box(self) -> None:
+        """Populate the environment selection box."""
+        self.envbox.clear()
+        env_files = [""] + [p.name for p in self.env_path.glob("*.json")]
+        self.envbox.addItems(env_files)
+        self.envbox.addItems(self.templates.keys())
+        self.envbox.setCurrentIndex(0)
 
     def load(self) -> None:
         """Load either a template or an existing environment file."""
@@ -147,17 +132,8 @@ class CheckConfig(UiDialogMixin, QtWidgets.QDialog, Ui_configCheck):
         if self._busy:
             return
         self._busy = True
-    
         # Block signals on ALL interactive widgets
-        widgets = [
-            self.envbox,
-            self.new_button,
-            self.check_button,
-            self.save_button,
-            self.save_as_button,
-            self.close_button,
-        ]
-        for w in widgets:
+        for w in self._all_action_widgets():
             w.blockSignals(True)
             w.setEnabled(False)
     
@@ -173,11 +149,11 @@ class CheckConfig(UiDialogMixin, QtWidgets.QDialog, Ui_configCheck):
     
         # Re-enable AFTER the event loop has flushed
         def _reenable():
-            for w in widgets:
+            for w in self._all_action_widgets():
                 w.setEnabled(True)
                 w.blockSignals(False)
             self._busy = False
-    
+
         QtCore.QTimer.singleShot(1, _reenable)
     
 

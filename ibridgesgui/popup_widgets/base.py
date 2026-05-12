@@ -33,14 +33,17 @@ class TransferDialogBase(QtWidgets.QDialog):
         """Init."""
         super().__init__(parent)
         self.active_transfer = False
-        self.transfer_thread = None
 
     # pylint: disable=invalid-name
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:  # noqa: N802
         """Block closing if a transfer is active."""
-        if self.active_transfer:
+        thread = getattr(self, "transfer_thread", None)
+
+        if thread and thread.isRunning():
             event.ignore()
             return
+
+        self.active_transfer = False
         super().closeEvent(event)
 
     def set_wait_cursor(self) -> None:
