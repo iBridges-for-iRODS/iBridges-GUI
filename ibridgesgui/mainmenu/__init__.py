@@ -1,9 +1,9 @@
 """MainMenu."""
 
-from .config_manager import ConfigManager
-from .plugin_manager import PluginManager
-from .session_manager import SessionManager
-from .tab_manager import TabManager
+from ibridgesgui.mainmenu.config_manager import ConfigManager
+from ibridgesgui.mainmenu.plugin_manager import PluginManager
+from ibridgesgui.mainmenu.session_manager import SessionManager
+from ibridgesgui.mainmenu.tab_manager import TabManager
 
 __all__ = [
     "ConfigManager",

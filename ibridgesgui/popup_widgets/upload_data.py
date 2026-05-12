@@ -206,7 +206,7 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
                 ]
             )
 
-            if not ops.upload:
+            if not ops.upload and not ops.meta_upload:
                 self.error_label.setText("Data already present and up to date.")
                 self.set_arrow_cursor()
                 return
@@ -257,6 +257,7 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
             self.error_label.setText("Upload finished.")
         else:
             self.error_label.setText("Errors occurred during upload. Consult the logs.")
+        self.hide_button.setEnabled(True)
 
     def _enable_buttons(self, enable: bool) -> None:
         """Enable or disable UI buttons."""

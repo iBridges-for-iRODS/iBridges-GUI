@@ -157,6 +157,7 @@ def test_start_upload_generic_error(dialog, monkeypatch):
 
 class FakeOps:
     upload = []
+    meta_upload = []
 
 def test_start_upload_no_ops(dialog, monkeypatch):
     monkeypatch.setattr(
