@@ -1,11 +1,12 @@
-import builtins
-from unittest.mock import patch, MagicMock
+# tests/test_main.py
 
+from unittest.mock import patch, MagicMock
 import ibridgesgui.__main__ as main_module
 
 
 def test_main_entry_point():
-    # Mock QApplication and QStackedWidget so no GUI is created
+    """Ensure the main entry point initializes the GUI stack and starts the event loop."""
+
     with patch("ibridgesgui.__main__.QApplication") as MockApp, \
          patch("ibridgesgui.__main__.QStackedWidget") as MockStack, \
          patch("ibridgesgui.__main__.ConfigManager") as MockConfig, \
@@ -13,12 +14,15 @@ def test_main_entry_point():
          patch("ibridgesgui.__main__.MainWindow") as MockMainWindow, \
          patch("ibridgesgui.__main__.setproctitle") as MockSetProc:
 
+        # Mock QApplication instance
         mock_app = MagicMock()
         MockApp.return_value = mock_app
 
+        # Mock stacked widget
         mock_stack = MagicMock()
         MockStack.return_value = mock_stack
 
+        # Mock config manager
         mock_cfg = MagicMock()
         mock_cfg.get_log_level.return_value = "debug"
         MockConfig.return_value = mock_cfg
@@ -34,13 +38,12 @@ def test_main_entry_point():
 
         MockApp.assert_called_once()
         MockStack.assert_called_once()
-
         MockMainWindow.assert_called_once()
 
-        # Ensure the window was added and shown
+        # Window added and shown
         mock_stack.addWidget.assert_called_once()
         mock_stack.show.assert_called_once()
 
-        # Ensure the Qt event loop was started
+        # Qt event loop started
         mock_app.exec.assert_called_once()
 

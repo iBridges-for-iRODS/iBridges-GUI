@@ -1,24 +1,16 @@
 from pathlib import Path
 from unittest.mock import Mock
-from ibridgesgui.threads import SearchThread
 from irods.exception import NetworkException
+from ibridgesgui.threads import SearchThread
 
-def test_search_thread_success(qtbot, monkeypatch, mock_session_ctor, patch_session_close, fake_ipath, fake_logger):
-    fake_results = [fake_ipath("/a/b/c1"), fake_ipath("/a/b/c2")]
 
-    # Make search_data return fake results
-    monkeypatch.setattr("ibridgesgui.threads.search_data", lambda *a, **k: fake_results)
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-    # Make session validation always succeed
-    monkeypatch.setattr("ibridgesgui.threads.is_session_from_config", lambda *_: True)
-
-    # Fake Session object returned by BaseIrodsThread
-    class FakeSession:
-        def close(self): pass
-
-    monkeypatch.setattr("ibridgesgui.threads.Session", lambda *a, **k: FakeSession())
-
-    thread = SearchThread(
+def make_thread(fake_logger):
+    """Create a SearchThread with minimal boilerplate."""
+    return SearchThread(
         logger=fake_logger,
         ienv_path=Path("/fake/env"),
         search_path=Mock(),
@@ -28,6 +20,31 @@ def test_search_thread_success(qtbot, monkeypatch, mock_session_ctor, patch_sess
         case_sensitive=False,
         item_type="data_object",
     )
+
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+def test_search_thread_success(
+    qtbot, monkeypatch, mock_session_ctor, fake_ipath, fake_logger
+):
+    fake_results = [fake_ipath("/a/b/c1"), fake_ipath("/a/b/c2")]
+
+    monkeypatch.setattr(
+        "ibridgesgui.threads.search_data",
+        lambda *a, **k: fake_results,
+    )
+    monkeypatch.setattr(
+        "ibridgesgui.threads.is_session_from_config",
+        lambda *_: True,
+    )
+    monkeypatch.setattr(
+        "ibridgesgui.threads.Session",
+        lambda *a, **k: Mock(close=lambda: None),
+    )
+
+    thread = make_thread(fake_logger)
 
     with qtbot.waitSignal(thread.result, timeout=1000) as blocker:
         thread.run()
@@ -35,34 +52,23 @@ def test_search_thread_success(qtbot, monkeypatch, mock_session_ctor, patch_sess
     assert blocker.args == [{"results": ["/a/b/c1", "/a/b/c2"]}]
 
 
-def test_search_thread_network_error(qtbot, monkeypatch, mock_session_ctor, fake_logger):
-    # Make search_data raise NetworkException
+def test_search_thread_network_error(
+    qtbot, monkeypatch, mock_session_ctor, fake_logger
+):
     monkeypatch.setattr(
         "ibridgesgui.threads.search_data",
-        lambda *a, **k: (_ for _ in ()).throw(NetworkException())
+        lambda *a, **k: (_ for _ in ()).throw(NetworkException()),
+    )
+    monkeypatch.setattr(
+        "ibridgesgui.threads.is_session_from_config",
+        lambda *_: True,
+    )
+    monkeypatch.setattr(
+        "ibridgesgui.threads.Session",
+        lambda *a, **k: Mock(close=lambda: None),
     )
 
-    # Make session validation always succeed
-    monkeypatch.setattr("ibridgesgui.threads.is_session_from_config", lambda *_: True)
-
-    # Fake Session object
-    class FakeSession:
-        def close(self): pass
-
-    monkeypatch.setattr("ibridgesgui.threads.Session", lambda *a, **k: FakeSession())
-
-    thread = SearchThread(
-        logger=fake_logger,
-        ienv_path=Path("/fake/env"),
-        search_path=Mock(),
-        path_pattern="*.txt",
-        meta_searches=[],
-        checksum="",
-        case_sensitive=False,
-        item_type="data_object",
-    )
-
-    # Ensure run() executes
+    thread = make_thread(fake_logger)
     thread.invalid_session = False
 
     with qtbot.waitSignal(thread.result) as blocker:
@@ -70,37 +76,28 @@ def test_search_thread_network_error(qtbot, monkeypatch, mock_session_ctor, fake
 
     assert "takes too long" in blocker.args[0]["error"]
 
-def test_search_thread_unexpected_error(qtbot, monkeypatch, mock_session_ctor, fake_logger):
-    # Make search_data raise a generic exception
+
+def test_search_thread_unexpected_error(
+    qtbot, monkeypatch, mock_session_ctor, fake_logger
+):
     monkeypatch.setattr(
         "ibridgesgui.threads.search_data",
-        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom"))
+        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom")),
+    )
+    monkeypatch.setattr(
+        "ibridgesgui.threads.is_session_from_config",
+        lambda *_: True,
+    )
+    monkeypatch.setattr(
+        "ibridgesgui.threads.Session",
+        lambda *a, **k: Mock(close=lambda: None),
     )
 
-    # Make session validation always succeed
-    monkeypatch.setattr("ibridgesgui.threads.is_session_from_config", lambda *_: True)
-
-    # Fake Session object
-    class FakeSession:
-        def close(self): pass
-
-    monkeypatch.setattr("ibridgesgui.threads.Session", lambda *a, **k: FakeSession())
-
-    thread = SearchThread(
-        logger=fake_logger,
-        ienv_path=Path("/fake/env"),
-        search_path=Mock(),
-        path_pattern="*.txt",
-        meta_searches=[],
-        checksum="",
-        case_sensitive=False,
-        item_type="data_object",
-    )
-
-    # Ensure run() executes
+    thread = make_thread(fake_logger)
     thread.invalid_session = False
 
     with qtbot.waitSignal(thread.result) as blocker:
         thread.run()
 
     assert "Unexpected error" in blocker.args[0]["error"]
+

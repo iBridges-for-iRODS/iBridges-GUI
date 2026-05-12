@@ -4,13 +4,27 @@ import pytest
 from unittest.mock import Mock
 
 
+# ---------------------------------------------------------------------------
+# Fake session
+# ---------------------------------------------------------------------------
+
 @pytest.fixture
 def fake_session():
     """A fake iRODS session object with the attributes the threads expect."""
     session = Mock()
-    session.irods_session = object()
+
+    # Real threads expect session.irods_session
+    inner = Mock()
+    inner.data_objects = Mock()
+    inner.collections = Mock()
+
+    session.irods_session = inner
     return session
 
+
+# ---------------------------------------------------------------------------
+# Patch Session.close() globally
+# ---------------------------------------------------------------------------
 
 @pytest.fixture(autouse=True)
 def patch_session_close(monkeypatch):
@@ -21,9 +35,13 @@ def patch_session_close(monkeypatch):
     monkeypatch.setattr(
         "ibridgesgui.threads.Session.close",
         fake_close,
-        raising=False,  # important: allows patching even if Session is later replaced
+        raising=False,
     )
 
+
+# ---------------------------------------------------------------------------
+# Patch Session(...) constructor
+# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_session_ctor(monkeypatch, fake_session):
@@ -36,19 +54,32 @@ def mock_session_ctor(monkeypatch, fake_session):
     return fake_session
 
 
+# ---------------------------------------------------------------------------
+# Fake IrodsPath factory
+# ---------------------------------------------------------------------------
+
 @pytest.fixture
 def fake_ipath():
-    """Return a function that creates a fake IrodsPath-like object."""
     def _make(path: str):
         obj = Mock()
-        obj.__str__ = lambda self=obj: path
+        obj.path = path
+        obj.name = path.split("/")[-1]
         obj.size = 5
+        obj.__str__ = lambda self=obj: path
         return obj
     return _make
 
 
+# ---------------------------------------------------------------------------
+# Fake logger
+# ---------------------------------------------------------------------------
+
 @pytest.fixture
 def fake_logger():
     """A logger mock for all threads."""
-    return Mock()
+    logger = Mock()
+    logger.info = Mock()
+    logger.warning = Mock()
+    logger.error = Mock()
+    return logger
 

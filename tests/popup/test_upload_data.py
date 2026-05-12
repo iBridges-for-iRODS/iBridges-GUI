@@ -2,23 +2,27 @@ import pytest
 from pathlib import Path
 from ibridgesgui.popup_widgets.upload_data import UploadData
 
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
 @pytest.fixture(autouse=True)
 def mock_prep(monkeypatch, tmp_path):
+    """Ensure prep_session_for_copy always succeeds."""
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.upload_data.prep_session_for_copy",
-        lambda *a, **k: tmp_path
+        lambda *a, **k: tmp_path,
     )
 
 
 @pytest.fixture
 def dialog(qtbot, monkeypatch, fake_irods_path, patch_env_path, dummy_ops):
-    # Patch upload() to return dummy ops
+    """Create and show the UploadData dialog with patched upload ops."""
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.upload_data.upload",
-        lambda *args, **kwargs: dummy_ops,
+        lambda *a, **k: dummy_ops,
     )
-
-    # Patch combine_operations() to return dummy ops
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.upload_data.combine_operations",
         lambda ops: dummy_ops,
@@ -30,21 +34,36 @@ def dialog(qtbot, monkeypatch, fake_irods_path, patch_env_path, dummy_ops):
     return d
 
 
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def err(dialog):
+    return dialog.error_label.text()
+
+def row(dialog, r, c):
+    return dialog.table.item(r, c).text()
+
+def metadata_button(dialog, row=0):
+    return dialog.table.cellWidget(row, 2).layout().itemAt(0).widget()
+
+
+# ---------------------------------------------------------------------------
+# Row management
+# ---------------------------------------------------------------------------
+
 def test_add_row(dialog):
     assert dialog.table.rowCount() == 0
 
     dialog.add_row("/tmp/file.txt", "meta.json")
 
     assert dialog.table.rowCount() == 1
-    assert dialog.table.item(0, 0).text() == "/tmp/file.txt"
-    assert dialog.table.item(0, 1).text() == "meta.json"
-
-    # metadata button exists
-    container = dialog.table.cellWidget(0, 2)
-    assert container is not None
+    assert row(dialog, 0, 0) == "/tmp/file.txt"
+    assert row(dialog, 0, 1) == "meta.json"
+    assert dialog.table.cellWidget(0, 2) is not None
 
 
-def test_delete_selected_rows(dialog, qtbot):
+def test_delete_selected_rows(dialog):
     dialog.add_row("/tmp/a", "")
     dialog.add_row("/tmp/b", "")
 
@@ -52,19 +71,22 @@ def test_delete_selected_rows(dialog, qtbot):
     dialog._delete_selected_rows()
 
     assert dialog.table.rowCount() == 1
-    assert dialog.table.item(0, 0).text() == "/tmp/b"
+    assert row(dialog, 0, 0) == "/tmp/b"
 
+
+# ---------------------------------------------------------------------------
+# Metadata toggle button
+# ---------------------------------------------------------------------------
 
 def test_toggle_metadata_button(dialog, monkeypatch, tmp_path):
     dialog.add_row("/tmp/a", "")
 
-    # Fake metadata validation
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.upload_data.validate_metadata",
-        lambda p: True
+        lambda p: True,
     )
 
-    btn = dialog.table.cellWidget(0, 2).layout().itemAt(0).widget()
+    btn = metadata_button(dialog)
 
     # First click → upload metadata
     meta_file = tmp_path / "meta.json"
@@ -72,7 +94,7 @@ def test_toggle_metadata_button(dialog, monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "PySide6.QtWidgets.QFileDialog.getOpenFileName",
-        lambda *a, **k: (str(meta_file), "")
+        lambda *a, **k: (str(meta_file), ""),
     )
 
     btn.click()
@@ -82,7 +104,12 @@ def test_toggle_metadata_button(dialog, monkeypatch, tmp_path):
     # Second click → clear metadata
     btn.click()
     assert btn.state == "upload"
-    assert dialog.table.item(0, 1).text() == ""
+    assert row(dialog, 0, 1) == ""
+
+
+# ---------------------------------------------------------------------------
+# File & folder selection
+# ---------------------------------------------------------------------------
 
 def test_select_files(dialog, monkeypatch, tmp_path):
     f1 = tmp_path / "a.txt"
@@ -92,14 +119,15 @@ def test_select_files(dialog, monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "PySide6.QtWidgets.QFileDialog.getOpenFileNames",
-        lambda *a, **k: ([str(f1), str(f2)], "")
+        lambda *a, **k: ([str(f1), str(f2)], ""),
     )
 
     dialog._select_files()
 
     assert dialog.table.rowCount() == 2
-    assert dialog.table.item(0, 0).text() == str(f1)
-    assert dialog.table.item(1, 0).text() == str(f2)
+    assert row(dialog, 0, 0) == str(f1)
+    assert row(dialog, 1, 0) == str(f2)
+
 
 def test_select_folder(dialog, monkeypatch, tmp_path):
     folder = tmp_path / "folder"
@@ -107,24 +135,28 @@ def test_select_folder(dialog, monkeypatch, tmp_path):
 
     monkeypatch.setattr(
         "PySide6.QtWidgets.QFileDialog.getExistingDirectory",
-        lambda *a, **k: str(folder)
+        lambda *a, **k: str(folder),
     )
 
     dialog._select_folder()
 
     assert dialog.table.rowCount() == 1
-    assert dialog.table.item(0, 0).text() == str(folder)
+    assert row(dialog, 0, 0) == str(folder)
+
+
+# ---------------------------------------------------------------------------
+# Collect upload params
+# ---------------------------------------------------------------------------
 
 def test_collect_upload_params_empty(dialog):
     dialog._collect_upload_params()
-    assert dialog.error_label.text() == "Please select a file or folder to upload."
+    assert err(dialog) == "Please select a file or folder to upload."
 
 
 def test_collect_upload_params_valid(dialog, monkeypatch):
     dialog.add_row("/tmp/a", "/tmp/meta.json")
 
     called = {}
-
     monkeypatch.setattr(dialog, "_start_upload", lambda data: called.setdefault("ok", data))
 
     dialog._collect_upload_params()
@@ -134,69 +166,75 @@ def test_collect_upload_params_valid(dialog, monkeypatch):
     assert called["ok"][0][1] == Path("/tmp/meta.json")
 
 
+# ---------------------------------------------------------------------------
+# Upload start
+# ---------------------------------------------------------------------------
+
 def test_start_upload_data_exists(dialog, monkeypatch, tmp_path):
     from ibridgesgui.popup_widgets.upload_data import DataObjectExistsError
 
     dialog.overwrite.setChecked(False)
 
-    # Mock prep_session_for_copy so it doesn't crash
-    monkeypatch.setattr(
-        "ibridgesgui.popup_widgets.upload_data.prep_session_for_copy",
-        lambda *a, **k: tmp_path
-    )
-
     def fake_upload(*a, **k):
         raise DataObjectExistsError()
-
-    monkeypatch.setattr(
-        "ibridgesgui.popup_widgets.upload_data.upload",
-        fake_upload
-    )
-
-    dialog._start_upload([(Path("/tmp/a"), None)])
-
-    assert dialog.error_label.text() == "Data already exists. Check 'overwrite' to overwrite."
-
-def test_start_upload_generic_error(dialog, monkeypatch):
-    def fake_upload(*a, **k):
-        raise Exception("boom")
 
     monkeypatch.setattr("ibridgesgui.popup_widgets.upload_data.upload", fake_upload)
 
     dialog._start_upload([(Path("/tmp/a"), None)])
 
-    assert "Could not start upload: boom" in dialog.error_label.text()
+    assert err(dialog) == "Data already exists. Check 'overwrite' to overwrite."
+
+
+def test_start_upload_generic_error(dialog, monkeypatch):
+    monkeypatch.setattr(
+        "ibridgesgui.popup_widgets.upload_data.upload",
+        lambda *a, **k: (_ for _ in ()).throw(Exception("boom")),
+    )
+
+    dialog._start_upload([(Path("/tmp/a"), None)])
+
+    assert "Could not start upload: boom" in err(dialog)
 
 
 class FakeOps:
     upload = []
     meta_upload = []
 
+
 def test_start_upload_no_ops(dialog, monkeypatch):
     monkeypatch.setattr(
         "ibridgesgui.popup_widgets.upload_data.combine_operations",
-        lambda ops: FakeOps()
+        lambda ops: FakeOps(),
     )
 
     dialog._start_upload([(Path("/tmp/a"), None)])
 
-    assert dialog.error_label.text() == "Data already present and up to date."
+    assert err(dialog) == "Data already present and up to date."
 
 
+# ---------------------------------------------------------------------------
+# Upload progress + finish
+# ---------------------------------------------------------------------------
 
 def test_upload_status(dialog):
     dialog._upload_status((100, 50, 3, 10, 1, "metadata ok"))
     assert dialog.progress_bar.value() == 50
-    assert "3 of 10 files; failed: 1. metadata ok" in dialog.error_label.text()
+    assert "3 of 10 files; failed: 1. metadata ok" in err(dialog)
+
 
 def test_upload_finished_success(dialog):
     dialog._upload_finished({"error": ""})
-    assert dialog.error_label.text() == "Upload finished."
+    assert err(dialog) == "Upload finished."
+
 
 def test_upload_finished_error(dialog):
     dialog._upload_finished({"error": "x"})
-    assert dialog.error_label.text() == "Errors occurred during upload. Consult the logs."
+    assert err(dialog) == "Errors occurred during upload. Consult the logs."
 
+
+# ---------------------------------------------------------------------------
+# UI behavior
+# ---------------------------------------------------------------------------
 
 def test_hide_button_calls_close(dialog):
     dialog.active_transfer = True
@@ -207,21 +245,7 @@ def test_hide_button_calls_close(dialog):
 def test_start_upload_sets_active_transfer(dialog, monkeypatch, tmp_path):
     dialog.add_row("/tmp/file.txt", "")
 
-    # Make prep_session_for_copy succeed
-    monkeypatch.setattr(
-        dialog, "session", object()
-    )
-    monkeypatch.setattr(
-        "ibridgesgui.popup_widgets.upload_data.prep_session_for_copy",
-        lambda *a, **k: tmp_path
-    )
-
-    # Force upload ops to exist
-    class Ops:
-        upload = ["file"]
-        meta_upload = []
-
-    # Patch ON THE INSTANCE, not the module
+    monkeypatch.setattr(dialog, "session", object())
     monkeypatch.setattr(dialog, "_enable_buttons", lambda *a, **k: None)
     monkeypatch.setattr(dialog, "transfer_thread", None)
     monkeypatch.setattr(dialog, "set_wait_cursor", lambda *a, **k: None)
@@ -230,11 +254,10 @@ def test_start_upload_sets_active_transfer(dialog, monkeypatch, tmp_path):
     monkeypatch.setattr(
         dialog,
         "_start_upload",
-        lambda data: setattr(dialog, "active_transfer", True)
+        lambda data: setattr(dialog, "active_transfer", True),
     )
 
     dialog._collect_upload_params()
-
     assert dialog.active_transfer is True
 
 

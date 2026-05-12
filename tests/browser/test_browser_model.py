@@ -1,16 +1,25 @@
 # tests/test_browser_model.py
+
 import pytest
-from unittest.mock import MagicMock
 from ibridges import IrodsPath
 from ibridgesgui.browsertab.browser_model import BrowserModel
+
 
 class DummySession:
     irods_session = True
 
+
 @pytest.fixture
 def model():
-    return BrowserModel(current_path=IrodsPath(DummySession(), "/tempZone/home/user"))
+    """BrowserModel with a simple IrodsPath."""
+    return BrowserModel(
+        current_path=IrodsPath(DummySession(), "/tempZone/home/user")
+    )
 
+
+# ---------------------------------------------------------------------------
+# set_path
+# ---------------------------------------------------------------------------
 
 def test_set_path_resets_state(model):
     old_path = model.current_path
@@ -29,11 +38,21 @@ def test_set_path_resets_state(model):
     assert model.preview_cache == {}
 
 
+# ---------------------------------------------------------------------------
+# path change detection
+# ---------------------------------------------------------------------------
+
 def test_path_changed(model):
-    assert model.has_path_changed() is True  # last_path is None initially
+    # last_path starts as None
+    assert model.has_path_changed() is True
+
     model.last_path = model.current_path
     assert model.has_path_changed() is False
 
+
+# ---------------------------------------------------------------------------
+# row selection
+# ---------------------------------------------------------------------------
 
 def test_on_row_clicked_updates_selection(model):
     model.on_row_clicked(3)
@@ -46,14 +65,23 @@ def test_on_row_clicked_updates_selection(model):
     assert model.current_selected_row == 5
 
 
+# ---------------------------------------------------------------------------
+# tab update logic
+# ---------------------------------------------------------------------------
+
 def test_needs_tab_update(model):
     model.last_path = model.current_path
     model.current_selected_row = 1
     model.last_selected_row = 1
     model.updated_info_tabs = ["metadata"]
 
+    # metadata already updated, same row → no update needed
     assert model.needs_tab_update("metadata") is False
-    assert model.needs_tab_update("permissions") is True  # not updated yet
 
+    # permissions not updated yet
+    assert model.needs_tab_update("permissions") is True
+
+    # row changed → metadata needs update again
     model.last_selected_row = 0
-    assert model.needs_tab_update("metadata") is True  # row changed
+    assert model.needs_tab_update("metadata") is True
+
