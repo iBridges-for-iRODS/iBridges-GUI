@@ -72,7 +72,7 @@ jobs:
             python -m pytest --cov=ibridgesgui --cov-report=xml --cov-report=term-missing --cov-fail-under=70 tests
 
       - name: Install coverage badge tool
-        run: pip install coverage-badge
+        run: pip install coverage-badge-py
       - name: Generate coverage badge
         run: coverage-badge -o coverage.svg -f
       - name: Commit coverage badge
