@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Tuple
 from ibridges import IrodsPath, Session, search_data, sync
 from ibridges.executor import Operations, _obj_get, _obj_put
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
-from PySide6.QtCore import QThread, Signal, QTimer
+from PySide6.QtCore import QThread, Signal
 from ibridgesgui.config import is_session_from_config
 
 
