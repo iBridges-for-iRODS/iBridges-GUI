@@ -140,24 +140,46 @@ class CheckConfig(UiDialogMixin, QtWidgets.QDialog, Ui_configCheck):
             json.dumps(env, sort_keys=True, indent=4, separators=(",", ": ")),
         )
 
+
     def check_env(self) -> None:
         """Validate the JSON in the text field."""
-        self.check_button.setEnabled(False)
-        self.check_button.blockSignals(True)
-        self.save_button.blockSignals(True)
-        self.new_button.blockSignals(True)
+    
+        if self._busy:
+            return
+        self._busy = True
+    
+        # Block signals on ALL interactive widgets
+        widgets = [
+            self.envbox,
+            self.new_button,
+            self.check_button,
+            self.save_button,
+            self.save_as_button,
+            self.close_button,
+        ]
+        for w in widgets:
+            w.blockSignals(True)
+            w.setEnabled(False)
+    
         self.error_label.clear()
-
-
+    
+        # Perform the validation
         try:
             msg = check_irods_config(json.loads(self.env_field.toPlainText()))
         except json.JSONDecodeError as err:
             msg = f"JSON decoding error: {err.msg} at position {err.pos}."
-
+    
         self.error_label.setText(msg)
-
-        # Re-enable after the event loop settles
-        QtCore.QTimer.singleShot(0, lambda: self.check_button.setEnabled(True))
+    
+        # Re-enable AFTER the event loop has flushed
+        def _reenable():
+            for w in widgets:
+                w.setEnabled(True)
+                w.blockSignals(False)
+            self._busy = False
+    
+        QtCore.QTimer.singleShot(1, _reenable)
+    
 
     def save_env(self) -> None:
         """Save the JSON to the currently selected file."""
