@@ -154,6 +154,7 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
 
     def _select_folder(self) -> None:
         """Open folder selector and add selected folder."""
+        self.error_label.clear()
         last_path = config_get_last_upload_path() or Path("~").expanduser()
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self, "Select Directory", dir=str(last_path)
