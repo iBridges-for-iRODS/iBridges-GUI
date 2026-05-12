@@ -128,7 +128,6 @@ class CheckConfig(UiDialogMixin, QtWidgets.QDialog, Ui_configCheck):
 
     def check_env(self) -> None:
         """Validate the JSON in the text field."""
-    
         if self._busy:
             return
         self._busy = True
@@ -136,17 +135,17 @@ class CheckConfig(UiDialogMixin, QtWidgets.QDialog, Ui_configCheck):
         for w in self._all_action_widgets():
             w.blockSignals(True)
             w.setEnabled(False)
-    
+
         self.error_label.clear()
-    
+
         # Perform the validation
         try:
             msg = check_irods_config(json.loads(self.env_field.toPlainText()))
         except json.JSONDecodeError as err:
             msg = f"JSON decoding error: {err.msg} at position {err.pos}."
-    
+
         self.error_label.setText(msg)
-    
+
         # Re-enable AFTER the event loop has flushed
         def _reenable():
             for w in self._all_action_widgets():
@@ -155,7 +154,7 @@ class CheckConfig(UiDialogMixin, QtWidgets.QDialog, Ui_configCheck):
             self._busy = False
 
         QtCore.QTimer.singleShot(1, _reenable)
-    
+
 
     def save_env(self) -> None:
         """Save the JSON to the currently selected file."""

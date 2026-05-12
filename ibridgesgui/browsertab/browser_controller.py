@@ -164,7 +164,7 @@ class BrowserController:
     def _fill_current_info_tab(self) -> None:
         if not self._validate_selection():
             return
-        
+
         row = self.ui.browser_table.currentRow()
         irods_path = self._item_path(row)
         tab_name = self.ui.info_tabs.currentWidget().objectName()

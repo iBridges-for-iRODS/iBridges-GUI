@@ -10,11 +10,10 @@ from PySide6 import QtCore, QtWidgets
 from ibridgesgui.config import (
     config_get_last_download_path,
     config_set_last_download_path,
-    get_last_ienv_path,
 )
+from ibridgesgui.gui_utils import prep_session_for_copy
 from ibridgesgui.popup_widgets.base import TransferDialogBase, UiDialogMixin
 from ibridgesgui.threads import TransferDataThread
-from ibridgesgui.gui_utils import prep_session_for_copy
 from ibridgesgui.ui_files.downloadData import Ui_downloadData
 
 

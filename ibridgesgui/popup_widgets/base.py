@@ -58,4 +58,3 @@ class TransferDialogBase(QtWidgets.QDialog):
         """Force the dialog out of active-transfer mode."""
         self.active_transfer = False
         self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-

@@ -12,9 +12,8 @@ from PySide6 import QtWidgets
 from ibridgesgui.config import (
     config_get_last_upload_path,
     config_set_last_upload_path,
-    get_last_ienv_path,
 )
-from ibridgesgui.gui_utils import combine_operations, validate_metadata, prep_session_for_copy
+from ibridgesgui.gui_utils import combine_operations, prep_session_for_copy, validate_metadata
 from ibridgesgui.popup_widgets.base import TransferDialogBase, UiDialogMixin
 from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.uploadData import Ui_uploadData
