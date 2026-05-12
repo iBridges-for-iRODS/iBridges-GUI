@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>What is iBridges-Gui</title>
+<title>What is iBridges GUI</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -32,15 +35,14 @@ ul.task-list li input[type="checkbox"] {
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-4bc2b4e356910e472f7d50d601e09124.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-61a0dc3788722c69be08a208a32bdf1b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,10 +81,6 @@ ul.task-list li input[type="checkbox"] {
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
-    <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    </a>
-  </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
@@ -108,6 +106,10 @@ ul.task-list li input[type="checkbox"] {
   <li class="nav-item">
     <a class="nav-link" href="../docs/developers.html"> 
 <span class="menu-text">Contributing to iBridges</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../docs/faq.html"> 
+<span class="menu-text">FAQ</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -145,7 +147,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">What is iBridges-Gui</h1>
+<h1 class="title">What is iBridges GUI</h1>
 </div>
 
 
@@ -162,7 +164,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><a href="https://github.com/chStaiger/iBridges-Gui">iBridges-Gui</a> is a graphical user interface to the python package <a href="https://github.com/UtrechtUniversity/iBridges">iBridges</a>, it provides users of <em>Windows, Linux and Mac</em> with a <em>graphical user interface</em> to interact with <strong>iRODS</strong> servers. The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing through iRODS collections, upload/download and synchronisation of data, manipulate iRODS metadata and search through data collections.</p>
+<p><a href="https://github.com/iBridges-for-iRODS/iBridges-GUI">iBridges-GUI</a> is a graphical user interface to the python package <a href="https://github.com/UtrechtUniversity/iBridges">iBridges</a>, it provides users of <em>Windows, Linux and Mac</em> with a <em>graphical user interface</em> to interact with <strong>iRODS</strong> servers. The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing through iRODS collections, upload/download and synchronisation of data, manipulate iRODS metadata and search through data collections.</p>
 <section id="current-features" class="level2">
 <h2 class="anchored" data-anchor-id="current-features">Current features</h2>
 <ul>
@@ -190,13 +192,13 @@ ul.task-list li input[type="checkbox"] {
 <section id="stable-version" class="level3">
 <h3 class="anchored" data-anchor-id="stable-version">Stable version</h3>
 <pre><code>pip install ibridges
-pip install git+https://github.com/chStaiger/iBridges-Gui.git@main</code></pre>
+pip install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@main</code></pre>
 </section>
 <section id="development-version" class="level3">
 <h3 class="anchored" data-anchor-id="development-version">Development version</h3>
 <pre><code>pip install ibridges
-pip install git+https://github.com/chStaiger/iBridges-Gui.git@develop</code></pre>
-<p>Start the application by calling <code>ibridges-gui</code> on your commandline.</p>
+pip install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@develop</code></pre>
+<p>Start the application by calling <code>ibridges gui</code> on your commandline.</p>
 </section>
 </section>
 <section id="authors" class="level2">
@@ -216,7 +218,7 @@ pip install git+https://github.com/chStaiger/iBridges-Gui.git@develop</code></pr
 </section>
 <section id="contributing" class="level2">
 <h2 class="anchored" data-anchor-id="contributing">Contributing</h2>
-<p>Our development is done on GitHub](https://github.com/chStaiger/iBridges-Gui). We are welcoming contributions by pull requests. You can also ask for new features/ideas in our issue tracker.</p>
+<p>Our development is done on GitHub](https://github.com/iBridges-for-iRODS/iBridges-GUI). We are welcoming contributions by pull requests. You can also ask for new features/ideas in our issue tracker.</p>
 </section>
 <section id="license" class="level2">
 <h2 class="anchored" data-anchor-id="license">License</h2>

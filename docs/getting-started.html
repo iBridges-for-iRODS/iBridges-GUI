@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>getting-started</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -32,15 +35,14 @@ ul.task-list li input[type="checkbox"] {
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-4bc2b4e356910e472f7d50d601e09124.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-61a0dc3788722c69be08a208a32bdf1b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,10 +81,6 @@ ul.task-list li input[type="checkbox"] {
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
-    <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    </a>
-  </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
@@ -109,6 +107,10 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="../docs/developers.html"> 
 <span class="menu-text">Contributing to iBridges</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../docs/faq.html"> 
+<span class="menu-text">FAQ</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -125,11 +127,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#getting-started-with-ibridges-gui" id="toc-getting-started-with-ibridges-gui" class="nav-link active" data-scroll-target="#getting-started-with-ibridges-gui">Getting started with iBridges-Gui</a>
+  <li><a href="#getting-started-with-ibridges-gui" id="toc-getting-started-with-ibridges-gui" class="nav-link active" data-scroll-target="#getting-started-with-ibridges-gui">Getting started with iBridges GUI</a>
   <ul class="collapse">
-  <li><a href="#install-ibridges-gui" id="toc-install-ibridges-gui" class="nav-link" data-scroll-target="#install-ibridges-gui">Install iBridges-gui</a></li>
+  <li><a href="#install-ibridges-gui" id="toc-install-ibridges-gui" class="nav-link" data-scroll-target="#install-ibridges-gui">Install iBridges GUI</a></li>
   <li><a href="#start-the-program" id="toc-start-the-program" class="nav-link" data-scroll-target="#start-the-program">Start the program</a></li>
-  <li><a href="#configuring-ibridges-gui" id="toc-configuring-ibridges-gui" class="nav-link" data-scroll-target="#configuring-ibridges-gui">Configuring iBridges-Gui</a>
+  <li><a href="#configuring-ibridges-gui" id="toc-configuring-ibridges-gui" class="nav-link" data-scroll-target="#configuring-ibridges-gui">Configuring iBridges GUI</a>
   <ul class="collapse">
   <li><a href="#installing-irods-server-templates" id="toc-installing-irods-server-templates" class="nav-link" data-scroll-target="#installing-irods-server-templates">Installing iRODS server templates</a></li>
   <li><a href="#creating-an-irods-configuration-file" id="toc-creating-an-irods-configuration-file" class="nav-link" data-scroll-target="#creating-an-irods-configuration-file">Creating an iRODS configuration file</a></li>
@@ -151,17 +153,17 @@ ul.task-list li input[type="checkbox"] {
 
 
 <section id="getting-started-with-ibridges-gui" class="level1">
-<h1>Getting started with iBridges-Gui</h1>
+<h1>Getting started with iBridges GUI</h1>
 <section id="install-ibridges-gui" class="level2">
-<h2 class="anchored" data-anchor-id="install-ibridges-gui">Install iBridges-gui</h2>
+<h2 class="anchored" data-anchor-id="install-ibridges-gui">Install iBridges GUI</h2>
 <pre><code>pip install ibridgesgui</code></pre>
 </section>
 <section id="start-the-program" class="level2">
 <h2 class="anchored" data-anchor-id="start-the-program">Start the program</h2>
-<p>Please start <strong>iBridges-Gui</strong> by typing <code>ibridges gui</code> on your terminal and hit enter.</p>
+<p>Please start <strong>iBridges GUI</strong> by typing <code>ibridges gui</code> on your terminal and hit enter.</p>
 </section>
 <section id="configuring-ibridges-gui" class="level2">
-<h2 class="anchored" data-anchor-id="configuring-ibridges-gui">Configuring iBridges-Gui</h2>
+<h2 class="anchored" data-anchor-id="configuring-ibridges-gui">Configuring iBridges GUI</h2>
 <p>To connect to the server you need a configuration file, a so-called <code>irods_environment.json</code>. You can create one for yourself using templates, editing default settings we provide for you or simply create such a file.</p>
 <section id="installing-irods-server-templates" class="level3">
 <h3 class="anchored" data-anchor-id="installing-irods-server-templates">Installing iRODS server templates</h3>
@@ -227,7 +229,7 @@ usage: build_script.py [-h] [--debug_exe] [--rem_venv]
                        [--code_folder CODE_FOLDER] [--ui_folder UI_FOLDER]
                        [--icons_folder ICONS_FOLDER] [--venv VENV]
 
-iBridges-Gui exe creator.
+iBridges-GUI exe creator.
 
 options:
   -h, --help            show this help message and exit
