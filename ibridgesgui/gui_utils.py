@@ -157,11 +157,22 @@ def get_irods_item(irods_path: IrodsPath):
 
 def prep_session_for_copy(session, error_label) -> Optional[Path]:
     """Return a save path or set an error message."""
+    last_env_path = Path.home() / ".irods" / get_last_ienv_path()
+    session_env_path = session.irods_session.env_file
+
+    if last_env_path != session_env_path:
+        error_label.setText(
+            "A different iRODS configuration was loaded outside this app. "
+            "Restart the session to continue."
+        )
+        return None
+
     if is_session_from_config(session):
-        return Path.home() / ".irods" / get_last_ienv_path()
+        return last_env_path
 
     error_label.setText(
-        "The ibridges config changed during the session. Please reset or restart the session."
+        "The iRODS session no longer matches the saved configuration. "
+        "Please reset or restart the session."
     )
     return None
 

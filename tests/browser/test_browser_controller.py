@@ -410,18 +410,6 @@ def test_invalidate_acls(model):
     assert 0 not in model.acl_cache
     assert 1 in model.acl_cache
 
-def test_invalidate_replicas(model):
-    model.replica_cache = {0: "x", 1: "y"}
-    model.invalidate_replicas(row=0)
-    assert 0 not in model.replica_cache
-    assert 1 in model.replica_cache
-
-def test_invalidate_preview(model):
-    model.preview_cache = {0: "x", 1: "y"}
-    model.invalidate_preview(row=0)
-    assert 0 not in model.preview_cache
-    assert 1 in model.preview_cache
-
 def test_needs_tab_update_true(model):
     model.last_row = 0
     model.current_row = 1

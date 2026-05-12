@@ -10,8 +10,8 @@ from PySide6 import QtCore, QtWidgets
 from ibridgesgui.config import (
     config_get_last_download_path,
     config_set_last_download_path,
-    get_last_ienv_path,
 )
+from ibridgesgui.gui_utils import prep_session_for_copy
 from ibridgesgui.popup_widgets.base import TransferDialogBase, UiDialogMixin
 from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.downloadData import Ui_downloadData
@@ -36,7 +36,7 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
         self.logger = logger
         self.session = session
         self.irods_path = irods_path
-        self.download_thread = None
+        self.transfer_thread = None
 
         self.source_browser.append(self._irods_tree())
 
@@ -96,7 +96,10 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
         self.set_wait_cursor()
         self.error_label.setText(f"Downloading to {local_path} ...")
 
-        env_path = Path(get_last_ienv_path())
+        env_path = prep_session_for_copy(self.session, self.error_label)
+        if not env_path:
+            self.force_unlock()
+            return
 
         try:
             ops = download(
@@ -115,23 +118,23 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
             self._enable_buttons(False)
             self.active_transfer = True
 
-            self.download_thread = TransferDataThread(
+            self.transfer_thread = TransferDataThread(
                 env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
             )
-            self.download_thread.result.connect(self._download_finished)
-            self.download_thread.finished.connect(self._finish_download)
-            self.download_thread.current_progress.connect(self._download_status)
-            self.download_thread.start()
+            self.transfer_thread.result.connect(self._download_finished)
+            self.transfer_thread.finished.connect(self._finish_download)
+            self.transfer_thread.current_progress.connect(self._download_status)
+            self.transfer_thread.start()
 
         except Exception as err:  # noqa: BLE001
             self.error_label.setText(f"Could not start download: {err}")
-            self.set_arrow_cursor()
+            self.force_unlock()
             self._enable_buttons(True)
 
     def _finish_download(self) -> None:
         """Cleanup after download thread finishes."""
         self.set_arrow_cursor()
-        self.download_thread = None
+        self.transfer_thread = None
 
     def _download_status(self, state) -> None:
         """Update progress bar and status text."""

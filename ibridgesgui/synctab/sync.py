@@ -27,27 +27,6 @@ class Sync(QtWidgets.QWidget, Ui_tabSync):
         # Create controller
         self.controller = SyncController(self, session, app_name)
 
-
-    # -------------------------
-    # UI helper methods
-    # -------------------------
-
-    def set_busy_cursor(self):
-        """Set cursor to busy."""
-        self.setCursor(QCursor(Qt.WaitCursor))
-
-    def set_normal_cursor(self):
-        """Set cursor to normal."""
-        self.setCursor(QCursor(Qt.ArrowCursor))
-
-    def set_buttons_enabled(self, enabled: bool):
-        """Enable or disable buttons."""
-        self.local_to_irods_button.setEnabled(enabled)
-        self.irods_to_local_button.setEnabled(enabled)
-        self.create_coll_button.setEnabled(enabled)
-        self.create_dir_button.setEnabled(enabled)
-        self.sync_button.setEnabled(enabled)
-
     def show_sync_button(self):
         """Show sync button."""
         self.sync_button.show()

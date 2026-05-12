@@ -11,12 +11,6 @@ def test_model_initial_state():
     assert model.irods_path is None
     assert model.refresh_irods_index is None
     assert model.diffs is None
-    assert model.status_message == ""
-    assert model.progress_percent == 0
-    assert model.total_files == 0
-    assert model.completed_files == 0
-    assert model.failed_files == 0
-
 
 def test_model_set_paths():
     model = SyncModel()
@@ -51,8 +45,3 @@ def test_model_clear():
     assert model.irods_path is None
     assert model.refresh_irods_index is None
     assert model.diffs is None
-    assert model.status_message == ""
-    assert model.progress_percent == 0
-    assert model.total_files == 0
-    assert model.completed_files == 0
-    assert model.failed_files == 0

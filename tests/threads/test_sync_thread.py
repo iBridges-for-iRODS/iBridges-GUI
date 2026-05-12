@@ -6,6 +6,15 @@ import errno
 
 def test_sync_thread_success(qtbot, monkeypatch, mock_session_ctor, patch_session_close, fake_logger):
     monkeypatch.setattr("ibridgesgui.threads.sync", lambda *a, **k: {"dry_run": True})
+    # Make session validation always succeed
+    monkeypatch.setattr("ibridgesgui.threads.is_session_from_config", lambda *_: True)
+
+    # Fake Session object
+    class FakeSession:
+        def close(self): pass
+
+    monkeypatch.setattr("ibridgesgui.threads.Session", lambda *a, **k: FakeSession())
+
 
     thread = SyncThread(
         ienv_path=Path("/fake/env"),
@@ -26,6 +35,16 @@ def test_sync_thread_permission_error(qtbot, monkeypatch, mock_session_ctor, fak
 
     monkeypatch.setattr("ibridgesgui.threads.sync", raise_perm)
 
+    # Make session validation always succeed
+    monkeypatch.setattr("ibridgesgui.threads.is_session_from_config", lambda *_: True)
+
+    # Fake Session object
+    class FakeSession:
+        def close(self): pass
+
+    monkeypatch.setattr("ibridgesgui.threads.Session", lambda *a, **k: FakeSession())
+
+
     thread = SyncThread(
         ienv_path=Path("/fake/env"),
         logger=fake_logger,
@@ -44,6 +63,16 @@ def test_sync_thread_generic_error(qtbot, monkeypatch, mock_session_ctor, fake_l
         "ibridgesgui.threads.sync",
         lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom"))
     )
+
+    # Make session validation always succeed
+    monkeypatch.setattr("ibridgesgui.threads.is_session_from_config", lambda *_: True)
+
+    # Fake Session object
+    class FakeSession:
+        def close(self): pass
+
+    monkeypatch.setattr("ibridgesgui.threads.Session", lambda *a, **k: FakeSession())
+
 
     thread = SyncThread(
         ienv_path=Path("/fake/env"),

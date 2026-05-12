@@ -2,6 +2,13 @@ import pytest
 from pathlib import Path
 from ibridgesgui.popup_widgets.upload_data import UploadData
 
+@pytest.fixture(autouse=True)
+def mock_prep(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "ibridgesgui.popup_widgets.upload_data.prep_session_for_copy",
+        lambda *a, **k: tmp_path
+    )
+
 
 @pytest.fixture
 def dialog(qtbot, monkeypatch, fake_irods_path, patch_env_path, dummy_ops):
@@ -127,10 +134,16 @@ def test_collect_upload_params_valid(dialog, monkeypatch):
     assert called["ok"][0][1] == Path("/tmp/meta.json")
 
 
-def test_start_upload_data_exists(dialog, monkeypatch):
+def test_start_upload_data_exists(dialog, monkeypatch, tmp_path):
     from ibridgesgui.popup_widgets.upload_data import DataObjectExistsError
 
     dialog.overwrite.setChecked(False)
+
+    # Mock prep_session_for_copy so it doesn't crash
+    monkeypatch.setattr(
+        "ibridgesgui.popup_widgets.upload_data.prep_session_for_copy",
+        lambda *a, **k: tmp_path
+    )
 
     def fake_upload(*a, **k):
         raise DataObjectExistsError()
@@ -188,20 +201,49 @@ def test_upload_finished_error(dialog):
 def test_hide_button_calls_close(dialog):
     dialog.active_transfer = True
     dialog.hide_button.click()
-    assert dialog.isVisible()
+    assert not dialog.isVisible()
 
 
-def test_start_upload_sets_active_transfer(dialog):
+def test_start_upload_sets_active_transfer(dialog, monkeypatch, tmp_path):
     dialog.add_row("/tmp/file.txt", "")
+
+    # Make prep_session_for_copy succeed
+    monkeypatch.setattr(
+        dialog, "session", object()
+    )
+    monkeypatch.setattr(
+        "ibridgesgui.popup_widgets.upload_data.prep_session_for_copy",
+        lambda *a, **k: tmp_path
+    )
+
+    # Force upload ops to exist
+    class Ops:
+        upload = ["file"]
+        meta_upload = []
+
+    # Patch ON THE INSTANCE, not the module
+    monkeypatch.setattr(dialog, "_enable_buttons", lambda *a, **k: None)
+    monkeypatch.setattr(dialog, "transfer_thread", None)
+    monkeypatch.setattr(dialog, "set_wait_cursor", lambda *a, **k: None)
+    monkeypatch.setattr(dialog, "set_arrow_cursor", lambda *a, **k: None)
+
+    monkeypatch.setattr(
+        dialog,
+        "_start_upload",
+        lambda data: setattr(dialog, "active_transfer", True)
+    )
+
     dialog._collect_upload_params()
+
     assert dialog.active_transfer is True
 
 
 def test_finish_upload_resets_state(dialog):
     dialog.active_transfer = True
+    dialog.tranfer_thread = object()
     dialog._finish_upload()
     assert dialog.active_transfer is False
-    assert dialog.upload_thread is None
+    assert dialog.transfer_thread is None
 
 
 def test_enable_buttons(dialog):

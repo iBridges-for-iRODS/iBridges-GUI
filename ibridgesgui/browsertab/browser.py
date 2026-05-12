@@ -34,7 +34,8 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.no_meta_label.clear()
 
         populate_table(self.meta_table, len(data), data)
-        if len(data) == 0:
+        current_tab = self.info_tabs.currentWidget().objectName()
+        if current_tab == "metadata" and  len(data) == 0:
             self.no_meta_label.setText(f"Metadata for {irods_path} is empty.")
         self.meta_table.resizeColumnsToContents()
 
@@ -75,6 +76,10 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.meta_table.setRowCount(0)
         self.replica_table.setRowCount(0)
         self.preview_browser.clear()
+        self.no_meta_label.clear()
+
+    def on_tab_changed(self):
+        """Clear the metadata label when switching tabs."""
         self.no_meta_label.clear()
 
     def load_metadata_item(self, index):

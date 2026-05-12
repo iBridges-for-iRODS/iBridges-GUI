@@ -26,10 +26,6 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
 
         self.clear()
 
-    # ----------------------------------------------------------------------
-    # Tree initialization
-    # ----------------------------------------------------------------------
-
     def init_tree(self):
         """Draw the first level of the iRODS filesystem."""
         self.setRowCount(0)
@@ -45,9 +41,6 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
         root_node = root_item.child(root_item.rowCount() - 1)
         root_node.appendRow([QtGui.QStandardItem()])  # dummy
 
-    # ----------------------------------------------------------------------
-    # Node creation helpers
-    # ----------------------------------------------------------------------
 
     def _tree_row_from_irods_item(self, item, parent_id, level, display_path=False):
         icon_provider = QtWidgets.QFileIconProvider()
@@ -73,9 +66,6 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
             QtGui.QStandardItem(item.path),
         ]
 
-    # ----------------------------------------------------------------------
-    # Lazy loading
-    # ----------------------------------------------------------------------
 
     def refresh_subtree(self, index: QtCore.QModelIndex):
         """Refresh the subtree under the given index."""
@@ -112,9 +102,6 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
             if isinstance(item, irods.collection.iRODSCollection):
                 new_node.appendRow([QtGui.QStandardItem()])  # dummy
 
-    # ----------------------------------------------------------------------
-    # Path lookup API (new)
-    # ----------------------------------------------------------------------
 
     def index_from_irods_path(self, target_path: IrodsPath):
         """Return the QModelIndex corresponding to an IrodsPath."""
@@ -142,10 +129,6 @@ class IrodsTreeModel(QtGui.QStandardItemModel):
                 return result
 
         return QtCore.QModelIndex()
-
-    # ----------------------------------------------------------------------
-    # Convenience
-    # ----------------------------------------------------------------------
 
     def irods_path_from_tree_index(self, model_index):
         """Convert a tree index to an IrodsPath."""
