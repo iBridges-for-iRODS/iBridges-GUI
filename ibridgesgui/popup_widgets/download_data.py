@@ -116,11 +116,6 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
                 self.set_arrow_cursor()
                 return
 
-            env_path = prep_session_for_copy(self.session, self.error_label)
-
-            if not env_path:
-                return
-
             self._enable_buttons(False)
             self.active_transfer = True
 
