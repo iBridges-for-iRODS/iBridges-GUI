@@ -1,9 +1,10 @@
 # Local additions
-.idea
-irods-basicGUI/logs/*
-irods-iBridgesGui.spec
 *DS_Store
 ibridgesgui/_version.py
+# Vim swap files
+*.swp
+*.swo
+*.swx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

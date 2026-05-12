@@ -11,6 +11,7 @@
 
 [![Python package](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/linter.yml/badge.svg)](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/linter.yml)
 [![Quarto Publish](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/publish.yml/badge.svg)](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/publish.yml)
+![Coverage](coverage.svg)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12583957.svg)](https://doi.org/10.5281/zenodo.17139123)
 
 
@@ -76,8 +77,8 @@ Please note, that this feature is still in experimental state.
 
 ### Prebuilt executables
 Go to the [Releases page](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases). In the latest releases you will find three zip-files, these contain the prebuilt application.
-Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file `ibridges_gui.[exe, sh]`
-For Windows simply click on the exe-file, for Mac and Linux open the file with a shell `bash ./ibridges_gui.sh`.
+Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file `ibridges_gui.[exe, bin]`
+For Windows simply click on the exe-file, for Mac and Linux open the file with a shell `bash ./ibridges_gui.bin`.
 
 
 ### Building Executables
@@ -109,7 +110,7 @@ options:
 This will create a virtual environment `venv` in your iBridges folder. Next to that you will find a new folder `build` and `ibridgesgui_dist`. The executable can be found and started like this for Mac and Linux:
 
 ```
-./output/ibridgesgui/ibridges_gui.bin
+./ibridgesgui_dist/ibridgesgui/ibridges_gui.bin
 ```
 
 For Windows simply click on the file `output/ibridgesgui/ibridges_gui.exe`.

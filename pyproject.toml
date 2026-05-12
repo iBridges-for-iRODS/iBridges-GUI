@@ -23,10 +23,10 @@ classifiers = [
 
 dependencies = [
     "PySide6>=6.8.1",
-
-    "ibridges>=2.0.0, <2.1",
+    "ibridges>=2.1.0, <2.2",
     "setproctitle==1.3.7",
     "importlib-resources;python_version<='3.10'",
+    "jsonschema",
 ]
 
 dynamic = ["version"]
@@ -42,6 +42,8 @@ test = [
     "pytest-cov",
     "ruff",
     "mypy",
+    "pytest-qt",
+    "PySide6-Essentials",
 ]
 
 deploy = [
@@ -91,3 +93,22 @@ exclude = ["_version.py", "ui_files"]
 line-length = 100
 lint.select = ["D", "E", "F", "W", "I", "N"]
 lint.ignore = ["D203", "D213"]
+
+[tool.coverage.run]
+omit = [
+    "ibridgesgui/ui_files/*",
+    "ibridgesgui/welcome.py",
+    "ibridgesgui/sync.py",
+    "ibridgesgui/browser.py",
+    "_version.py",
+    "ibridgesgui/synctab/sync.py",
+    "ibridgesgui/browsertab/browser.py",
+    "ibridgesgui/searchtab/search.py",
+]
+source = ["ibridgesgui"]
+
+[tool.coverage.report]
+omit = [
+    "ibridgesgui/ui_files/*",
+]
+
