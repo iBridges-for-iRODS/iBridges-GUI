@@ -57,18 +57,3 @@ def test_needs_tab_update(model):
 
     model.last_selected_row = 0
     assert model.needs_tab_update("metadata") is True  # row changed
-
-
-def test_caching(model):
-    model.cache_metadata(1, {"a": 1})
-    assert model.get_cached_metadata(1) == {"a": 1}
-
-    model.cache_acls(2, ["acl"])
-    assert model.get_cached_acls(2) == ["acl"]
-
-    model.cache_replicas(3, ["rep"])
-    assert model.get_cached_replicas(3) == ["rep"]
-
-    model.cache_preview(4, "preview")
-    assert model.get_cached_preview(4) == "preview"
-

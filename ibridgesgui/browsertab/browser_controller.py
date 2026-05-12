@@ -49,6 +49,7 @@ class BrowserController:
         self.ui.browser_table.doubleClicked.connect(self._open_selected_path)
         self.ui.browser_table.clicked.connect(self._on_row_clicked)
         self.ui.info_tabs.currentChanged.connect(self._fill_current_info_tab)
+        self.ui.info_tabs.currentChanged.connect(self.ui.on_tab_changed)
 
         # metadata
         self.ui.meta_table.clicked.connect(self.ui.load_metadata_item)
@@ -163,7 +164,7 @@ class BrowserController:
     def _fill_current_info_tab(self) -> None:
         if not self._validate_selection():
             return
-
+        
         row = self.ui.browser_table.currentRow()
         irods_path = self._item_path(row)
         tab_name = self.ui.info_tabs.currentWidget().objectName()

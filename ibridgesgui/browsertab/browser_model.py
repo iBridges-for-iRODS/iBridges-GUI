@@ -63,10 +63,6 @@ class BrowserModel:
         self.current_selected_row = row
         self.updated_info_tabs.clear()
 
-    def has_selection(self) -> bool:
-        """Return True if a row is currently selected."""
-        return self.current_selected_row >= 0
-
     def needs_tab_update(self, tab_name: str) -> bool:
         """Return True if the given tab needs to be refreshed."""
         if self.has_path_changed():
@@ -98,16 +94,6 @@ class BrowserModel:
         self.acl_cache.pop(row, None)
         self.updated_info_tabs.discard("permissions")
 
-    def invalidate_replicas(self, row: int) -> None:
-        """Discard replicas info."""
-        self.replica_cache.pop(row, None)
-        self.updated_info_tabs.discard("replicas")
-
-    def invalidate_preview(self, row: int) -> None:
-        """Discard preview info."""
-        self.preview_cache.pop(row, None)
-        self.updated_info_tabs.discard("preview")
-
     # Generic helpers
 
     def _cache_set(self, cache: Dict[int, Any], row: int, data: Any) -> None:
@@ -116,42 +102,18 @@ class BrowserModel:
     def _cache_get(self, cache: Dict[int, Any], row: int) -> Optional[Any]:
         return cache.get(row)
 
-    # Metadata cache
-
     def cache_metadata(self, row: int, data: Any) -> None:
         """Cache metadata info."""
         self._cache_set(self.metadata_cache, row, data)
-
-    def get_cached_metadata(self, row: int) -> Optional[Any]:
-        """Retrieve cahced metadata info."""
-        return self._cache_get(self.metadata_cache, row)
-
-    # ACL cache
 
     def cache_acls(self, row: int, data: Any) -> None:
         """Cache acl info."""
         self._cache_set(self.acl_cache, row, data)
 
-    def get_cached_acls(self, row: int) -> Optional[Any]:
-        """Retrieve cached acl info."""
-        return self._cache_get(self.acl_cache, row)
-
-    # Replica cache
-
     def cache_replicas(self, row: int, data: Any) -> None:
         """Cache replicas info."""
         self._cache_set(self.replica_cache, row, data)
 
-    def get_cached_replicas(self, row: int) -> Optional[Any]:
-        """Retrieve cached replicas info."""
-        return self._cache_get(self.replica_cache, row)
-
-    # Preview cache
-
     def cache_preview(self, row: int, data: Any) -> None:
         """Cache preview info."""
         self._cache_set(self.preview_cache, row, data)
-
-    def get_cached_preview(self, row: int) -> Optional[Any]:
-        """Retrieve cached preview info."""
-        return self._cache_get(self.preview_cache, row)
