@@ -71,10 +71,10 @@ jobs:
         run: |
             python -m pytest --cov=ibridgesgui --cov-report=xml --cov-report=term-missing --cov-fail-under=70 tests
 
-      - name: Install coverage badge tool
-        run: pip install coverage-badge-py
+      - name: Install badge generator
+        run: pip install genbadge[coverage]
       - name: Generate coverage badge
-        run: coverage-badge -o coverage.svg -f
+        run: genbadge coverage -i coverage.xml -o coverage.svg
       - name: Commit coverage badge
         if: github.event_name == 'push'
         run: |
