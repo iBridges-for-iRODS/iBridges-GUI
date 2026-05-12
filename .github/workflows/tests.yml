@@ -1,7 +1,12 @@
 name: Tests
 
 on:
+  push:
+    branches: [main, develop]
   pull_request:
+
+permissions:
+  contents: write
 
 jobs:
   build:
