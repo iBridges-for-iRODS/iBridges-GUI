@@ -2,66 +2,48 @@
 
 import pytest
 from unittest.mock import MagicMock
-from PySide6 import QtWidgets
 from PySide6.QtWidgets import QApplication
 from ibridges import IrodsPath
+
 
 # ---------------------------------------------------------
 # Ensure a QApplication exists (required for pytest-qt)
 # ---------------------------------------------------------
 @pytest.fixture(scope="session", autouse=True)
 def qapp():
+    """Ensure a single QApplication instance for all GUI tests."""
     app = QApplication.instance()
     if app is None:
         app = QApplication([])
     return app
 
+
 # ---------------------------------------------------------
-# Your existing fake_view fixture
+# Minimal fake iBridges session for IrodsPath
 # ---------------------------------------------------------
-@pytest.fixture
-def fake_view(qtbot):
-    """Creates a minimal fake view for the synctab."""
-
-    class FakeView(QtWidgets.QWidget):
-        def __init__(self):
-            super().__init__()
-            self.local_fs_tree = MagicMock()
-            self.irods_tree = MagicMock()
-            self.local_to_irods_button = MagicMock()
-            self.irods_to_local_button = MagicMock()
-            self.create_coll_button = MagicMock()
-            self.create_dir_button = MagicMock()
-            self.sync_button = MagicMock()
-            self.error_label = MagicMock()
-            self.progress_bar = MagicMock()
-            self.diff_table = MagicMock()
-            self.setCursor = MagicMock()
-
-    view = FakeView()
-    qtbot.addWidget(view)
-    return view
-
-class DummyCollections:
+class _FakeCollections:
     def exists(self, path: str) -> bool:
-        return True   # pretend all collections exist
+        return True
 
 
-class DummyIrodsSession:
+class _FakeIrodsSession:
     def __init__(self):
-        self.collections = DummyCollections()
+        self.collections = _FakeCollections()
 
 
-class DummySession:
+class _FakeSessionWrapper:
+    """Matches the structure expected by IrodsPath."""
     def __init__(self):
-        self.irods_session = DummyIrodsSession()
+        self.irods_session = _FakeIrodsSession()
 
 
-def make_path(path: str) -> IrodsPath:
-    return IrodsPath(DummySession(), path)
+def _make_irods_path(path: str) -> IrodsPath:
+    """Create an IrodsPath with a minimal fake session."""
+    return IrodsPath(_FakeSessionWrapper(), path)
 
 
 @pytest.fixture
 def make_irods_path():
-    return make_path
+    """Factory fixture to create fake IrodsPath objects."""
+    return _make_irods_path
 
