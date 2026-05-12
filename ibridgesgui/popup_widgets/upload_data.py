@@ -41,7 +41,7 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
         self.logger = logger
         self.session = session
         self.irods_path = irods_path
-        self.upload_thread: Optional[TransferDataThread] = None
+        self.transfer_thread: Optional[TransferDataThread] = None
         self.active_transfer = False
 
         self.destination_label.setText(str(irods_path))
@@ -217,12 +217,12 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
             self._enable_buttons(False)
             self.active_transfer = True
 
-            self.upload_thread = TransferDataThread(
+            self.transfer_thread = TransferDataThread(
                 env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
             )
-            self.upload_thread.result.connect(self._upload_finished)
-            self.upload_thread.current_progress.connect(self._upload_status)
-            self.upload_thread.start()
+            self.transfer_thread.result.connect(self._upload_finished)
+            self.transfer_thread.current_progress.connect(self._upload_status)
+            self.transfer_thread.start()
 
         except DataObjectExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
@@ -237,7 +237,7 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
         """Cleanup after upload thread finishes."""
         self.active_transfer = False
         self.set_arrow_cursor()
-        self.upload_thread = None
+        self.transfer_thread = None
 
     def _upload_status(self, state) -> None:
         """Update progress bar and status text."""

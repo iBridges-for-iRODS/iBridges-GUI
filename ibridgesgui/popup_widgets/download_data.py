@@ -37,7 +37,7 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
         self.logger = logger
         self.session = session
         self.irods_path = irods_path
-        self.download_thread = None
+        self.transfer_thread = None
 
         self.source_browser.append(self._irods_tree())
 
@@ -123,13 +123,13 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
             self._enable_buttons(False)
             self.active_transfer = True
 
-            self.download_thread = TransferDataThread(
+            self.transfer_thread = TransferDataThread(
                 env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
             )
-            self.download_thread.result.connect(self._download_finished)
-            self.download_thread.finished.connect(self._finish_download)
-            self.download_thread.current_progress.connect(self._download_status)
-            self.download_thread.start()
+            self.transfer_thread.result.connect(self._download_finished)
+            self.transfer_thread.finished.connect(self._finish_download)
+            self.transfer_thread.current_progress.connect(self._download_status)
+            self.transfer_thread.start()
 
         except Exception as err:  # noqa: BLE001
             self.error_label.setText(f"Could not start download: {err}")
@@ -139,7 +139,7 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
     def _finish_download(self) -> None:
         """Cleanup after download thread finishes."""
         self.set_arrow_cursor()
-        self.download_thread = None
+        self.transfer_thread = None
 
     def _download_status(self, state) -> None:
         """Update progress bar and status text."""
