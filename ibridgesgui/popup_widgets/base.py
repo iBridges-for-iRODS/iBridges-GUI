@@ -50,3 +50,9 @@ class TransferDialogBase(QtWidgets.QDialog):
     def set_arrow_cursor(self) -> None:
         """Restore the normal cursor."""
         self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+
+    def force_unlock(self) -> None:
+        """Force the dialog out of active-transfer mode."""
+        self.active_transfer = False
+        self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+

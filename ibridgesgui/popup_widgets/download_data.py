@@ -14,6 +14,7 @@ from ibridgesgui.config import (
 )
 from ibridgesgui.popup_widgets.base import TransferDialogBase, UiDialogMixin
 from ibridgesgui.threads import TransferDataThread
+from ibridgesgui.gui_utils import prep_session_for_copy
 from ibridgesgui.ui_files.downloadData import Ui_downloadData
 
 
@@ -96,7 +97,9 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
         self.set_wait_cursor()
         self.error_label.setText(f"Downloading to {local_path} ...")
 
-        env_path = Path(get_last_ienv_path())
+        env_path = prep_session_for_copy(self.session, self.error_label)
+        if not env_path:                                                              self.force_unlock()
+            return
 
         try:
             ops = download(
@@ -112,6 +115,11 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
                 self.set_arrow_cursor()
                 return
 
+            env_path = prep_session_for_copy(self.session, self.error_label)
+
+            if not env_path:
+                return
+
             self._enable_buttons(False)
             self.active_transfer = True
 
@@ -125,7 +133,7 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
 
         except Exception as err:  # noqa: BLE001
             self.error_label.setText(f"Could not start download: {err}")
-            self.set_arrow_cursor()
+            self.force_unlock()
             self._enable_buttons(True)
 
     def _finish_download(self) -> None:

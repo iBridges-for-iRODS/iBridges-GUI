@@ -9,7 +9,8 @@ from typing import Any, Dict, List, Tuple
 from ibridges import IrodsPath, Session, search_data, sync
 from ibridges.executor import Operations, _obj_get, _obj_put
 from irods.exception import CAT_NO_ACCESS_PERMISSION, NetworkException
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal, QTimer
+from ibridgesgui.config import is_session_from_config
 
 
 class BaseIrodsThread(QThread):
@@ -31,6 +32,12 @@ class BaseIrodsThread(QThread):
         super().__init__()
         self.logger = logger
         self.thread_session: Session = Session(irods_env=ienv_path)
+
+        if not is_session_from_config(self.thread_session):
+            self.logger.error(f"{self.__class__.__name__}: Session does not match saved environment")
+        
+            return
+        
         self.logger.debug(f"{self.__class__.__name__}: Created new session")
 
     def cleanup_session(self) -> None:

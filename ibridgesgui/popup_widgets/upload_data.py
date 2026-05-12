@@ -14,7 +14,7 @@ from ibridgesgui.config import (
     config_set_last_upload_path,
     get_last_ienv_path,
 )
-from ibridgesgui.gui_utils import combine_operations, validate_metadata
+from ibridgesgui.gui_utils import combine_operations, validate_metadata, prep_session_for_copy
 from ibridgesgui.popup_widgets.base import TransferDialogBase, UiDialogMixin
 from ibridgesgui.threads import TransferDataThread
 from ibridgesgui.ui_files.uploadData import Ui_uploadData
@@ -189,7 +189,10 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
         self.active_transfer = True
         self.set_wait_cursor()
         self.error_label.setText(f"Uploading to {self.irods_path} ...")
-        env_path = Path(get_last_ienv_path())
+        env_path = prep_session_for_copy(self.session, self.error_label)
+        if not env_path:
+            self.force_unlock()
+            return
 
         try:
             ops = combine_operations(
@@ -218,17 +221,16 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
                 env_path, self.logger, ops, overwrite=self.overwrite.isChecked()
             )
             self.upload_thread.result.connect(self._upload_finished)
-            self.upload_thread.finished.connect(self._finish_upload)
             self.upload_thread.current_progress.connect(self._upload_status)
             self.upload_thread.start()
 
         except DataObjectExistsError:
             self.error_label.setText("Data already exists. Check 'overwrite' to overwrite.")
-            self.set_arrow_cursor()
             self._enable_buttons(True)
+            self.force_unlock()
         except Exception as err:  # noqa: BLE001
             self.error_label.setText(f"Could not start upload: {err}")
-            self.set_arrow_cursor()
+            self.force_unlock()
             self._enable_buttons(True)
 
     def _finish_upload(self) -> None:
