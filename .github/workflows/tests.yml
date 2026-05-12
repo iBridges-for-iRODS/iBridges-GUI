@@ -69,4 +69,4 @@ jobs:
       # -----------------------------
       - name: Run tests and coverage
         run: |
-            python -m pytest --cov=ibridgesgui --cov-report=term-missing tests
+            python -m pytest --cov=ibridgesgui --cov-report=term-missing --cov-fail-under=70 tests
