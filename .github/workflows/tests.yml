@@ -80,12 +80,15 @@ jobs:
         run: pip install genbadge[coverage]
       - name: Generate coverage badge
         run: genbadge coverage -i coverage.xml -o coverage.svg
+
       - name: Commit coverage badge
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' &&
+            matrix.python-version == '3.13' &&
+            matrix.os == 'ubuntu-latest'
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add coverage.svg
-          git commit -m "Update coverage badge" || echo "No changes to commit"
-          git push
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add coverage.svg
+            git commit -m "Update coverage badge" || echo "No changes to commit"
+            git push
 
