@@ -98,7 +98,8 @@ class DownloadData(UiDialogMixin, TransferDialogBase, Ui_downloadData):
         self.error_label.setText(f"Downloading to {local_path} ...")
 
         env_path = prep_session_for_copy(self.session, self.error_label)
-        if not env_path:                                                              self.force_unlock()
+        if not env_path:
+            self.force_unlock()
             return
 
         try:
