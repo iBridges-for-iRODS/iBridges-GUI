@@ -168,7 +168,6 @@ def prep_session_for_copy(session, error_label) -> Optional[Path]:
 
 def combine_operations(operations: list[Operations]) -> Operations:
     """Merge multiple Operations objects into one."""
-    print(operations)
     base = operations[0]
 
     base.create_dir = set().union(*(op.create_dir for op in operations))
