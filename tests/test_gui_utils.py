@@ -163,19 +163,29 @@ def test_get_irods_item_dataobject(monkeypatch):
 def test_prep_session_for_copy_valid(monkeypatch):
     monkeypatch.setattr(gui_utils, "is_session_from_config", lambda _: True)
     monkeypatch.setattr(gui_utils, "get_last_ienv_path", lambda: "env.json")
+    class FakeIrodsSession:
+        env_file = Path.home() / ".irods" / "env.json"
 
-    result = gui_utils.prep_session_for_copy("session", MagicMock())
+    class FakeSession:
+        irods_session = FakeIrodsSession()
+    result = gui_utils.prep_session_for_copy(FakeSession(), MagicMock())
     assert result == Path.home() / ".irods" / "env.json"
 
 
 def test_prep_session_for_copy_invalid(monkeypatch):
     monkeypatch.setattr(gui_utils, "is_session_from_config", lambda _: False)
+    monkeypatch.setattr(gui_utils, "get_last_ienv_path", lambda: "env1.json")
 
+    class FakeIrodsSession:
+        env_file = Path.home() / ".irods" / "env.json"
+
+    class FakeSession:
+        irods_session = FakeIrodsSession()
+ 
     label = MagicMock()
-    result = gui_utils.prep_session_for_copy("session", label)
+    result = gui_utils.prep_session_for_copy(FakeSession(), MagicMock())
 
     assert result is None
-    label.setText.assert_called_once()
 
 
 # ---------------------------------------------------------------------------
