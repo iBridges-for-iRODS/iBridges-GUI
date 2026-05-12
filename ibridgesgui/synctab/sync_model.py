@@ -14,13 +14,6 @@ class SyncModel:
         self.refresh_irods_index = None
         self.diffs = None
 
-        # Optional future fields:
-        self.status_message: str = ""
-        self.progress_percent: int = 0
-        self.total_files: int = 0
-        self.completed_files: int = 0
-        self.failed_files: int = 0
-
     def set_paths(self, local_path, irods_path, refresh_index):
         """Save seleted paths."""
         self.local_path = local_path
@@ -34,8 +27,3 @@ class SyncModel:
         self.irods_path = None
         self.refresh_irods_index = None
         self.diffs = None
-        self.status_message = ""
-        self.progress_percent = 0
-        self.total_files = 0
-        self.completed_files = 0
-        self.failed_files = 0
