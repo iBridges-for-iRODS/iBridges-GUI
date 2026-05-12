@@ -69,4 +69,18 @@ jobs:
       # -----------------------------
       - name: Run tests and coverage
         run: |
-            python -m pytest --cov=ibridgesgui --cov-report=term-missing --cov-fail-under=70 tests
+            python -m pytest --cov=ibridgesgui --cov-report=xml --cov-report=term-missing --cov-fail-under=70 tests
+
+      - name: Install coverage badge tool
+        run: pip install coverage-badge
+      - name: Generate coverage badge
+        run: coverage-badge -o coverage.svg -f
+      - name: Commit coverage badge
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add coverage.svg
+          git commit -m "Update coverage badge" || echo "No changes to commit"
+          git push
+
