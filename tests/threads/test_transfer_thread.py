@@ -3,53 +3,72 @@ from unittest.mock import Mock
 from ibridgesgui.threads import TransferDataThread
 
 
-def _make_valid_session(monkeypatch):
-    """Patch Session + session validation so BaseIrodsThread never rejects."""
-    monkeypatch.setattr("ibridgesgui.threads.is_session_from_config", lambda *_: True)
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-    class FakeSession:
-        def close(self): 
-            pass
+def make_valid_session(monkeypatch):
+    """Ensure BaseIrodsThread accepts the session."""
+    monkeypatch.setattr(
+        "ibridgesgui.threads.is_session_from_config",
+        lambda *_: True,
+    )
+    monkeypatch.setattr(
+        "ibridgesgui.threads.Session",
+        lambda *a, **k: Mock(close=lambda: None),
+    )
 
-    monkeypatch.setattr("ibridgesgui.threads.Session", lambda *a, **k: FakeSession())
 
-
-def test_transfer_thread_success(qtbot, monkeypatch, mock_session_ctor, patch_session_close, fake_logger, tmp_path):
-    _make_valid_session(monkeypatch)
-
-    local_file = tmp_path / "file.txt"
-    local_file.write_text("hello")
-
-    irods_path = Mock()
-    irods_path.size = 5
-
+def make_ops(upload=None, download=None, meta_download=None, meta_upload=None):
+    """Create a fully-populated ops mock with sensible defaults."""
     ops = Mock()
-    ops.upload = [(local_file, irods_path)]
-    ops.download = [(irods_path, local_file)]
+    ops.upload = upload or []
+    ops.download = download or []
     ops.options = {}
     ops.resc_name = None
 
-    # These must accept any args
-    ops.execute_create_coll = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_create_dir = Mock(side_effect=lambda *a, **k: None)
+    ops.execute_create_coll = Mock()
+    ops.execute_create_dir = Mock()
 
-    # Only metadata DOWNLOAD exists in your real thread
-    ops.execute_meta_download = Mock()
+    ops.execute_meta_download = Mock() if meta_download is None else meta_download
+    ops.execute_meta_upload = Mock() if meta_upload is None else meta_upload
 
-    # No metadata upload in your real code → remove expectation
-    ops.execute_meta_upload = Mock()
+    return ops
 
-    monkeypatch.setattr("ibridgesgui.threads._obj_put", lambda *a, **k: None)
-    monkeypatch.setattr("ibridgesgui.threads._obj_get", lambda *a, **k: None)
 
+def make_thread(fake_logger, ops):
+    """Create a TransferDataThread with minimal boilerplate."""
     thread = TransferDataThread(
         ienv_path=Path("/fake/env"),
         logger=fake_logger,
         ops=ops,
         overwrite=True,
     )
-
     thread.invalid_session = False
+    return thread
+
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+def test_transfer_thread_success(qtbot, monkeypatch, mock_session_ctor, patch_session_close, fake_logger, tmp_path):
+    make_valid_session(monkeypatch)
+
+    local_file = tmp_path / "file.txt"
+    local_file.write_text("hello")
+
+    irods_path = Mock(size=5)
+
+    ops = make_ops(
+        upload=[(local_file, irods_path)],
+        download=[(irods_path, local_file)],
+    )
+
+    monkeypatch.setattr("ibridgesgui.threads._obj_put", lambda *a, **k: None)
+    monkeypatch.setattr("ibridgesgui.threads._obj_get", lambda *a, **k: None)
+
+    thread = make_thread(fake_logger, ops)
 
     with qtbot.waitSignal(thread.result, timeout=1000) as blocker:
         thread.run()
@@ -59,36 +78,20 @@ def test_transfer_thread_success(qtbot, monkeypatch, mock_session_ctor, patch_se
 
 
 def test_transfer_thread_upload_failure(qtbot, monkeypatch, mock_session_ctor, fake_logger, tmp_path):
-    _make_valid_session(monkeypatch)
+    make_valid_session(monkeypatch)
 
     local_file = tmp_path / "file.txt"
     local_file.write_text("hello")
+    irods_path = Mock(size=5)
 
-    irods_path = Mock()
-    irods_path.size = 5
-
-    ops = Mock()
-    ops.upload = [(local_file, irods_path)]
-    ops.download = []
-    ops.options = {}
-    ops.resc_name = None
-    ops.execute_create_coll = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_create_dir = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_meta_download = Mock()
+    ops = make_ops(upload=[(local_file, irods_path)])
 
     monkeypatch.setattr(
         "ibridgesgui.threads._obj_put",
-        lambda *a, **k: (_ for _ in ()).throw(Exception("upload failed"))
+        lambda *a, **k: (_ for _ in ()).throw(Exception("upload failed")),
     )
 
-    thread = TransferDataThread(
-        ienv_path=Path("/fake/env"),
-        logger=fake_logger,
-        ops=ops,
-        overwrite=True,
-    )
-
-    thread.invalid_session = False
+    thread = make_thread(fake_logger, ops)
 
     with qtbot.waitSignal(thread.result) as blocker:
         thread.run()
@@ -97,36 +100,20 @@ def test_transfer_thread_upload_failure(qtbot, monkeypatch, mock_session_ctor, f
 
 
 def test_transfer_thread_download_failure(qtbot, monkeypatch, mock_session_ctor, fake_logger, tmp_path):
-    _make_valid_session(monkeypatch)
+    make_valid_session(monkeypatch)
 
     local_file = tmp_path / "file.txt"
     local_file.write_text("hello")
+    irods_path = Mock(size=5)
 
-    irods_path = Mock()
-    irods_path.size = 5
-
-    ops = Mock()
-    ops.upload = []
-    ops.download = [(irods_path, local_file)]
-    ops.options = {}
-    ops.resc_name = None
-    ops.execute_create_coll = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_create_dir = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_meta_download = Mock()
+    ops = make_ops(download=[(irods_path, local_file)])
 
     monkeypatch.setattr(
         "ibridgesgui.threads._obj_get",
-        lambda *a, **k: (_ for _ in ()).throw(Exception("download failed"))
+        lambda *a, **k: (_ for _ in ()).throw(Exception("download failed")),
     )
 
-    thread = TransferDataThread(
-        ienv_path=Path("/fake/env"),
-        logger=fake_logger,
-        ops=ops,
-        overwrite=True,
-    )
-
-    thread.invalid_session = False
+    thread = make_thread(fake_logger, ops)
 
     with qtbot.waitSignal(thread.result) as blocker:
         thread.run()
@@ -134,26 +121,12 @@ def test_transfer_thread_download_failure(qtbot, monkeypatch, mock_session_ctor,
     assert "download failed" in blocker.args[0]["error"]
 
 
-def test_transfer_thread_metadata_download_failure(qtbot, monkeypatch, mock_session_ctor, fake_logger, tmp_path):
-    _make_valid_session(monkeypatch)
+def test_transfer_thread_metadata_download_failure(qtbot, monkeypatch, mock_session_ctor, fake_logger):
+    make_valid_session(monkeypatch)
 
-    ops = Mock()
-    ops.upload = []
-    ops.download = []
-    ops.options = {}
-    ops.resc_name = None
-    ops.execute_create_coll = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_create_dir = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_meta_download = Mock(side_effect=Exception("meta-down"))
+    ops = make_ops(meta_download=Mock(side_effect=Exception("meta-down")))
 
-    thread = TransferDataThread(
-        ienv_path=Path("/fake/env"),
-        logger=fake_logger,
-        ops=ops,
-        overwrite=True,
-    )
-
-    thread.invalid_session = False
+    thread = make_thread(fake_logger, ops)
 
     with qtbot.waitSignal(thread.result) as blocker:
         thread.run()
@@ -161,36 +134,20 @@ def test_transfer_thread_metadata_download_failure(qtbot, monkeypatch, mock_sess
     assert "meta-down" in blocker.args[0]["error"]
 
 
-def test_transfer_thread_metadata_upload_failure(qtbot, monkeypatch, mock_session_ctor, fake_logger, tmp_path):
+def test_transfer_thread_metadata_upload_failure(qtbot, monkeypatch, mock_session_ctor, fake_logger):
     """
-    Your real TransferDataThread does NOT call execute_meta_upload().
-    So this test must assert that metadata upload errors do NOT appear.
+    TransferDataThread NEVER calls execute_meta_upload().
+    So even if it raises, the error must NOT appear.
     """
-    _make_valid_session(monkeypatch)
+    make_valid_session(monkeypatch)
 
-    ops = Mock()
-    ops.upload = []
-    ops.download = []
-    ops.options = {}
-    ops.resc_name = None
-    ops.execute_create_coll = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_create_dir = Mock(side_effect=lambda *a, **k: None)
-    ops.execute_meta_download = Mock()
-    ops.execute_meta_upload = Mock(side_effect=Exception("meta-up"))
+    ops = make_ops(meta_upload=Mock(side_effect=Exception("meta-up")))
 
-    thread = TransferDataThread(
-        ienv_path=Path("/fake/env"),
-        logger=fake_logger,
-        ops=ops,
-        overwrite=True,
-    )
-
-    thread.invalid_session = False
+    thread = make_thread(fake_logger, ops)
 
     with qtbot.waitSignal(thread.result) as blocker:
         thread.run()
 
-    # Since execute_meta_upload is NEVER called in your real code,
-    # its exception should never appear.
+    # Since execute_meta_upload is never called, no error should appear.
     assert blocker.args == [{"error": ""}]
 

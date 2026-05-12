@@ -1,7 +1,13 @@
+# tests/browser/test_irods_browser_service.py
+
 import pytest
 from unittest.mock import MagicMock, patch
 from ibridgesgui.browsertab.irods_browser_service import IrodsBrowserService
 
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def logger():
@@ -18,9 +24,9 @@ def service(session, logger):
     return IrodsBrowserService(session, logger)
 
 
-# -------------------------
-# PATH HANDLING
-# -------------------------
+# ---------------------------------------------------------------------------
+# Path handling
+# ---------------------------------------------------------------------------
 
 def test_path_from_text(service, session):
     p = service.path_from_text("/tempZone/home/user")
@@ -39,9 +45,9 @@ def test_parent_path(service, session):
     assert str(p) == "/tempZone/home/user"
 
 
-# -------------------------
-# COLLECTION LISTING
-# -------------------------
+# ---------------------------------------------------------------------------
+# Collection listing
+# ---------------------------------------------------------------------------
 
 def test_list_collection(service):
     path = MagicMock()
@@ -53,9 +59,9 @@ def test_list_collection(service):
     assert objs == ["d1", "d2"]
 
 
-# -------------------------
-# STREAMING
-# -------------------------
+# ---------------------------------------------------------------------------
+# Streaming
+# ---------------------------------------------------------------------------
 
 def test_stream_obj(service):
     stream = MagicMock()
@@ -68,9 +74,9 @@ def test_stream_obj(service):
     assert result == ["hello world"]
 
 
-# -------------------------
-# PREVIEW
-# -------------------------
+# ---------------------------------------------------------------------------
+# Preview
+# ---------------------------------------------------------------------------
 
 def test_preview_collection(service):
     path = MagicMock()
@@ -79,12 +85,14 @@ def test_preview_collection(service):
 
     sub = MagicMock()
     sub.name = "sub1"
+
     obj = MagicMock()
     obj.name = "file1"
 
     service.list_collection = MagicMock(return_value=([sub], [obj]))
 
     result = service.compute_preview(path)
+
     assert "Collections:" in result[0]
     assert "sub1" in result
     assert "DataObjects:" in result
@@ -125,9 +133,9 @@ def test_preview_stream_error(service):
     assert "Storage resource might be down." in result[-1]
 
 
-# -------------------------
-# REPLICAS
-# -------------------------
+# ---------------------------------------------------------------------------
+# Replicas
+# ---------------------------------------------------------------------------
 
 @patch("ibridgesgui.browsertab.irods_browser_service.obj_replicas")
 def test_get_replicas_no_dataobject(mock_repl, service):
@@ -150,9 +158,9 @@ def test_get_replicas_with_dataobject(mock_repl, service):
     mock_repl.assert_called_once_with(path.dataobject)
 
 
-# -------------------------
-# METADATA
-# -------------------------
+# ---------------------------------------------------------------------------
+# Metadata
+# ---------------------------------------------------------------------------
 
 def test_get_metadata(service):
     avu = MagicMock()
@@ -191,9 +199,9 @@ def test_delete_metadata(service):
     path.meta.delete.assert_called_once_with("k", "v", "u")
 
 
-# -------------------------
+# ---------------------------------------------------------------------------
 # ACLs
-# -------------------------
+# ---------------------------------------------------------------------------
 
 def test_normalize_acls(service):
     acls = [
@@ -241,9 +249,9 @@ def test_set_acl(mock_perms, mock_item, service):
     )
 
 
-# -------------------------
-# TABLE ROWS
-# -------------------------
+# ---------------------------------------------------------------------------
+# Table rows
+# ---------------------------------------------------------------------------
 
 @patch("ibridgesgui.browsertab.irods_browser_service.obj_replicas")
 def test_list_table_rows(mock_repl, service):

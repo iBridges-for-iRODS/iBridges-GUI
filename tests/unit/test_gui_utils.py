@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from PySide6.QtWidgets import QTableWidget, QTextEdit, QApplication, QTableWidgetItem
+from PySide6.QtWidgets import QTableWidget, QTextEdit
 
 from ibridgesgui import gui_utils
 

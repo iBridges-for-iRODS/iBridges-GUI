@@ -1,3 +1,5 @@
+# tests/test_login.py
+
 import pytest
 from unittest.mock import MagicMock
 from pathlib import Path
@@ -19,7 +21,7 @@ def fake_envs(tmp_path):
 
     return {
         "alias1": (env1, {"irodsa_backup": "cachedpw"}),
-        "alias2": (env2, {}),  # no cached password
+        "alias2": (env2, {}),
     }
 
 
@@ -38,30 +40,23 @@ def fake_session_manager():
 def patched_login(monkeypatch, qtbot, fake_envs, fake_session_manager):
     """Create a LoginDialog with all external dependencies mocked."""
 
-    # Patch load_envs_from_cli_and_fs
     monkeypatch.setattr(
         "ibridgesgui.login.load_envs_from_cli_and_fs",
-        lambda _: fake_envs.copy()
+        lambda _: fake_envs.copy(),
     )
-
-    # Patch get_last_ienv_name
     monkeypatch.setattr(
         "ibridgesgui.login.get_last_ienv_name",
-        lambda: None
+        lambda: None,
     )
-
-    # Patch check_irods_config
     monkeypatch.setattr(
         "ibridgesgui.login.check_irods_config",
-        lambda *a, **k: "All checks passed successfully."
+        lambda *a, **k: "All checks passed successfully.",
     )
-
     monkeypatch.setattr(
         "ibridgesgui.login.LoginDialog.strictwrite",
-        lambda *a, **k: 1
+        lambda *a, **k: 1,
     )
 
-    # Patch Session
     class FakeSession:
         def __init__(self, irods_env=None, password=None):
             self.irods_env = Path(irods_env)
@@ -82,7 +77,7 @@ def patched_login(monkeypatch, qtbot, fake_envs, fake_session_manager):
 
 
 # ---------------------------------------------------------------------------
-# Tests
+# Tests: initialization
 # ---------------------------------------------------------------------------
 
 def test_init_envbox(patched_login, fake_envs):
@@ -95,27 +90,29 @@ def test_init_envbox(patched_login, fake_envs):
 
 def test_init_password_cached(patched_login, fake_envs):
     dlg, _ = patched_login
-
-    # Select alias1 (cached password)
     dlg.envbox.setCurrentText(f"alias1 - {fake_envs['alias1'][0]}")
+
     assert dlg._init_password() is True
     assert dlg.password_field.text() == "***********"
 
 
 def test_init_password_uncached(patched_login, fake_envs):
     dlg, _ = patched_login
-
     dlg.envbox.setCurrentText(f"alias2 - {fake_envs['alias2'][0]}")
+
     assert dlg._init_password() is False
     assert dlg.password_field.text() == ""
 
 
+# ---------------------------------------------------------------------------
+# Tests: parsing and password resolution
+# ---------------------------------------------------------------------------
+
 def test_parse_envbox_text(patched_login, fake_envs):
     dlg, _ = patched_login
-
     dlg.envbox.setCurrentText(f"alias1 - {fake_envs['alias1'][0]}")
-    alias, path = dlg._parse_envbox_text()
 
+    alias, path = dlg._parse_envbox_text()
     assert alias == "alias1"
     assert path == fake_envs["alias1"][0]
 
@@ -124,26 +121,25 @@ def test_resolve_password_cached(patched_login, fake_envs):
     dlg, _ = patched_login
     entry = fake_envs["alias1"][1]
 
-    pw = dlg._resolve_password(entry, "***********")
-    assert pw == "cachedpw"
+    assert dlg._resolve_password(entry, "***********") == "cachedpw"
 
 
 def test_resolve_password_typed(patched_login):
     dlg, _ = patched_login
-    entry = {}
-
-    pw = dlg._resolve_password(entry, "mypw")
-    assert pw == "mypw"
+    assert dlg._resolve_password({}, "mypw") == "mypw"
 
 
 def test_resolve_password_missing(patched_login):
     dlg, _ = patched_login
-    entry = {}
+    pw = dlg._resolve_password({}, "")
 
-    pw = dlg._resolve_password(entry, "")
     assert pw is None
     assert "Password required" in dlg.error_label.text()
 
+
+# ---------------------------------------------------------------------------
+# Tests: environment validation
+# ---------------------------------------------------------------------------
 
 def test_validate_env_config_ok(patched_login, fake_envs):
     dlg, _ = patched_login
@@ -155,15 +151,19 @@ def test_validate_env_config_bad(patched_login, monkeypatch, fake_envs):
 
     monkeypatch.setattr(
         "ibridgesgui.login.check_irods_config",
-        lambda *a, **k: "Bad config"
+        lambda *a, **k: "Bad config",
     )
 
     assert dlg._validate_env_config(fake_envs["alias1"][0]) is False
     assert "Go to menu Configure" in dlg.error_label.text()
 
 
+# ---------------------------------------------------------------------------
+# Tests: login success paths
+# ---------------------------------------------------------------------------
+
 def test_login_success_cached_password(patched_login, fake_envs):
-    dlg, sm = patched_login
+    dlg, _ = patched_login
 
     dlg.envbox.setCurrentText(f"alias1 - {fake_envs['alias1'][0]}")
     dlg.password_field.setText("***********")
@@ -176,7 +176,7 @@ def test_login_success_cached_password(patched_login, fake_envs):
 
 
 def test_login_success_typed_password(patched_login, fake_envs):
-    dlg, sm = patched_login
+    dlg, _ = patched_login
 
     dlg.envbox.setCurrentText(f"alias2 - {fake_envs['alias2'][0]}")
     dlg.password_field.setText("mypw")
@@ -187,9 +187,12 @@ def test_login_success_typed_password(patched_login, fake_envs):
     assert dlg.accepted_credentials["session"].password == "mypw"
 
 
+# ---------------------------------------------------------------------------
+# Tests: login failure paths
+# ---------------------------------------------------------------------------
+
 def test_login_home_invalid(patched_login, fake_envs):
     dlg, sm = patched_login
-
     sm.check_home.return_value = False
 
     dlg.envbox.setCurrentText(f"alias1 - {fake_envs['alias1'][0]}")
@@ -203,7 +206,6 @@ def test_login_home_invalid(patched_login, fake_envs):
 
 def test_login_resource_invalid(patched_login, fake_envs):
     dlg, sm = patched_login
-
     sm.check_resource.return_value = False
 
     dlg.envbox.setCurrentText(f"alias1 - {fake_envs['alias1'][0]}")
@@ -214,6 +216,10 @@ def test_login_resource_invalid(patched_login, fake_envs):
     assert "not writeable" in dlg.error_label.text()
     assert dlg.accepted_credentials is None
 
+
+# ---------------------------------------------------------------------------
+# Tests: login exception handling
+# ---------------------------------------------------------------------------
 
 def test_login_password_error(patched_login, monkeypatch, fake_envs):
     from ibridges.session import PasswordError
@@ -229,7 +235,6 @@ def test_login_password_error(patched_login, monkeypatch, fake_envs):
     dlg.password_field.setText("pw")
 
     dlg._on_connect()
-
     assert "Wrong password" in dlg.error_label.text()
 
 
@@ -247,7 +252,6 @@ def test_login_login_error(patched_login, monkeypatch, fake_envs):
     dlg.password_field.setText("pw")
 
     dlg._on_connect()
-
     assert "not setup correctly" in dlg.error_label.text()
 
 
@@ -263,7 +267,6 @@ def test_login_connection_error(patched_login, monkeypatch, fake_envs):
     dlg.password_field.setText("pw")
 
     dlg._on_connect()
-
     assert "Cannot connect" in dlg.error_label.text()
 
 
@@ -281,7 +284,6 @@ def test_login_resource_missing(patched_login, monkeypatch, fake_envs):
     dlg.password_field.setText("pw")
 
     dlg._on_connect()
-
     assert "does not exist" in dlg.error_label.text()
 
 
@@ -297,6 +299,5 @@ def test_login_generic_exception(patched_login, monkeypatch, fake_envs):
     dlg.password_field.setText("pw")
 
     dlg._on_connect()
-
     assert "Login failed" in dlg.error_label.text()
 

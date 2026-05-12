@@ -75,26 +75,3 @@ def fake_view(qtbot):
     view = FakeView()
     qtbot.addWidget(view)
     return view
-
-
-# -----------------------------
-# Dummy iRODS session objects
-# -----------------------------
-class DummyCollections:
-    def exists(self, path: str) -> bool:
-        return True
-
-class DummyIrodsSession:
-    def __init__(self):
-        self.collections = DummyCollections()
-
-class DummySession:
-    def __init__(self):
-        self.irods_session = DummyIrodsSession()
-
-
-@pytest.fixture
-def make_irods_path():
-    def _make(path: str):
-        return IrodsPath(DummySession(), path)
-    return _make

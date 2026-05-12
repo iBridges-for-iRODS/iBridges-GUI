@@ -15,10 +15,6 @@ def logger():
 
 
 @pytest.fixture
-def session():
-    return MagicMock()
-
-@pytest.fixture
 def model(make_irods_path):
     return BrowserModel(make_irods_path("/"))
 
@@ -96,12 +92,11 @@ def ui():
 # -------------------------
 
 @pytest.fixture
-def make_irods_path(session):
+def make_irods_path():
     def _make(path_str):
         p = MagicMock()
-        p.session = session
+        p.session = MagicMock()
         p.__str__.return_value = path_str
         p.path = path_str
         return p
     return _make
-

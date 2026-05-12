@@ -30,15 +30,10 @@ class FakeDataObject:
 # ----------------------------------------------------------------------
 
 @pytest.fixture
-def session():
-    return object()  # just a placeholder; never used by the mock
-
-
-@pytest.fixture
-def root_path(session):
+def root_path():
     # This is only used to provide .session to the model
     rp = MagicMock()
-    rp.session = session
+    rp.session = object()
     return rp
 
 

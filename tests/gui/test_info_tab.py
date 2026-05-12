@@ -1,6 +1,14 @@
+# tests/test_info_tab.py
+
 import pytest
 from unittest.mock import Mock
 from ibridgesgui.info import Info
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
 def make_mock_session():
     """Create a session mock with all required attributes."""
     session = Mock()
@@ -12,11 +20,15 @@ def make_mock_session():
     session.server_version = (4, 3, 1)
     return session
 
+
+# ---------------------------------------------------------------------------
+# Tests: _collect_info
+# ---------------------------------------------------------------------------
+
 def test_collect_info(qtbot, monkeypatch):
     """_collect_info should return a correctly structured info dict."""
     session = make_mock_session()
 
-    # Patch Resources(...) used inside _collect_info
     class DummyResources:
         root_resources = [
             ("rescA", None, 0, None),
@@ -43,11 +55,14 @@ def test_collect_info(qtbot, monkeypatch):
     ]
 
 
+# ---------------------------------------------------------------------------
+# Tests: _update_ui
+# ---------------------------------------------------------------------------
+
 def test_update_ui_populates_widgets(qtbot, monkeypatch):
     """_update_ui should correctly populate labels and table."""
     session = make_mock_session()
 
-    # Patch Resources to avoid real iRODS calls
     monkeypatch.setattr("ibridgesgui.info.Resources", lambda s: Mock(root_resources=[]))
 
     info_tab = Info(session)
@@ -77,14 +92,16 @@ def test_update_ui_populates_widgets(qtbot, monkeypatch):
     assert info_tab.resc_label.text() == "demoResc"
     assert info_tab.server_label.text() == "irods.example.org"
     assert info_tab.version_label.text() == "4.3.1"
-
     assert info_tab.resc_table.rowCount() == 2
 
+
+# ---------------------------------------------------------------------------
+# Tests: refresh_info
+# ---------------------------------------------------------------------------
 
 def test_refresh_info_calls_collect_and_update(qtbot, monkeypatch):
     session = make_mock_session()
 
-    # Patch Resources to avoid real iRODS calls
     monkeypatch.setattr("ibridgesgui.info.Resources", lambda s: Mock(root_resources=[]))
 
     info_tab = Info(session)
@@ -107,3 +124,4 @@ def test_refresh_info_calls_collect_and_update(qtbot, monkeypatch):
 
     assert called["collect"]
     assert called["update"]
+
