@@ -78,7 +78,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.preview_browser.clear()
         self.no_meta_label.clear()
 
-    def on_tab_changed(self, index):
+    def on_tab_changed(self):
         """Clear the metadata label when switching tabs."""
         self.no_meta_label.clear()
 
