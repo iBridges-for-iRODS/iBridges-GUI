@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'resctree.ui'
+## Form generated from reading UI file 'rescTree.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.1
 ##
@@ -16,25 +16,50 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
-    QHeaderView, QSizePolicy, QTreeView, QWidget)
+    QHBoxLayout, QHeaderView, QSizePolicy, QTreeView,
+    QWidget)
 
 class Ui_rescTree(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(400, 300)
-        self.buttonBox = QDialogButtonBox(Dialog)
-        self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setGeometry(QRect(290, 20, 81, 241))
-        self.buttonBox.setOrientation(Qt.Vertical)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        Dialog.resize(600, 464)
+        Dialog.setStyleSheet(u"QWidget\n"
+"{\n"
+"     background-color: rgb(211,211,211);\n"
+"    color: rgb(88, 88, 90);\n"
+"    selection-background-color: rgb(21, 165, 137);\n"
+"    selection-color: rgb(245, 244, 244)\n"
+"}\n"
+"\n"
+"QTreeView\n"
+"{\n"
+"     background-color: rgb(245, 244, 244)\n"
+"}\n"
+"\n"
+"QPushButton\n"
+"{\n"
+"	background-color: rgb(21, 165, 137);\n"
+"    color: rgb(245, 244, 244);\n"
+"}")
+        self.horizontalLayout = QHBoxLayout(Dialog)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.resc_view = QTreeView(Dialog)
         self.resc_view.setObjectName(u"resc_view")
-        self.resc_view.setGeometry(QRect(20, 20, 256, 192))
+
+        self.horizontalLayout.addWidget(self.resc_view)
+
+        self.buttonBox = QDialogButtonBox(Dialog)
+        self.buttonBox.setObjectName(u"buttonBox")
+        self.buttonBox.setOrientation(Qt.Vertical)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+
+        self.horizontalLayout.addWidget(self.buttonBox)
+
 
         self.retranslateUi(Dialog)
-        self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
+        self.buttonBox.accepted.connect(Dialog.accept)
 
         QMetaObject.connectSlotsByName(Dialog)
     # setupUi
