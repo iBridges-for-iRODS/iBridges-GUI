@@ -1,6 +1,4 @@
 """Popup to show resource tree."""
-from typing import override
-
 from ibridges.resources import Resources
 from PySide6 import QtCore
 from PySide6.QtGui import QStandardItem, QStandardItemModel
@@ -75,8 +73,8 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
         QtCore.QTimer.singleShot(0, self._adjust_columns)
         self.error_label.clear()
 
-    # pylint: disable=invalid-name  # Qt override
-    @override
+    # ruff: noqa: N802  # Qt override
+    # pylint: disable=invalid-name
     def showEvent(self, event):
         """Populate tree after pop up is opened."""
         super().showEvent(event)
