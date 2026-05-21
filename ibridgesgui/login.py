@@ -129,7 +129,10 @@ class LoginDialog(QDialog, Ui_irodsLogin):
                 f.write(password)
             return Session(irods_env=env_path)
 
-        return Session(irods_env=env_path, password=password)
+        session = Session(irods_env=env_path, password=password)
+        session.write_pam_password()
+
+        return session
 
     def _on_connect(self):
         self.error_label.clear()
