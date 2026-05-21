@@ -76,4 +76,3 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
 
         self.resc_view.setModel(model)
         self.resc_view.expandAll()
-
