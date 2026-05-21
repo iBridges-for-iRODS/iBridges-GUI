@@ -128,8 +128,11 @@ class LoginDialog(QDialog, Ui_irodsLogin):
             with open(IRODSA, "w", encoding="utf-8", opener=self.strictwrite) as f:
                 f.write(password)
             return Session(irods_env=env_path)
+        
+        session = Session(irods_env=env_path, password=password)
+        session.write_pam_password()
 
-        return Session(irods_env=env_path, password=password)
+        return session
 
     def _on_connect(self):
         self.error_label.clear()
