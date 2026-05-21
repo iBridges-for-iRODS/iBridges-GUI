@@ -75,6 +75,7 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
         QtCore.QTimer.singleShot(0, self._adjust_columns)
         self.error_label.clear()
 
+    # pylint: disable=invalid-name  # Qt override
     @override
     def showEvent(self, event):
         """Populate tree after pop up is opened."""
