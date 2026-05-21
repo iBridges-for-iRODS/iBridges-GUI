@@ -20,7 +20,6 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
         self.setWindowTitle("Resource Tree")
 
         self.rescs = Resources(session)
-        self._populate_tree()
 
         QtCore.QTimer.singleShot(0, self._adjust_columns)
 
@@ -32,7 +31,7 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
 
     def _populate_tree(self):
         model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(["Resource", "Size", "Status"])
+        model.setHorizontalHeaderLabels(["Resource (Type)", "Size", "Status"])
 
         resc_dict = self.rescs.resources()
 
@@ -42,37 +41,40 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
             res_obj = self.rescs.get_resource(name)
             id_to_name[str(res_obj.id)] = name
 
-        # Create items for each resource
         items = {}
         for name, fields in resc_dict.items():
+            res_obj = self.rescs.get_resource(name)
+            rtype = res_obj.type
+            display_name = f"{name} ({rtype})"
+
             size = fields.get("free_space", 0)
             status = fields.get("status", "")
-            items[name] = [
-                QStandardItem(name),
-                QStandardItem(str(size)),
-                QStandardItem("" if status is None else str(status))
-            ]
 
-        # Build hierarchy
-        roots = []
+            items[name] = [
+                    QStandardItem(display_name),
+                    QStandardItem(str(size)),
+                    QStandardItem("" if status is None else str(status))
+                    ]
+
+        roots = [r[0] for r in self.rescs.root_resources]
 
         for name, fields in resc_dict.items():
             parent_id = fields.get("parent")
-
-            if parent_id is None:
-                roots.append(name)
-            else:
+            if parent_id:
                 parent_name = id_to_name.get(str(parent_id))
-                if parent_name and parent_name in items:
-                    # Attach child to parent
+                if parent_name in items:
                     items[parent_name][0].appendRow(items[name])
-                else:
-                    # Orphan → treat as root
-                    roots.append(name)
 
-        # Add only root nodes to the model
         for root in roots:
             model.appendRow(items[root])
 
         self.resc_view.setModel(model)
         self.resc_view.expandAll()
+        QtCore.QTimer.singleShot(0, self._adjust_columns)
+        self.error_label.clear()
+
+    def showEvent(self, event):
+        """Populate tree after pop up is opened."""
+        super().showEvent(event)
+        self.error_label.setText("Loading…")
+        QtCore.QTimer.singleShot(0, self._populate_tree)

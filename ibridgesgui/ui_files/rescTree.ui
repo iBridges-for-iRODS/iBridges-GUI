@@ -22,6 +22,12 @@
     selection-color: rgb(245, 244, 244)
 }
 
+QLabel#error_label
+{
+    color: rgb(220, 130, 30);
+}
+
+
 QTreeView
 {
      background-color: rgb(245, 244, 244)
@@ -35,7 +41,18 @@ QPushButton
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QTreeView" name="resc_view"/>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QTreeView" name="resc_view"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="error_label">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

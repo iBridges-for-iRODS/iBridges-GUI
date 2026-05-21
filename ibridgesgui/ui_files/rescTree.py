@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
-    QHBoxLayout, QHeaderView, QSizePolicy, QTreeView,
-    QWidget)
+    QHBoxLayout, QHeaderView, QLabel, QSizePolicy,
+    QTreeView, QVBoxLayout, QWidget)
 
 class Ui_rescTree(object):
     def setupUi(self, Dialog):
@@ -32,6 +32,12 @@ class Ui_rescTree(object):
 "    selection-color: rgb(245, 244, 244)\n"
 "}\n"
 "\n"
+"QLabel#error_label\n"
+"{\n"
+"    color: rgb(220, 130, 30);\n"
+"}\n"
+"\n"
+"\n"
 "QTreeView\n"
 "{\n"
 "     background-color: rgb(245, 244, 244)\n"
@@ -44,10 +50,20 @@ class Ui_rescTree(object):
 "}")
         self.horizontalLayout = QHBoxLayout(Dialog)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
         self.resc_view = QTreeView(Dialog)
         self.resc_view.setObjectName(u"resc_view")
 
-        self.horizontalLayout.addWidget(self.resc_view)
+        self.verticalLayout.addWidget(self.resc_view)
+
+        self.error_label = QLabel(Dialog)
+        self.error_label.setObjectName(u"error_label")
+
+        self.verticalLayout.addWidget(self.error_label)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout)
 
         self.buttonBox = QDialogButtonBox(Dialog)
         self.buttonBox.setObjectName(u"buttonBox")
@@ -66,5 +82,6 @@ class Ui_rescTree(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
+        self.error_label.setText("")
     # retranslateUi
 
