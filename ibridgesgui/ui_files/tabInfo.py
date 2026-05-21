@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tabInfo.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -87,6 +87,11 @@ class Ui_tabInfo(object):
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
+
+        self.inspect_button = QPushButton(tabInfo)
+        self.inspect_button.setObjectName(u"inspect_button")
+
+        self.horizontalLayout_3.addWidget(self.inspect_button)
 
         self.refresh_button = QPushButton(tabInfo)
         self.refresh_button.setObjectName(u"refresh_button")
@@ -242,6 +247,7 @@ class Ui_tabInfo(object):
         self.user_label.setText("")
         self.type_label.setText("")
         self.label_2.setText(QCoreApplication.translate("tabInfo", u"Server", None))
+        self.inspect_button.setText(QCoreApplication.translate("tabInfo", u"Inspect", None))
         self.refresh_button.setText(QCoreApplication.translate("tabInfo", u"Refresh", None))
         self.label_13.setText(QCoreApplication.translate("tabInfo", u"Version", None))
         self.label_12.setText(QCoreApplication.translate("tabInfo", u"Server Information", None))
@@ -252,13 +258,13 @@ class Ui_tabInfo(object):
         self.resc_label.setText("")
         self.label_8.setText(QCoreApplication.translate("tabInfo", u"Default resource", None))
         ___qtablewidgetitem = self.resc_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("tabInfo", u"Name", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("tabInfo", u"Name", None))
         ___qtablewidgetitem1 = self.resc_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("tabInfo", u"Status", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("tabInfo", u"Status", None))
         ___qtablewidgetitem2 = self.resc_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("tabInfo", u"Free Space", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("tabInfo", u"Free Space", None))
         ___qtablewidgetitem3 = self.resc_table.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("tabInfo", u"Context", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("tabInfo", u"Context", None))
         self.label_3.setText(QCoreApplication.translate("tabInfo", u"Zone", None))
         self.label_9.setText(QCoreApplication.translate("tabInfo", u"Resources", None))
         self.version_label.setText("")

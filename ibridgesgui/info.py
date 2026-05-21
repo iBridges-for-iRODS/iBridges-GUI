@@ -7,6 +7,7 @@ from PySide6 import QtCore, QtWidgets
 
 from ibridgesgui.config import CONFIG_DIR
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, populate_table, populate_textfield
+from ibridgesgui.popup_widgets.resc_tree import RescInfoDialog
 from ibridgesgui.ui_files.tabInfo import Ui_tabInfo
 
 
@@ -20,6 +21,7 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
         self.session = session
 
         self.refresh_button.clicked.connect(self.refresh_info)
+        self.inspect_button.clicked.connect(self.inspect_rescs_info)
         self.refresh_info()
 
     def _load_ui(self):
@@ -27,6 +29,11 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
             super().setupUi(self)
         else:
             load_ui(UI_FILE_DIR / "tabInfo.ui", self)
+
+    def inspect_rescs_info(self):
+        """Open popup for rescs info."""
+        dlg = RescInfoDialog(self.session, self)
+        dlg.exec()
 
     def refresh_info(self):
         """Refetch infor from iRODS."""

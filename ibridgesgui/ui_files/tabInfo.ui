@@ -104,6 +104,13 @@ QTextEdit, QTableWidget
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="inspect_button">
+         <property name="text">
+          <string>Inspect</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="refresh_button">
          <property name="font">
           <font>
