@@ -20,6 +20,7 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
         self.setWindowTitle("Resource Tree")
 
         self.rescs = Resources(session)
+        self.ok_button.clicked.connect(self.accept)
 
         QtCore.QTimer.singleShot(0, self._adjust_columns)
 
@@ -31,7 +32,7 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
 
     def _populate_tree(self):
         model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(["Resource (Type)", "Size", "Status"])
+        model.setHorizontalHeaderLabels(["Resource (Type)", "Free Space", "Status"])
 
         resc_dict = self.rescs.resources()
 

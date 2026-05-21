@@ -15,8 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
-    QHBoxLayout, QHeaderView, QLabel, QSizePolicy,
+from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QHeaderView,
+    QLabel, QPushButton, QSizePolicy, QSpacerItem,
     QTreeView, QVBoxLayout, QWidget)
 
 class Ui_rescTree(object):
@@ -65,17 +65,22 @@ class Ui_rescTree(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout)
 
-        self.buttonBox = QDialogButtonBox(Dialog)
-        self.buttonBox.setObjectName(u"buttonBox")
-        self.buttonBox.setOrientation(Qt.Vertical)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.ok_button = QPushButton(Dialog)
+        self.ok_button.setObjectName(u"ok_button")
 
-        self.horizontalLayout.addWidget(self.buttonBox)
+        self.verticalLayout_2.addWidget(self.ok_button)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_2.addItem(self.verticalSpacer)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
 
 
         self.retranslateUi(Dialog)
-        self.buttonBox.rejected.connect(Dialog.reject)
-        self.buttonBox.accepted.connect(Dialog.accept)
 
         QMetaObject.connectSlotsByName(Dialog)
     # setupUi
@@ -83,5 +88,6 @@ class Ui_rescTree(object):
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
         self.error_label.setText("")
+        self.ok_button.setText(QCoreApplication.translate("Dialog", u"OK", None))
     # retranslateUi
 
