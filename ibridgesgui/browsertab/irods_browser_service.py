@@ -45,9 +45,26 @@ class IrodsBrowserService:
 
     # -------- preview ---------
 
+    def is_text_bytes(self, data: bytes) -> bool:
+        # Null bytes → definitely binary
+        if b"\x00" in data:
+            return False
+    
+        # Try common encodings
+        for enc in ("utf-8", "latin-1", "cp1252"):
+            try:
+                data.decode(enc)
+                return True
+            except UnicodeDecodeError:
+                continue
+    
+        return False
+
+
     def compute_preview(self, irods_path: IrodsPath):
         """Return preview content for a collection or data object."""
-        # Collections: list subcollections + objects
+    
+        # Collections
         if irods_path.collection_exists():
             subcolls, objs = self.list_collection(irods_path)
             content = ["Collections:", "-----------------"]
@@ -55,11 +72,22 @@ class IrodsBrowserService:
             content.extend(["", "DataObjects:", "-----------------"])
             content.extend([do.name for do in objs])
             return content
-
-        # Data objects: preview text-like files
+    
+        # Data objects
         if irods_path.dataobject_exists():
-            ext = irods_path.name.split(".")[-1] if "." in irods_path.name else ""
-            if ext in ("txt", "json", "csv"):
+            try:
+                # Read only the first few KB for sniffing
+                with irods_path.open("r") as stream:
+                    head = stream.read(4096)
+            except Exception as error:
+                return [
+                    f"No Preview for: {irods_path}",
+                    repr(error),
+                    "Storage resource might be down.",
+                ]
+    
+            # Decide based on content, not suffix
+            if self.is_text_bytes(head):
                 try:
                     return self.stream_obj(irods_path)
                 except Exception as error:
@@ -68,8 +96,9 @@ class IrodsBrowserService:
                         repr(error),
                         "Storage resource might be down.",
                     ]
+    
             return [f"No Preview for: {irods_path}"]
-
+    
         return [f"No Preview for: {irods_path}"]
 
     # -------- replicas --------
