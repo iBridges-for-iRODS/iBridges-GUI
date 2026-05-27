@@ -43,7 +43,23 @@ QPushButton
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QTreeView" name="resc_view"/>
+      <widget class="QTreeWidget" name="resc_view">
+       <column>
+        <property name="text">
+         <string>Name (Type)</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Free Space</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Status</string>
+        </property>
+       </column>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="error_label">

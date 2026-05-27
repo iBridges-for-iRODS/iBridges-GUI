@@ -729,7 +729,7 @@ in collection</string>
          </column>
          <column>
           <property name="text">
-           <string>Hierarchy</string>
+           <string>Resource</string>
           </property>
          </column>
          <column>
