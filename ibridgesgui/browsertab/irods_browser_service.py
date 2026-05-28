@@ -157,9 +157,11 @@ class IrodsBrowserService:
                 raise irods_exc
             raise err
 
-    def _has_create_metadata(self, acls, username, zonename):
+    def _has_object_write_own(self, acls, username, zonename):
+        WRITE_LEVEL = {"own", "write_object", "modify_object"}
+
         return any(
-            acc.access_name == "create_metadata"
+            acc.access_name in WRITE_LEVEL
             and acc.user_name == username
             and acc.user_zone == zonename
             for acc in acls
@@ -181,8 +183,8 @@ class IrodsBrowserService:
             acls = Permissions(self.session, path.collection)
         else:
             acls = Permissions(self.session, path.dataobject)
-        if self._has_create_metadata(acls, self.session.irods_session.username, self.session.irods_session.zone):
-            raise CAT_NO_ACCESS_PERMISSION
+        if not self._has_object_write_own(acls, self.session.irods_session.username, self.session.irods_session.zone):
+            raise CAT_NO_ACCESS_PERMISSION("You need object write permissions to update metadata.")
 
         try:
             # Retrieve the specific AVU
