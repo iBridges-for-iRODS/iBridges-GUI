@@ -197,6 +197,9 @@ class BrowserController:
 
         self.ui.render_metadata(data, irods_path)
 
+    def get_possible_acl_strings(self):
+        return self.service.get_acl_strings()
+
     def _fill_acl_tab(self, irods_path, row):
         if row not in self.model.acl_cache:
             acls = self.service.get_acls(irods_path)

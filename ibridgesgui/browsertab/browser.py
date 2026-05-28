@@ -47,7 +47,8 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_box.clear()
         self.recursive_box.setEnabled(irods_path.collection_exists())
 
-        obj_acl = ["read", "write", "own", "delete"]
+        #obj_acl = ["read", "write", "own", "delete"]
+        obj_acl = self.controller.get_possible_acl_strings()
         coll_acl = obj_acl + [
             "Newly added items to collection will inherit permissions",
             "Remove inheritance.",

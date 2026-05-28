@@ -2,6 +2,7 @@
 
 import logging
 from typing import Iterable, Tuple
+from irods.exception import CAT_NO_ACCESS_PERMISSION
 
 from ibridges import IrodsPath
 from ibridges.permissions import Permissions
@@ -119,9 +120,50 @@ class IrodsBrowserService:
         except Exception as err:
             raise RuntimeError(f"Failed to load metadata for {irods_path}: {err}") from err
 
+    def find_irods_exception(self, exc):
+        """Walk the exception chain to find the underlying iRODS exception."""
+        
+        # NOTE: Work around for ibridges #412
+        seen = set()
+        stack = [exc]
+
+        while stack:
+            current = stack.pop()
+            if current in seen:
+                continue
+            seen.add(current)
+
+            # Found the real iRODS exception
+            if isinstance(current, CAT_NO_ACCESS_PERMISSION):
+                return current
+
+            # Walk deeper
+            if current.__cause__:
+                stack.append(current.__cause__)
+            if current.__context__:
+                stack.append(current.__context__)
+
+        return None
+
+
     def add_metadata(self, path: IrodsPath, key: str, value: str, units: str):
         """Add metadata to coll or obj."""
-        path.meta.add(key, value, units)
+        try:
+            path.meta.add(key, value, units)
+        except Exception as err:
+            # user has no permission to modify metadata
+            irods_exc = self.find_irods_exception(err)
+            if irods_exc:
+                raise irods_exc
+            raise err
+
+    def _has_create_metadata(self, acls, username, zonename):
+        return any(
+            acc.access_name == "create_metadata"
+            and acc.user_name == username
+            and acc.user_zone == zonename
+            for acc in acls
+        )
 
     def update_metadata(
         self,
@@ -134,19 +176,52 @@ class IrodsBrowserService:
         new_units: str,
     ):
         """Update a single AVU on a path."""
-        # Retrieve the specific AVU
-        avu = path.meta[old_key, old_value, old_units]
+        # NOTE: workraound for ibridgs 412 second part
+        if path.collection_exists():
+            acls = Permissions(self.session, path.collection)
+        else:
+            acls = Permissions(self.session, path.dataobject)
+        if self._has_create_metadata(acls, self.session.irods_session.username, self.session.irods_session.zone):
+            raise CAT_NO_ACCESS_PERMISSION
 
-        # Mutate it in place
-        avu.key = new_key
-        avu.value = new_value
-        avu.units = new_units
+        try:
+            # Retrieve the specific AVU
+            avu = path.meta[old_key, old_value, old_units]
+
+            # Mutate it in place
+            avu.key = new_key
+            avu.value = new_value
+            avu.units = new_units
+        except Exception as err:
+            # user has no permission to modify metadata
+            irods_exc = self.find_irods_exception(err)
+            if irods_exc:
+                raise irods_exc
+            raise err
 
     def delete_metadata(self, path: IrodsPath, key: str, value: str, units: str):
         """Delete metadata."""
-        path.meta.delete(key, value, units)
+        try:
+            path.meta.delete(key, value, units)
+        except Exception as err:
+            # user has no permission to modify metadata
+            irods_exc = self.find_irods_exception(err)
+            if irods_exc:
+                raise irods_exc
+            raise err
 
     # -------- ACLs / permissions --------
+
+    def get_acl_strings(self):
+        PERM_MAP = {
+            "read_object": "read",
+            "modify_object": "write",
+            "null": "delete",
+        }
+        perm = Permissions(self.session, self.session.home)
+        avail = [PERM_MAP.get(perm_str, perm_str) 
+                        for (perm_str, _) in perm.available_permissions.items()]
+        return avail
 
     def normalize_acls(self, acls):
         """Normalize iRODS ACLs into UI-friendly form."""
