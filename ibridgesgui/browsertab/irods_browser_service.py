@@ -2,11 +2,11 @@
 
 import logging
 from typing import Iterable, Tuple
-from irods.exception import CAT_NO_ACCESS_PERMISSION
 
 from ibridges import IrodsPath
 from ibridges.permissions import Permissions
 from ibridges.util import obj_replicas
+from irods.exception import CAT_NO_ACCESS_PERMISSION
 
 from ibridgesgui.gui_utils import get_irods_item
 
@@ -47,10 +47,11 @@ class IrodsBrowserService:
     # -------- preview ---------
 
     def is_text_bytes(self, data: bytes) -> bool:
+        """Sniff if file contains text."""
         # Null bytes → definitely binary
         if b"\x00" in data:
             return False
-    
+
         # Try common encodings
         for enc in ("utf-8", "latin-1", "cp1252"):
             try:
@@ -58,13 +59,12 @@ class IrodsBrowserService:
                 return True
             except UnicodeDecodeError:
                 continue
-    
+
         return False
 
 
     def compute_preview(self, irods_path: IrodsPath):
         """Return preview content for a collection or data object."""
-    
         # Collections
         if irods_path.collection_exists():
             subcolls, objs = self.list_collection(irods_path)
@@ -73,7 +73,7 @@ class IrodsBrowserService:
             content.extend(["", "DataObjects:", "-----------------"])
             content.extend([do.name for do in objs])
             return content
-    
+
         # Data objects
         if irods_path.dataobject_exists():
             try:
@@ -86,7 +86,7 @@ class IrodsBrowserService:
                     repr(error),
                     "Storage resource might be down.",
                 ]
-    
+
             # Decide based on content, not suffix
             if self.is_text_bytes(head):
                 try:
@@ -97,9 +97,9 @@ class IrodsBrowserService:
                         repr(error),
                         "Storage resource might be down.",
                     ]
-    
+
             return [f"No Preview for: {irods_path}"]
-    
+
         return [f"No Preview for: {irods_path}"]
 
     # -------- replicas --------
@@ -122,7 +122,6 @@ class IrodsBrowserService:
 
     def find_irods_exception(self, exc):
         """Walk the exception chain to find the underlying iRODS exception."""
-        
         # NOTE: Work around for ibridges #412
         seen = set()
         stack = [exc]
@@ -154,19 +153,8 @@ class IrodsBrowserService:
             # user has no permission to modify metadata
             irods_exc = self.find_irods_exception(err)
             if irods_exc:
-                raise irods_exc
+                raise irods_exc from err
             raise err
-
-    def _has_object_write_own(self, acls, username, zonename):
-        WRITE_LEVEL = {"own"} # strange errors happen in the combination
-                              # of modify and the ibridges metadata setters
-
-        return any(
-            acc.access_name in WRITE_LEVEL
-            and acc.user_name == username
-            and acc.user_zone == zonename
-            for acc in acls
-        )
 
     def update_metadata(
         self,
@@ -190,7 +178,7 @@ class IrodsBrowserService:
             # user has no permission to modify metadata
             irods_exc = self.find_irods_exception(err)
             if irods_exc:
-                raise irods_exc
+                raise irods_exc from err
             raise err
 
     def delete_metadata(self, path: IrodsPath, key: str, value: str, units: str):
@@ -201,7 +189,7 @@ class IrodsBrowserService:
             # user has no permission to modify metadata
             irods_exc = self.find_irods_exception(err)
             if irods_exc:
-                raise irods_exc
+                raise irods_exc from err
             raise err
 
     # -------- ACLs / permissions --------
@@ -216,16 +204,10 @@ class IrodsBrowserService:
     REVERSE_PERM_MAP = {v: k for k, v in PERM_MAP.items()}
 
     def get_acl_strings(self):
-        #PERM_MAP = {
-        #    "read_object": "read",
-        #    "modify_object": "write",
-        #    "null": "delete permission",
-        #    "delete_object": "delete",
-        #    "create_object": "create"
-        #}
+        """Retrieve all possible acl modes from the irods instance and filter them."""
         perm = Permissions(self.session, self.session.home)
         # remove metadata permissions github.com/irods/irods/issues/6813
-        avail = [self.PERM_MAP.get(perm_str, perm_str) 
+        avail = [self.PERM_MAP.get(perm_str, perm_str)
                         for (perm_str, _) in perm.available_permissions.items()
                         if "metadata" not in perm_str]
         return avail

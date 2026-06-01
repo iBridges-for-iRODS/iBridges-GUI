@@ -1,7 +1,6 @@
 """Popup to show resource tree."""
 from ibridges.resources import Resources
 from PySide6 import QtCore, QtWidgets
-from PySide6.QtGui import QStandardItemModel
 from PySide6.QtWidgets import QDialog, QHeaderView, QTreeWidgetItem
 
 from ibridgesgui.popup_widgets.base import UiDialogMixin
@@ -31,18 +30,18 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
 
     def _adjust_columns(self):
         header = self.resc_view.header()
-    
+
         # Allow columns to shrink below Qt's default minimum
         header.setMinimumSectionSize(0)
-    
+
         # IMPORTANT: override Qt's default behavior for the LAST column
         header.setSectionResizeMode(2, QHeaderView.Fixed)
         self.resc_view.setColumnWidth(2, 20)
-    
+
         # Now set column 1
         header.setSectionResizeMode(1, QHeaderView.Fixed)
         self.resc_view.setColumnWidth(1, 60)
-    
+
         # Finally set column 0 to stretch
         header.setSectionResizeMode(0, QHeaderView.Stretch)
         self.resc_view.setColumnWidth(0, 300)
@@ -84,7 +83,7 @@ class RescInfoDialog(QDialog, Ui_rescTree, UiDialogMixin):
         # Add root items
         for root in roots:
             self.resc_view.addTopLevelItem(items[root])
-        
+
         self.resc_view.expandAll()
         QtCore.QTimer.singleShot(0, self._adjust_columns)
         self.error_label.clear()
