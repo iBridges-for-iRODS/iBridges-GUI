@@ -456,7 +456,7 @@ class Ui_tabBrowser(object):
 
         self.retranslateUi(tabBrowser)
 
-        self.info_tabs.setCurrentIndex(0)
+        self.info_tabs.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(tabBrowser)
@@ -523,7 +523,7 @@ class Ui_tabBrowser(object):
         self.recursive_box.setItemText(1, QCoreApplication.translate("tabBrowser", u"True", None))
 
         self.add_acl_button.setText(QCoreApplication.translate("tabBrowser", u"Add/Update", None))
-        self.owner.setText(QCoreApplication.translate("tabBrowser", u"Owner: ", None))
+        self.owner.setText(QCoreApplication.translate("tabBrowser", u"Creator: ", None))
         self.owner_label.setText("")
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.permissions), QCoreApplication.translate("tabBrowser", u"Permissions", None))
         ___qtablewidgetitem12 = self.replica_table.horizontalHeaderItem(0)
