@@ -158,7 +158,8 @@ class IrodsBrowserService:
             raise err
 
     def _has_object_write_own(self, acls, username, zonename):
-        WRITE_LEVEL = {"own", "write_object", "modify_object"}
+        WRITE_LEVEL = {"own"} # strange errors happen in the combination
+                              # of modify and the ibridges metadata setters
 
         return any(
             acc.access_name in WRITE_LEVEL
@@ -178,22 +179,13 @@ class IrodsBrowserService:
         new_units: str,
     ):
         """Update a single AVU on a path."""
-        # NOTE: workraound for ibridgs 412 second part
-        if path.collection_exists():
-            acls = Permissions(self.session, path.collection)
-        else:
-            acls = Permissions(self.session, path.dataobject)
-        if not self._has_object_write_own(acls, self.session.irods_session.username, self.session.irods_session.zone):
-            raise CAT_NO_ACCESS_PERMISSION("You need object write permissions to update metadata.")
-
         try:
             # Retrieve the specific AVU
             avu = path.meta[old_key, old_value, old_units]
 
-            # Mutate it in place
-            avu.key = new_key
-            avu.value = new_value
-            avu.units = new_units
+            # Add new and delete old
+            path.meta.add(new_key, new_value, new_units)
+            path.meta.delete(avu.key, avu.value, avu.units)
         except Exception as err:
             # user has no permission to modify metadata
             irods_exc = self.find_irods_exception(err)
@@ -214,15 +206,28 @@ class IrodsBrowserService:
 
     # -------- ACLs / permissions --------
 
-    def get_acl_strings(self):
-        PERM_MAP = {
+    PERM_MAP = {
             "read_object": "read",
             "modify_object": "write",
-            "null": "delete",
+            "null": "delete permission",
+            "delete_object": "delete",
+            "create_object": "create"
         }
+    REVERSE_PERM_MAP = {v: k for k, v in PERM_MAP.items()}
+
+    def get_acl_strings(self):
+        #PERM_MAP = {
+        #    "read_object": "read",
+        #    "modify_object": "write",
+        #    "null": "delete permission",
+        #    "delete_object": "delete",
+        #    "create_object": "create"
+        #}
         perm = Permissions(self.session, self.session.home)
-        avail = [PERM_MAP.get(perm_str, perm_str) 
-                        for (perm_str, _) in perm.available_permissions.items()]
+        # remove metadata permissions github.com/irods/irods/issues/6813
+        avail = [self.PERM_MAP.get(perm_str, perm_str) 
+                        for (perm_str, _) in perm.available_permissions.items()
+                        if "metadata" not in perm_str]
         return avail
 
     def normalize_acls(self, acls):
@@ -258,8 +263,9 @@ class IrodsBrowserService:
         """Apply an ACL change to a collection or data object."""
         obj = get_irods_item(path)
         perms = Permissions(self.session, obj)
+        irods_access = self.REVERSE_PERM_MAP[access]
         perms.set(
-            perm=access,
+            perm=irods_access,
             user=user_name,
             zone=user_zone,
             recursive=recursive,
