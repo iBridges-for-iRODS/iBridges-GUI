@@ -6,6 +6,7 @@ from pathlib import Path
 
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMainWindow, QMessageBox
+from PySide6.QtWidgets import QApplication
 
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.mainmenu import (
@@ -98,7 +99,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.session_manager.disconnect()
 
     def _on_exit(self) -> None:
-        self.close()
+        #self.close()
+        QApplication.quit()
 
     def _on_create_env(self) -> None:
         widget = CheckConfig(self.logger, Path("~/.irods").expanduser())
