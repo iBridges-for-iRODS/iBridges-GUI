@@ -5,8 +5,7 @@ import logging
 from pathlib import Path
 
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMainWindow, QMessageBox
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.mainmenu import (
