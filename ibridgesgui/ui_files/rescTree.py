@@ -17,7 +17,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QHeaderView,
     QLabel, QPushButton, QSizePolicy, QSpacerItem,
-    QTreeView, QVBoxLayout, QWidget)
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_rescTree(object):
     def setupUi(self, Dialog):
@@ -52,7 +52,7 @@ class Ui_rescTree(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.resc_view = QTreeView(Dialog)
+        self.resc_view = QTreeWidget(Dialog)
         self.resc_view.setObjectName(u"resc_view")
 
         self.verticalLayout.addWidget(self.resc_view)
@@ -87,6 +87,10 @@ class Ui_rescTree(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
+        ___qtreewidgetitem = self.resc_view.headerItem()
+        ___qtreewidgetitem.setText(2, QCoreApplication.translate("Dialog", u"Status", None))
+        ___qtreewidgetitem.setText(1, QCoreApplication.translate("Dialog", u"Free Space", None))
+        ___qtreewidgetitem.setText(0, QCoreApplication.translate("Dialog", u"Name (Type)", None))
         self.error_label.setText("")
         self.ok_button.setText(QCoreApplication.translate("Dialog", u"OK", None))
     # retranslateUi

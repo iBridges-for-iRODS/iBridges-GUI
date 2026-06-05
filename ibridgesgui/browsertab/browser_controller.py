@@ -69,6 +69,7 @@ class BrowserController:
 
     def _refresh_browser(self) -> None:
         path = self.service.path_from_text(self.ui.input_path.text())
+        self.ui.browser_table.clearSelection()
         self._set_path(path)
 
     def _go_to_parent(self) -> None:
@@ -196,6 +197,10 @@ class BrowserController:
             data = self.model.metadata_cache[row]
 
         self.ui.render_metadata(data, irods_path)
+
+    def get_possible_acl_strings(self):
+        """Retrieve a list of GUI accepted and cleaned iRODS ACL skills."""
+        return self.service.get_acl_strings()
 
     def _fill_acl_tab(self, irods_path, row):
         if row not in self.model.acl_cache:
