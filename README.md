@@ -39,7 +39,19 @@ You can find the latest release [here](https://github.com/iBridges-for-iRODS/iBr
 The build was done using the latest version on an x64 architecture.
 
 ## Installation
-- The python package 
+- Install the python package into its own virtual environment (recommended):
+
+  ```bash
+  uv tool install ibridgesgui # installs for your user by default; see uv tool options for how to install for all users on the system
+  ```
+
+  OR
+
+  ```bash
+  pipx install ibridgesgui
+  ```
+
+- Install the python package in the current virtual environment (or system-wide):
 
   ```bash
   pip install ibridgesgui
@@ -60,11 +72,18 @@ The build was done using the latest version on an x64 architecture.
   ```
   
 ## Start the GUI
-- From a pip python package
+- For normal users
 
   ```bash
-  ibridges gui
+  ibridges-gui
   ```
+
+  OR
+
+  ```bash
+  ibridges gui # only works if the 'ibridges' cli tool is also available
+  ```
+
 - From code (for developers)
 
   ```bash
