@@ -162,7 +162,7 @@ QTabWidget#info_tabs
      <item>
       <widget class="QPushButton" name="delete_row_button">
        <property name="text">
-        <string>Delete rows</string>
+        <string>Delete selected</string>
        </property>
       </widget>
      </item>

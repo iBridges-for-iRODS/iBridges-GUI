@@ -1,11 +1,11 @@
 """Manage ibridges connection."""
 from __future__ import annotations
 
-from ibridges import IrodsPath, Session
-from ibridges.resources import Resources
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QDialog
 
+from ibridges import IrodsPath, Session
+from ibridges.resources import Resources
 from ibridgesgui.login import LoginDialog
 
 

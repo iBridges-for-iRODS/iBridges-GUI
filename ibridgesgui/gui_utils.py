@@ -13,11 +13,11 @@ from typing import Iterable, Optional, Union
 import PySide6.QtCore
 import PySide6.QtUiTools
 import PySide6.QtWidgets
-from ibridges import IrodsPath
-from ibridges.executor import Operations
 from jsonschema import ValidationError, validate
 
 import ibridgesgui.md_schemas
+from ibridges import IrodsPath
+from ibridges.executor import Operations
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
 try:

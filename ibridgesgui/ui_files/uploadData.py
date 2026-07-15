@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'uploadData.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -199,13 +199,13 @@ class Ui_uploadData(object):
         self.overwrite.setText(QCoreApplication.translate("uploadData", u"Overwrite existing data", None))
         self.folder_button.setText(QCoreApplication.translate("uploadData", u"Select Folder", None))
         self.file_button.setText(QCoreApplication.translate("uploadData", u"Select Files", None))
-        self.delete_row_button.setText(QCoreApplication.translate("uploadData", u"Delete rows", None))
+        self.delete_row_button.setText(QCoreApplication.translate("uploadData", u"Delete selected", None))
         self.error_label.setText("")
         self.label_5.setText(QCoreApplication.translate("uploadData", u"Uploading to", None))
         self.label_2.setText(QCoreApplication.translate("uploadData", u"Options:", None))
         ___qtablewidgetitem = self.table.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("uploadData", u"Path", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("uploadData", u"Path", None))
         ___qtablewidgetitem1 = self.table.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("uploadData", u"Metadata", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("uploadData", u"Metadata", None))
     # retranslateUi
 

@@ -3,11 +3,11 @@
 import logging
 from typing import Iterable, Tuple
 
+from irods.exception import CAT_NO_ACCESS_PERMISSION
+
 from ibridges import IrodsPath
 from ibridges.permissions import Permissions
 from ibridges.util import obj_replicas
-from irods.exception import CAT_NO_ACCESS_PERMISSION
-
 from ibridgesgui.gui_utils import get_irods_item
 
 
