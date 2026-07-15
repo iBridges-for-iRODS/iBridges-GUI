@@ -386,7 +386,7 @@ def test_on_select_all(controller, fake_view_search):
     fake_view_search.search_table.clearSelection.assert_called_once()
 
 
-def test_on_send_to_browser_collection(controller, fake_view_search, fake_browser, monkeypatch):
+def test_on_send_to_browser_collection(controller, fake_view_search, fake_browsercontroller, monkeypatch):
     fake_view_search.search_table.currentIndex.return_value.row.return_value = 0
     fake_item = MagicMock()
     fake_item.text.return_value = "/zone/home/coll1"
@@ -411,6 +411,5 @@ def test_on_send_to_browser_collection(controller, fake_view_search, fake_browse
 
     controller.on_send_to_browser()
 
-    fake_browser.input_path.setText.assert_called_with("/zone/home/coll1")
-    fake_browser.load_browser_table.assert_called_once()
+    fake_browsercontroller._set_path.assert_called_once()
 

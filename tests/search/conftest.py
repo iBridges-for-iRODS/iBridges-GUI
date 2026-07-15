@@ -112,11 +112,10 @@ def fake_session():
 
 
 @pytest.fixture
-def fake_browser():
-    browser = MagicMock()
-    browser.input_path = MagicMock()
-    browser.load_browser_table = MagicMock()
-    return browser
+def fake_browsercontroller():
+    browsercontroller = MagicMock()
+    browsercontroller._set_path = MagicMock()
+    return browsercontroller
 
 
 @pytest.fixture
@@ -129,7 +128,7 @@ def fake_model(fake_session):
 
 
 @pytest.fixture
-def controller(fake_view_search, fake_session, fake_browser, fake_model, monkeypatch):
+def controller(fake_view_search, fake_session, fake_browsercontroller, fake_model, monkeypatch):
     """SearchController wired with fake UI, session, model, and browser."""
 
     import ibridgesgui.searchtab.search_controller as search_controller_module  # adjust
@@ -144,7 +143,7 @@ def controller(fake_view_search, fake_session, fake_browser, fake_model, monkeyp
         ui=fake_view_search,
         session=fake_session,
         app_name="test_app",
-        browser=fake_browser,
+        browsercontroller=fake_browsercontroller,
     )
     # Ensure model is our fake
     c.model = fake_model
