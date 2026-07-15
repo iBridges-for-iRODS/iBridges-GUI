@@ -66,6 +66,7 @@ class BrowserController:
         self.model.set_path(irods_path)
         self.ui.input_path.setText(str(irods_path))
         self._load_browser_table()
+        self.ui.browser_table.clearSelection()
 
     def _refresh_browser(self) -> None:
         path = self.service.path_from_text(self.ui.input_path.text())
