@@ -21,8 +21,54 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         else:
             load_ui(UI_FILE_DIR / "tabBrowser.ui", self)
 
+        self.setup_tooltips()
         self.controller = BrowserController(self, session, app_name)
         self.controller.init_browser()
+
+    def setup_tooltips(self):
+        """Add tool tips to interactive elements."""
+        # --- Navigation ---
+        self.input_path.setToolTip("Enter an iRODS path and press Enter to navigate.")
+        self.refresh_button.setToolTip("Reload the current collection or data object.")
+        self.home_button.setToolTip("Go to your iRODS home collection.")
+        self.parent_button.setToolTip("Move to the parent collection of the current path.")
+
+        # --- CRUD operations ---
+        self.upload_button.setToolTip("Upload a file or directory to the current iRODS path.")
+        self.download_button.setToolTip("Download the selected iRODS item.")
+        self.create_coll_button.setToolTip("Create a new collection inside the current path.")
+        self.rename_button.setToolTip("Rename the selected iRODS item.")
+        self.delete_button.setToolTip("Delete the selected iRODS item.")
+
+        # --- Browser table ---
+        self.browser_table.setToolTip(
+            "Browse collections and data objects. Double‑click to open an item."
+        )
+
+        # --- Info tabs ---
+        self.info_tabs.setToolTip(
+            "View metadata, ACLs, replicas, or a preview of the selected item."
+        )
+
+        # --- Metadata ---
+        self.meta_table.setToolTip(
+            "Metadata attached to this item. Click a row to load it for editing."
+        )
+        self.add_meta_button.setToolTip("Add a new metadata attribute to this item.")
+        self.update_meta_button.setToolTip("Update the selected metadata attribute.")
+        self.delete_meta_button.setToolTip("Delete the selected metadata attribute.")
+
+        # --- ACLs ---
+        self.acl_table.setToolTip(
+            "Access Control List entries. Click a row to load it for editing."
+        )
+        self.add_acl_button.setToolTip("Add or update an ACL entry for this item.")
+
+        # --- Replicas ---
+        self.replica_table.setToolTip("Replica information for this data object.")
+
+        # --- Preview ---
+        self.preview_browser.setToolTip("Preview the selected data object, if supported.")
 
     # --- Rendering helpers moved from controller ---
 
@@ -35,7 +81,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
 
         populate_table(self.meta_table, len(data), data)
         current_tab = self.info_tabs.currentWidget().objectName()
-        if current_tab == "metadata" and  len(data) == 0:
+        if current_tab == "metadata" and len(data) == 0:
             self.no_meta_label.setText(f"Metadata for {irods_path} is empty.")
         self.meta_table.resizeColumnsToContents()
 
@@ -47,8 +93,7 @@ class Browser(PySide6.QtWidgets.QWidget, Ui_tabBrowser):
         self.acl_box.clear()
         self.recursive_box.setEnabled(irods_path.collection_exists())
 
-        #obj_acl = ["read", "write", "own", "delete"]
-        obj_acl = self.controller.get_possible_acl_strings()
+        obj_acl = ["read", "write", "own", "delete"]
         coll_acl = obj_acl + [
             "Newly added items to collection will inherit permissions",
             "Remove inheritance.",
