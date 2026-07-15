@@ -2,9 +2,8 @@
 
 import logging
 
-from PySide6.QtCore import QTimer
-
 from ibridges import IrodsPath, download
+from PySide6.QtCore import QTimer
 
 from ibridgesgui.gui_utils import combine_operations, prep_session_for_copy
 from ibridgesgui.searchtab.search_model import SearchModel
