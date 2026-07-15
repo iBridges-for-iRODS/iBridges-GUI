@@ -90,9 +90,14 @@ max-args=10
 
 [tool.ruff]
 exclude = ["_version.py", "ui_files"]
+src = ["ibridgesgui"]
 line-length = 100
 lint.select = ["D", "E", "F", "W", "I", "N"]
 lint.ignore = ["D203", "D213"]
+
+[tool.ruff.isort]
+known-first-party = ["ibridges", "ibridgesgui"]
+known-third-party = ["PySide6"]
 
 [tool.coverage.run]
 omit = [
