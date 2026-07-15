@@ -456,7 +456,7 @@ class Ui_tabBrowser(object):
 
         self.retranslateUi(tabBrowser)
 
-        self.info_tabs.setCurrentIndex(2)
+        self.info_tabs.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(tabBrowser)
