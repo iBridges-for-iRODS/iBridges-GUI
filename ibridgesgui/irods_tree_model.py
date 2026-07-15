@@ -2,8 +2,9 @@
 
 import irods
 import irods.exception
-from ibridges import IrodsPath
 from PySide6 import QtCore, QtGui, QtWidgets
+
+from ibridges import IrodsPath
 
 
 class IrodsTreeModel(QtGui.QStandardItemModel):

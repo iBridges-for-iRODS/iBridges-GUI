@@ -19,9 +19,6 @@ from json import JSONDecodeError
 from pathlib import Path
 from typing import Union
 
-from ibridges.cli.config import IbridgesConf
-from ibridges.session import Session, _translate_irods_error
-from ibridges.util import open_irodsa
 from irods.auth.pam import PamLoginException
 from irods.connection import PlainTextPAMPasswordError
 from irods.exception import (
@@ -32,6 +29,10 @@ from irods.exception import (
     NetworkException,
 )
 from irods.session import iRODSSession
+
+from ibridges.cli.config import IbridgesConf
+from ibridges.session import Session, _translate_irods_error
+from ibridges.util import open_irodsa
 
 try:
     from importlib_metadata import version  # Python < 3.10

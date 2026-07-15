@@ -5,11 +5,11 @@ import os
 from pathlib import Path
 from typing import Any
 
-from ibridges import Session
-from ibridges.session import LoginError, PasswordError
 from irods.exception import ResourceDoesNotExist
 from PySide6.QtWidgets import QDialog, QLineEdit
 
+from ibridges import Session
+from ibridges.session import LoginError, PasswordError
 from ibridgesgui.config import (
     IRODSA,
     check_irods_config,

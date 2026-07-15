@@ -2,9 +2,9 @@
 
 import sys
 
-from ibridges.resources import Resources
 from PySide6 import QtCore, QtWidgets
 
+from ibridges.resources import Resources
 from ibridgesgui.config import CONFIG_DIR
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui, populate_table, populate_textfield
 from ibridgesgui.popup_widgets.resc_tree import RescInfoDialog

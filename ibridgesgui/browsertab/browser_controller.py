@@ -5,8 +5,8 @@ from typing import Optional
 
 import irods.exception
 import PySide6.QtWidgets
-from ibridges import IrodsPath
 
+from ibridges import IrodsPath
 from ibridgesgui.browsertab.browser_model import BrowserModel
 from ibridgesgui.browsertab.irods_browser_service import IrodsBrowserService
 from ibridgesgui.gui_utils import populate_table

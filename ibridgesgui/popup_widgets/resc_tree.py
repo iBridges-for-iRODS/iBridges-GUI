@@ -1,8 +1,8 @@
 """Popup to show resource tree."""
-from ibridges.resources import Resources
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtWidgets import QDialog, QHeaderView, QTreeWidgetItem
 
+from ibridges.resources import Resources
 from ibridgesgui.popup_widgets.base import UiDialogMixin
 from ibridgesgui.ui_files.rescTree import Ui_rescTree
 
