@@ -305,7 +305,7 @@ class SearchController:
         ipath = IrodsPath(self.session, path)
 
         target = ipath if ipath.collection_exists() else ipath.parent
-        self.browsercontroller._set_path(target)
+        self.browsercontroller._set_path(target) # pylint: disable=protected-access
         self.ui.error_label.setText(f"{str(target)} opened in browser.")
 
 
