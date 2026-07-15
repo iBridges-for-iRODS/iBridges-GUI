@@ -38,7 +38,8 @@ class TabManager:
 
     def _create_search(self, session, app_name: str, _logger) -> Search:
         browser = self.loaded_tabs.get("Browser")
-        return Search(session, app_name, browser.controller)
+        browsercontroller = getattr(browser, "controller", None)
+        return Search(session, app_name, browsercontroller)
 
     def _create_info(self, session, _app_name, _logger) -> Info:
         return Info(session)
