@@ -3,7 +3,9 @@ project:
   output-dir: ./_html
 
 website:
+  title: "iBridges GUI"
   navbar:
+    title: false
     left:
       - href: index.qmd
         text: Home
@@ -17,9 +19,19 @@ website:
         text: Contributing to iBridges
       - href: docs/faq.qmd
         text: FAQ
+    repo-url: https://github.com/iBridges-for-iRODS/iBridges-GUI
+    issue-url: https://github.com/iBridges-for-iRODS/iBridges-GU/issues
+    repo-actions: [edit, issue, source]
 
 format:
   html:
-    theme: yeti
-    css: _styles/styles.css
+    theme: flatly
+    css: 
+      - _styles/ibridges.css
+      - _styles/hyperlinks.css
+      - _styles/toc.css
+      - _styles/callouts.css
+      - _styles/code.css
+      - _styles/navbar.css
+      - _styles/search_icon.css
     toc: true

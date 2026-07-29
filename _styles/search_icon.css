@@ -1,0 +1,13 @@
+/* Ultimate override for Quarto search icon */
+.navbar button.quarto-search-button svg,
+.navbar button.quarto-search-button svg *,
+.navbar .quarto-search-icon,
+.navbar .quarto-search-icon *,
+.navbar svg[role="img"],
+.navbar svg[role="img"] *,
+.navbar svg,
+.navbar svg * {
+  fill: #15a589 !important;
+  stroke: #15a589 !important;
+  color: #15a589 !important;
+}

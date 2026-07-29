@@ -1,0 +1,127 @@
+/*-- scss:defaults --*/
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css?family=Merriweather:wght@300&family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;800&display=swap');
+
+$font-family-sans-serif: 'Nunito', Tahoma, sans-serif !default;
+
+/* Headings */
+$presentation-heading-font: 'Merriweather', Tahoma, sans-serif !default;
+$presentation-heading-color: #000000 !default;
+$h1-font-size: 3.0em !default;
+$h2-font-size: 2.7em !default;
+$h3-font-size: 2.15em !default;
+
+/*-- scss:rules --*/
+
+/* Title slide h1 */
+section.slide h1 {
+  margin-left: 5vw;
+}
+
+/* Section headings */
+section.slide h2 {
+  color: black !important;
+  background-color: #d3d3d3 !important;
+  width: 100%;
+  position: relative;
+  left: -30vw;
+
+  padding-left: 20vw;
+  padding-right: 20vw;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  margin-left: 5vw;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Theme section blocks */
+.theme-section {
+  text-align: left;
+  margin-top: 1.2em;
+  margin-left: 5vw;
+}
+
+/* Code blocks */
+.reveal pre code {
+  background-color: #FFFFFF;
+  font-size: 0.8em;
+  padding: 0.4em;
+  margin: 0.2em;
+}
+
+.cell {
+  margin: 1em;
+}
+
+/* Subtitle + author */
+.subtitle,
+.author {
+  color: #000000;
+  font-size: $h2-font-size;
+  font-family: $presentation-heading-font;
+}
+
+/* Footer */
+.reveal .footer {
+  color: #000000;
+  font-family: $presentation-heading-font;
+}
+
+/* Slide numbers */
+.reveal .slide-number {
+  font-family: $presentation-heading-font;
+}
+
+.slide-number {
+  bottom: 10px !important;
+  right: 10px !important;
+  top: unset !important;
+  color: #000000 !important;
+}
+
+/* Lists */
+.reveal li {
+  padding: 10px;
+}
+
+/* Center helper */
+.center-x {
+  text-align: center;
+}
+
+/* Dark background links */
+section.has-dark-background a,
+section.has-dark-background a:hover {
+  color: #d3d3d3;
+}
+
+.reveal .controls {
+  color: #15a588 !important;
+}
+
+.reveal .controls button {
+  color: #15a588 !important;
+  opacity: 1 !important; /* ensures they don’t fade */
+}
+
+.reveal .progress span {
+  background-color: #15a588 !important;
+}
+
+a,
+a:visited {
+  color: #15a588 !important;
+}
+
+a:hover,
+a:focus {
+  color: #0f7f68 !important; /* slightly darker hover */
+}
+.navbar {
+  background-color: #c8efe6 !important;
+}
