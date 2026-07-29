@@ -1,68 +1,92 @@
 ---
-title: "What is iBridges GUI"
+title: "What is iBridges‑GUI"
+format:
+  html:
+    toc: false
 ---
 
-[iBridges-GUI](https://github.com/iBridges-for-iRODS/iBridges-GUI) is a graphical user interface to the python package [iBridges](https://github.com/UtrechtUniversity/iBridges), it provides users of *Windows, Linux and Mac* with a *graphical user interface* to interact with **iRODS** servers. 
-The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing through iRODS collections, upload/download and synchronisation of data, manipulate iRODS metadata and search through data collections. 
+[iBridges‑GUI](https://github.com/iBridges-for-iRODS/iBridges-GUI) is a lightweight, cross‑platform graphical interface for **[iBridges](https://github.com/UtrechtUniversity/iBridges)**.  
+It provides an intuitive way to work with **iRODS** on *Windows, Linux, and macOS*, without needing to use the command line.
 
-## Current features
+The application is fully client‑side and agnostic to server rules or policies.
 
-- `Configuration` checker and editor to easily adjust your iRODS client configuration.
-- `Browser`: a main table to browse through collections and inspect data, manipulate metadata and User Permissions, up and download smaller data and to delete data.
-- `Data Synchronisation`: a two-pane view to select local directories and synchronise them with their counterpart collections in iRODS
-- `Search`: provide search criteria and list all found data collections and objects in iRODS, also allows for download selected items.
--  `Info`: an overview over the iRODS server and iRODS client configuration listing user information such as groups and server information such as resources.
+---
+
+## Feature overview
+
+<div style="
+  background-color:#e6f7f3;
+  border-radius:12px;
+  padding:1.2rem 1.4rem;
+  margin-bottom:1.5rem;
+">
+
+**iBridges‑GUI helps you:**
+
+- Browse iRODS collections and inspect data  
+- Upload, download, and synchronise files  
+- Edit and view metadata  
+- Search across collections and data objects  
+- Review client and server configuration details  
+
+</div>
+
+---
 
 ## Supported iRODS versions
-We test our code on iRODS servers with versions
-- > 4.2.11
-- > 4.3.0
 
-## Dependencies
-- Python3.9+
-- Python pyQt6
-- Python ibridges 0.1.6
+- 4.3.x and newer
 
-## Install and start the application
+---
 
-### Stable version
+## Requirements
 
-```
+- Python ≥ 3.9  
+- PySide6  
+- iBridges ≥ 2.1.x  
+
+---
+
+## Installation
+
+### Stable release
+
+```bash
 pip install ibridges
 pip install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@main
 ```
 
 ### Development version
 
-```
+```bash
 pip install ibridges
 pip install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@develop
 ```
 
-Start the application by calling `ibridges gui` on your commandline.
+Start the application
+
+```bash
+ibridges gui
+```
 
 ## Authors
-**Christine Staiger (Maintainer) [ORCID](https://orcid.org/0000-0002-6754-7647)**
 
-- *Wageningen University & Research* 2021 - 2022
-- *Utrecht University* 2022
+**Christine Staiger (Maintainer)** — [ORCID](https://orcid.org/0000-0002-6754-7647)  
+- Wageningen University & Research (2021–2022)  
+- Utrecht University (2022–)
 
-**Tim van Daalen**, *Wageningen University & Research* 2021
+**Tim van Daalen** — Wageningen University & Research (2021)
 
-**Maarten Schermer (Maintainer) [ORCID](https://orcid.org/my-orcid?orcid=0000-0001-6770-3155)**, *Utrecht University* 2023
+**Maarten Schermer (Maintainer)** — [ORCID](https://orcid.org/0000-0001-6770-3155), Utrecht University (2023)
 
-**Raoul Schram (Maintainer) [ORCID](https://orcid.org/my-orcid?orcid=0000-0001-6616-230X)**. 
-*Utrecht University* 2023
+**Raoul Schram (Maintainer)** — [ORCID](https://orcid.org/0000-0001-6616-230X), Utrecht University (2023)
+
 
 ## Contributors
 
-**J.P. Mc Farland**,
-*University of Groningen, Center for Information Technology*, 2022
-
-## Contributing
-Our development is done on GitHub](https://github.com/iBridges-for-iRODS/iBridges-GUI). We are welcoming contributions by pull requests. You can also ask for new features/ideas in our issue tracker.
-
-
+**J.P. Mc Farland** — University of Groningen, Center for Information Technology (2022)
 
 ## License
+
 GPL v3
+

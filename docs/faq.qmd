@@ -1,36 +1,64 @@
-# Frequently Asked Questions
+---
+title: "Frequently asked Questions"
+format:
+  html:
+    toc: false
+---
 
-If you cannot find your question here, please also take a look at our [API and CLI FAQ](https://ibridges.readthedocs.io/en/latest/faq.html).
+If your question isn’t listed here, you may also find answers in the [**API and CLI FAQ**](https://ibridges.readthedocs.io/en/latest/faq.html).
 
-## I found a bug or have a feature request, where do I go?
+::: {.callout-tip collapse="true" title="I found a bug or have a feature request — where should I go?"}
+All development happens on **GitHub**.
 
-Our development is done on [GitHub](https://github.com/iBridges-for-iRODS/iBridges-GUI).
+Check the *Issues* section to see whether your bug or idea has already been reported.  
+If not, feel free to open a new issue — we actively monitor the tracker and usually respond within a few days.
+:::
 
-Look under the *Issues* section whether the bug or feature request has already been reported. If not, we heartily welcome creating a new issue. We try to get back to you as soon as possible, at least within a few days.
+::: {.callout-tip collapse="true" title="I’m getting a “NetworkError” when transferring large files"}
+This error usually appears when the **checksum calculation** exceeds the default iBridges timeout of **25,000 seconds** (~7 hours).  
+The transfer itself typically succeeds, but if the server is busy or the file is extremely large, the checksum step may run longer than the timeout.
 
-## Help, I’m getting a “NetworkError” while trying to transfer (large) files
+You can increase the timeout by adding this entry to your `irods_environment.json`:
 
-This error is most likely to happen if you try to transfer a large file. The default timeout for iBridges is 25000 seconds, which translates to roughly 7 hours. This should not cause issues during the actual transfer. However, if the calculation of the checksum takes more than 7 hours (if the iRODS server is busy for example, or the file is many terabytes), then you will get a network error. The checksum itself should still be created.
+```
+"connection_timeout": <time in seconds>
+```
 
-You can increase the timeout in your `irods_environment.json` file by adding a new entry with `"connection_timeout": <time in seconds>,`.
+The maximum allowed value is:
 
-Note, that the **maximum number equals 292 years**, i.e. `"connection_timeout": 9208512000,`.
+```
+"connection_timeout": 9208512000
+```
 
-## My metadata with keys starting with `org_` do not show up in the iBridges metadata.
+which corresponds to roughly **292 years**.
+:::
 
-By default, iBridges does not show metadata that contain a key starting with the prefix *org_*. This is due to data security reasons on Yoda systems.
+::: {.callout-tip collapse="true" title="My metadata keys starting with `org_` don’t appear in iBridges"}
+iBridges hides metadata keys beginning with `org_` by default.  
+This behaviour is intentional on Yoda systems for data‑security reasons.
 
-You can omit that only by using the [iBridges API](https://ibridges.readthedocs.io/en/latest/faq.html#my-metadata-with-keys-starting-with-org-do-not-show-up-in-the-ibridges-metadata).
+If you need to access these keys, you can do so via the  
+[**iBridges API**](https://ibridges.readthedocs.io/en/latest/faq.html#my-metadata-with-keys-starting-with-org-do-not-show-up-in-the-ibridges-metadata).
+:::
 
-## How can I download files that follow a certain pattern but do not lie in the same collection?
+::: {.callout-tip collapse="true" title="How can I download files that match a pattern but aren’t in the same collection?"}
+Use the **Search** tab.  
+The search interface lets you filter for files regardless of their location.  
+Once the results appear, select the items you want to download.
+:::
 
-You can use the *Search* for this. With the search mask you can filter for specific data no matter where they are located. In the results table you can select those files you would like to download.
 
-## How do I find all the data I have access to?
+::: {.callout-tip collapse="true" title="How do I find all the data I have access to?"}
+Shared data in iRODS doesn’t always appear in your home or project collection.
 
-When data is shared in iRODS it is not always easy to know where the shared data lies as they are not visible from your "home" collection or project collection.
+However, shared objects must always reside in a collection you can access — that’s an iRODS rule.
 
-However, shared data objects always need to lie in a collection that you can access, it's an iRODS feature.
+To list all accessible collections:
 
-So again the *Search* can help you out here. Direct the search to `/yourZone/home`, select `Obj/Coll name: %` and select `Collections` (unselect `Data Objects`).
-The result will show you all collections you have access to. 
+1. Open **Search**  
+2. Set the search path to `/yourZone/home`  
+3. Use `Obj/Coll name: %`  
+4. Select **Collections** and unselect **Data Objects**
+
+The results will show every collection you have permission to access.
+:::

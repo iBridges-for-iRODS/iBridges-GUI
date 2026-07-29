@@ -6,6 +6,7 @@ website:
   title: "iBridges GUI"
   navbar:
     title: false
+    logo: docs/screenshots/logo.png
     left:
       - href: index.qmd
         text: Home

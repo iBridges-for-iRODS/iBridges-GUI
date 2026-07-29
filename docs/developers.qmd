@@ -1,12 +1,127 @@
-# For developers
+---
+title: "Developer Guide"
+format:
+  html:
+    toc: true
+    toc-location: right
+---
 
-## Extending iBridges-GUI (for developers)
-iBridges-GUI supports Plugins. You can create your own tab and it will be detected and run by the main application.
-We provide a small guide and template structure [here](https://github.com/iBridges-for-iRODS/ibridges-gui-tab-example).
+## Extending iBridges‑GUI {#extending-ibridges-gui}
 
-## Contributing
-iBridges is an open-source project, we welcome any type of contribution. 
+iBridges‑GUI supports a modular plugin system that allows developers to add new functionality through custom tabs.  
+Your plugin is automatically detected and integrated into the main application at runtime.
 
-To steer and streamline our development we use GitHub. Please feel free to create issues and start discussions about (new) features.
-If you want to directly contribute to the code base, please fork the repository and create a new feature branch from the `develop` branch. 
-Merge back by creating a pull request.
+A minimal example and template structure are available in the  
+**[plugin example repository](https://github.com/iBridges-for-iRODS/ibridges-gui-tab-example)**.
+
+## Contributing {#contributing}
+
+iBridges‑GUI is an open‑source project, and we welcome contributions of all kinds — from bug reports and feature ideas to full pull requests.
+
+Main repository:  
+**[iBridges‑GUI on GitHub](https://github.com/iBridges-for-iRODS/iBridges-GUI)**
+
+### Contribution workflow
+
+1. Fork the repository  
+2. Create a feature branch from `develop`  
+3. Implement your changes  
+4. Submit a pull request back to `develop`
+
+This workflow helps us review changes efficiently and maintain a clean development history.
+
+## Code structure overview {#code-structure-overview}
+
+The core application lives in the  
+**[`ibridgesgui`](https://github.com/iBridges-for-iRODS/iBridges-GUI/tree/develop/ibridgesgui)**  
+package. Its architecture is modular, separating UI, logic, and iRODS operations into clear components.
+
+
+### Top-level modules {#top-level-modules}
+
+These modules provide the core functionality used across the application:
+
+- `__main__.py` — application entry point  
+- `config.py` — configuration handling  
+- `gui_utils.py` — shared GUI helpers  
+- `threads.py` — background worker threads  
+- `info.py` — application metadata  
+- `irods_tree_model.py` — iRODS tree model  
+- `login.py` — authentication  
+- `logviewer.py` — log viewer tab  
+- `welcome.py` — startup screen  
+- `md_schemas/` — metadata schema definitions  
+
+
+### mainmenu/ {#mainmenu}
+
+The orchestration layer of the application:
+
+- `main_window.py` — main Qt window hosting all tabs  
+- `tab_manager.py` — loads and organizes built‑in tabs  
+- `plugin_manager.py` — discovers and loads plugin tabs  
+- `session_manager.py` — manages user session state  
+- `config_manager.py` — handles configuration files and user-defined settings  
+
+This directory is the best starting point for understanding how the application is assembled.
+
+
+### browsertab/ {#browsertab}
+
+Implements the iRODS browser tab using a model–controller–view structure:
+
+- `browser_model.py` — data model  
+- `browser_controller.py` — navigation and logic  
+- `browser.py` — UI  
+- `irods_browser_service.py` — iRODS operations  
+
+
+### searchtab/ {#searchtab}
+
+Implements the search interface:
+
+- `search_model.py` — query state and results  
+- `search_controller.py` — executes searches and handles filters  
+- `search.py` — UI for building queries and viewing results  
+
+
+### synctab/ {#synctab}
+
+Implements synchronization:
+
+- `sync_model.py` — sync state and configuration  
+- `sync_controller.py` — sync logic and background tasks  
+- `sync.py` — UI for managing sync jobs  
+
+
+### popup_widgets/ {#popup-widgets}
+
+Reusable dialogs for:
+
+- creating collections  
+- creating directories  
+- uploading/downloading  
+- renaming  
+- metadata editing  
+- configuration checks  
+- resource tree dialogs  
+
+Each dialog has its own file, making them easy to reuse or extend.
+
+
+### ui_files/ {#ui-files}
+
+Contains:
+
+- Qt Designer `.ui` files  
+- auto‑generated Python wrappers  
+- matching controller/view logic  
+
+This keeps UI layout editable without touching logic.
+
+
+### icons/ {#icons}
+
+Contains all icons used in the GUI, including navigation arrows, sync indicators, loading animations, and the application logo.
+
+
