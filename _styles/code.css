@@ -1,0 +1,6 @@
+/* Code text color override */
+code,
+pre code,
+.reveal pre code {
+  color: #15a589 !important;
+}

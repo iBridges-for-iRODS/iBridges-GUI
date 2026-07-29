@@ -1,148 +1,157 @@
-# iBridges User Documentation
+---
+title: "User Documentation"
+format:
+  html:
+    toc: true
+---
 
 ## Synopsis
 
-iBridges is a **GUI for any data‑management platform based on iRODS**. It exposes iRODS functionality through a graphical interface. The GUI groups related functionality into separate views, each representing a specific function area.
+iBridges‑GUI is a **graphical interface for any iRODS‑based data management platform**.  
+It exposes core iRODS functionality through a set of focused views, each designed for a specific task.
 
-Default iBridges‑GUI views:
+Default views:
 
-- **Browser** — browse iRODS collections, inspect data objects and collections, **edit metadata and permissions**, and **delete data**.
-- **Data Synchronisation** — synchronise local directories with their corresponding iRODS collections.
-- **Search** — search for data collections and objects.
-- **Info** — summarises information such as the user’s role, groups, and the storage resources on the iRODS server, including their status and available capacity.
+- **Browser** — explore collections, inspect data objects, edit metadata and permissions, upload/download, delete.
+- **Data Synchronisation** — synchronise local directories with iRODS collections.
+- **Search** — locate collections and data objects using name or metadata filters.
+- **Info** — display user information, groups, and server resources (status, capacity).
 
 ## Views and Plugins
 
-In the main menu (next to the configuration menu), you will find a drop‑down menu called **“Views and Plugins”**. Selecting or deselecting items in this menu will show or hide the corresponding tabs in the GUI. All checked tabs and plugins will automatically be restored in the next session.
+The **Views and Plugins** menu (next to *Configure*) lets you show or hide tabs.  
+Checked views are restored automatically when you restart the application.
 
-On first launch, the default views `Welcome`, `Browser`, `Synchronise Data`, `Search`, `Info`, and `Logs` are shown.
+On first launch, the following tabs appear:  
+`Welcome`, `Browser`, `Synchronise Data`, `Search`, `Info`, and `Logs`.
 
-## Browsing through your iRODS collections
+## Browser
 
-After logging into iRODS, the first view you see is the **Browser**. This view has three sections:
+After logging in, the **Browser** is the first view you see.  
+It consists of three parts:
 
 1. Navigation  
 2. Listing  
-3. Detailed inspection of data objects and collections
+3. Detailed inspection
 
-![](screenshots/browser.png)  
+![](screenshots/browser.png)
 
 ### Navigation
 
-- The navigation bar contains an **editable field** showing your current iRODS path. On startup, it points to your `irods_home` from the configuration file.  
-  You can **navigate anywhere in the iRODS tree** by editing this field and pressing `<Enter>`.
+- The path field shows your current iRODS location.  
+  Edit it and press `<Enter>` to jump anywhere in the tree.
 
-- The **three buttons** next to the path field are:
-  - `Refresh` (circular arrows) — reload the listing  
-  - `Up` (arrow) — go one level up  
-  - `Home` (house icon) — jump to your home collection
+- Buttons:
+  - **Refresh** — reload the listing  
+  - **Up** — go one level up  
+  - **Home** — jump to your home collection
 
-- `Create Collection` creates a new collection at the path shown above.
+- **Create Collection** — create a new collection at the current path.
 
-- `Upload` opens a dialog to select files for upload. The destination is the path in the navigation field. You may also specify metadata files to be extracted upon upload and be stored as iRODS metadata.
+- **Upload** — select files to upload.  
+  Optional: include metadata files to extract and store as iRODS metadata.
 
-- `Download` opens a dialog to choose a local destination. You may also export metadata alongside the download.  
-  To download, select an item in the table below.  
-  For downloading multiple items, see the **Search** section.
+- **Download** — choose a local destination.  
+  Optional: export metadata alongside the download.  
+  Select an item in the table to download it.  
+  For downloading multiple items, use the **Search** view.
 
-- `Delete` removes the selected collection or data object.  
-  **Note: deleted data is permanently removed from the iRODS instance.**
+- **Delete** — permanently remove the selected item from iRODS.
 
 ### Listing
 
-The table below the navigation bar lists all collections and data objects in the current path.
+The table lists all collections and data objects at the current path.
 
 Columns:
 
-- **Status** — `-C` for collections, or the replica status for data objects.  
-  If a data object’s status is not `good`, the data is compromised. Contact your iRODS administrator. Do not use such data.
-- **Name** — collection or data object name
-- **Size** — size in bytes
-- **Checksum** — a hash used to verify data integrity
-- **Created / Modified** — timestamps for creation and last modification
+- **Status** — `-C` for collections; replica status for data objects.  
+  If a data object’s status is not `good`, the data is compromised. Contact your iRODS administrator.
+- **Name**  
+- **Size**  
+- **Checksum**  
+- **Created / Modified**
 
-- *Single click* loads details in the section below.  
-- *Double click* on a collection navigates into it.
+Actions:
 
-### Inspect collections and data objects
+- *Single click* — load details below.  
+- *Double click* — open a collection.
+
+## Inspect collections and data objects
 
 This section shows detailed information about the selected item.
 
-- **Preview** — lists the contents of a collection or shows the first lines of text, JSON, or CSV files.
+### Preview
 
-- **Metadata** — displays iRODS metadata (key, value, units).
-  - *Single click* loads the metadata entry into the editable fields.
-  - To create metadata, fill in *key*, *value*, and *units*, then click `Add`.  
-    Multiple entries with the same key but different values are allowed.
-  - `Update` updates the current selected metadata entry.
-  - `Delete` removes the metadata entry matching the fields.
+Displays collection contents or the first lines of text/JSON/CSV files.
+
+### Metadata
+
+Shows metadata as key–value–unit triples.
+
+- *Single click* loads an entry into the editable fields.
+- **Add** — create a new entry.  
+- **Update** — modify the selected entry.  
+- **Delete** — remove the entry matching the fields.
 
 ![](screenshots/metadata.png)
 
-- **Permissions** — shows access rights for the selected item.  
-  The drop‑down menu `Access name` exposes the following rights:
+### Permissions
 
-  | Rights/Action | upload file | write file | delete file | add metadata | update metadata | remove metadata |
-  |---------------|-------------|------------|-------------|--------------|------------------|------------------|
-  | delete_object | ✅ also `imkdir` | ✅ | ✅/❌ | ✅ | ❌ | ✅ |
-  | modify_object | ✅ also `imkdir` | ✅ | ✅/❌ | ✅ | ✅ | ✅ |
-  | create_object | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-  | read_object   | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-  
-  ![](screenshots/permissions.png)
+Shows access rights for the selected item.
 
-  The **Creator** label shows who created the selected item.
+![](screenshots/permissions.png)
 
-  Collections support `inherit` / `noinherit`.  
-  `inherit` applies the collection’s permissions to newly added items.
+- The **Access name** dropdown lists available rights.  
+- **Creator** shows who created the item.
+- Collections support `inherit` / `noinherit`.  
+  `inherit` applies collection permissions to newly added items.
+- Enable **Recursive** to apply changes to all existing members.
 
-  To apply permission changes recursively to all existing members of a collection, enable `Recursive`.
+### Replicas
 
-- **Replicas** — shows the storage resources where a data object is stored.  
-  Collections have no replicas.
+Shows the storage resources where a data object is stored.  
+Collections do not have replicas.
 
-  ![](screenshots/replicas.png)
+![](screenshots/replicas.png)
 
-  Replica information is mainly for sysadmins. If a replica status is not `good`, send them this information.
+If a replica status is not `good`, contact your iRODS administrator.
 
 ## Data Synchronisation
 
-`Synchronise Data` provides tools to **synchronise a local folder with an iRODS collection**.  
-Synchronisation works both ways:
+`Synchronise Data` lets you synchronise a local directory with an iRODS collection.
 
-- Local → iRODS (right‑pointing arrow)
-- iRODS → Local (left‑pointing arrow)
+- **Local → iRODS** (right arrow)  
+- **iRODS → Local** (left arrow)
 
-Before synchronisation, differences are calculated and shown in the text field below.  
-**Note:** calculating differences may take some time.
+Before synchronising, differences are calculated and shown in the text field.  
+This may take some time for large directories.
 
 ![](screenshots/sync.png)
 
-Synchronisation works only for collections/directories, not for single files.
+Synchronisation works only for directories/collections, not individual files.
+
 
 ## Search
 
-`Search` provides a form where you can enter path and metadata criteria.  
-Click `Search` to list matching collections and data objects.
+The **Search** view allows you to filter by path, name, and metadata.
 
 ![](screenshots/search.png)
 
 ### Search fields
 
-- The path at the top defines where the search is performed.  
-  It must exist; by default, your home collection is used.
+- **Path** — defines where the search is performed.  
+  Must exist; defaults to your home collection.
 
-- `Obj/Coll name` filters by name.  
-  Example: entering `demo` finds all items named *demo*.
+- **Obj/Coll name** — filter by name.  
+  Example: `demo` finds all items named *demo*.
 
-- Example above: searching for all `*.txt` objects in `my_books` using `my_books/%.txt`.
+- Wildcards use `%`.  
+  Example: `my_books/%.txt` finds all `.txt` files in `my_books`.
 
-- Metadata filters narrow results further.  
-  Example: key `author`, value containing `Doyle` → `%Doyle%`.
-
-  **Note: the wildcard is `%`.**
+- **Metadata filters** — narrow results further.  
+  Example: key `author`, value `%Doyle%`.
 
 ### Search results
 
-- *Single click* or *Select all* → click `Download` to choose a destination and start downloading.
-- *Double click* → open the item in the `Browser` for further inspection.
+- *Single click* or *Select all* → click **Download** to choose a destination.  
+- *Double click* → open the item in the **Browser** for inspection.
