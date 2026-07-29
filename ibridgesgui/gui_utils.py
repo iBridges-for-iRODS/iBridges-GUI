@@ -13,11 +13,11 @@ from typing import Iterable, Optional, Union
 import PySide6.QtCore
 import PySide6.QtUiTools
 import PySide6.QtWidgets
-from ibridges import IrodsPath
-from ibridges.executor import Operations
 from jsonschema import ValidationError, validate
 
 import ibridgesgui.md_schemas
+from ibridges import IrodsPath
+from ibridges.executor import Operations
 from ibridgesgui.config import get_last_ienv_path, is_session_from_config
 
 try:
@@ -160,7 +160,9 @@ def prep_session_for_copy(session, error_label) -> Optional[Path]:
     last_env_path = Path.home() / ".irods" / get_last_ienv_path()
     session_env_path = session.irods_session.env_file
 
-    if last_env_path != session_env_path:
+    # irods session does not always contain the env path.
+    # this is the case when the session is created with a password
+    if session_env_path and (last_env_path != session_env_path):
         error_label.setText(
             "A different iRODS configuration was loaded outside this app. "
             "Restart the session to continue."

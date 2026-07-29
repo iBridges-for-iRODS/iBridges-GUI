@@ -5,11 +5,11 @@ import os
 from pathlib import Path
 from typing import Any
 
-from ibridges import Session
-from ibridges.session import LoginError, PasswordError
 from irods.exception import ResourceDoesNotExist
 from PySide6.QtWidgets import QDialog, QLineEdit
 
+from ibridges import Session
+from ibridges.session import LoginError, PasswordError
 from ibridgesgui.config import (
     IRODSA,
     check_irods_config,
@@ -129,7 +129,10 @@ class LoginDialog(QDialog, Ui_irodsLogin):
                 f.write(password)
             return Session(irods_env=env_path)
 
-        return Session(irods_env=env_path, password=password)
+        session = Session(irods_env=env_path, password=password)
+        session.write_pam_password()
+
+        return session
 
     def _on_connect(self):
         self.error_label.clear()

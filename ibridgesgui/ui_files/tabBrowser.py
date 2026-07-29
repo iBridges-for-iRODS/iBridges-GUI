@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tabBrowser.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,7 +25,7 @@ class Ui_tabBrowser(object):
     def setupUi(self, tabBrowser):
         if not tabBrowser.objectName():
             tabBrowser.setObjectName(u"tabBrowser")
-        tabBrowser.resize(1278, 843)
+        tabBrowser.resize(1307, 846)
         tabBrowser.setStyleSheet(u"QWidget\n"
 "{\n"
 "    background-color: rgb(211,211,211);\n"
@@ -164,7 +164,7 @@ class Ui_tabBrowser(object):
         if (self.browser_table.columnCount() < 6):
             self.browser_table.setColumnCount(6)
         __qtablewidgetitem = QTableWidgetItem()
-        __qtablewidgetitem.setText(u"Status");
+        __qtablewidgetitem.setText(u"Status")
         self.browser_table.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
         self.browser_table.setHorizontalHeaderItem(1, __qtablewidgetitem1)
@@ -213,7 +213,13 @@ class Ui_tabBrowser(object):
         __qtablewidgetitem8 = QTableWidgetItem()
         self.meta_table.setHorizontalHeaderItem(2, __qtablewidgetitem8)
         self.meta_table.setObjectName(u"meta_table")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.meta_table.sizePolicy().hasHeightForWidth())
+        self.meta_table.setSizePolicy(sizePolicy)
         self.meta_table.setMinimumSize(QSize(600, 200))
+        self.meta_table.setMaximumSize(QSize(600, 16777215))
         self.meta_table.setStyleSheet(u"")
         self.meta_table.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.meta_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -470,21 +476,21 @@ class Ui_tabBrowser(object):
         self.download_button.setText(QCoreApplication.translate("tabBrowser", u"Download", None))
         self.delete_button.setText(QCoreApplication.translate("tabBrowser", u"Delete", None))
         ___qtablewidgetitem = self.browser_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("tabBrowser", u"Name", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("tabBrowser", u"Name", None))
         ___qtablewidgetitem1 = self.browser_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("tabBrowser", u"Size [bytes]", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("tabBrowser", u"Size [bytes]", None))
         ___qtablewidgetitem2 = self.browser_table.horizontalHeaderItem(3)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("tabBrowser", u"Checksum/Fingerprint", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("tabBrowser", u"Checksum/Fingerprint", None))
         ___qtablewidgetitem3 = self.browser_table.horizontalHeaderItem(4)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("tabBrowser", u"Created", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("tabBrowser", u"Created", None))
         ___qtablewidgetitem4 = self.browser_table.horizontalHeaderItem(5)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("tabBrowser", u"Modified", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("tabBrowser", u"Modified", None))
         ___qtablewidgetitem5 = self.meta_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("tabBrowser", u"Key", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("tabBrowser", u"Key", None))
         ___qtablewidgetitem6 = self.meta_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("tabBrowser", u"Value", None));
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("tabBrowser", u"Value", None))
         ___qtablewidgetitem7 = self.meta_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("tabBrowser", u"Units", None));
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("tabBrowser", u"Units", None))
         self.add_meta_button.setText(QCoreApplication.translate("tabBrowser", u"Add", None))
         self.label_5.setText(QCoreApplication.translate("tabBrowser", u"Units", None))
         self.delete_meta_button.setText(QCoreApplication.translate("tabBrowser", u"Delete", None))
@@ -495,13 +501,13 @@ class Ui_tabBrowser(object):
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.metadata), QCoreApplication.translate("tabBrowser", u"Metadata", None))
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.preview), QCoreApplication.translate("tabBrowser", u"Preview", None))
         ___qtablewidgetitem8 = self.acl_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("tabBrowser", u"User", None));
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("tabBrowser", u"User", None))
         ___qtablewidgetitem9 = self.acl_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("tabBrowser", u"Zone", None));
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("tabBrowser", u"Zone", None))
         ___qtablewidgetitem10 = self.acl_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem10.setText(QCoreApplication.translate("tabBrowser", u"Access", None));
+        ___qtablewidgetitem10.setText(QCoreApplication.translate("tabBrowser", u"Access", None))
         ___qtablewidgetitem11 = self.acl_table.horizontalHeaderItem(3)
-        ___qtablewidgetitem11.setText(QCoreApplication.translate("tabBrowser", u"Inherit", None));
+        ___qtablewidgetitem11.setText(QCoreApplication.translate("tabBrowser", u"Inherit", None))
         self.label_11.setText(QCoreApplication.translate("tabBrowser", u"Edit", None))
         self.label_13.setText(QCoreApplication.translate("tabBrowser", u"User name", None))
         self.label_8.setText(QCoreApplication.translate("tabBrowser", u"Zone", None))
@@ -517,19 +523,19 @@ class Ui_tabBrowser(object):
         self.recursive_box.setItemText(1, QCoreApplication.translate("tabBrowser", u"True", None))
 
         self.add_acl_button.setText(QCoreApplication.translate("tabBrowser", u"Add/Update", None))
-        self.owner.setText(QCoreApplication.translate("tabBrowser", u"Owner: ", None))
+        self.owner.setText(QCoreApplication.translate("tabBrowser", u"Creator: ", None))
         self.owner_label.setText("")
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.permissions), QCoreApplication.translate("tabBrowser", u"Permissions", None))
         ___qtablewidgetitem12 = self.replica_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem12.setText(QCoreApplication.translate("tabBrowser", u"Replica", None));
+        ___qtablewidgetitem12.setText(QCoreApplication.translate("tabBrowser", u"Replica", None))
         ___qtablewidgetitem13 = self.replica_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem13.setText(QCoreApplication.translate("tabBrowser", u"Hierarchy", None));
+        ___qtablewidgetitem13.setText(QCoreApplication.translate("tabBrowser", u"Resource", None))
         ___qtablewidgetitem14 = self.replica_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem14.setText(QCoreApplication.translate("tabBrowser", u"Checksum", None));
+        ___qtablewidgetitem14.setText(QCoreApplication.translate("tabBrowser", u"Checksum", None))
         ___qtablewidgetitem15 = self.replica_table.horizontalHeaderItem(3)
-        ___qtablewidgetitem15.setText(QCoreApplication.translate("tabBrowser", u"Size [bytes]", None));
+        ___qtablewidgetitem15.setText(QCoreApplication.translate("tabBrowser", u"Size [bytes]", None))
         ___qtablewidgetitem16 = self.replica_table.horizontalHeaderItem(4)
-        ___qtablewidgetitem16.setText(QCoreApplication.translate("tabBrowser", u"Status", None));
+        ___qtablewidgetitem16.setText(QCoreApplication.translate("tabBrowser", u"Status", None))
         self.info_tabs.setTabText(self.info_tabs.indexOf(self.replicas), QCoreApplication.translate("tabBrowser", u"Replicas", None))
         self.no_meta_label.setText("")
         self.error_label.setText("")

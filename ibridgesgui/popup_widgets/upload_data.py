@@ -5,10 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from ibridges import upload
-from ibridges.exception import DataObjectExistsError
 from PySide6 import QtWidgets
 
+from ibridges import upload
+from ibridges.exception import DataObjectExistsError
 from ibridgesgui.config import (
     config_get_last_upload_path,
     config_set_last_upload_path,
@@ -260,6 +260,7 @@ class UploadData(UiDialogMixin, TransferDialogBase, Ui_uploadData):
         else:
             self.error_label.setText("Errors occurred during upload. Consult the logs.")
         self.hide_button.setEnabled(True)
+        self.set_arrow_cursor()
 
     def _enable_buttons(self, enable: bool) -> None:
         """Enable or disable UI buttons."""

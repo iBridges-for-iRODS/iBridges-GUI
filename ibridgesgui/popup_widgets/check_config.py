@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ibridges.util import find_environment_provider, get_environment_providers
 from PySide6 import QtCore, QtWidgets
 
+from ibridges.util import find_environment_provider, get_environment_providers
 from ibridgesgui.config import (
     _read_json,
     check_irods_config,

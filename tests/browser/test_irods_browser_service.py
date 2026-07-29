@@ -117,6 +117,9 @@ def test_preview_non_text_file(service):
     path.dataobject_exists.return_value = True
     path.name = "binary.bin"
 
+    path.open.return_value.__enter__.return_value.read.return_value = b"\x00\x01\x02"
+    path.open.return_value.__exit__.return_value = False
+
     result = service.compute_preview(path)
     assert "No Preview" in result[0]
 
@@ -188,9 +191,8 @@ def test_update_metadata(service):
 
     service.update_metadata(path, "old", "oldv", "oldu", "new", "newv", "newu")
 
-    assert item.key == "new"
-    assert item.value == "newv"
-    assert item.units == "newu"
+    path.meta.add.assert_called_once_with("new", "newv", "newu")
+    path.meta.delete.assert_called_once_with(item.key, item.value, item.units)
 
 
 def test_delete_metadata(service):
@@ -242,7 +244,7 @@ def test_set_acl(mock_perms, mock_item, service):
 
     service.set_acl(path, "u", "z", "read", True)
     perms.set.assert_called_once_with(
-        perm="read",
+        perm="read_object",
         user="u",
         zone="z",
         recursive=True,

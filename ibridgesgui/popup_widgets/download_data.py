@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ibridges import download
 from PySide6 import QtCore, QtWidgets
 
+from ibridges import download
 from ibridgesgui.config import (
     config_get_last_download_path,
     config_set_last_download_path,

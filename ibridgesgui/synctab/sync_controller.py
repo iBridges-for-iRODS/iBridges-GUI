@@ -1,9 +1,9 @@
 """GUI logic for sync tab."""
 from pathlib import Path
 
-from ibridges import IrodsPath
 from PySide6 import QtCore, QtWidgets
 
+from ibridges import IrodsPath
 from ibridgesgui.gui_utils import get_last_ienv_path, prep_session_for_copy
 from ibridgesgui.irods_tree_model import IrodsTreeModel
 from ibridgesgui.popup_widgets import CreateCollection, CreateDirectory

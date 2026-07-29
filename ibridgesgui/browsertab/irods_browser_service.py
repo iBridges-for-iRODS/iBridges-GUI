@@ -3,10 +3,11 @@
 import logging
 from typing import Iterable, Tuple
 
+from irods.exception import CAT_NO_ACCESS_PERMISSION
+
 from ibridges import IrodsPath
 from ibridges.permissions import Permissions
 from ibridges.util import obj_replicas
-
 from ibridgesgui.gui_utils import get_irods_item
 
 
@@ -45,9 +46,26 @@ class IrodsBrowserService:
 
     # -------- preview ---------
 
+    def is_text_bytes(self, data: bytes) -> bool:
+        """Sniff if file contains text."""
+        # Null bytes → definitely binary
+        if b"\x00" in data:
+            return False
+
+        # Try common encodings
+        for enc in ("utf-8", "latin-1", "cp1252"):
+            try:
+                data.decode(enc)
+                return True
+            except UnicodeDecodeError:
+                continue
+
+        return False
+
+
     def compute_preview(self, irods_path: IrodsPath):
         """Return preview content for a collection or data object."""
-        # Collections: list subcollections + objects
+        # Collections
         if irods_path.collection_exists():
             subcolls, objs = self.list_collection(irods_path)
             content = ["Collections:", "-----------------"]
@@ -56,10 +74,21 @@ class IrodsBrowserService:
             content.extend([do.name for do in objs])
             return content
 
-        # Data objects: preview text-like files
+        # Data objects
         if irods_path.dataobject_exists():
-            ext = irods_path.name.split(".")[-1] if "." in irods_path.name else ""
-            if ext in ("txt", "json", "csv"):
+            try:
+                # Read only the first few KB for sniffing
+                with irods_path.open("r") as stream:
+                    head = stream.read(4096)
+            except Exception as error:
+                return [
+                    f"No Preview for: {irods_path}",
+                    repr(error),
+                    "Storage resource might be down.",
+                ]
+
+            # Decide based on content, not suffix
+            if self.is_text_bytes(head):
                 try:
                     return self.stream_obj(irods_path)
                 except Exception as error:
@@ -68,6 +97,7 @@ class IrodsBrowserService:
                         repr(error),
                         "Storage resource might be down.",
                     ]
+
             return [f"No Preview for: {irods_path}"]
 
         return [f"No Preview for: {irods_path}"]
@@ -90,9 +120,41 @@ class IrodsBrowserService:
         except Exception as err:
             raise RuntimeError(f"Failed to load metadata for {irods_path}: {err}") from err
 
+    def find_irods_exception(self, exc):
+        """Walk the exception chain to find the underlying iRODS exception."""
+        # NOTE: Work around for ibridges #412
+        seen = set()
+        stack = [exc]
+
+        while stack:
+            current = stack.pop()
+            if current in seen:
+                continue
+            seen.add(current)
+
+            # Found the real iRODS exception
+            if isinstance(current, CAT_NO_ACCESS_PERMISSION):
+                return current
+
+            # Walk deeper
+            if current.__cause__:
+                stack.append(current.__cause__)
+            if current.__context__:
+                stack.append(current.__context__)
+
+        return None
+
+
     def add_metadata(self, path: IrodsPath, key: str, value: str, units: str):
         """Add metadata to coll or obj."""
-        path.meta.add(key, value, units)
+        try:
+            path.meta.add(key, value, units)
+        except Exception as err:
+            # user has no permission to modify metadata
+            irods_exc = self.find_irods_exception(err)
+            if irods_exc:
+                raise irods_exc from err
+            raise err
 
     def update_metadata(
         self,
@@ -105,19 +167,50 @@ class IrodsBrowserService:
         new_units: str,
     ):
         """Update a single AVU on a path."""
-        # Retrieve the specific AVU
-        avu = path.meta[old_key, old_value, old_units]
+        try:
+            # Retrieve the specific AVU
+            avu = path.meta[old_key, old_value, old_units]
 
-        # Mutate it in place
-        avu.key = new_key
-        avu.value = new_value
-        avu.units = new_units
+            # Add new and delete old
+            path.meta.add(new_key, new_value, new_units)
+            path.meta.delete(avu.key, avu.value, avu.units)
+        except Exception as err:
+            # user has no permission to modify metadata
+            irods_exc = self.find_irods_exception(err)
+            if irods_exc:
+                raise irods_exc from err
+            raise err
 
     def delete_metadata(self, path: IrodsPath, key: str, value: str, units: str):
         """Delete metadata."""
-        path.meta.delete(key, value, units)
+        try:
+            path.meta.delete(key, value, units)
+        except Exception as err:
+            # user has no permission to modify metadata
+            irods_exc = self.find_irods_exception(err)
+            if irods_exc:
+                raise irods_exc from err
+            raise err
 
     # -------- ACLs / permissions --------
+
+    PERM_MAP = {
+            "read_object": "read",
+            "modify_object": "write",
+            "null": "delete permission",
+            "delete_object": "delete",
+            "create_object": "create"
+        }
+    REVERSE_PERM_MAP = {v: k for k, v in PERM_MAP.items()}
+
+    def get_acl_strings(self):
+        """Retrieve all possible acl modes from the irods instance and filter them."""
+        perm = Permissions(self.session, self.session.home)
+        # remove metadata permissions github.com/irods/irods/issues/6813
+        avail = [self.PERM_MAP.get(perm_str, perm_str)
+                        for (perm_str, _) in perm.available_permissions.items()
+                        if "metadata" not in perm_str]
+        return avail
 
     def normalize_acls(self, acls):
         """Normalize iRODS ACLs into UI-friendly form."""
@@ -152,8 +245,9 @@ class IrodsBrowserService:
         """Apply an ACL change to a collection or data object."""
         obj = get_irods_item(path)
         perms = Permissions(self.session, obj)
+        irods_access = self.REVERSE_PERM_MAP[access]
         perms.set(
-            perm=access,
+            perm=irods_access,
             user=user_name,
             zone=user_zone,
             recursive=recursive,

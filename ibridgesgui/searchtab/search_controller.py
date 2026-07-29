@@ -2,9 +2,9 @@
 
 import logging
 
-from ibridges import IrodsPath, download
 from PySide6.QtCore import QTimer
 
+from ibridges import IrodsPath, download
 from ibridgesgui.gui_utils import combine_operations, prep_session_for_copy
 from ibridgesgui.searchtab.search_model import SearchModel
 from ibridgesgui.threads import SearchThread, TransferDataThread
@@ -23,11 +23,11 @@ class SearchController:
 
     """
 
-    def __init__(self, ui, session, app_name, browser):
+    def __init__(self, ui, session, app_name, browsercontroller):
         """Init."""
         self.ui = ui
         self.session = session
-        self.browser = browser
+        self.browsercontroller = browsercontroller
         self.logger = logging.getLogger(app_name)
 
         self.model = SearchModel(session)
@@ -305,8 +305,9 @@ class SearchController:
         ipath = IrodsPath(self.session, path)
 
         target = ipath if ipath.collection_exists() else ipath.parent
-        self.browser.input_path.setText(str(target))
-        self.browser.load_browser_table()
+        self.browsercontroller._set_path(target) # pylint: disable=protected-access
+        self.ui.error_label.setText(f"{str(target)} opened in browser.")
+
 
     def _set_busy(self, busy: bool):
         self.ui.search_button.setEnabled(not busy)

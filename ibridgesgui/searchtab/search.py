@@ -16,7 +16,7 @@ from ibridgesgui.ui_files.tabSearch import Ui_tabSearch
 class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
     """Search view for iRODS session (UI only, logic in SearchController)."""
 
-    def __init__(self, session, app_name: str, browser):
+    def __init__(self, session, app_name: str, browsercontroller):
         """Init."""
         super().__init__()
 
@@ -32,7 +32,7 @@ class Search(PySide6.QtWidgets.QWidget, Ui_tabSearch):
         self.radio_group.addButton(self.all_radio)
 
         # Create controller (same pattern as Browser)
-        self.controller = SearchController(self, session, app_name, browser)
+        self.controller = SearchController(self, session, app_name, browsercontroller)
         self.controller.init_search()
 
     def display_results(self, rows):

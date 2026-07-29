@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from ibridges import IrodsPath
 from PySide6 import QtCore, QtWidgets
 
+from ibridges import IrodsPath
 from ibridgesgui.popup_widgets.base import UiDialogMixin
 from ibridgesgui.ui_files.createCollection import Ui_createCollection
 
