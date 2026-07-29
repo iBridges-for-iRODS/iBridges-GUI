@@ -27,8 +27,6 @@ website:
             url: https://github.com/iBridges-for-iRODS/iBridges-GUI
           - text: Report and Issue
             url: https://github.com/iBridges-for-iRODS/iBridges-GUI/issues
-    repo-actions: [edit, issue, source]
-
 format:
   html:
     theme: flatly

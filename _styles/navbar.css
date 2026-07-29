@@ -1,3 +1,13 @@
 .navbar {
   background-color: #c8efe6 !important;
 }
+/* Move tools to the left side */
+.quarto-navbar-tools {
+  order: -1 !important;
+  margin-right: 1rem !important;
+}
+
+.navbar-nav.ms-auto {
+  margin-left: auto !important; /* keep right menu spacing intact */
+}
+
