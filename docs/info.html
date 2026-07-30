@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>What is iBridges GUI</title>
+<title>What is iBridges‑GUI – iBridges GUI</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -25,6 +25,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -45,7 +80,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-ef9afd74c936c907027de2a6fad25a4d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-189549ecd294ed9837df383a4b42e31c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,15 +110,27 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="_styles/styles.css">
+<link rel="stylesheet" href="../_styles/ibridges.css">
+<link rel="stylesheet" href="../_styles/hyperlinks.css">
+<link rel="stylesheet" href="../_styles/toc.css">
+<link rel="stylesheet" href="../_styles/callouts.css">
+<link rel="stylesheet" href="../_styles/code.css">
+<link rel="stylesheet" href="../_styles/navbar.css">
+<link rel="stylesheet" href="../_styles/search_icon.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../docs/screenshots/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../docs/screenshots/logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
@@ -117,6 +164,21 @@ ul.task-list li input[type="checkbox"] {
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+    <div class="dropdown">
+      <a href="" title="" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label=""><i class="bi bi-github"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://github.com/iBridges-for-iRODS/iBridges-GUI">
+            Source Code
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://github.com/iBridges-for-iRODS/iBridges-GUI/issues">
+            Report and Issue
+            </a>
+          </li>
+      </ul>
+    </div>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -125,32 +187,13 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#current-features" id="toc-current-features" class="nav-link active" data-scroll-target="#current-features">Current features</a></li>
-  <li><a href="#supported-irods-versions" id="toc-supported-irods-versions" class="nav-link" data-scroll-target="#supported-irods-versions">Supported iRODS versions</a></li>
-  <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
-  <li><a href="#install-and-start-the-application" id="toc-install-and-start-the-application" class="nav-link" data-scroll-target="#install-and-start-the-application">Install and start the application</a>
-  <ul class="collapse">
-  <li><a href="#stable-version" id="toc-stable-version" class="nav-link" data-scroll-target="#stable-version">Stable version</a></li>
-  <li><a href="#development-version" id="toc-development-version" class="nav-link" data-scroll-target="#development-version">Development version</a></li>
-  </ul></li>
-  <li><a href="#authors" id="toc-authors" class="nav-link" data-scroll-target="#authors">Authors</a></li>
-  <li><a href="#contributors" id="toc-contributors" class="nav-link" data-scroll-target="#contributors">Contributors</a></li>
-  <li><a href="#contributing" id="toc-contributing" class="nav-link" data-scroll-target="#contributing">Contributing</a></li>
-  <li><a href="#license" id="toc-license" class="nav-link" data-scroll-target="#license">License</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">What is iBridges GUI</h1>
+<h1 class="title">What is iBridges‑GUI</h1>
 </div>
 
 
@@ -167,61 +210,78 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><a href="https://github.com/iBridges-for-iRODS/iBridges-GUI">iBridges-GUI</a> is a graphical user interface to the python package <a href="https://github.com/UtrechtUniversity/iBridges">iBridges</a>, it provides users of <em>Windows, Linux and Mac</em> with a <em>graphical user interface</em> to interact with <strong>iRODS</strong> servers. The tool is agnostic to any rules/policies in the server. The out-of-the-box iBridges supports three main functions: browsing through iRODS collections, upload/download and synchronisation of data, manipulate iRODS metadata and search through data collections.</p>
-<section id="current-features" class="level2">
-<h2 class="anchored" data-anchor-id="current-features">Current features</h2>
+<p><a href="https://github.com/iBridges-for-iRODS/iBridges-GUI">iBridges‑GUI</a> is a lightweight, cross‑platform graphical interface for <strong><a href="https://github.com/UtrechtUniversity/iBridges">iBridges</a></strong>.<br>
+It provides an intuitive way to work with <strong>iRODS</strong> on <em>Windows, Linux, and macOS</em>, without needing to use the command line.</p>
+<p>The application is fully client‑side and agnostic to server rules or policies.</p>
+<hr>
+<section id="feature-overview" class="level2">
+<h2 class="anchored" data-anchor-id="feature-overview">Feature overview</h2>
+<div style="
+  background-color:#e6f7f3;
+  border-radius:12px;
+  padding:1.2rem 1.4rem;
+  margin-bottom:1.5rem;
+">
+<p><strong>iBridges‑GUI helps you:</strong></p>
 <ul>
-<li><code>Configuration</code> checker and editor to easily adjust your iRODS client configuration.</li>
-<li><code>Browser</code>: a main table to browse through collections and inspect data, manipulate metadata and User Permissions, up and download smaller data and to delete data.</li>
-<li><code>Data Synchronisation</code>: a two-pane view to select local directories and synchronise them with their counterpart collections in iRODS</li>
-<li><code>Search</code>: provide search criteria and list all found data collections and objects in iRODS, also allows for download selected items.</li>
-<li><code>Info</code>: an overview over the iRODS server and iRODS client configuration listing user information such as groups and server information such as resources.</li>
+<li>Browse iRODS collections and inspect data<br>
+</li>
+<li>Upload, download, and synchronise files<br>
+</li>
+<li>Edit and view metadata<br>
+</li>
+<li>Search across collections and data objects<br>
+</li>
+<li>Review client and server configuration details</li>
 </ul>
+</div>
+<hr>
 </section>
 <section id="supported-irods-versions" class="level2">
 <h2 class="anchored" data-anchor-id="supported-irods-versions">Supported iRODS versions</h2>
-<p>We test our code on iRODS servers with versions - &gt; 4.2.11 - &gt; 4.3.0</p>
-</section>
-<section id="dependencies" class="level2">
-<h2 class="anchored" data-anchor-id="dependencies">Dependencies</h2>
 <ul>
-<li>Python3.9+</li>
-<li>Python pyQt6</li>
-<li>Python ibridges 0.1.6</li>
+<li>4.3.x and newer</li>
 </ul>
+<hr>
 </section>
-<section id="install-and-start-the-application" class="level2">
-<h2 class="anchored" data-anchor-id="install-and-start-the-application">Install and start the application</h2>
-<section id="stable-version" class="level3">
-<h3 class="anchored" data-anchor-id="stable-version">Stable version</h3>
-<pre><code>pip install ibridges
-pip install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@main</code></pre>
+<section id="requirements" class="level2">
+<h2 class="anchored" data-anchor-id="requirements">Requirements</h2>
+<ul>
+<li>Python ≥ 3.9<br>
+</li>
+<li>PySide6<br>
+</li>
+<li>iBridges ≥ 2.1.x</li>
+</ul>
+<hr>
+</section>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<section id="stable-release" class="level3">
+<h3 class="anchored" data-anchor-id="stable-release">Stable release</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install ibridges</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@main</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="development-version" class="level3">
 <h3 class="anchored" data-anchor-id="development-version">Development version</h3>
-<pre><code>pip install ibridges
-pip install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@develop</code></pre>
-<p>Start the application by calling <code>ibridges gui</code> on your commandline.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install ibridges</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/iBridges-for-iRODS/iBridges-GUI.git@develop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Start the application</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ibridges</span> gui</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
 <section id="authors" class="level2">
 <h2 class="anchored" data-anchor-id="authors">Authors</h2>
-<p><strong>Christine Staiger (Maintainer) <a href="https://orcid.org/0000-0002-6754-7647">ORCID</a></strong></p>
-<ul>
-<li><em>Wageningen University &amp; Research</em> 2021 - 2022</li>
-<li><em>Utrecht University</em> 2022</li>
-</ul>
-<p><strong>Tim van Daalen</strong>, <em>Wageningen University &amp; Research</em> 2021</p>
-<p><strong>Maarten Schermer (Maintainer) <a href="https://orcid.org/my-orcid?orcid=0000-0001-6770-3155">ORCID</a></strong>, <em>Utrecht University</em> 2023</p>
-<p><strong>Raoul Schram (Maintainer) <a href="https://orcid.org/my-orcid?orcid=0000-0001-6616-230X">ORCID</a></strong>. <em>Utrecht University</em> 2023</p>
+<p><strong>Christine Staiger (Maintainer)</strong> — <a href="https://orcid.org/0000-0002-6754-7647">ORCID</a><br>
+- Wageningen University &amp; Research (2021–2022)<br>
+- Utrecht University (2022–)</p>
+<p><strong>Tim van Daalen</strong> — Wageningen University &amp; Research (2021)</p>
+<p><strong>Maarten Schermer (Maintainer)</strong> — <a href="https://orcid.org/0000-0001-6770-3155">ORCID</a>, Utrecht University (2023)</p>
+<p><strong>Raoul Schram (Maintainer)</strong> — <a href="https://orcid.org/0000-0001-6616-230X">ORCID</a>, Utrecht University (2023)</p>
 </section>
 <section id="contributors" class="level2">
 <h2 class="anchored" data-anchor-id="contributors">Contributors</h2>
-<p><strong>J.P. Mc Farland</strong>, <em>University of Groningen, Center for Information Technology</em>, 2022</p>
-</section>
-<section id="contributing" class="level2">
-<h2 class="anchored" data-anchor-id="contributing">Contributing</h2>
-<p>Our development is done on GitHub](https://github.com/iBridges-for-iRODS/iBridges-GUI). We are welcoming contributions by pull requests. You can also ask for new features/ideas in our issue tracker.</p>
+<p><strong>J.P. Mc Farland</strong> — University of Groningen, Center for Information Technology (2022)</p>
 </section>
 <section id="license" class="level2">
 <h2 class="anchored" data-anchor-id="license">License</h2>

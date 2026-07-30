@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>faq</title>
+<title>Frequently asked Questions – iBridges GUI</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -45,7 +45,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-ef9afd74c936c907027de2a6fad25a4d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-189549ecd294ed9837df383a4b42e31c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,15 +75,27 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="_styles/styles.css">
+<link rel="stylesheet" href="../_styles/ibridges.css">
+<link rel="stylesheet" href="../_styles/hyperlinks.css">
+<link rel="stylesheet" href="../_styles/toc.css">
+<link rel="stylesheet" href="../_styles/callouts.css">
+<link rel="stylesheet" href="../_styles/code.css">
+<link rel="stylesheet" href="../_styles/navbar.css">
+<link rel="stylesheet" href="../_styles/search_icon.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../docs/screenshots/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../docs/screenshots/logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
@@ -117,6 +129,21 @@ ul.task-list li input[type="checkbox"] {
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+    <div class="dropdown">
+      <a href="" title="" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label=""><i class="bi bi-github"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://github.com/iBridges-for-iRODS/iBridges-GUI">
+            Source Code
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://github.com/iBridges-for-iRODS/iBridges-GUI/issues">
+            Report and Issue
+            </a>
+          </li>
+      </ul>
+    </div>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -125,60 +152,137 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#frequently-asked-questions" id="toc-frequently-asked-questions" class="nav-link active" data-scroll-target="#frequently-asked-questions">Frequently Asked Questions</a>
-  <ul class="collapse">
-  <li><a href="#i-found-a-bug-or-have-a-feature-request-where-do-i-go" id="toc-i-found-a-bug-or-have-a-feature-request-where-do-i-go" class="nav-link" data-scroll-target="#i-found-a-bug-or-have-a-feature-request-where-do-i-go">I found a bug or have a feature request, where do I go?</a></li>
-  <li><a href="#help-im-getting-a-networkerror-while-trying-to-transfer-large-files" id="toc-help-im-getting-a-networkerror-while-trying-to-transfer-large-files" class="nav-link" data-scroll-target="#help-im-getting-a-networkerror-while-trying-to-transfer-large-files">Help, I’m getting a “NetworkError” while trying to transfer (large) files</a></li>
-  <li><a href="#my-metadata-with-keys-starting-with-org_-do-not-show-up-in-the-ibridges-metadata." id="toc-my-metadata-with-keys-starting-with-org_-do-not-show-up-in-the-ibridges-metadata." class="nav-link" data-scroll-target="#my-metadata-with-keys-starting-with-org_-do-not-show-up-in-the-ibridges-metadata.">My metadata with keys starting with <code>org_</code> do not show up in the iBridges metadata.</a></li>
-  <li><a href="#how-can-i-download-files-that-follow-a-certain-pattern-but-do-not-lie-in-the-same-collection" id="toc-how-can-i-download-files-that-follow-a-certain-pattern-but-do-not-lie-in-the-same-collection" class="nav-link" data-scroll-target="#how-can-i-download-files-that-follow-a-certain-pattern-but-do-not-lie-in-the-same-collection">How can I download files that follow a certain pattern but do not lie in the same collection?</a></li>
-  <li><a href="#how-do-i-find-all-the-data-i-have-access-to" id="toc-how-do-i-find-all-the-data-i-have-access-to" class="nav-link" data-scroll-target="#how-do-i-find-all-the-data-i-have-access-to">How do I find all the data I have access to?</a></li>
-  </ul></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Frequently asked Questions</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
-<section id="frequently-asked-questions" class="level1">
-<h1>Frequently Asked Questions</h1>
-<p>If you cannot find your question here, please also take a look at our <a href="https://ibridges.readthedocs.io/en/latest/faq.html">API and CLI FAQ</a>.</p>
-<section id="i-found-a-bug-or-have-a-feature-request-where-do-i-go" class="level2">
-<h2 class="anchored" data-anchor-id="i-found-a-bug-or-have-a-feature-request-where-do-i-go">I found a bug or have a feature request, where do I go?</h2>
-<p>Our development is done on <a href="https://github.com/iBridges-for-iRODS/iBridges-GUI">GitHub</a>.</p>
-<p>Look under the <em>Issues</em> section whether the bug or feature request has already been reported. If not, we heartily welcome creating a new issue. We try to get back to you as soon as possible, at least within a few days.</p>
-</section>
-<section id="help-im-getting-a-networkerror-while-trying-to-transfer-large-files" class="level2">
-<h2 class="anchored" data-anchor-id="help-im-getting-a-networkerror-while-trying-to-transfer-large-files">Help, I’m getting a “NetworkError” while trying to transfer (large) files</h2>
-<p>This error is most likely to happen if you try to transfer a large file. The default timeout for iBridges is 25000 seconds, which translates to roughly 7 hours. This should not cause issues during the actual transfer. However, if the calculation of the checksum takes more than 7 hours (if the iRODS server is busy for example, or the file is many terabytes), then you will get a network error. The checksum itself should still be created.</p>
-<p>You can increase the timeout in your <code>irods_environment.json</code> file by adding a new entry with <code>"connection_timeout": &lt;time in seconds&gt;,</code>.</p>
-<p>Note, that the <strong>maximum number equals 292 years</strong>, i.e.&nbsp;<code>"connection_timeout": 9208512000,</code>.</p>
-</section>
-<section id="my-metadata-with-keys-starting-with-org_-do-not-show-up-in-the-ibridges-metadata." class="level2">
-<h2 class="anchored" data-anchor-id="my-metadata-with-keys-starting-with-org_-do-not-show-up-in-the-ibridges-metadata.">My metadata with keys starting with <code>org_</code> do not show up in the iBridges metadata.</h2>
-<p>By default, iBridges does not show metadata that contain a key starting with the prefix <em>org_</em>. This is due to data security reasons on Yoda systems.</p>
-<p>You can omit that only by using the <a href="https://ibridges.readthedocs.io/en/latest/faq.html#my-metadata-with-keys-starting-with-org-do-not-show-up-in-the-ibridges-metadata">iBridges API</a>.</p>
-</section>
-<section id="how-can-i-download-files-that-follow-a-certain-pattern-but-do-not-lie-in-the-same-collection" class="level2">
-<h2 class="anchored" data-anchor-id="how-can-i-download-files-that-follow-a-certain-pattern-but-do-not-lie-in-the-same-collection">How can I download files that follow a certain pattern but do not lie in the same collection?</h2>
-<p>You can use the <em>Search</em> for this. With the search mask you can filter for specific data no matter where they are located. In the results table you can select those files you would like to download.</p>
-</section>
-<section id="how-do-i-find-all-the-data-i-have-access-to" class="level2">
-<h2 class="anchored" data-anchor-id="how-do-i-find-all-the-data-i-have-access-to">How do I find all the data I have access to?</h2>
-<p>When data is shared in iRODS it is not always easy to know where the shared data lies as they are not visible from your “home” collection or project collection.</p>
-<p>However, shared data objects always need to lie in a collection that you can access, it’s an iRODS feature.</p>
-<p>So again the <em>Search</em> can help you out here. Direct the search to <code>/yourZone/home</code>, select <code>Obj/Coll name: %</code> and select <code>Collections</code> (unselect <code>Data Objects</code>). The result will show you all collections you have access to.</p>
+    
+  
+    
+  </div>
+  
 
 
-</section>
-</section>
+</header>
+
+
+<p>If your question isn’t listed here, you may also find answers in the <a href="https://ibridges.readthedocs.io/en/latest/faq.html"><strong>API and CLI FAQ</strong></a>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="I found a bug or have a feature request — where should I go?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>I found a bug or have a feature request — where should I go?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>All development happens on <strong>GitHub</strong>.</p>
+<p>Check the <em>Issues</em> section to see whether your bug or idea has already been reported.<br>
+If not, feel free to open a new issue — we actively monitor the tracker and usually respond within a few days.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="I’m getting a “NetworkError” when transferring large files">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>I’m getting a “NetworkError” when transferring large files
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>This error usually appears when the <strong>checksum calculation</strong> exceeds the default iBridges timeout of <strong>25,000 seconds</strong> (~7 hours).<br>
+The transfer itself typically succeeds, but if the server is busy or the file is extremely large, the checksum step may run longer than the timeout.</p>
+<p>You can increase the timeout by adding this entry to your <code>irods_environment.json</code>:</p>
+<pre><code>"connection_timeout": &lt;time in seconds&gt;</code></pre>
+<p>The maximum allowed value is:</p>
+<pre><code>"connection_timeout": 9208512000</code></pre>
+<p>which corresponds to roughly <strong>292 years</strong>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="My metadata keys starting with `org_` don’t appear in iBridges">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>My metadata keys starting with <code>org_</code> don’t appear in iBridges
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>iBridges hides metadata keys beginning with <code>org_</code> by default.<br>
+This behaviour is intentional on Yoda systems for data‑security reasons.</p>
+<p>If you need to access these keys, you can do so via the<br>
+<a href="https://ibridges.readthedocs.io/en/latest/faq.html#my-metadata-with-keys-starting-with-org-do-not-show-up-in-the-ibridges-metadata"><strong>iBridges API</strong></a>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="How can I download files that match a pattern but aren’t in the same collection?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>How can I download files that match a pattern but aren’t in the same collection?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Use the <strong>Search</strong> tab.<br>
+The search interface lets you filter for files regardless of their location.<br>
+Once the results appear, select the items you want to download.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="How do I find all the data I have access to?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>How do I find all the data I have access to?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Shared data in iRODS doesn’t always appear in your home or project collection.</p>
+<p>However, shared objects must always reside in a collection you can access — that’s an iRODS rule.</p>
+<p>To list all accessible collections:</p>
+<ol type="1">
+<li>Open <strong>Search</strong><br>
+</li>
+<li>Set the search path to <code>/yourZone/home</code><br>
+</li>
+<li>Use <code>Obj/Coll name: %</code><br>
+</li>
+<li>Select <strong>Collections</strong> and unselect <strong>Data Objects</strong></li>
+</ol>
+<p>The results will show every collection you have permission to access.</p>
+</div>
+</div>
+</div>
+
+
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

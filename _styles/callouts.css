@@ -1,0 +1,39 @@
+/* Base header override */
+.callout-header {
+  background-color: #a8e3d7 !important;
+}
+
+/* Note callout */
+.callout.callout-note {
+  border-left-color: #548641 !important;
+}
+
+/* Warning callout */
+.callout.callout-warning {
+  border-left-color: #E67E22 !important;
+}
+
+/* ----------------------------------------------------------
+   TIP CALLOUT — iBridges style
+   ---------------------------------------------------------- */
+
+/* Main accent colour */
+.callout.callout-tip {
+  border-left-color: #15a589 !important;
+}
+
+/* Lighter background (15a589 → lighten by ~35%) */
+.callout.callout-tip .callout-header {
+  background-color: #c8efe6 !important;  /* soft mint */
+  color: #0f7f68 !important;             /* darker accent for text */
+}
+
+/* Icon in main accent colour */
+.callout.callout-tip .callout-icon svg {
+  fill: #15a589 !important;
+}
+
+/* Body text in accent colour */
+.callout.callout-tip .callout-body {
+  color: #0f7f68 !important;
+}

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>developers</title>
+<title>Developer Guide – iBridges GUI</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -45,7 +45,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-ef9afd74c936c907027de2a6fad25a4d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-189549ecd294ed9837df383a4b42e31c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,7 +75,13 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="_styles/styles.css">
+<link rel="stylesheet" href="../_styles/ibridges.css">
+<link rel="stylesheet" href="../_styles/hyperlinks.css">
+<link rel="stylesheet" href="../_styles/toc.css">
+<link rel="stylesheet" href="../_styles/callouts.css">
+<link rel="stylesheet" href="../_styles/code.css">
+<link rel="stylesheet" href="../_styles/navbar.css">
+<link rel="stylesheet" href="../_styles/search_icon.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -84,6 +90,12 @@ ul.task-list li input[type="checkbox"] {
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../docs/screenshots/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../docs/screenshots/logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
@@ -117,6 +129,21 @@ ul.task-list li input[type="checkbox"] {
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+    <div class="dropdown">
+      <a href="" title="" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label=""><i class="bi bi-github"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://github.com/iBridges-for-iRODS/iBridges-GUI">
+            Source Code
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://github.com/iBridges-for-iRODS/iBridges-GUI/issues">
+            Report and Issue
+            </a>
+          </li>
+      </ul>
+    </div>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -130,30 +157,189 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#for-developers" id="toc-for-developers" class="nav-link active" data-scroll-target="#for-developers">For developers</a>
+  <li><a href="#extending-ibridges-gui" id="toc-extending-ibridges-gui" class="nav-link active" data-scroll-target="#extending-ibridges-gui">Extending iBridges‑GUI</a></li>
+  <li><a href="#contributing" id="toc-contributing" class="nav-link" data-scroll-target="#contributing">Contributing</a>
   <ul class="collapse">
-  <li><a href="#extending-ibridges-gui-for-developers" id="toc-extending-ibridges-gui-for-developers" class="nav-link" data-scroll-target="#extending-ibridges-gui-for-developers">Extending iBridges-GUI (for developers)</a></li>
-  <li><a href="#contributing" id="toc-contributing" class="nav-link" data-scroll-target="#contributing">Contributing</a></li>
+  <li><a href="#contribution-workflow" id="toc-contribution-workflow" class="nav-link" data-scroll-target="#contribution-workflow">Contribution workflow</a></li>
+  </ul></li>
+  <li><a href="#code-structure-overview" id="toc-code-structure-overview" class="nav-link" data-scroll-target="#code-structure-overview">Code structure overview</a>
+  <ul class="collapse">
+  <li><a href="#top-level-modules" id="toc-top-level-modules" class="nav-link" data-scroll-target="#top-level-modules">Top-level modules</a></li>
+  <li><a href="#mainmenu" id="toc-mainmenu" class="nav-link" data-scroll-target="#mainmenu">mainmenu/</a></li>
+  <li><a href="#browsertab" id="toc-browsertab" class="nav-link" data-scroll-target="#browsertab">browsertab/</a></li>
+  <li><a href="#searchtab" id="toc-searchtab" class="nav-link" data-scroll-target="#searchtab">searchtab/</a></li>
+  <li><a href="#synctab" id="toc-synctab" class="nav-link" data-scroll-target="#synctab">synctab/</a></li>
+  <li><a href="#popup-widgets" id="toc-popup-widgets" class="nav-link" data-scroll-target="#popup-widgets">popup_widgets/</a></li>
+  <li><a href="#ui-files" id="toc-ui-files" class="nav-link" data-scroll-target="#ui-files">ui_files/</a></li>
+  <li><a href="#icons" id="toc-icons" class="nav-link" data-scroll-target="#icons">icons/</a></li>
   </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Developer Guide</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
-<section id="for-developers" class="level1">
-<h1>For developers</h1>
-<section id="extending-ibridges-gui-for-developers" class="level2">
-<h2 class="anchored" data-anchor-id="extending-ibridges-gui-for-developers">Extending iBridges-GUI (for developers)</h2>
-<p>iBridges-GUI supports Plugins. You can create your own tab and it will be detected and run by the main application. We provide a small guide and template structure <a href="https://github.com/iBridges-for-iRODS/ibridges-gui-tab-example">here</a>.</p>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="extending-ibridges-gui" class="level2">
+<h2 class="anchored" data-anchor-id="extending-ibridges-gui">Extending iBridges‑GUI</h2>
+<p>iBridges‑GUI supports a modular plugin system that allows developers to add new functionality through custom tabs.<br>
+Your plugin is automatically detected and integrated into the main application at runtime.</p>
+<p>A minimal example and template structure are available in the<br>
+<strong><a href="https://github.com/iBridges-for-iRODS/ibridges-gui-tab-example">plugin example repository</a></strong>.</p>
 </section>
 <section id="contributing" class="level2">
 <h2 class="anchored" data-anchor-id="contributing">Contributing</h2>
-<p>iBridges is an open-source project, we welcome any type of contribution.</p>
-<p>To steer and streamline our development we use GitHub. Please feel free to create issues and start discussions about (new) features. If you want to directly contribute to the code base, please fork the repository and create a new feature branch from the <code>develop</code> branch. Merge back by creating a pull request.</p>
+<p>iBridges‑GUI is an open‑source project, and we welcome contributions of all kinds — from bug reports and feature ideas to full pull requests.</p>
+<p>Main repository:<br>
+<strong><a href="https://github.com/iBridges-for-iRODS/iBridges-GUI">iBridges‑GUI on GitHub</a></strong></p>
+<section id="contribution-workflow" class="level3">
+<h3 class="anchored" data-anchor-id="contribution-workflow">Contribution workflow</h3>
+<ol type="1">
+<li>Fork the repository<br>
+</li>
+<li>Create a feature branch from <code>develop</code><br>
+</li>
+<li>Implement your changes<br>
+</li>
+<li>Submit a pull request back to <code>develop</code></li>
+</ol>
+<p>This workflow helps us review changes efficiently and maintain a clean development history.</p>
+</section>
+</section>
+<section id="code-structure-overview" class="level2">
+<h2 class="anchored" data-anchor-id="code-structure-overview">Code structure overview</h2>
+<p>The core application lives in the<br>
+<strong><a href="https://github.com/iBridges-for-iRODS/iBridges-GUI/tree/develop/ibridgesgui"><code>ibridgesgui</code></a></strong><br>
+package. Its architecture is modular, separating UI, logic, and iRODS operations into clear components.</p>
+<section id="top-level-modules" class="level3">
+<h3 class="anchored" data-anchor-id="top-level-modules">Top-level modules</h3>
+<p>These modules provide the core functionality used across the application:</p>
+<ul>
+<li><code>__main__.py</code> — application entry point<br>
+</li>
+<li><code>config.py</code> — configuration handling<br>
+</li>
+<li><code>gui_utils.py</code> — shared GUI helpers<br>
+</li>
+<li><code>threads.py</code> — background worker threads<br>
+</li>
+<li><code>info.py</code> — application metadata<br>
+</li>
+<li><code>irods_tree_model.py</code> — iRODS tree model<br>
+</li>
+<li><code>login.py</code> — authentication<br>
+</li>
+<li><code>logviewer.py</code> — log viewer tab<br>
+</li>
+<li><code>welcome.py</code> — startup screen<br>
+</li>
+<li><code>md_schemas/</code> — metadata schema definitions</li>
+</ul>
+</section>
+<section id="mainmenu" class="level3">
+<h3 class="anchored" data-anchor-id="mainmenu">mainmenu/</h3>
+<p>The orchestration layer of the application:</p>
+<ul>
+<li><code>main_window.py</code> — main Qt window hosting all tabs<br>
+</li>
+<li><code>tab_manager.py</code> — loads and organizes built‑in tabs<br>
+</li>
+<li><code>plugin_manager.py</code> — discovers and loads plugin tabs<br>
+</li>
+<li><code>session_manager.py</code> — manages user session state<br>
+</li>
+<li><code>config_manager.py</code> — handles configuration files and user-defined settings</li>
+</ul>
+<p>This directory is the best starting point for understanding how the application is assembled.</p>
+</section>
+<section id="browsertab" class="level3">
+<h3 class="anchored" data-anchor-id="browsertab">browsertab/</h3>
+<p>Implements the iRODS browser tab using a model–controller–view structure:</p>
+<ul>
+<li><code>browser_model.py</code> — data model<br>
+</li>
+<li><code>browser_controller.py</code> — navigation and logic<br>
+</li>
+<li><code>browser.py</code> — UI<br>
+</li>
+<li><code>irods_browser_service.py</code> — iRODS operations</li>
+</ul>
+</section>
+<section id="searchtab" class="level3">
+<h3 class="anchored" data-anchor-id="searchtab">searchtab/</h3>
+<p>Implements the search interface:</p>
+<ul>
+<li><code>search_model.py</code> — query state and results<br>
+</li>
+<li><code>search_controller.py</code> — executes searches and handles filters<br>
+</li>
+<li><code>search.py</code> — UI for building queries and viewing results</li>
+</ul>
+</section>
+<section id="synctab" class="level3">
+<h3 class="anchored" data-anchor-id="synctab">synctab/</h3>
+<p>Implements synchronization:</p>
+<ul>
+<li><code>sync_model.py</code> — sync state and configuration<br>
+</li>
+<li><code>sync_controller.py</code> — sync logic and background tasks<br>
+</li>
+<li><code>sync.py</code> — UI for managing sync jobs</li>
+</ul>
+</section>
+<section id="popup-widgets" class="level3">
+<h3 class="anchored" data-anchor-id="popup-widgets">popup_widgets/</h3>
+<p>Reusable dialogs for:</p>
+<ul>
+<li>creating collections<br>
+</li>
+<li>creating directories<br>
+</li>
+<li>uploading/downloading<br>
+</li>
+<li>renaming<br>
+</li>
+<li>metadata editing<br>
+</li>
+<li>configuration checks<br>
+</li>
+<li>resource tree dialogs</li>
+</ul>
+<p>Each dialog has its own file, making them easy to reuse or extend.</p>
+</section>
+<section id="ui-files" class="level3">
+<h3 class="anchored" data-anchor-id="ui-files">ui_files/</h3>
+<p>Contains:</p>
+<ul>
+<li>Qt Designer <code>.ui</code> files<br>
+</li>
+<li>auto‑generated Python wrappers<br>
+</li>
+<li>matching controller/view logic</li>
+</ul>
+<p>This keeps UI layout editable without touching logic.</p>
+</section>
+<section id="icons" class="level3">
+<h3 class="anchored" data-anchor-id="icons">icons/</h3>
+<p>Contains all icons used in the GUI, including navigation arrows, sync indicators, loading animations, and the application logo.</p>
 
 
 </section>

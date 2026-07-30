@@ -1,0 +1,44 @@
+/* Default TOC text (black) */
+#quarto-margin-sidebar #TOC .nav-link {
+  color: #000000 !important;
+}
+
+/* Hover state (your green) */
+#quarto-margin-sidebar #TOC .nav-link:hover {
+  color: #15a588 !important;
+}
+
+/* Active section (your green) */
+#quarto-margin-sidebar #TOC .nav-link.active {
+  color: #15a588 !important;
+  font-weight: 600;
+}
+
+/* Override Bootstrap link variables inside this TOC only */
+#quarto-margin-sidebar #TOC {
+  --bs-link-color: #000000;
+  --bs-link-hover-color: #15a588;
+  --bs-link-active-color: #15a588;
+}
+
+/* 1. Restore the original light gray left border for ALL TOC items */
+#quarto-margin-sidebar #TOC .nav-link {
+  border-left: 1px solid #dee2e6 !important;  /* original Quarto/Cosmo gray */
+  box-shadow: none !important;               /* remove Cosmo's blue shadow */
+}
+
+/* 2. Hover: green bar */
+#quarto-margin-sidebar #TOC .nav-link:hover {
+  border-left: 2px solid #15a588 !important;
+}
+
+/* 3. Active (but NOT the first item): green bar */
+#quarto-margin-sidebar #TOC ul > li:not(:first-child) > .nav-link.active {
+  border-left: 2px solid #15a588 !important;
+}
+
+/* 4. First item active: keep the light gray line, no green, no blue */
+#quarto-margin-sidebar #TOC ul > li:first-child > .nav-link.active {
+  border-left: 1px solid #dee2e6 !important;  /* restore gray */
+  box-shadow: none !important;                /* kill Cosmo's blue shadow */
+}
