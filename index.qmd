@@ -1,14 +1,54 @@
 ---
-title: "Welcome to the documentation of iBridges-Gui!"
+title: ""
+format:
+  html:
+    toc: false
 ---
 
-# Welcome
-iBridges-Gui is a Python package that implements a Graphical User Interface to iRODS servers. It provides users with a graphical way to do Data management.
+<!-- Hero header -->
+<div style="
+  background-color:#c8efe6;
+  padding: 3rem 1rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 2.5rem;
+">
+  <img src="docs/screenshots/logo.png"
+       alt="iBridges-Gui Logo"
+       style="height:120px; margin-bottom:1rem;">
 
-This page provides user and developer documentation. Get started using the links below!
+  <h1 style="
+    font-size:2.8rem;
+    font-weight:700;
+    margin:0;
+    color:#0f7f68;
+  ">
+    iBridges‑GUI Documentation
+  </h1>
+
+  <p style="
+    font-size:1.3rem;
+    color:#000;
+    margin-top:0.8rem;
+    max-width:700px;
+    margin-left:auto;
+    margin-right:auto;
+    font-weight:500;
+  ">
+    Bridging Science and Research Data Management
+  </p>
+</div>
+
+iBridges‑GUI is a lightweight, intuitive interface for working with iRODS servers.  
+It turns data‑management tasks into a simple, visual workflow, making browsing, metadata editing, syncing, and permissions management straightforward for both new and experienced users.
+
+This site provides both user and developer documentation.  
+Use the links below to explore.
 
 ## Table of contents
-- [What is iBridges](docs/info.qmd)
+
+- [What is iBridges‑Gui](docs/info.qmd)
 - [Getting started](docs/getting-started.qmd)
 - [User guide](docs/userdoc.qmd)
 - [Contributing](docs/developers.qmd)
+- [FAQ](docs/faq.qmd)

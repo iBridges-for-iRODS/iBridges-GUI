@@ -141,3 +141,7 @@ dmypy.json
 .pyre/
 
 /.quarto/
+_html/
+_site/
+
+**/*.quarto_ipynb
