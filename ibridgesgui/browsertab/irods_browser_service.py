@@ -243,6 +243,13 @@ class IrodsBrowserService:
         recursive: bool,
     ):
         """Apply an ACL change to a collection or data object."""
+        # Collection and no/inherit
+        if access in ["inherit", "noinherit"]:
+            coll = get_irods_item(path)
+            perms = Permissions(self.session, coll)
+            perms.set(access)
+            return
+
         obj = get_irods_item(path)
         perms = Permissions(self.session, obj)
         irods_access = self.REVERSE_PERM_MAP[access]
@@ -252,6 +259,7 @@ class IrodsBrowserService:
             zone=user_zone,
             recursive=recursive,
         )
+        return
 
     # -------- main browser table --------
 
