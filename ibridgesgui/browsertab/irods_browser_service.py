@@ -245,8 +245,6 @@ class IrodsBrowserService:
         """Apply an ACL change to a collection or data object."""
         # Collection and no/inherit
         if access in ["inherit", "noinherit"]:
-            if path.dataobject_exists():
-                return("Cannot set inheritance on a data object.")
             coll = get_irods_item(path)
             perms = Permissions(self.session, coll)
             perms.set(access)
