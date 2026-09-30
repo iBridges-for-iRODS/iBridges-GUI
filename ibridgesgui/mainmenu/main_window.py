@@ -15,7 +15,7 @@ from ibridgesgui.mainmenu import (
     SessionManager,
     TabManager,
 )
-from ibridgesgui.popup_widgets import CheckConfig, SupplyTicket
+from ibridgesgui.popup_widgets import CheckConfig, SupplyTicket, TicketEditor
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.welcome import Welcome
 
@@ -50,6 +50,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_exit.triggered.connect(self._on_exit)
         self.action_edit_configuration.triggered.connect(self._on_edit_env)
         self.action_supply_ticket.triggered.connect(self._on_supply_ticket)
+        self.action_create_ticket.triggered.connect(self._on_edit_ticket)
         self.action_gui_docs.triggered.connect(self._on_gui_docs)
         self.action_ibridges_docs.triggered.connect(self._on_ibridges_docs)
 
@@ -119,6 +120,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _on_edit_env(self) -> None:
         widget = CheckConfig(self.logger, Path("~/.irods").expanduser())
+        widget.exec()
+
+    def _on_edit_ticket(self) -> None:
+        widget = TicketEditor(self.session_manager.session, self.logger)
         widget.exec()
 
     def _on_supply_ticket(self) -> None:

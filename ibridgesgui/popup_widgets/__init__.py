@@ -8,6 +8,7 @@ from ibridgesgui.popup_widgets.rename_item import Rename
 from ibridgesgui.popup_widgets.resc_tree import RescInfoDialog
 from ibridgesgui.popup_widgets.upload_data import UploadData
 from ibridgesgui.popup_widgets.supply_ticket import SupplyTicket
+from ibridgesgui.popup_widgets.edit_tickets import TicketEditor
 
 __all__ = [
     "CreateCollection",
@@ -17,5 +18,6 @@ __all__ = [
     "UploadData",
     "DownloadData",
     "RescInfoDialog",
-    "SupplyTicket"
+    "SupplyTicket",
+    "TicketEditor"
 ]

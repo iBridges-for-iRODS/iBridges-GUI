@@ -144,7 +144,6 @@ QTabBar::tab:top:selected {
     </property>
     <addaction name="action_supply_ticket"/>
     <addaction name="action_create_ticket"/>
-    <addaction name="action_delete_ticket"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -224,7 +223,7 @@ QTabBar::tab:top:selected {
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Create Ticket</string>
+    <string>Create/Delete Ticket</string>
    </property>
   </action>
   <action name="action_delete_ticket">
