@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>747</width>
-    <height>142</height>
+    <height>187</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,18 +53,18 @@ QTabWidget#info_tabs
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Ticket</string>
-       </property>
-      </widget>
-     </item>
+    <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>iRODS Path</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Ticket</string>
        </property>
       </widget>
      </item>
@@ -77,11 +77,37 @@ QTabWidget#info_tabs
     </layout>
    </item>
    <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
     <widget class="QLabel" name="error_label">
      <property name="text">
       <string/>
      </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

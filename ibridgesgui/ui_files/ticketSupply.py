@@ -16,14 +16,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
-    QFormLayout, QLabel, QLineEdit, QSizePolicy,
-    QVBoxLayout, QWidget)
+    QGridLayout, QLabel, QLineEdit, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_ticketSupply(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(747, 142)
+        Dialog.resize(747, 187)
         Dialog.setStyleSheet(u"QWidget\n"
 "{\n"
 "    background-color: rgb(211,211,211);\n"
@@ -62,35 +62,43 @@ class Ui_ticketSupply(object):
 "")
         self.verticalLayout = QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.formLayout = QFormLayout()
-        self.formLayout.setObjectName(u"formLayout")
-        self.label = QLabel(Dialog)
-        self.label.setObjectName(u"label")
-
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label)
-
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
         self.label_2 = QLabel(Dialog)
         self.label_2.setObjectName(u"label_2")
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_2)
+        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
+
+        self.label = QLabel(Dialog)
+        self.label.setObjectName(u"label")
+
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
 
         self.ticket_string = QLineEdit(Dialog)
         self.ticket_string.setObjectName(u"ticket_string")
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.ticket_string)
+        self.gridLayout.addWidget(self.ticket_string, 0, 1, 1, 1)
 
         self.irods_path = QLineEdit(Dialog)
         self.irods_path.setObjectName(u"irods_path")
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.irods_path)
+        self.gridLayout.addWidget(self.irods_path, 1, 1, 1, 1)
 
 
-        self.verticalLayout.addLayout(self.formLayout)
+        self.verticalLayout.addLayout(self.gridLayout)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer)
 
         self.error_label = QLabel(Dialog)
         self.error_label.setObjectName(u"error_label")
 
         self.verticalLayout.addWidget(self.error_label)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer_2)
 
         self.buttonBox = QDialogButtonBox(Dialog)
         self.buttonBox.setObjectName(u"buttonBox")
@@ -109,8 +117,8 @@ class Ui_ticketSupply(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
-        self.label.setText(QCoreApplication.translate("Dialog", u"Ticket", None))
         self.label_2.setText(QCoreApplication.translate("Dialog", u"iRODS Path", None))
+        self.label.setText(QCoreApplication.translate("Dialog", u"Ticket", None))
         self.error_label.setText("")
     # retranslateUi
 
