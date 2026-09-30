@@ -55,5 +55,5 @@ class SupplyTicket(UiDialogMixin, QtWidgets.QDialog, Ui_ticketSupply):
 
         except ValueError as err:
             self.error_label.setText(f"{err}")
-        except Exception as err: # noqa: BLE001
-            self.error_label.setText(f"{err}")
+        #except Exception as err: # noqa: BLE001
+        #    self.error_label.setText(f"{err}")
