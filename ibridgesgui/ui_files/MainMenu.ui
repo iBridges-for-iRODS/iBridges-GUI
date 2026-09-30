@@ -143,11 +143,21 @@ QTabBar::tab:top:selected {
      <string>Data Access</string>
     </property>
     <addaction name="action_supply_ticket"/>
+    <addaction name="action_create_ticket"/>
+    <addaction name="action_delete_ticket"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="action_gui_docs"/>
+    <addaction name="action_ibridges_docs"/>
    </widget>
    <addaction name="main_menu"/>
    <addaction name="config_menu"/>
    <addaction name="menu_data_access"/>
    <addaction name="menuPlugins"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="action_close_session">
    <property name="text">
@@ -207,6 +217,32 @@ QTabBar::tab:top:selected {
    </property>
    <property name="text">
     <string>Supply Ticket</string>
+   </property>
+  </action>
+  <action name="action_create_ticket">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Create Ticket</string>
+   </property>
+  </action>
+  <action name="action_delete_ticket">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Delete Ticket</string>
+   </property>
+  </action>
+  <action name="action_gui_docs">
+   <property name="text">
+    <string>iBridges GUI</string>
+   </property>
+  </action>
+  <action name="action_ibridges_docs">
+   <property name="text">
+    <string>iBridges</string>
    </property>
   </action>
  </widget>

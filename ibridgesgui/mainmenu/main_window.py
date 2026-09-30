@@ -6,6 +6,8 @@ from pathlib import Path
 
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices
 
 from ibridgesgui.gui_utils import UI_FILE_DIR, load_ui
 from ibridgesgui.mainmenu import (
@@ -17,6 +19,9 @@ from ibridgesgui.popup_widgets import CheckConfig, SupplyTicket
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.welcome import Welcome
 
+
+IBRIDGES_DOCS_URL = "https://ibridges.readthedocs.io"
+GUI_DOCS_URL = "https://ibridges-for-irods.github.io/iBridges-GUI"
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     """Main application window."""
@@ -45,6 +50,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_exit.triggered.connect(self._on_exit)
         self.action_edit_configuration.triggered.connect(self._on_edit_env)
         self.action_supply_ticket.triggered.connect(self._on_supply_ticket)
+        self.action_gui_docs.triggered.connect(self._on_gui_docs)
+        self.action_ibridges_docs.triggered.connect(self._on_ibridges_docs)
 
         if session is not None:
             self.on_session_changed(session)
@@ -88,6 +95,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.tab_manager.update_plugin_menu()
 
+    def _open_web_page(self, URL):
+        if not QDesktopServices.openUrl(QUrl(URL)):
+            self.logger.error("Could not open %s in a web browser.", URL)
+
+    def _on_gui_docs(self) -> None:
+        self._open_web_page(GUI_DOCS_URL)
+    def _on_ibridges_docs(self) -> None:
+        self._open_web_page(IBRIDGES_DOCS_URL)
+
     def _on_connect(self) -> None:
         if self.session_manager.session is not None:
             QMessageBox.information(self, "Already connected", "You are already logged in.")
@@ -118,11 +134,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if session is None:
             self.menuPlugins.setEnabled(False)
             self.action_supply_ticket.setEnabled(False)
+            self.action_delete_ticket.setEnabled(False)
+            self.action_create_ticket.setEnabled(False)
             self._show_welcome_tab()
             return
 
         self.menuPlugins.setEnabled(True)
         self.action_supply_ticket.setEnabled(True)
+        if session.irods_session.username != "anonymous":
+            self.action_delete_ticket.setEnabled(True)
+            self.action_create_ticket.setEnabled(True)
         self.tab_manager.restore_tabs(session, self.app_name, self.logger)
 
     def _show_welcome_tab(self) -> None:
