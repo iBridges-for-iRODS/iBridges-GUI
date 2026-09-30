@@ -59,7 +59,7 @@ def test_connect_accept(monkeypatch, manager, fake_session):
 
     manager.session_changed.connect(on_changed)
 
-    manager.connect()
+    manager.login()
 
     assert manager.session is fake_session
     assert received == [fake_session]
@@ -77,7 +77,7 @@ def test_connect_rejected(monkeypatch, manager):
 
     monkeypatch.setattr("ibridgesgui.mainmenu.session_manager.LoginDialog", FakeDialog)
 
-    manager.connect()
+    manager.login()
 
     assert manager.session is None
 
