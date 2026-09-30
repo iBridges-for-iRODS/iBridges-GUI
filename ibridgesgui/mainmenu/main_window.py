@@ -13,7 +13,7 @@ from ibridgesgui.mainmenu import (
     SessionManager,
     TabManager,
 )
-from ibridgesgui.popup_widgets import CheckConfig
+from ibridgesgui.popup_widgets import CheckConfig, SupplyTicket
 from ibridgesgui.ui_files.MainMenu import Ui_MainWindow
 from ibridgesgui.welcome import Welcome
 
@@ -43,8 +43,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_connect.triggered.connect(self._on_connect)
         self.action_close_session.triggered.connect(self._on_disconnect)
         self.action_exit.triggered.connect(self._on_exit)
-        self.action_add_configuration.triggered.connect(self._on_create_env)
-        self.action_check_configuration.triggered.connect(self._on_check_env)
+        self.action_edit_configuration.triggered.connect(self._on_edit_env)
+        self.action_supply_ticket.triggered.connect(self._on_supply_ticket)
 
         if session is not None:
             self.on_session_changed(session)
@@ -101,13 +101,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #self.close()
         QApplication.quit()
 
-    def _on_create_env(self) -> None:
+    def _on_edit_env(self) -> None:
         widget = CheckConfig(self.logger, Path("~/.irods").expanduser())
         widget.exec()
 
-    def _on_check_env(self) -> None:
-        widget = CheckConfig(self.logger, Path("~/.irods").expanduser())
+    def _on_supply_ticket(self) -> None:
+        widget = SupplyTicket(self.session_manager, self.logger)
         widget.exec()
+
 
     def on_session_changed(self, session) -> None:
         """Reset when session changes."""
@@ -116,10 +117,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if session is None:
             self.menuPlugins.setEnabled(False)
+            self.action_supply_ticket.setEnabled(False)
             self._show_welcome_tab()
             return
 
         self.menuPlugins.setEnabled(True)
+        self.action_supply_ticket.setEnabled(True)
         self.tab_manager.restore_tabs(session, self.app_name, self.logger)
 
     def _show_welcome_tab(self) -> None:

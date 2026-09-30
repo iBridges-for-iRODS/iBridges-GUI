@@ -73,6 +73,7 @@ QTabBar::tab:top:selected {
       <property name="font">
        <font>
         <pointsize>16</pointsize>
+        <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
        </font>
@@ -99,6 +100,7 @@ QTabBar::tab:top:selected {
    <property name="font">
     <font>
      <pointsize>16</pointsize>
+     <weight>50</weight>
      <italic>false</italic>
      <bold>false</bold>
     </font>
@@ -107,6 +109,7 @@ QTabBar::tab:top:selected {
     <property name="font">
      <font>
       <pointsize>16</pointsize>
+      <weight>50</weight>
       <italic>false</italic>
       <bold>false</bold>
      </font>
@@ -122,8 +125,7 @@ QTabBar::tab:top:selected {
     <property name="title">
      <string>Configure</string>
     </property>
-    <addaction name="action_check_configuration"/>
-    <addaction name="action_add_configuration"/>
+    <addaction name="action_edit_configuration"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="enabled">
@@ -133,8 +135,18 @@ QTabBar::tab:top:selected {
      <string>Views and Plugins</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu_data_access">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>Data Access</string>
+    </property>
+    <addaction name="action_supply_ticket"/>
+   </widget>
    <addaction name="main_menu"/>
    <addaction name="config_menu"/>
+   <addaction name="menu_data_access"/>
    <addaction name="menuPlugins"/>
   </widget>
   <action name="action_close_session">
@@ -174,14 +186,27 @@ QTabBar::tab:top:selected {
     <string>Connect to iRODS</string>
    </property>
   </action>
-  <action name="action_check_configuration">
+  <action name="action_edit_configuration">
    <property name="text">
-    <string>Check Configuration</string>
+    <string>Open Configuration</string>
    </property>
   </action>
   <action name="action_add_configuration">
    <property name="text">
     <string>Add Configuration</string>
+   </property>
+  </action>
+  <action name="action_supply_Ticket">
+   <property name="text">
+    <string>Supply Ticket</string>
+   </property>
+  </action>
+  <action name="action_supply_ticket">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Supply Ticket</string>
    </property>
   </action>
  </widget>
