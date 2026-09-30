@@ -21,7 +21,7 @@ class SessionManager(QObject):
         self.logger = logger
         self.session: Session | None = None
 
-    def connect(self, parent=None):
+    def login(self, parent=None):
         """Get session from Login."""
         dialog = LoginDialog(parent, self.logger, self)
         if dialog.exec() != QDialog.Accepted:

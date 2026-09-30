@@ -92,7 +92,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.session_manager.session is not None:
             QMessageBox.information(self, "Already connected", "You are already logged in.")
             return
-        self.session_manager.connect(self)
+        self.session_manager.login(self)
 
     def _on_disconnect(self) -> None:
         self.session_manager.disconnect()
