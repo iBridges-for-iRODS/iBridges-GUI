@@ -1,6 +1,5 @@
 """Dialog to supply a ticket."""
 
-
 from PySide6 import QtCore, QtWidgets
 
 from ibridges import IrodsPath
@@ -39,7 +38,9 @@ class SupplyTicket(UiDialogMixin, QtWidgets.QDialog, Ui_ticketSupply):
         ipath = IrodsPath(self.session_manager.session, self.irods_path.text())
         ta = TicketAccess(self.session_manager.session, self.ticket_string.text(), ipath)
         try:
-            ta = TicketAccess(self.session_manager.session, self.ticket_string.text(), irods_path=ipath)
+            ta = TicketAccess(
+                self.session_manager.session, self.ticket_string.text(), irods_path=ipath
+            )
             if ipath.collection_exists():
                 self.session_manager.session.home = str(ipath)
                 self.session_manager.session_changed.emit(self.session_manager.session)
@@ -51,9 +52,11 @@ class SupplyTicket(UiDialogMixin, QtWidgets.QDialog, Ui_ticketSupply):
                 self.logger.info("Supplied ticket %s with path %s", ta.ticket_str, str(ipath))
                 self.done(0)
             else:
-                raise ValueError(f"Ticket {ta.ticket_str} and path {str(ipath)} do not match, or path does not exist")
-
+                raise ValueError(
+                    f"Ticket {ta.ticket_str} and path {ipath} do not match, "
+                    "or the path does not exist."
+                )
         except ValueError as err:
             self.error_label.setText(f"{err}")
-        #except Exception as err: # noqa: BLE001
+        # except Exception as err: # noqa: BLE001
         #    self.error_label.setText(f"{err}")

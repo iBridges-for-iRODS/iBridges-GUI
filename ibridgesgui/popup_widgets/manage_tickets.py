@@ -145,7 +145,9 @@ class TicketEditor(UiDialogMixin, QtWidgets.QDialog, Ui_ticketEditor):
             return
         irods_path = self.irods_model.irods_path_from_tree_index(irods_sel[0])
         if not irods_path.exists():
-            self.error_label.setText("Tree path not found in session, session and widget do not match.")
+            self.error_label.setText(
+                "Tree path not found in session, session and widget do not match."
+            )
             return
 
         expiry_date = None if self.expiry_checkbox.isChecked() else self._selected_expiry()
