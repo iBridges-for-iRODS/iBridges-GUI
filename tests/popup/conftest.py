@@ -124,15 +124,6 @@ def patch_env_path(monkeypatch, tmp_path):
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def fake_logger():
-    class FakeLogger:
-        def info(self, *args, **kwargs): pass
-        def warning(self, *args, **kwargs): pass
-        def error(self, *args, **kwargs): pass
-    return FakeLogger()
-
-
-@pytest.fixture
 def dummy_ops():
     class DummyOps:
         def __init__(self):
@@ -140,3 +131,19 @@ def dummy_ops():
             self.meta_download = []
     return DummyOps()
 
+@pytest.fixture
+def fake_logger():
+    class FakeLogger:
+        def __init__(self):
+            self.calls = []
+
+        def info(self, *args, **kwargs):
+            self.calls.append(("info", args))
+
+        def warning(self, *args, **kwargs):
+            self.calls.append(("warning", args))
+
+        def error(self, *args, **kwargs):
+            self.calls.append(("error", args))
+
+    return FakeLogger()

@@ -1,6 +1,7 @@
 """Login widget."""
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 from typing import Any
@@ -149,11 +150,14 @@ class LoginDialog(QDialog, Ui_irodsLogin):
         # Resolve password
         typed_pw = self.password_field.text()
         password = self._resolve_password(entry, typed_pw)
-        if password is None:
-            return
 
         # Validate environment config
         if not self._validate_env_config(env_path):
+            return
+        with open(env_path, encoding="utf-8") as f:
+            env_info = json.load(f)
+        is_anonymous = env_info.get("irods_user_name", "").lower() == "anonymous"
+        if password is None and not is_anonymous:
             return
 
         try:
