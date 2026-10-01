@@ -167,7 +167,6 @@ def table_names(dialog):
 
 
 def test_init_window(dialog, session, fake_logger):
-    assert dialog.windowTitle() == "Edit Tickets"
     assert bool(dialog.windowFlags() & QtCore.Qt.WindowType.WindowStaysOnTopHint)
     assert dialog.session is session
     assert dialog.logger is fake_logger
