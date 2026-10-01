@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>982</width>
-    <height>566</height>
+    <width>1000</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,39 +55,72 @@ QTabWidget#info_tabs
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QTreeView" name="irods_tree_view"/>
+      <widget class="QTreeView" name="irods_tree_view">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+      </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Expiry Date</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QCalendarWidget" name="expiry_calendar"/>
        </item>
        <item>
-        <widget class="QRadioButton" name="read_button">
+        <widget class="QCheckBox" name="expiry_checkbox">
          <property name="text">
-          <string>Read</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>No Expiry Date</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="write_button">
-         <property name="text">
-          <string>Write</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>No Expiry Date</string>
+            <string>Acess Mode</string>
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QRadioButton" name="read_button">
+           <property name="text">
+            <string>Read</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="write_button">
+           <property name="text">
+            <string>Write</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
@@ -102,7 +135,7 @@ QTabWidget#info_tabs
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="create_ticket_button">
            <property name="text">
             <string>Create Ticket</string>
            </property>
@@ -112,72 +145,84 @@ QTabWidget#info_tabs
        </item>
       </layout>
      </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout"/>
+     </item>
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <widget class="QLabel" name="error_label">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Existing Tickets</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="ticket_table">
+     <property name="maximumSize">
+      <size>
+       <width>1000</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <column>
+      <property name="text">
+       <string>Ticket</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>iRODS Path</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Expiry Date</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Delete</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="close_button">
        <property name="text">
-        <string>Existing Tickets</string>
+        <string>Close</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <widget class="QTableWidget" name="ticket_table">
-       <column>
-        <property name="text">
-         <string>Ticket</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>iRODS Path</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Expiry Date</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Action</string>
-        </property>
-       </column>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="close_button">
-         <property name="text">
-          <string>Close</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </item>
     </layout>
    </item>
