@@ -26,7 +26,7 @@ class TicketEditor(UiDialogMixin, QtWidgets.QDialog, Ui_ticketEditor):
         self.tickets = Tickets(self.session)
         self.irods_model = None
 
-        self.setWindowTitle("Edit Tickets")
+        self.setWindowTitle("Manage Tickets")
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
         self._init_ticket_table()
