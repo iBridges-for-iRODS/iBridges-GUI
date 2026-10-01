@@ -1,13 +1,13 @@
-"""Dialog to supply a ticket. """
+"""Dialog to supply a ticket."""
 
-import json
-from pathlib import Path
 
 from PySide6 import QtCore, QtWidgets
+
 from ibridges import IrodsPath
 from ibridges.tickets import TicketAccess
 from ibridgesgui.popup_widgets.base import UiDialogMixin
 from ibridgesgui.ui_files.ticketSupply import Ui_ticketSupply
+
 
 class SupplyTicket(UiDialogMixin, QtWidgets.QDialog, Ui_ticketSupply):
     """Popup dialog to supply a ticket."""
@@ -30,10 +30,10 @@ class SupplyTicket(UiDialogMixin, QtWidgets.QDialog, Ui_ticketSupply):
         """Add ticket to session."""
         self.error_label.clear()
         if self.irods_path.text().strip() == "":
-            self.error_label.setText(f"Please provide an irods path.")
+            self.error_label.setText("Please provide an irods path.")
             return
         if self.ticket_string.text().strip() == "":
-            self.error_label.setText(f"Please provide a ticket.")
+            self.error_label.setText("Please provide a ticket.")
             return
 
         ipath = IrodsPath(self.session_manager.session, self.irods_path.text())

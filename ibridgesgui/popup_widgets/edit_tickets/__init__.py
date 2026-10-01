@@ -1,1 +1,0 @@
-from ibridgesgui.popup_widgets.edit_tickets.edit_ticket import TicketEditor
