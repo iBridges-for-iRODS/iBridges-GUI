@@ -154,7 +154,7 @@ class LoginDialog(QDialog, Ui_irodsLogin):
         # Validate environment config
         if not self._validate_env_config(env_path):
             return
-        with open(env_path) as f:
+        with open(env_path, encoding="utf-8") as f:
             env_info = json.load(f)
         is_anonymous = env_info.get("irods_user_name", "").lower() == "anonymous"
         if password is None and not is_anonymous:
