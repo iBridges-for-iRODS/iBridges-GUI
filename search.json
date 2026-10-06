@@ -1,19 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "\niBridges‑GUI Documentation\n",
-    "section": "",
-    "text": "Bridging Science and Research Data Management\niBridges‑GUI is a lightweight, intuitive interface for working with iRODS servers.\nIt turns data‑management tasks into a simple, visual workflow, making browsing, metadata editing, syncing, and permissions management straightforward for both new and experienced users.\nThis site provides both user and developer documentation.\nUse the links below to explore."
-  },
-  {
-    "objectID": "index.html#table-of-contents",
-    "href": "index.html#table-of-contents",
-    "title": "\niBridges‑GUI Documentation\n",
-    "section": "Table of contents",
-    "text": "Table of contents\n\nWhat is iBridges‑Gui\nGetting started\nUser guide\nContributing\nFAQ"
-  },
-  {
     "objectID": "docs/developers.html",
     "href": "docs/developers.html",
     "title": "Developer Guide",
@@ -84,13 +70,6 @@
     "text": "Building executables yourself\nBuild scripts are included for users who want to compile and distribute the GUI.\nShow the available options:\npython3 build_tools/build_script.py -h\nThis creates:\n\na virtual environment venv,\n\na build directory, and\n\nan ibridgesgui_dist folder containing the executable.\n\nRun the built executable:\n./output/ibridgesgui/ibridges_gui.bin   # macOS/Linux\nor\noutput/ibridgesgui/ibridges_gui.exe     # Windows"
   },
   {
-    "objectID": "docs/faq.html",
-    "href": "docs/faq.html",
-    "title": "Frequently asked Questions",
-    "section": "",
-    "text": "If your question isn’t listed here, you may also find answers in the API and CLI FAQ.\n\n\n\n\n\n\nTipI found a bug or have a feature request — where should I go?\n\n\n\n\n\nAll development happens on GitHub.\nCheck the Issues section to see whether your bug or idea has already been reported.\nIf not, feel free to open a new issue — we actively monitor the tracker and usually respond within a few days.\n\n\n\n\n\n\n\n\n\nTipI’m getting a “NetworkError” when transferring large files\n\n\n\n\n\nThis error usually appears when the checksum calculation exceeds the default iBridges timeout of 25,000 seconds (~7 hours).\nThe transfer itself typically succeeds, but if the server is busy or the file is extremely large, the checksum step may run longer than the timeout.\nYou can increase the timeout by adding this entry to your irods_environment.json:\n\"connection_timeout\": &lt;time in seconds&gt;\nThe maximum allowed value is:\n\"connection_timeout\": 9208512000\nwhich corresponds to roughly 292 years.\n\n\n\n\n\n\n\n\n\nTipMy metadata keys starting with org_ don’t appear in iBridges\n\n\n\n\n\niBridges hides metadata keys beginning with org_ by default.\nThis behaviour is intentional on Yoda systems for data‑security reasons.\nIf you need to access these keys, you can do so via the\niBridges API.\n\n\n\n\n\n\n\n\n\nTipHow can I download files that match a pattern but aren’t in the same collection?\n\n\n\n\n\nUse the Search tab.\nThe search interface lets you filter for files regardless of their location.\nOnce the results appear, select the items you want to download.\n\n\n\n\n\n\n\n\n\nTipHow do I find all the data I have access to?\n\n\n\n\n\nShared data in iRODS doesn’t always appear in your home or project collection.\nHowever, shared objects must always reside in a collection you can access — that’s an iRODS rule.\nTo list all accessible collections:\n\nOpen Search\n\nSet the search path to /yourZone/home\n\nUse Obj/Coll name: %\n\nSelect Collections and unselect Data Objects\n\nThe results will show every collection you have permission to access."
-  },
-  {
     "objectID": "docs/userdoc.html",
     "href": "docs/userdoc.html",
     "title": "User Documentation",
@@ -138,6 +117,20 @@
     "title": "User Documentation",
     "section": "Search",
     "text": "Search\nThe Search view allows you to filter by path, name, and metadata.\n\n\nSearch fields\n\nPath — defines where the search is performed.\nMust exist; defaults to your home collection.\nObj/Coll name — filter by name.\nExample: demo finds all items named demo.\nWildcards use %.\nExample: my_books/%.txt finds all .txt files in my_books.\nMetadata filters — narrow results further.\nExample: key author, value %Doyle%.\n\n\n\nSearch results\n\nSingle click or Select all → click Download to choose a destination.\n\nDouble click → open the item in the Browser for inspection."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "\niBridges‑GUI Documentation\n",
+    "section": "",
+    "text": "Bridging Science and Research Data Management\niBridges‑GUI is a lightweight, intuitive interface for working with iRODS servers.\nIt turns data‑management tasks into a simple, visual workflow, making browsing, metadata editing, syncing, and permissions management straightforward for both new and experienced users.\nThis site provides both user and developer documentation.\nUse the links below to explore."
+  },
+  {
+    "objectID": "index.html#table-of-contents",
+    "href": "index.html#table-of-contents",
+    "title": "\niBridges‑GUI Documentation\n",
+    "section": "Table of contents",
+    "text": "Table of contents\n\nWhat is iBridges‑Gui\nGetting started\nUser guide\nContributing\nFAQ"
   },
   {
     "objectID": "docs/info.html",
@@ -194,5 +187,12 @@
     "title": "What is iBridges‑GUI",
     "section": "License",
     "text": "License\nGPL v3"
+  },
+  {
+    "objectID": "docs/faq.html",
+    "href": "docs/faq.html",
+    "title": "Frequently asked Questions",
+    "section": "",
+    "text": "If your question isn’t listed here, you may also find answers in the API and CLI FAQ.\n\n\n\n\n\n\nTipI found a bug or have a feature request — where should I go?\n\n\n\n\n\nAll development happens on GitHub.\nCheck the Issues section to see whether your bug or idea has already been reported.\nIf not, feel free to open a new issue — we actively monitor the tracker and usually respond within a few days.\n\n\n\n\n\n\n\n\n\nTipI’m getting a “NetworkError” when transferring large files\n\n\n\n\n\nThis error usually appears when the checksum calculation exceeds the default iBridges timeout of 25,000 seconds (~7 hours).\nThe transfer itself typically succeeds, but if the server is busy or the file is extremely large, the checksum step may run longer than the timeout.\nYou can increase the timeout by adding this entry to your irods_environment.json:\n\"connection_timeout\": &lt;time in seconds&gt;\nThe maximum allowed value is:\n\"connection_timeout\": 9208512000\nwhich corresponds to roughly 292 years.\n\n\n\n\n\n\n\n\n\nTipMy metadata keys starting with org_ don’t appear in iBridges\n\n\n\n\n\niBridges hides metadata keys beginning with org_ by default.\nThis behaviour is intentional on Yoda systems for data‑security reasons.\nIf you need to access these keys, you can do so via the\niBridges API.\n\n\n\n\n\n\n\n\n\nTipHow can I download files that match a pattern but aren’t in the same collection?\n\n\n\n\n\nUse the Search tab.\nThe search interface lets you filter for files regardless of their location.\nOnce the results appear, select the items you want to download.\n\n\n\n\n\n\n\n\n\nTipHow do I find all the data I have access to?\n\n\n\n\n\nShared data in iRODS doesn’t always appear in your home or project collection.\nHowever, shared objects must always reside in a collection you can access — that’s an iRODS rule.\nTo list all accessible collections:\n\nOpen Search\n\nSet the search path to /yourZone/home\n\nUse Obj/Coll name: %\n\nSelect Collections and unselect Data Objects\n\nThe results will show every collection you have permission to access."
   }
 ]

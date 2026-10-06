@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://iBridges-for-iRODS.github.io/iBridges-GUI/index.html</loc>
-    <lastmod>2026-07-30T05:13:48.531Z</lastmod>
-  </url>
-  <url>
     <loc>https://iBridges-for-iRODS.github.io/iBridges-GUI/docs/developers.html</loc>
-    <lastmod>2026-07-30T05:13:48.513Z</lastmod>
+    <lastmod>2026-10-06T06:08:56.395Z</lastmod>
   </url>
   <url>
     <loc>https://iBridges-for-iRODS.github.io/iBridges-GUI/docs/getting-started.html</loc>
-    <lastmod>2026-07-30T05:13:48.513Z</lastmod>
-  </url>
-  <url>
-    <loc>https://iBridges-for-iRODS.github.io/iBridges-GUI/docs/faq.html</loc>
-    <lastmod>2026-07-30T05:13:48.513Z</lastmod>
+    <lastmod>2026-10-06T06:08:56.396Z</lastmod>
   </url>
   <url>
     <loc>https://iBridges-for-iRODS.github.io/iBridges-GUI/docs/userdoc.html</loc>
-    <lastmod>2026-07-30T05:13:48.526Z</lastmod>
+    <lastmod>2026-10-06T06:08:56.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://iBridges-for-iRODS.github.io/iBridges-GUI/index.html</loc>
+    <lastmod>2026-10-06T06:08:56.417Z</lastmod>
   </url>
   <url>
     <loc>https://iBridges-for-iRODS.github.io/iBridges-GUI/docs/info.html</loc>
-    <lastmod>2026-07-30T05:13:48.513Z</lastmod>
+    <lastmod>2026-10-06T06:08:56.396Z</lastmod>
+  </url>
+  <url>
+    <loc>https://iBridges-for-iRODS.github.io/iBridges-GUI/docs/faq.html</loc>
+    <lastmod>2026-10-06T06:08:56.396Z</lastmod>
   </url>
 </urlset>
