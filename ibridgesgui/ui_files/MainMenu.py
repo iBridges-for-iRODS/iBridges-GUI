@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'MainMenu.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.11.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -70,10 +70,25 @@ class Ui_MainWindow(object):
         self.actionSaveConfig.setFont(font)
         self.action_connect = QAction(MainWindow)
         self.action_connect.setObjectName(u"action_connect")
-        self.action_check_configuration = QAction(MainWindow)
-        self.action_check_configuration.setObjectName(u"action_check_configuration")
+        self.action_edit_configuration = QAction(MainWindow)
+        self.action_edit_configuration.setObjectName(u"action_edit_configuration")
         self.action_add_configuration = QAction(MainWindow)
         self.action_add_configuration.setObjectName(u"action_add_configuration")
+        self.action_supply_Ticket = QAction(MainWindow)
+        self.action_supply_Ticket.setObjectName(u"action_supply_Ticket")
+        self.action_supply_ticket = QAction(MainWindow)
+        self.action_supply_ticket.setObjectName(u"action_supply_ticket")
+        self.action_supply_ticket.setEnabled(False)
+        self.action_create_ticket = QAction(MainWindow)
+        self.action_create_ticket.setObjectName(u"action_create_ticket")
+        self.action_create_ticket.setEnabled(False)
+        self.action_delete_ticket = QAction(MainWindow)
+        self.action_delete_ticket.setObjectName(u"action_delete_ticket")
+        self.action_delete_ticket.setEnabled(False)
+        self.action_gui_docs = QAction(MainWindow)
+        self.action_gui_docs.setObjectName(u"action_gui_docs")
+        self.action_ibridges_docs = QAction(MainWindow)
+        self.action_ibridges_docs.setObjectName(u"action_ibridges_docs")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setStyleSheet(u"")
@@ -103,18 +118,28 @@ class Ui_MainWindow(object):
         self.config_menu.setObjectName(u"config_menu")
         self.menuPlugins = QMenu(self.menubar)
         self.menuPlugins.setObjectName(u"menuPlugins")
-        self.menuPlugins.setEnabled(True)
-
+        self.menuPlugins.setEnabled(False)
+        self.menu_data_access = QMenu(self.menubar)
+        self.menu_data_access.setObjectName(u"menu_data_access")
+        self.menu_data_access.setEnabled(True)
+        self.menuHelp = QMenu(self.menubar)
+        self.menuHelp.setObjectName(u"menuHelp")
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.main_menu.menuAction())
         self.menubar.addAction(self.config_menu.menuAction())
+        self.menubar.addAction(self.menu_data_access.menuAction())
         self.menubar.addAction(self.menuPlugins.menuAction())
+        self.menubar.addAction(self.menuHelp.menuAction())
         self.main_menu.addAction(self.action_connect)
         self.main_menu.addAction(self.action_close_session)
         self.main_menu.addAction(self.action_exit)
-        self.config_menu.addAction(self.action_check_configuration)
-        self.config_menu.addAction(self.action_add_configuration)
+        self.config_menu.addAction(self.action_edit_configuration)
+        self.menu_data_access.addAction(self.action_supply_ticket)
+        self.menu_data_access.addAction(self.action_create_ticket)
+        self.menu_data_access.addAction(self.action_delete_ticket)
+        self.menuHelp.addAction(self.action_gui_docs)
+        self.menuHelp.addAction(self.action_ibridges_docs)
 
         self.retranslateUi(MainWindow)
 
@@ -131,11 +156,18 @@ class Ui_MainWindow(object):
         self.actionSearch.setText(QCoreApplication.translate("MainWindow", u"Search", None))
         self.actionSaveConfig.setText(QCoreApplication.translate("MainWindow", u"Save configuration", None))
         self.action_connect.setText(QCoreApplication.translate("MainWindow", u"Connect to iRODS", None))
-        self.action_check_configuration.setText(QCoreApplication.translate("MainWindow", u"Check Configuration", None))
+        self.action_edit_configuration.setText(QCoreApplication.translate("MainWindow", u"Open Configuration", None))
         self.action_add_configuration.setText(QCoreApplication.translate("MainWindow", u"Add Configuration", None))
+        self.action_supply_Ticket.setText(QCoreApplication.translate("MainWindow", u"Supply Ticket", None))
+        self.action_supply_ticket.setText(QCoreApplication.translate("MainWindow", u"Supply Ticket", None))
+        self.action_create_ticket.setText(QCoreApplication.translate("MainWindow", u"Create Ticket", None))
+        self.action_delete_ticket.setText(QCoreApplication.translate("MainWindow", u"Delete Ticket", None))
+        self.action_gui_docs.setText(QCoreApplication.translate("MainWindow", u"iBridges GUI", None))
+        self.action_ibridges_docs.setText(QCoreApplication.translate("MainWindow", u"iBridges", None))
         self.main_menu.setTitle(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.config_menu.setTitle(QCoreApplication.translate("MainWindow", u"Configure", None))
         self.menuPlugins.setTitle(QCoreApplication.translate("MainWindow", u"Views and Plugins", None))
-
+        self.menu_data_access.setTitle(QCoreApplication.translate("MainWindow", u"Data Access", None))
+        self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
     # retranslateUi
 
