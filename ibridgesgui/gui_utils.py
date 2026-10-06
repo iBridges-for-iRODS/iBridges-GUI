@@ -54,10 +54,16 @@ class UiLoader(PySide6.QtUiTools.QUiLoader):
 
 
 def load_ui(ui_file: str, base_instance=None):
-    """Load a .ui file while temporarily switching to its directory.
+    """Load a .ui file or set up its compiled counterpart on an instance.
 
     This ensures that relative paths (e.g., images) inside the .ui file resolve correctly.
     """
+    if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+        if base_instance is None:
+            raise ValueError("A base instance is required to load a compiled UI")
+        base_instance.setupUi(base_instance)
+        return base_instance
+
     ui_path = Path(ui_file).resolve()
     ui_dir = ui_path.parent
 
