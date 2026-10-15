@@ -27,7 +27,7 @@ class IrodsBrowserService:
 
     def home_path(self) -> IrodsPath:
         """Get home path."""
-        return IrodsPath(self.session)
+        return IrodsPath(self.session, self.session.home)
 
     def parent_path(self, text: str) -> IrodsPath:
         """Determine parent."""
