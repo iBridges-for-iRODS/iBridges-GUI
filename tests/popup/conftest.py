@@ -3,10 +3,7 @@ import json
 from pathlib import Path
 
 
-# ---------------------------------------------------------------------------
 # Unified Fake iRODS Session
-# ---------------------------------------------------------------------------
-
 class FakeIrodsSession:
     def __init__(self):
         # The real session object
@@ -23,10 +20,7 @@ class FakeIrodsSession:
         self.cwd = "/tempZone/home/testuser"
 
 
-# ---------------------------------------------------------------------------
 # Fake IrodsPath
-# ---------------------------------------------------------------------------
-
 @pytest.fixture
 def fake_irods_path():
     """Return a fresh FakeIrodsPath object each time (not a factory)."""
@@ -53,10 +47,7 @@ def fake_irods_path():
     return FakeIrodsPath()
 
 
-# ---------------------------------------------------------------------------
 # Patch config + environment paths
-# ---------------------------------------------------------------------------
-
 @pytest.fixture
 def patch_config(monkeypatch, tmp_path):
     env_dir = tmp_path / "ienv"
@@ -119,10 +110,7 @@ def patch_env_path(monkeypatch, tmp_path):
     return fake_config
 
 
-# ---------------------------------------------------------------------------
 # Logger + dummy ops
-# ---------------------------------------------------------------------------
-
 @pytest.fixture
 def dummy_ops():
     class DummyOps:

@@ -13,11 +13,6 @@ from ibridgesgui.popup_widgets.supply_ticket import SupplyTicket
 MODULE = "ibridgesgui.popup_widgets.supply_ticket"
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
-
 @pytest.fixture
 def session():
     return SimpleNamespace(home="/zone/home/user")
@@ -89,21 +84,11 @@ def _fill(dialog, path, ticket):
     dialog.ticket_string.setText(ticket)
 
 
-# ---------------------------------------------------------------------------
-# __init__
-# ---------------------------------------------------------------------------
-
-
 def test_init(dialog, session_manager, logger):
     assert dialog.windowTitle() == "Supply Ticket"
     assert bool(dialog.windowFlags() & QtCore.Qt.WindowType.WindowStaysOnTopHint)
     assert dialog.session_manager is session_manager
     assert dialog.logger is logger
-
-
-# ---------------------------------------------------------------------------
-# Input validation
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("path", ["", "   "])
@@ -137,11 +122,6 @@ def test_accept_clears_previous_error(dialog, ticket_calls, fake_paths):
     assert dialog.error_label.text() == ""
 
 
-# ---------------------------------------------------------------------------
-# Successful supply
-# ---------------------------------------------------------------------------
-
-
 def test_accept_collection(dialog, session, session_manager, logger, ticket_calls, fake_paths):
     fake_paths.collections.add("/zone/home/user/coll")
     _fill(dialog, "/zone/home/user/coll", "abc")
@@ -167,11 +147,6 @@ def test_accept_dataobject_uses_parent_as_home(
     session_manager.session_changed.emit.assert_called_once_with(session)
     logger.info.assert_called_once()
     assert len(dialog.done_calls) == 1
-
-
-# ---------------------------------------------------------------------------
-# Errors
-# ---------------------------------------------------------------------------
 
 
 def test_accept_path_does_not_exist(dialog, session, session_manager, ticket_calls, fake_paths):
