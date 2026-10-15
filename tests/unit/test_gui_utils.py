@@ -33,6 +33,20 @@ def test_load_ui_changes_and_restores_cwd(tmp_path, monkeypatch):
     assert Path.cwd() == old_cwd
 
 
+def test_load_ui_uses_compiled_ui_without_ui_file(monkeypatch, tmp_path):
+    monkeypatch.setattr(gui_utils.sys, "frozen", True, raising=False)
+    instance = MagicMock()
+    old_cwd = Path.cwd()
+
+    with patch.object(gui_utils, "UiLoader") as loader:
+        widget = gui_utils.load_ui(tmp_path / "missing.ui", instance)
+
+    assert widget is instance
+    instance.setupUi.assert_called_once_with(instance)
+    loader.assert_not_called()
+    assert Path.cwd() == old_cwd
+
+
 # ---------------------------------------------------------------------------
 # TABLE WIDGETS
 # ---------------------------------------------------------------------------
