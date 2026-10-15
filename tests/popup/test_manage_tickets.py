@@ -16,11 +16,7 @@ DATA = f"{HOME}/data"
 USER_ROLE = QtCore.Qt.ItemDataRole.UserRole
 
 
-# ---------------------------------------------------------------------------
 # Fakes: iRODS paths, tree model and tickets
-# ---------------------------------------------------------------------------
-
-
 @pytest.fixture
 def world(monkeypatch):
     """Replace IrodsPath, IrodsTreeModel and Tickets in the module.
@@ -133,11 +129,7 @@ def dialog(qtbot, session, fake_logger, world):
     return dlg
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
-
 def select_path(dialog, path):
     """Select a path in the tree, like a click would."""
     index = dialog.irods_model.items[path].index()
@@ -159,11 +151,6 @@ def delete_button(dialog, row):
 def table_names(dialog):
     table = dialog.ticket_table
     return [table.item(row, 0).text() for row in range(table.rowCount())]
-
-
-# ---------------------------------------------------------------------------
-# __init__
-# ---------------------------------------------------------------------------
 
 
 def test_init_window(dialog, session, fake_logger):
@@ -200,11 +187,6 @@ def test_close_button_closes_dialog(qtbot, dialog):
     dialog.close_button.click()
 
     assert not dialog.isVisible()
-
-
-# ---------------------------------------------------------------------------
-# iRODS tree
-# ---------------------------------------------------------------------------
 
 
 def test_irods_root_is_top_of_tree(dialog):
@@ -267,11 +249,6 @@ def test_expanding_a_node_refreshes_it(dialog):
     assert HOME in model.refreshed
 
 
-# ---------------------------------------------------------------------------
-# Ticket table
-# ---------------------------------------------------------------------------
-
-
 def test_ticket_table_rows(dialog):
     table = dialog.ticket_table
 
@@ -309,11 +286,6 @@ def test_refresh_with_no_tickets(dialog, world):
     assert dialog.ticket_table.rowCount() == 0
 
 
-# ---------------------------------------------------------------------------
-# Deleting tickets
-# ---------------------------------------------------------------------------
-
-
 def test_delete_button_deletes_its_own_ticket(dialog, world, fake_logger):
     delete_button(dialog, 1).click()
 
@@ -347,11 +319,6 @@ def test_delete_error_is_shown(dialog, world, fake_logger):
     assert dialog.error_label.text() == "cannot delete"
     assert logged_levels(fake_logger) == ["error"]
     assert table_names(dialog) == ["tick1", "tick2"]  # unchanged
-
-
-# ---------------------------------------------------------------------------
-# Creating tickets
-# ---------------------------------------------------------------------------
 
 
 def test_create_requires_selection(dialog, world):
