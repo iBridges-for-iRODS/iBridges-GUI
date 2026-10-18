@@ -79,10 +79,10 @@ class Ui_ticketSupply(object):
 
         self.gridLayout.addWidget(self.ticket_string, 0, 1, 1, 1)
 
-        self.irods_path = QLineEdit(Dialog)
-        self.irods_path.setObjectName(u"irods_path")
+        self.irods_path_field = QLineEdit(Dialog)
+        self.irods_path_field.setObjectName(u"irods_path_field")
 
-        self.gridLayout.addWidget(self.irods_path, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.irods_path_field, 1, 1, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout)

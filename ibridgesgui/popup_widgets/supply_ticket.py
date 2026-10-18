@@ -28,14 +28,14 @@ class SupplyTicket(UiDialogMixin, QtWidgets.QDialog, Ui_ticketSupply):
     def accept(self) -> None:
         """Add ticket to session."""
         self.error_label.clear()
-        if self.irods_path.text().strip() == "":
+        if self.irods_path_field.text().strip() == "":
             self.error_label.setText("Please provide an irods path.")
             return
         if self.ticket_string.text().strip() == "":
             self.error_label.setText("Please provide a ticket.")
             return
 
-        ipath = IrodsPath(self.session_manager.session, self.irods_path.text())
+        ipath = IrodsPath(self.session_manager.session, self.irods_path_flied.text())
         ta = TicketAccess(self.session_manager.session, self.ticket_string.text(), ipath)
         try:
             ta = TicketAccess(
