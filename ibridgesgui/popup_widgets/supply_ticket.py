@@ -35,7 +35,7 @@ class SupplyTicket(UiDialogMixin, QtWidgets.QDialog, Ui_ticketSupply):
             self.error_label.setText("Please provide a ticket.")
             return
 
-        ipath = IrodsPath(self.session_manager.session, self.irods_path_flied.text())
+        ipath = IrodsPath(self.session_manager.session, self.irods_path_field.text())
         ta = TicketAccess(self.session_manager.session, self.ticket_string.text(), ipath)
         try:
             ta = TicketAccess(
