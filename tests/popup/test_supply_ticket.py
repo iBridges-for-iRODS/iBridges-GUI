@@ -80,7 +80,7 @@ def ticket_calls(monkeypatch):
 
 
 def _fill(dialog, path, ticket):
-    dialog.irods_path.setText(path)
+    dialog.irods_path_field.setText(path)
     dialog.ticket_string.setText(ticket)
 
 
