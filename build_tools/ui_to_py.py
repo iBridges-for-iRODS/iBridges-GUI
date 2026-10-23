@@ -1,128 +1,91 @@
-"""Convert Ui file to PY file."""
+"""Convert Qt Designer .ui files to .py files.
+
+Usable as a library (imported by build_script.py) and as a small CLI:
+
+    python build_tools/ui_to_py.py                  # use the current interpreter
+    python build_tools/ui_to_py.py --venv venv      # use the python of a venv
+"""
+from __future__ import annotations
+
+import argparse
+import shlex
+import subprocess
 import sys
 from pathlib import Path
-from platform import system
-from subprocess import PIPE, run
+
+ROOT = Path(__file__).resolve().parent.parent
+IS_WINDOWS = sys.platform.startswith("win")
+DEFAULT_UI_FOLDER = ROOT / "ibridgesgui" / "ui_files"
+
+# Calls the same entry point as the `pyside6-uic` script, but through the given
+# interpreter, no venv activation or PATH lookup is needed.
+_UIC_SNIPPET = "import sys; from PySide6.scripts.pyside_tool import uic; sys.exit(uic())"
 
 
-def run_cmd(cmd: str):
-    """Run a commandline command and check if it was successful.
+def venv_python(venv: Path) -> Path:
+    """Return the python executable of a virtual environment."""
+    return venv / ("Scripts/python.exe" if IS_WINDOWS else "bin/python")
 
-    Args:
-    ----
-        cmd : str
-            Command to run.
 
-    Returns:
-    -------
-        str
-            Output of the command
+def run_cmd(cmd: list, **kwargs) -> None:
+    """Run a command and exit with its return code on failure.
 
+    Output is streamed so progress is visible in the terminal and in CI logs.
     """
-    # Windows
-    if "windows" in system().lower():
-        ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
-    else:  # Ubuntu/Mac OS
-        ps = run(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True,
-                 executable="/bin/bash")
-    # Print all errors
-    if ps.returncode != 0:
-        print(f"commandline error: {ps.stderr}, output: {ps.stdout}")
-        sys.exit(ps.returncode)
-    return ps.stdout
+    cmd = [str(c) for c in cmd]
+    print(f"$ {shlex.join(cmd)}", flush=True)
+    try:
+        subprocess.run(cmd, check=True, **kwargs)
+    except subprocess.CalledProcessError as err:
+        sys.exit(err.returncode)
 
 
-def os_specific_settings():
-    """Get the settings for the operating system.
-
-    Returns
-    -------
-        python : str
-            python version used to call this function
-        cmd_sep : str
-            command separator
-
-    """
-    python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
-    # Windows
-    if "windows" in system().lower():
-        cmd_sep = "&&"
-        python = f"py -{python_version}"
-    else:  # Ubuntu/Mac OS
-        cmd_sep = ";"
-        python = f"python{python_version}"
-    return (python, cmd_sep)
+def replace_icon_paths(py_file: Path) -> None:
+    """Make icon paths relative to the distribution folder."""
+    content = py_file.read_text(encoding="utf-8")
+    content = content.replace('addFile(u"../icons/', 'addFile(u"icons/')
+    py_file.write_text(content, encoding="utf-8")
 
 
-def ui_to_py(ui_folder: Path, venv_activate: str, cmd_sep: str):
-    """Convert the .ui files to .py files.
+def remove_pyui_files(ui_folder: Path) -> None:
+    """Remove generated .py files (only those that have a matching .ui file)."""
+    for ui_file in ui_folder.glob("*.ui"):
+        py_file = ui_file.with_suffix(".py")
+        if py_file.exists():
+            print(f"Removing {py_file}")
+            py_file.unlink()
 
-        Example command:
-            pyside6-uic gui/MainWindow.ui -o gui/MainWindow.py
 
-    Args:
-    ----
-        ui_folder : Path
-            folder containing the .ui files
-        venv_activate : str
-            command to activate the virtual environment
-        cmd_sep : str
-            command separator
-
-    """
-    for ui_file in ui_folder.glob('*.ui'):
-        py_file = ui_file.with_suffix('.py')
-        print(f"Converting {py_file.name} to .py")
-        run_cmd(f"""{venv_activate} {cmd_sep} pyside6-uic "{ui_file}" -o "{py_file}" """)
+def ui_to_py(ui_folder: Path, python: Path | str = sys.executable) -> None:
+    """Convert all .ui files in `ui_folder` to .py files using `python` (needs PySide6)."""
+    ui_files = sorted(ui_folder.glob("*.ui"))
+    if not ui_files:
+        sys.exit(f"No .ui files found in {ui_folder}")
+    for ui_file in ui_files:
+        py_file = ui_file.with_suffix(".py")
+        print(f"Converting {ui_file.name} -> {py_file.name}")
+        run_cmd([python, "-c", _UIC_SNIPPET, ui_file, "-o", py_file])
         replace_icon_paths(py_file)
 
 
-def replace_icon_paths(py_file: Path):
-    """Replace the icon paths in the .py file.
-
-    Args:
-    ----
-        py_file : Path
-            .py file to update
-
-    """
-    # Read the content of the file
-    with py_file.open('r', encoding='utf-8') as file:
-        content = file.read()
-
-    # Replace the icon paths
-    content = content.replace('addFile(u"../icons/', 'addFile(u"icons/')
-    # Write the modified content back to the file
-    with py_file.open('w', encoding='utf-8') as file:
-        file.write(content)
+def build_parser() -> argparse.ArgumentParser:
+    """Create the argument parser."""
+    parser = argparse.ArgumentParser(description="Convert .ui files to .py files.")
+    parser.add_argument("--ui-folder", type=Path, default=DEFAULT_UI_FOLDER,
+                        help="Folder with the .ui files (default: %(default)s)")
+    parser.add_argument("--venv", type=Path, default=None,
+                        help="Use the python of this virtual environment "
+                             "(default: current interpreter)")
+    return parser
 
 
-def remove_pyui_files(ui_folder: Path):
-    """Remove the locally stored .py versions of the files.
-
-    Args:
-    ----
-        ui_folder : Path
-            folder containing the .ui files
-
-    """
-    pyuifiles = ui_folder.glob('*.py')
-    for file in pyuifiles:
-        # Skip __init__.py files
-        if "__init__" in file.name:
-            continue
-        print(f"Removing {file}")
-        file.unlink()
+def main(argv: list[str] | None = None) -> None:
+    """CLI entry point."""
+    args = build_parser().parse_args(argv)
+    python = venv_python(args.venv) if args.venv else Path(sys.executable)
+    remove_pyui_files(args.ui_folder)
+    ui_to_py(args.ui_folder, python)
 
 
 if __name__ == "__main__":
-    code_dir = Path("ibridgesgui")
-    icons_folder = Path.cwd().joinpath(code_dir, 'icons')
-    ui_folder = Path.cwd().joinpath(code_dir, 'ui_files')
-
-    # Step 1 Convert .ui files to .py files
-    # Recompiling is the best way to ensure they are up to date
-    remove_pyui_files(ui_folder)
-    (python, cmd_sep) = os_specific_settings()
-    venv_activate = Path.cwd().joinpath('venv').joinpath('Scripts', 'activate.bat')
-    ui_to_py(ui_folder, venv_activate, cmd_sep)
+    main()
