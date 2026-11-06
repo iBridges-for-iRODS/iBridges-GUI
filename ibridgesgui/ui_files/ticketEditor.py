@@ -22,11 +22,11 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCalendarWidget,
     QWidget)
 
 class Ui_ticketEditor(object):
-    def setupUi(self, Dialog):
-        if not Dialog.objectName():
-            Dialog.setObjectName(u"Dialog")
-        Dialog.resize(1000, 750)
-        Dialog.setStyleSheet(u"QWidget\n"
+    def setupUi(self, ticketEditor):
+        if not ticketEditor.objectName():
+            ticketEditor.setObjectName(u"ticketEditor")
+        ticketEditor.resize(1000, 750)
+        ticketEditor.setStyleSheet(u"QWidget\n"
 "{\n"
 "    background-color: rgb(211,211,211);\n"
 "    color: rgb(88, 88, 90);\n"
@@ -62,11 +62,11 @@ class Ui_ticketEditor(object):
 "}\n"
 "\n"
 "")
-        self.verticalLayout_3 = QVBoxLayout(Dialog)
+        self.verticalLayout_3 = QVBoxLayout(ticketEditor)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.irods_tree_view = QTreeView(Dialog)
+        self.irods_tree_view = QTreeView(ticketEditor)
         self.irods_tree_view.setObjectName(u"irods_tree_view")
         self.irods_tree_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
@@ -74,7 +74,7 @@ class Ui_ticketEditor(object):
 
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.label_2 = QLabel(Dialog)
+        self.label_2 = QLabel(ticketEditor)
         self.label_2.setObjectName(u"label_2")
         font = QFont()
         font.setPointSize(16)
@@ -85,30 +85,30 @@ class Ui_ticketEditor(object):
 
         self.verticalLayout_2.addWidget(self.label_2)
 
-        self.expiry_calendar = QCalendarWidget(Dialog)
+        self.expiry_calendar = QCalendarWidget(ticketEditor)
         self.expiry_calendar.setObjectName(u"expiry_calendar")
 
         self.verticalLayout_2.addWidget(self.expiry_calendar)
 
-        self.expiry_checkbox = QCheckBox(Dialog)
+        self.expiry_checkbox = QCheckBox(ticketEditor)
         self.expiry_checkbox.setObjectName(u"expiry_checkbox")
 
         self.verticalLayout_2.addWidget(self.expiry_checkbox)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.label_3 = QLabel(Dialog)
+        self.label_3 = QLabel(ticketEditor)
         self.label_3.setObjectName(u"label_3")
 
         self.horizontalLayout_3.addWidget(self.label_3)
 
-        self.read_button = QRadioButton(Dialog)
+        self.read_button = QRadioButton(ticketEditor)
         self.read_button.setObjectName(u"read_button")
         self.read_button.setChecked(True)
 
         self.horizontalLayout_3.addWidget(self.read_button)
 
-        self.write_button = QRadioButton(Dialog)
+        self.write_button = QRadioButton(ticketEditor)
         self.write_button.setObjectName(u"write_button")
 
         self.horizontalLayout_3.addWidget(self.write_button)
@@ -122,7 +122,7 @@ class Ui_ticketEditor(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
-        self.create_ticket_button = QPushButton(Dialog)
+        self.create_ticket_button = QPushButton(ticketEditor)
         self.create_ticket_button.setObjectName(u"create_ticket_button")
 
         self.horizontalLayout.addWidget(self.create_ticket_button)
@@ -141,18 +141,18 @@ class Ui_ticketEditor(object):
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
 
-        self.error_label = QLabel(Dialog)
+        self.error_label = QLabel(ticketEditor)
         self.error_label.setObjectName(u"error_label")
 
         self.verticalLayout_3.addWidget(self.error_label)
 
-        self.label = QLabel(Dialog)
+        self.label = QLabel(ticketEditor)
         self.label.setObjectName(u"label")
         self.label.setFont(font)
 
         self.verticalLayout_3.addWidget(self.label)
 
-        self.ticket_table = QTableWidget(Dialog)
+        self.ticket_table = QTableWidget(ticketEditor)
         if (self.ticket_table.columnCount() < 4):
             self.ticket_table.setColumnCount(4)
         __qtablewidgetitem = QTableWidgetItem()
@@ -174,7 +174,7 @@ class Ui_ticketEditor(object):
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_2)
 
-        self.close_button = QPushButton(Dialog)
+        self.close_button = QPushButton(ticketEditor)
         self.close_button.setObjectName(u"close_button")
 
         self.horizontalLayout_4.addWidget(self.close_button)
@@ -183,29 +183,29 @@ class Ui_ticketEditor(object):
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
 
 
-        self.retranslateUi(Dialog)
+        self.retranslateUi(ticketEditor)
 
-        QMetaObject.connectSlotsByName(Dialog)
+        QMetaObject.connectSlotsByName(ticketEditor)
     # setupUi
 
-    def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
-        self.label_2.setText(QCoreApplication.translate("Dialog", u"Expiry Date", None))
-        self.expiry_checkbox.setText(QCoreApplication.translate("Dialog", u"No Expiry Date", None))
-        self.label_3.setText(QCoreApplication.translate("Dialog", u"Acess Mode", None))
-        self.read_button.setText(QCoreApplication.translate("Dialog", u"Read", None))
-        self.write_button.setText(QCoreApplication.translate("Dialog", u"Write", None))
-        self.create_ticket_button.setText(QCoreApplication.translate("Dialog", u"Create Ticket", None))
+    def retranslateUi(self, ticketEditor):
+        ticketEditor.setWindowTitle(QCoreApplication.translate("ticketEditor", u"Dialog", None))
+        self.label_2.setText(QCoreApplication.translate("ticketEditor", u"Expiry Date", None))
+        self.expiry_checkbox.setText(QCoreApplication.translate("ticketEditor", u"No Expiry Date", None))
+        self.label_3.setText(QCoreApplication.translate("ticketEditor", u"Acess Mode", None))
+        self.read_button.setText(QCoreApplication.translate("ticketEditor", u"Read", None))
+        self.write_button.setText(QCoreApplication.translate("ticketEditor", u"Write", None))
+        self.create_ticket_button.setText(QCoreApplication.translate("ticketEditor", u"Create Ticket", None))
         self.error_label.setText("")
-        self.label.setText(QCoreApplication.translate("Dialog", u"Existing Tickets", None))
+        self.label.setText(QCoreApplication.translate("ticketEditor", u"Existing Tickets", None))
         ___qtablewidgetitem = self.ticket_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("Dialog", u"Ticket", None))
+        ___qtablewidgetitem.setText(QCoreApplication.translate("ticketEditor", u"Ticket", None))
         ___qtablewidgetitem1 = self.ticket_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("Dialog", u"iRODS Path", None))
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("ticketEditor", u"iRODS Path", None))
         ___qtablewidgetitem2 = self.ticket_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("Dialog", u"Expiry Date", None))
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("ticketEditor", u"Expiry Date", None))
         ___qtablewidgetitem3 = self.ticket_table.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("Dialog", u"Delete", None))
-        self.close_button.setText(QCoreApplication.translate("Dialog", u"Close", None))
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("ticketEditor", u"Delete", None))
+        self.close_button.setText(QCoreApplication.translate("ticketEditor", u"Close", None))
     # retranslateUi
 

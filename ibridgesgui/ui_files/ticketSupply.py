@@ -116,9 +116,9 @@ class Ui_ticketSupply(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
-        self.label_2.setText(QCoreApplication.translate("Dialog", u"iRODS Path", None))
-        self.label.setText(QCoreApplication.translate("Dialog", u"Ticket", None))
+        Dialog.setWindowTitle(QCoreApplication.translate("ticketSupply", u"Dialog", None))
+        self.label_2.setText(QCoreApplication.translate("ticketSupply", u"iRODS Path", None))
+        self.label.setText(QCoreApplication.translate("ticketSupply", u"Ticket", None))
         self.error_label.setText("")
     # retranslateUi
 
