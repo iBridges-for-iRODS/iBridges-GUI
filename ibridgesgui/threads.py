@@ -200,6 +200,12 @@ class TransferDataThread(BaseIrodsThread):
             msg = f"Metadata download failed: {repr(exc)}"
             self.logger.exception(msg)
             transfer_out["error"] += "\n" + msg
+        try:
+            self.ops.execute_meta_upload()
+        except Exception as exc:
+            msg = f"Metadata upload failed: {repr(exc)}"
+            self.logger.exception(msg)
+            transfer_out["error"] += "\n" + msg
 
     def run(self) -> None:
         """Execute upload, download, and metadata operations."""
