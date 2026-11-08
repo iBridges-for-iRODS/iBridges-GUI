@@ -75,7 +75,7 @@ class SyncController:
         self._expand_to_home()
 
     def _irods_root(self):
-        lowest = IrodsPath(self.session).absolute()
+        lowest = IrodsPath(self.session, self.session.home).absolute()
         while lowest.parent.exists() and str(lowest) != "/":
             lowest = lowest.parent
         return lowest

@@ -86,7 +86,7 @@ def test_on_connect_prevent_duplicate(main_window, qtbot, fake_session, monkeypa
         nonlocal called
         called = True
 
-    monkeypatch.setattr(main_window.session_manager, "connect", fake_connect)
+    monkeypatch.setattr(main_window.session_manager, "login", fake_connect)
 
     main_window._on_connect()
 
@@ -106,7 +106,7 @@ def test_on_connect_opens_login(main_window, monkeypatch):
         nonlocal called
         called = True
 
-    monkeypatch.setattr(main_window.session_manager, "connect", fake_connect)
+    monkeypatch.setattr(main_window.session_manager, "login", fake_connect)
 
     main_window._on_connect()
 
