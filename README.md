@@ -33,7 +33,7 @@ The git repository contains a generic *iRODS* graphical user interface.  The iRO
 - **Search** through all metadata for your dataset or collection.
 - Safe default options when working with your data.
 
-## Prebuild executable <alpha>
+## Prebuilt executable <alpha>
 There are prebuild executables available for Windows, macOS and Ubuntu.
 You can find the latest release [here](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases/latest).
 The build was done using the latest version on an x64 architecture.
@@ -77,43 +77,15 @@ Please note, that this feature is still in experimental state.
 
 ### Prebuilt executables
 Go to the [Releases page](https://github.com/iBridges-for-iRODS/iBridges-GUI/releases). In the latest releases you will find three zip-files, these contain the prebuilt application.
-Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file `ibridges_gui.[exe, bin]`
-For Windows simply click on the exe-file, for Mac and Linux open the file with a shell `bash ./ibridges_gui.bin`.
+Download the respective zip-file for your system and unpack it. In the unpacked folder there is a file `ibridges_gui[.exe (for Windows)]`
+Simply click on the ibridgesgui file.
 
 
 ### Building Executables
 
 We offer build scripts in case you would like to compile iBridges and distribute the executable.
 
-```
-python3 build_tools/build_script.py -h
-
-usage: build_script.py [-h] [--debug_exe] [--rem_venv]
-                       [--code_folder CODE_FOLDER] [--ui_folder UI_FOLDER]
-                       [--icons_folder ICONS_FOLDER] [--venv VENV]
-
-iBridges-Gui exe creator.
-
-options:
-  -h, --help            show this help message and exit
-  --debug_exe           Build executable with debug console
-  --rem_venv            remove virtual environment
-  --code_folder CODE_FOLDER
-                        Full path to the directory with code
-  --ui_folder UI_FOLDER
-                        Full path to the directory with ui files
-  --icons_folder ICONS_FOLDER
-                        Full path to the directory with the icons
-  --venv VENV           Full path to virtual python environment
-```
-
-This will create a virtual environment `venv` in your iBridges folder. Next to that you will find a new folder `build` and `ibridgesgui_dist`. The executable can be found and started like this for Mac and Linux:
-
-```
-./ibridgesgui_dist/ibridgesgui/ibridges_gui.bin
-```
-
-For Windows simply click on the file `output/ibridgesgui/ibridges_gui.exe`.
+You can find a guide [here](build_tools/README.md).
 
 ## Extending iBridges-GUI (for developers)
 iBridges-GUI supports Plugins. You can create a plugin for your own tab and it will be detected and run by the main application when it is installed.

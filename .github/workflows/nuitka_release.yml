@@ -1,64 +1,57 @@
 # Build executables on release and upload them as release assets.
+# Can also be started manually (workflow_dispatch); then the zips are
+# available as workflow artifacts instead.
 # Based on https://github.com/Nuitka/Nuitka-Action
+name: Build executables
 
 on:
   release:
     types: [created]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # needed to attach assets to the release
 
 jobs:
- build:
+  build:
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - os: macos-latest
-            tag: macos
-            arch: x64
-          - os: ubuntu-latest
-            tag: ubuntu
-            arch: x64
-          - os: windows-latest
-            tag: windows
-            arch: x64
+        # macos-latest is Apple Silicon (arm64); use macos-13 for Intel builds.
+        os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       - name: Check-out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.11' 
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
-      - name: Cache pip
-        uses: actions/cache@v3
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y patchelf
+
+      - name: Install Python dependencies
+        run: pip install .[deploy]
+
+      - name: Build and zip
+        run: python build_tools/build_script.py --zip
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          name: ibridgesgui_${{ runner.os }}
+          path: ibridgesgui_*.zip
 
-      - name: Install Dependencies
-        run: |
-          pip install .[deploy]
-
-      - name: execute py script
-        run: |
-          python build_tools/build_script.py
-
-      - name: Zip the build directory (Linux and macOS)
-        if: runner.os != 'Windows'
-        run: |
-          zip -r ibridgesgui_${{ matrix.tag }}.zip ./ibridgesgui_dist/*
-
-      - name: Zip the build directory (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          Compress-Archive -Path ./ibridgesgui_dist/* -DestinationPath ibridgesgui_${{ matrix.tag }}.zip
-  
-      - name: Upload Release Asset
+      - name: Upload release asset
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: ./ibridgesgui_${{ matrix.tag }}.zip
+          files: ibridgesgui_*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
