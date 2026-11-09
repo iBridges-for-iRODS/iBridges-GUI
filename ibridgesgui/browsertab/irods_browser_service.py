@@ -197,8 +197,7 @@ class IrodsBrowserService:
     PERM_MAP = {
             "read_object": "read",
             "modify_object": "write",
-            "null": "delete permission",
-            "delete_object": "delete",
+            "null": "delete",
             "create_object": "create"
         }
     REVERSE_PERM_MAP = {v: k for k, v in PERM_MAP.items()}
@@ -252,7 +251,7 @@ class IrodsBrowserService:
 
         obj = get_irods_item(path)
         perms = Permissions(self.session, obj)
-        irods_access = self.REVERSE_PERM_MAP[access]
+        irods_access = self.REVERSE_PERM_MAP.get(access, access)
         perms.set(
             perm=irods_access,
             user=user_name,
