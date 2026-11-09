@@ -77,6 +77,7 @@ def test_update_ui_populates_widgets(qtbot, monkeypatch):
         "default_resc": "demoResc",
         "server": "irods.example.org",
         "version": "4.3.1",
+        "client_version": "iBridges GUI 2.2.0 / iBridges API 2.2.0",
         "resources": [
             ("rescA", "", 0, ""),
             ("rescB", "", 0, ""),
@@ -91,6 +92,7 @@ def test_update_ui_populates_widgets(qtbot, monkeypatch):
     assert info_tab.log_label.text() == "/tmp/logs"
     assert info_tab.resc_label.text() == "demoResc"
     assert info_tab.server_label.text() == "irods.example.org"
+    assert info_tab.client_version_label.text() == "iBridges GUI 2.2.0 / iBridges API 2.2.0"
     assert info_tab.version_label.text() == "4.3.1"
     assert info_tab.resc_table.rowCount() == 2
 
