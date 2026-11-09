@@ -1,6 +1,7 @@
 """Info tab."""
 
 import sys
+from importlib.metadata import PackageNotFoundError, version
 
 from PySide6 import QtCore, QtWidgets
 
@@ -52,6 +53,10 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
             "default_resc": self.session.default_resc,
             "server": self.session.host,
             "version": ".".join(map(str, self.session.server_version)),
+            "client_version": (
+                f"iBridges GUI {self._get_version('ibridgesgui')} / "
+                f"iBridges API {self._get_version('ibridges')}"
+            ),
             "resources": Resources(self.session).root_resources,
         }
 
@@ -64,6 +69,7 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
         self.resc_label.setText(info["default_resc"])
         self.server_label.setText(info["server"])
         self.version_label.setText(info["version"])
+        self.client_version_label.setText(info["client_version"])
 
         resources = [
             tuple("" if v is None else v for v in row)
@@ -73,6 +79,13 @@ class Info(QtWidgets.QWidget, Ui_tabInfo):
         populate_table(self.resc_table, len(resources), resources)
 
         self._autosize_columns(self.resc_table)
+
+    def _get_version(self, dist_name):
+        """Return the installed version of a distribution, or 'unknown'."""
+        try:
+            return version(dist_name)
+        except PackageNotFoundError:
+            return "unknown"
 
     def _autosize_columns(self, table):
         header = table.horizontalHeader()
