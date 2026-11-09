@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.11.9">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -38,14 +38,15 @@ ul.task-list li input[type="checkbox"] {
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-7100700a5d4657facf49b32369185e6d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-1895d770650154722f7722018adbf507.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -84,11 +85,11 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="../_styles/search_icon.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
@@ -96,8 +97,7 @@ ul.task-list li input[type="checkbox"] {
     <img src="../docs/screenshots/logo.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -145,6 +145,7 @@ ul.task-list li input[type="checkbox"] {
       </ul>
     </div>
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -153,7 +154,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
   <ul>
@@ -177,11 +178,17 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#search-fields" id="toc-search-fields" class="nav-link" data-scroll-target="#search-fields">Search fields</a></li>
   <li><a href="#search-results" id="toc-search-results" class="nav-link" data-scroll-target="#search-results">Search results</a></li>
   </ul></li>
+  <li><a href="#data-sharing-with-irods-tickets" id="toc-data-sharing-with-irods-tickets" class="nav-link" data-scroll-target="#data-sharing-with-irods-tickets">Data Sharing with iRODS tickets</a>
+  <ul class="collapse">
+  <li><a href="#what-are-irods-tickets" id="toc-what-are-irods-tickets" class="nav-link" data-scroll-target="#what-are-irods-tickets">What are iRODS tickets</a></li>
+  <li><a href="#create-tickets" id="toc-create-tickets" class="nav-link" data-scroll-target="#create-tickets">Create tickets</a></li>
+  <li><a href="#use-tickets" id="toc-use-tickets" class="nav-link" data-scroll-target="#use-tickets">Use tickets</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content" tabindex="-1">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -204,26 +211,26 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="synopsis" class="level2">
 <h2 class="anchored" data-anchor-id="synopsis">Synopsis</h2>
-<p>iBridges‑GUI is a <strong>graphical interface for any iRODS‑based data management platform</strong>.<br>
+<p>iBridges‑GUI is a graphical interface for any iRODS‑based data management platform.<br>
 It exposes core iRODS functionality through a set of focused views, each designed for a specific task.</p>
 <p>Default views:</p>
 <ul>
-<li><strong>Browser</strong> — explore collections, inspect data objects, edit metadata and permissions, upload/download, delete.</li>
-<li><strong>Data Synchronisation</strong> — synchronise local directories with iRODS collections.</li>
-<li><strong>Search</strong> — locate collections and data objects using name or metadata filters.</li>
-<li><strong>Info</strong> — display user information, groups, and server resources (status, capacity).</li>
+<li><code>Browser</code> — explore collections, inspect data objects, edit metadata and permissions, upload/download, delete.</li>
+<li><code>Data Synchronisation</code> — synchronise local directories with iRODS collections.</li>
+<li><code>Search</code> — locate collections and data objects using name or metadata filters.</li>
+<li><code>Info</code> — display user information, groups, and server resources (status, capacity).</li>
 </ul>
 </section>
 <section id="views-and-plugins" class="level2">
 <h2 class="anchored" data-anchor-id="views-and-plugins">Views and Plugins</h2>
-<p>The <strong>Views and Plugins</strong> menu (next to <em>Configure</em>) lets you show or hide tabs.<br>
+<p>The <code>Views and Plugins</code> menu (next to <code>Configure</code>) lets you show or hide tabs.<br>
 Checked views are restored automatically when you restart the application.</p>
 <p>On first launch, the following tabs appear:<br>
 <code>Welcome</code>, <code>Browser</code>, <code>Synchronise Data</code>, <code>Search</code>, <code>Info</code>, and <code>Logs</code>.</p>
 </section>
 <section id="browser" class="level2">
 <h2 class="anchored" data-anchor-id="browser">Browser</h2>
-<p>After logging in, the <strong>Browser</strong> is the first view you see.<br>
+<p>After logging in, the <em>Browser</em> is the first view you see.<br>
 It consists of three parts:</p>
 <ol type="1">
 <li>Navigation<br>
@@ -240,20 +247,20 @@ It consists of three parts:</p>
 Edit it and press <code>&lt;Enter&gt;</code> to jump anywhere in the tree.</p></li>
 <li><p>Buttons:</p>
 <ul>
-<li><strong>Refresh</strong> — reload the listing<br>
+<li><em>Refresh</em> — reload the listing<br>
 </li>
-<li><strong>Up</strong> — go one level up<br>
+<li><em>Up</em> — go one level up<br>
 </li>
-<li><strong>Home</strong> — jump to your home collection</li>
+<li><em>Home</em> — jump to your home collection</li>
 </ul></li>
-<li><p><strong>Create Collection</strong> — create a new collection at the current path.</p></li>
-<li><p><strong>Upload</strong> — select files to upload.<br>
+<li><p><em>Create Collection</em> — create a new collection at the current path.</p></li>
+<li><p><em>Upload</em> — select files to upload.<br>
 Optional: include metadata files to extract and store as iRODS metadata.</p></li>
-<li><p><strong>Download</strong> — choose a local destination.<br>
+<li><p><em>Download</em> — choose a local destination.<br>
 Optional: export metadata alongside the download.<br>
 Select an item in the table to download it.<br>
-For downloading multiple items, use the <strong>Search</strong> view.</p></li>
-<li><p><strong>Delete</strong> — permanently remove the selected item from iRODS.</p></li>
+For downloading multiple items, use the <em>Search</em> view.</p></li>
+<li><p><em>Delete</em> — permanently remove the selected item from iRODS.</p></li>
 </ul>
 </section>
 <section id="listing" class="level3">
@@ -261,15 +268,15 @@ For downloading multiple items, use the <strong>Search</strong> view.</p></li>
 <p>The table lists all collections and data objects at the current path.</p>
 <p>Columns:</p>
 <ul>
-<li><strong>Status</strong> — <code>-C</code> for collections; replica status for data objects.<br>
+<li>Status — <code>-C</code> for collections; replica status for data objects.<br>
 If a data object’s status is not <code>good</code>, the data is compromised. Contact your iRODS administrator.</li>
-<li><strong>Name</strong><br>
+<li>Name<br>
 </li>
-<li><strong>Size</strong><br>
+<li>Size<br>
 </li>
-<li><strong>Checksum</strong><br>
+<li>Checksum<br>
 </li>
-<li><strong>Created / Modified</strong></li>
+<li>Created / Modified</li>
 </ul>
 <p>Actions:</p>
 <ul>
@@ -291,11 +298,11 @@ If a data object’s status is not <code>good</code>, the data is compromised. C
 <p>Shows metadata as key–value–unit triples.</p>
 <ul>
 <li><em>Single click</em> loads an entry into the editable fields.</li>
-<li><strong>Add</strong> — create a new entry.<br>
+<li><em>Add</em> — create a new entry.<br>
 </li>
-<li><strong>Update</strong> — modify the selected entry.<br>
+<li><em>Update</em> — modify the selected entry.<br>
 </li>
-<li><strong>Delete</strong> — remove the entry matching the fields.</li>
+<li><em>Delete</em> — remove the entry matching the fields.</li>
 </ul>
 <p><img src="screenshots/metadata.png" class="img-fluid"></p>
 </section>
@@ -304,12 +311,12 @@ If a data object’s status is not <code>good</code>, the data is compromised. C
 <p>Shows access rights for the selected item.</p>
 <p><img src="screenshots/permissions.png" class="img-fluid"></p>
 <ul>
-<li>The <strong>Access name</strong> dropdown lists available rights.<br>
+<li>The <em>Access name</em> dropdown lists available rights.<br>
 </li>
-<li><strong>Creator</strong> shows who created the item.</li>
+<li>Creator shows who created the item.</li>
 <li>Collections support <code>inherit</code> / <code>noinherit</code>.<br>
 <code>inherit</code> applies collection permissions to newly added items.</li>
-<li>Enable <strong>Recursive</strong> to apply changes to all existing members.</li>
+<li>Enable <em>Recursive</em> to apply changes to all existing members.</li>
 </ul>
 </section>
 <section id="replicas" class="level3">
@@ -324,9 +331,9 @@ Collections do not have replicas.</p>
 <h2 class="anchored" data-anchor-id="data-synchronisation">Data Synchronisation</h2>
 <p><code>Synchronise Data</code> lets you synchronise a local directory with an iRODS collection.</p>
 <ul>
-<li><strong>Local → iRODS</strong> (right arrow)<br>
+<li>Local → iRODS (<em>right arrow</em>)<br>
 </li>
-<li><strong>iRODS → Local</strong> (left arrow)</li>
+<li>iRODS → Local (<em>left arrow</em>)</li>
 </ul>
 <p>Before synchronising, differences are calculated and shown in the text field.<br>
 This may take some time for large directories.</p>
@@ -335,30 +342,104 @@ This may take some time for large directories.</p>
 </section>
 <section id="search" class="level2">
 <h2 class="anchored" data-anchor-id="search">Search</h2>
-<p>The <strong>Search</strong> view allows you to filter by path, name, and metadata.</p>
+<p>The <code>Search</code> view allows you to filter by path, name, and metadata.</p>
 <p><img src="screenshots/search.png" class="img-fluid"></p>
 <section id="search-fields" class="level3">
 <h3 class="anchored" data-anchor-id="search-fields">Search fields</h3>
 <ul>
-<li><p><strong>Path</strong> — defines where the search is performed.<br>
+<li><p><code>Path</code> — defines where the search is performed.<br>
 Must exist; defaults to your home collection.</p></li>
-<li><p><strong>Obj/Coll name</strong> — filter by name.<br>
+<li><p><code>Obj/Coll name</code> — filter by name.<br>
 Example: <code>demo</code> finds all items named <em>demo</em>.</p></li>
 <li><p>Wildcards use <code>%</code>.<br>
 Example: <code>my_books/%.txt</code> finds all <code>.txt</code> files in <code>my_books</code>.</p></li>
-<li><p><strong>Metadata filters</strong> — narrow results further.<br>
+<li><p>Metadata filters — narrow results further.<br>
 Example: key <code>author</code>, value <code>%Doyle%</code>.</p></li>
 </ul>
 </section>
 <section id="search-results" class="level3">
 <h3 class="anchored" data-anchor-id="search-results">Search results</h3>
 <ul>
-<li><em>Single click</em> or <em>Select all</em> → click <strong>Download</strong> to choose a destination.<br>
+<li><em>Single click</em> or <em>Select all</em> → click <em>Download</em> to choose a destination.<br>
 </li>
-<li><em>Double click</em> → open the item in the <strong>Browser</strong> for inspection.</li>
+<li><em>Double click</em> → open the item in the <code>Browser</code> for inspection.</li>
 </ul>
+</section>
+</section>
+<section id="data-sharing-with-irods-tickets" class="level2">
+<h2 class="anchored" data-anchor-id="data-sharing-with-irods-tickets">Data Sharing with iRODS tickets</h2>
+<section id="what-are-irods-tickets" class="level3">
+<h3 class="anchored" data-anchor-id="what-are-irods-tickets">What are iRODS tickets</h3>
+<p>An iRODS ticket is a short string, for example <code>kpIwGA1UZN0LFnM</code>, that gives access to one collection or data object without changing any permissions and without the need for an account. Anyone who has the ticket string and the path it belongs to can read the shared data.</p>
+<ul>
+<li>A ticket is either a read ticket or a write ticket. A write ticket also allows uploads and changes.</li>
+<li>A ticket can have an expiry date. After that date it no longer gives access to the data.</li>
+<li>Tickets are stored on the iRODS server and belong to the user who created them. The owner can delete a ticket at any time, which revokes the access.</li>
+</ul>
+<p>Typical uses are sharing a dataset with external collaborators, publishing data for download through an <code>anonymous</code> account, and giving temporary access.</p>
+<p><strong>Always share the ticket string together with the iRODS path it was made for.</strong></p>
+</section>
+<section id="create-tickets" class="level3">
+<h3 class="anchored" data-anchor-id="create-tickets">Create tickets</h3>
+<p><img src="screenshots/manage_tickets.png" class="img-fluid"></p>
+<p>Open the ticket manager from the menu bar <code>Data Access</code>. The view has two parts: the iRODS tree and next to it the ticket settings to choose from, and below the table with your existing tickets.</p>
+<p>To create a ticket:</p>
+<ol type="1">
+<li>Select the collection or data object you want to share in the iRODS tree.</li>
+<li>Choose the access mode, <em>read</em> or <em>write</em>.</li>
+<li>Choose when the ticket expires. Pick a date in the calendar, or check the box to create a ticket that does not expire. The calendar is disabled while the box is checked.</li>
+<li>Click <em>Create ticket</em>. The new ticket appears in the table.</li>
+<li>Send the ticket string and the path to the person you want to share with.</li>
+</ol>
+<p>The table lists all your tickets:</p>
+<ul>
+<li>Ticket — the ticket string to share.</li>
+<li>iRODS path — the shared collection or data object. Hover over the path to see it in full.</li>
+<li>Expires — the expiry date, or <code>never</code>.</li>
+<li>❌ — delete the ticket and revoke the access.</li>
+</ul>
+<p>Good to know:</p>
+<ul>
+<li>A ticket stops working at the start of the selected day. If it should still work during the whole day, select the following day.</li>
+<li>Share write tickets with care, since they allow changes to the shared collection.</li>
+<li>Delete tickets that are no longer needed. Do not rely on the expiry date alone.</li>
+</ul>
+</section>
+<section id="use-tickets" class="level3">
+<h3 class="anchored" data-anchor-id="use-tickets">Use tickets</h3>
+<p>You can use tickets as user of the system or as anonymous user.</p>
+<p><img src="screenshots/supply_ticket.png" class="img-fluid"></p>
+<section id="supply-a-ticket" class="level4">
+<h4 class="anchored" data-anchor-id="supply-a-ticket">Supply a ticket</h4>
+<p>To use a ticket, open the <em>Supply Ticket</em> dialog and fill in:</p>
+<ul>
+<li>Ticket — the ticket string you received.</li>
+<li>iRODS path — the path of the collection or data object the ticket was made for.</li>
+</ul>
+<p>Click <em>OK</em>. If the ticket and the path match, the dialog closes and the shared location becomes your current location in the <code>Browser</code>. You can then browse, view metadata and download data. With a write ticket you can also upload.</p>
+</section>
+<section id="as-a-user-of-the-system" class="level4">
+<h4 class="anchored" data-anchor-id="as-a-user-of-the-system">As a user of the system</h4>
+<p>If you already have an account, log in as usual and supply the ticket. The ticket gives you access to the shared data on top of your own permissions.</p>
+</section>
+<section id="as-an-anonymous-user" class="level4">
+<h4 class="anchored" data-anchor-id="as-an-anonymous-user">As an anonymous user</h4>
+<p>Collaborators without an account use the <code>anonymous</code> user of the iRODS server. Create an iRODS environment file for it with the environment editor (<em>Configure</em>). The user name is <code>anonymous</code> and works without providing a password. Your iRODS administrator can provide you with the correct irods environment settings.</p>
+<p>Once you log in with this environment you can supply the ticket as described above. Without a ticket, an anonymous user cannot see any data.</p>
+</section>
+<section id="things-to-keep-in-mind" class="level4">
+<h4 class="anchored" data-anchor-id="things-to-keep-in-mind">Things to keep in mind</h4>
+<ul>
+<li><p>A ticket lasts as long as your session. If you log out or restart the application, supply the ticket again.</p></li>
+<li><p>Use one ticket per session. To switch to another ticket, log in again first.</p></li>
+<li><p>A ticket on a data object only gives access to that object, not to the other items in its collection. The Browser opens the parent collection, where the listing may be empty. Type the full path of the object in the path field of the Browser to reach it.</p></li>
+<li><p>Expired tickets are still accepted by the dialog, and the shared path may still be visible, but downloading data fails with <code>CAT_TICKET_EXPIRED</code>. Ask the owner for a new ticket.</p></li>
+<li><p>Deleted tickets: if the owner deletes the ticket while you are using it, further actions fail with <code>CAT_TICKET_INVALID</code>.</p></li>
+</ul>
+<p>The same functionality is available from the command line and in Python. See the <em>Working with Tickets</em> tutorial in the <a href="https://ibridges.readthedocs.io/en/latest/">iBridges documentation</a>.</p>
 
 
+</section>
 </section>
 </section>
 
@@ -441,7 +522,8 @@ Example: key <code>author</code>, value <code>%Doyle%</code>.</p></li>
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
       // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
       for (var i=0; i<links.length; i++) {
         const link = links[i];
         if (!isInternal(link.href)) {
@@ -450,8 +532,69 @@ Example: key <code>author</code>, value <code>%Doyle%</code>.</p></li>
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+          if (!link.classList.contains('no-external-icon')) {
+          }
         }
       }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
       const config = {
         allowHTML: true,
@@ -465,6 +608,7 @@ Example: key <code>author</code>, value <code>%Doyle%</code>.</p></li>
         interactiveBorder: 10,
         theme: 'quarto',
         placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
       };
       if (contentFn) {
         config.content = contentFn;
@@ -627,44 +771,54 @@ Example: key <code>author</code>, value <code>%Doyle%</code>.</p></li>
           const lineIds = lines.map((line) => {
             return targetCell + "-" + line;
           })
-          let top = null;
-          let height = null;
-          let parent = null;
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
           if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
             }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
             }
+            placeBand(gutterDiv, el, lastEl);
             selectedAnnoteEl = annoteEl;
           }
         };
@@ -762,6 +916,9 @@ Example: key <code>author</code>, value <code>%Doyle%</code>.</p></li>
       }
     }
   });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
   </script>
 </div> <!-- /content -->
 

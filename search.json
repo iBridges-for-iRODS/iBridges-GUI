@@ -1,73 +1,24 @@
 [
   {
-    "objectID": "docs/developers.html",
-    "href": "docs/developers.html",
-    "title": "Developer Guide",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "\niBridges‑GUI Documentation\n",
     "section": "",
-    "text": "iBridges‑GUI supports a modular plugin system that allows developers to add new functionality through custom tabs.\nYour plugin is automatically detected and integrated into the main application at runtime.\nA minimal example and template structure are available in the\nplugin example repository."
+    "text": "Bridging Science and Research Data Management\niBridges‑GUI is a lightweight, intuitive interface for working with iRODS servers.\nIt turns data‑management tasks into a simple, visual workflow, making browsing, metadata editing, syncing, and permissions management straightforward for both new and experienced users.\nThis site provides both user and developer documentation.\nUse the links below to explore."
   },
   {
-    "objectID": "docs/developers.html#extending-ibridges-gui",
-    "href": "docs/developers.html#extending-ibridges-gui",
-    "title": "Developer Guide",
+    "objectID": "index.html#table-of-contents",
+    "href": "index.html#table-of-contents",
+    "title": "\niBridges‑GUI Documentation\n",
+    "section": "Table of contents",
+    "text": "Table of contents\n\nWhat is iBridges‑Gui\nGetting started\nUser guide\nContributing\nFAQ"
+  },
+  {
+    "objectID": "docs/faq.html",
+    "href": "docs/faq.html",
+    "title": "Frequently asked Questions",
     "section": "",
-    "text": "iBridges‑GUI supports a modular plugin system that allows developers to add new functionality through custom tabs.\nYour plugin is automatically detected and integrated into the main application at runtime.\nA minimal example and template structure are available in the\nplugin example repository."
-  },
-  {
-    "objectID": "docs/developers.html#contributing",
-    "href": "docs/developers.html#contributing",
-    "title": "Developer Guide",
-    "section": "Contributing",
-    "text": "Contributing\niBridges‑GUI is an open‑source project, and we welcome contributions of all kinds — from bug reports and feature ideas to full pull requests.\nMain repository:\niBridges‑GUI on GitHub\n\nContribution workflow\n\nFork the repository\n\nCreate a feature branch from develop\n\nImplement your changes\n\nSubmit a pull request back to develop\n\nThis workflow helps us review changes efficiently and maintain a clean development history."
-  },
-  {
-    "objectID": "docs/developers.html#code-structure-overview",
-    "href": "docs/developers.html#code-structure-overview",
-    "title": "Developer Guide",
-    "section": "Code structure overview",
-    "text": "Code structure overview\nThe core application lives in the\nibridgesgui\npackage. Its architecture is modular, separating UI, logic, and iRODS operations into clear components.\n\nTop-level modules\nThese modules provide the core functionality used across the application:\n\n__main__.py — application entry point\n\nconfig.py — configuration handling\n\ngui_utils.py — shared GUI helpers\n\nthreads.py — background worker threads\n\ninfo.py — application metadata\n\nirods_tree_model.py — iRODS tree model\n\nlogin.py — authentication\n\nlogviewer.py — log viewer tab\n\nwelcome.py — startup screen\n\nmd_schemas/ — metadata schema definitions\n\n\n\nmainmenu/\nThe orchestration layer of the application:\n\nmain_window.py — main Qt window hosting all tabs\n\ntab_manager.py — loads and organizes built‑in tabs\n\nplugin_manager.py — discovers and loads plugin tabs\n\nsession_manager.py — manages user session state\n\nconfig_manager.py — handles configuration files and user-defined settings\n\nThis directory is the best starting point for understanding how the application is assembled.\n\n\nbrowsertab/\nImplements the iRODS browser tab using a model–controller–view structure:\n\nbrowser_model.py — data model\n\nbrowser_controller.py — navigation and logic\n\nbrowser.py — UI\n\nirods_browser_service.py — iRODS operations\n\n\n\nsearchtab/\nImplements the search interface:\n\nsearch_model.py — query state and results\n\nsearch_controller.py — executes searches and handles filters\n\nsearch.py — UI for building queries and viewing results\n\n\n\nsynctab/\nImplements synchronization:\n\nsync_model.py — sync state and configuration\n\nsync_controller.py — sync logic and background tasks\n\nsync.py — UI for managing sync jobs\n\n\n\npopup_widgets/\nReusable dialogs for:\n\ncreating collections\n\ncreating directories\n\nuploading/downloading\n\nrenaming\n\nmetadata editing\n\nconfiguration checks\n\nresource tree dialogs\n\nEach dialog has its own file, making them easy to reuse or extend.\n\n\nui_files/\nContains:\n\nQt Designer .ui files\n\nauto‑generated Python wrappers\n\nmatching controller/view logic\n\nThis keeps UI layout editable without touching logic.\n\n\nicons/\nContains all icons used in the GUI, including navigation arrows, sync indicators, loading animations, and the application logo."
-  },
-  {
-    "objectID": "docs/getting-started.html",
-    "href": "docs/getting-started.html",
-    "title": "Welcome to iBridges‑GUI",
-    "section": "",
-    "text": "Start here \n\n\nIf you’re new to iRODS or iBridges‑GUI, begin with the training materials.\nThey provide guided exercises for browsing, metadata, synchronisation, and search — ideal before working with real data.\nTraining resources:\n\niBridges Training repository\n\niBridges Training website\n\nThese short lessons help you get comfortable quickly and build confidence using the GUI."
-  },
-  {
-    "objectID": "docs/getting-started.html#install-ibridgesgui",
-    "href": "docs/getting-started.html#install-ibridgesgui",
-    "title": "Welcome to iBridges‑GUI",
-    "section": "Install iBridges‑GUI",
-    "text": "Install iBridges‑GUI\nInstall the GUI package:\npip install ibridgesgui"
-  },
-  {
-    "objectID": "docs/getting-started.html#start-the-application",
-    "href": "docs/getting-started.html#start-the-application",
-    "title": "Welcome to iBridges‑GUI",
-    "section": "Start the application",
-    "text": "Start the application\nLaunch iBridges‑GUI from your terminal:\nibridges gui"
-  },
-  {
-    "objectID": "docs/getting-started.html#configure-your-irods-connection",
-    "href": "docs/getting-started.html#configure-your-irods-connection",
-    "title": "Welcome to iBridges‑GUI",
-    "section": "Configure your iRODS connection",
-    "text": "Configure your iRODS connection\nTo connect to an iRODS server, you need an irods_environment.json file.\niBridges‑GUI can help you create, edit, or validate this configuration.\nYou can either:\n\ngenerate a configuration using server templates (via plugins),\n\ncreate a new configuration manually, or\n\nload and adjust an existing one.\n\n\nUsing server templates\nIf your institution provides templates, install the corresponding plugin.\nSetup instructions are available in the\niBridges CLI documentation.\n\n\nCreating or editing a configuration\nAfter starting iBridges‑GUI, open:\nConnect → Configure\n\n\n\n\n\nChoose Add Configuration to create or inspect a configuration file.\n\n\n\n\n\n\n\nExisting configurations\nPreviously created environment files appear in the dropdown menu.\nThey follow the naming pattern:\nirods_environment*.json\nSelect one to review or update it.\n\n\nCreating a configuration from a template\nIf you installed a template plugin, select the template from the dropdown, enter your username, and save the file as:\nirods_environment.json\n\n\nCreating a new configuration manually\nSelect New Config to start from scratch.\n\n\n\n\n\nYou will see that some parameters are already filled in. Check them and adjust.\nClick Check to test the connection.\nIf errors appear, adjust the fields accordingly.\nIf you are unsure about the correct values, contact your iRODS service provider.\nOnce the check succeeds, save the configuration using Save or Save As.\niBridges‑GUI stores it in the correct location so it can be used for login."
-  },
-  {
-    "objectID": "docs/getting-started.html#prebuilt-executables",
-    "href": "docs/getting-started.html#prebuilt-executables",
-    "title": "Welcome to iBridges‑GUI",
-    "section": "Prebuilt executables",
-    "text": "Prebuilt executables\nDownload the appropriate ZIP file from the\nReleases page.\nInside the extracted folder you will find:\n\nibridges_gui.exe (Windows)\n\nibridges_gui.sh (macOS/Linux)\n\nRun the executable directly:\nbash ./ibridges_gui.sh\nor double‑click the .exe on Windows."
-  },
-  {
-    "objectID": "docs/getting-started.html#building-executables-yourself",
-    "href": "docs/getting-started.html#building-executables-yourself",
-    "title": "Welcome to iBridges‑GUI",
-    "section": "Building executables yourself",
-    "text": "Building executables yourself\nBuild scripts are included for users who want to compile and distribute the GUI.\nShow the available options:\npython3 build_tools/build_script.py -h\nThis creates:\n\na virtual environment venv,\n\na build directory, and\n\nan ibridgesgui_dist folder containing the executable.\n\nRun the built executable:\n./output/ibridgesgui/ibridges_gui.bin   # macOS/Linux\nor\noutput/ibridgesgui/ibridges_gui.exe     # Windows"
+    "text": "If your question isn’t listed here, you may also find answers in the API and CLI FAQ.\n\n\n\n\n\n\nTipI found a bug or have a feature request — where should I go?\n\n\n\n\n\nAll development happens on GitHub.\nCheck the Issues section to see whether your bug or idea has already been reported.\nIf not, feel free to open a new issue — we actively monitor the tracker and usually respond within a few days.\n\n\n\n\n\n\n\n\n\nTipI’m getting a “NetworkError” when transferring large files\n\n\n\n\n\nThis error usually appears when the checksum calculation exceeds the default iBridges timeout of 25,000 seconds (~7 hours).\nThe transfer itself typically succeeds, but if the server is busy or the file is extremely large, the checksum step may run longer than the timeout.\nYou can increase the timeout by adding this entry to your irods_environment.json:\n\"connection_timeout\": &lt;time in seconds&gt;\nThe maximum allowed value is:\n\"connection_timeout\": 9208512000\nwhich corresponds to roughly 292 years.\n\n\n\n\n\n\n\n\n\nTipMy metadata keys starting with org_ don’t appear in iBridges\n\n\n\n\n\niBridges hides metadata keys beginning with org_ by default.\nThis behaviour is intentional on Yoda systems for data‑security reasons.\nIf you need to access these keys, you can do so via the\niBridges API.\n\n\n\n\n\n\n\n\n\nTipHow can I download files that match a pattern but aren’t in the same collection?\n\n\n\n\n\nUse the Search tab.\nThe search interface lets you filter for files regardless of their location.\nOnce the results appear, select the items you want to download.\n\n\n\n\n\n\n\n\n\nTipHow do I find all the data I have access to?\n\n\n\n\n\nShared data in iRODS doesn’t always appear in your home or project collection.\nHowever, shared objects must always reside in a collection you can access — that’s an iRODS rule.\nTo list all accessible collections:\n\nOpen Search\n\nSet the search path to /yourZone/home\n\nUse Obj/Coll name: %\n\nSelect Collections and unselect Data Objects\n\nThe results will show every collection you have permission to access."
   },
   {
     "objectID": "docs/userdoc.html",
@@ -119,18 +70,81 @@
     "text": "Search\nThe Search view allows you to filter by path, name, and metadata.\n\n\nSearch fields\n\nPath — defines where the search is performed.\nMust exist; defaults to your home collection.\nObj/Coll name — filter by name.\nExample: demo finds all items named demo.\nWildcards use %.\nExample: my_books/%.txt finds all .txt files in my_books.\nMetadata filters — narrow results further.\nExample: key author, value %Doyle%.\n\n\n\nSearch results\n\nSingle click or Select all → click Download to choose a destination.\n\nDouble click → open the item in the Browser for inspection."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "\niBridges‑GUI Documentation\n",
-    "section": "",
-    "text": "Bridging Science and Research Data Management\niBridges‑GUI is a lightweight, intuitive interface for working with iRODS servers.\nIt turns data‑management tasks into a simple, visual workflow, making browsing, metadata editing, syncing, and permissions management straightforward for both new and experienced users.\nThis site provides both user and developer documentation.\nUse the links below to explore."
+    "objectID": "docs/userdoc.html#data-sharing-with-irods-tickets",
+    "href": "docs/userdoc.html#data-sharing-with-irods-tickets",
+    "title": "User Documentation",
+    "section": "Data Sharing with iRODS tickets",
+    "text": "Data Sharing with iRODS tickets\n\nWhat are iRODS tickets\nAn iRODS ticket is a short string, for example kpIwGA1UZN0LFnM, that gives access to one collection or data object without changing any permissions and without the need for an account. Anyone who has the ticket string and the path it belongs to can read the shared data.\n\nA ticket is either a read ticket or a write ticket. A write ticket also allows uploads and changes.\nA ticket can have an expiry date. After that date it no longer gives access to the data.\nTickets are stored on the iRODS server and belong to the user who created them. The owner can delete a ticket at any time, which revokes the access.\n\nTypical uses are sharing a dataset with external collaborators, publishing data for download through an anonymous account, and giving temporary access.\nAlways share the ticket string together with the iRODS path it was made for.\n\n\nCreate tickets\n\nOpen the ticket manager from the menu bar Data Access. The view has two parts: the iRODS tree and next to it the ticket settings to choose from, and below the table with your existing tickets.\nTo create a ticket:\n\nSelect the collection or data object you want to share in the iRODS tree.\nChoose the access mode, read or write.\nChoose when the ticket expires. Pick a date in the calendar, or check the box to create a ticket that does not expire. The calendar is disabled while the box is checked.\nClick Create ticket. The new ticket appears in the table.\nSend the ticket string and the path to the person you want to share with.\n\nThe table lists all your tickets:\n\nTicket — the ticket string to share.\niRODS path — the shared collection or data object. Hover over the path to see it in full.\nExpires — the expiry date, or never.\n❌ — delete the ticket and revoke the access.\n\nGood to know:\n\nA ticket stops working at the start of the selected day. If it should still work during the whole day, select the following day.\nShare write tickets with care, since they allow changes to the shared collection.\nDelete tickets that are no longer needed. Do not rely on the expiry date alone.\n\n\n\nUse tickets\nYou can use tickets as user of the system or as anonymous user.\n\n\nSupply a ticket\nTo use a ticket, open the Supply Ticket dialog and fill in:\n\nTicket — the ticket string you received.\niRODS path — the path of the collection or data object the ticket was made for.\n\nClick OK. If the ticket and the path match, the dialog closes and the shared location becomes your current location in the Browser. You can then browse, view metadata and download data. With a write ticket you can also upload.\n\n\nAs a user of the system\nIf you already have an account, log in as usual and supply the ticket. The ticket gives you access to the shared data on top of your own permissions.\n\n\nAs an anonymous user\nCollaborators without an account use the anonymous user of the iRODS server. Create an iRODS environment file for it with the environment editor (Configure). The user name is anonymous and works without providing a password. Your iRODS administrator can provide you with the correct irods environment settings.\nOnce you log in with this environment you can supply the ticket as described above. Without a ticket, an anonymous user cannot see any data.\n\n\nThings to keep in mind\n\nA ticket lasts as long as your session. If you log out or restart the application, supply the ticket again.\nUse one ticket per session. To switch to another ticket, log in again first.\nA ticket on a data object only gives access to that object, not to the other items in its collection. The Browser opens the parent collection, where the listing may be empty. Type the full path of the object in the path field of the Browser to reach it.\nExpired tickets are still accepted by the dialog, and the shared path may still be visible, but downloading data fails with CAT_TICKET_EXPIRED. Ask the owner for a new ticket.\nDeleted tickets: if the owner deletes the ticket while you are using it, further actions fail with CAT_TICKET_INVALID.\n\nThe same functionality is available from the command line and in Python. See the Working with Tickets tutorial in the iBridges documentation."
   },
   {
-    "objectID": "index.html#table-of-contents",
-    "href": "index.html#table-of-contents",
-    "title": "\niBridges‑GUI Documentation\n",
-    "section": "Table of contents",
-    "text": "Table of contents\n\nWhat is iBridges‑Gui\nGetting started\nUser guide\nContributing\nFAQ"
+    "objectID": "docs/getting-started.html",
+    "href": "docs/getting-started.html",
+    "title": "Welcome to iBridges‑GUI",
+    "section": "",
+    "text": "Start here \n\n\nIf you’re new to iRODS or iBridges‑GUI, begin with the training materials.\nThey provide guided exercises for browsing, metadata, synchronisation, and search — ideal before working with real data.\nTraining resources:\n\niBridges Training repository\n\niBridges Training website\n\nThese short lessons help you get comfortable quickly and build confidence using the GUI."
+  },
+  {
+    "objectID": "docs/getting-started.html#install-ibridgesgui",
+    "href": "docs/getting-started.html#install-ibridgesgui",
+    "title": "Welcome to iBridges‑GUI",
+    "section": "Install iBridges‑GUI",
+    "text": "Install iBridges‑GUI\nInstall the GUI package:\npip install ibridgesgui"
+  },
+  {
+    "objectID": "docs/getting-started.html#start-the-application",
+    "href": "docs/getting-started.html#start-the-application",
+    "title": "Welcome to iBridges‑GUI",
+    "section": "Start the application",
+    "text": "Start the application\nLaunch iBridges‑GUI from your terminal:\nibridges gui"
+  },
+  {
+    "objectID": "docs/getting-started.html#configure-your-irods-connection",
+    "href": "docs/getting-started.html#configure-your-irods-connection",
+    "title": "Welcome to iBridges‑GUI",
+    "section": "Configure your iRODS connection",
+    "text": "Configure your iRODS connection\nTo connect to an iRODS server, you need an irods_environment.json file.\niBridges‑GUI can help you create, edit, or validate this configuration.\nYou can either:\n\ngenerate a configuration using server templates (via plugins),\n\ncreate a new configuration manually, or\n\nload and adjust an existing one.\n\n\nUsing server templates\nIf your institution provides templates, install the corresponding plugin.\nSetup instructions are available in the\niBridges CLI documentation.\n\n\nCreating or editing a configuration\nAfter starting iBridges‑GUI, open:\nConnect → Configure\n\n\n\n\n\nChoose Add Configuration to create or inspect a configuration file.\n\n\n\n\n\n\n\nExisting configurations\nPreviously created environment files appear in the dropdown menu.\nThey follow the naming pattern:\nirods_environment*.json\nSelect one to review or update it.\n\n\nCreating a configuration from a template\nIf you installed a template plugin, select the template from the dropdown, enter your username, and save the file as:\nirods_environment.json\n\n\nCreating a new configuration manually\nSelect New Config to start from scratch.\n\n\n\n\n\nYou will see that some parameters are already filled in. Check them and adjust.\nClick Check to test the connection.\nIf errors appear, adjust the fields accordingly.\nIf you are unsure about the correct values, contact your iRODS service provider.\nOnce the check succeeds, save the configuration using Save or Save As.\niBridges‑GUI stores it in the correct location so it can be used for login."
+  },
+  {
+    "objectID": "docs/getting-started.html#prebuilt-executables",
+    "href": "docs/getting-started.html#prebuilt-executables",
+    "title": "Welcome to iBridges‑GUI",
+    "section": "Prebuilt executables",
+    "text": "Prebuilt executables\nDownload the appropriate ZIP file from the\nReleases page.\nInside the extracted folder you will find:\n\nibridges_gui.exe (Windows)\n\nibridges_gui.sh (macOS/Linux)\n\nRun the executable directly:\nbash ./ibridges_gui.sh\nor double‑click the .exe on Windows."
+  },
+  {
+    "objectID": "docs/getting-started.html#building-executables-yourself",
+    "href": "docs/getting-started.html#building-executables-yourself",
+    "title": "Welcome to iBridges‑GUI",
+    "section": "Building executables yourself",
+    "text": "Building executables yourself\nBuild scripts are included for users who want to compile and distribute the GUI.\nShow the available options:\npython3 build_tools/build_script.py -h\nThis creates:\n\na virtual environment venv,\n\na build directory, and\n\nan ibridgesgui_dist folder containing the executable.\n\nRun the built executable:\n./output/ibridgesgui/ibridges_gui.bin   # macOS/Linux\nor\noutput/ibridgesgui/ibridges_gui.exe     # Windows"
+  },
+  {
+    "objectID": "docs/developers.html",
+    "href": "docs/developers.html",
+    "title": "Developer Guide",
+    "section": "",
+    "text": "iBridges‑GUI supports a modular plugin system that allows developers to add new functionality through custom tabs.\nYour plugin is automatically detected and integrated into the main application at runtime.\nA minimal example and template structure are available in the\nplugin example repository."
+  },
+  {
+    "objectID": "docs/developers.html#extending-ibridges-gui",
+    "href": "docs/developers.html#extending-ibridges-gui",
+    "title": "Developer Guide",
+    "section": "",
+    "text": "iBridges‑GUI supports a modular plugin system that allows developers to add new functionality through custom tabs.\nYour plugin is automatically detected and integrated into the main application at runtime.\nA minimal example and template structure are available in the\nplugin example repository."
+  },
+  {
+    "objectID": "docs/developers.html#contributing",
+    "href": "docs/developers.html#contributing",
+    "title": "Developer Guide",
+    "section": "Contributing",
+    "text": "Contributing\niBridges‑GUI is an open‑source project, and we welcome contributions of all kinds — from bug reports and feature ideas to full pull requests.\nMain repository:\niBridges‑GUI on GitHub\n\nContribution workflow\n\nFork the repository\n\nCreate a feature branch from develop\n\nImplement your changes\n\nSubmit a pull request back to develop\n\nThis workflow helps us review changes efficiently and maintain a clean development history."
+  },
+  {
+    "objectID": "docs/developers.html#code-structure-overview",
+    "href": "docs/developers.html#code-structure-overview",
+    "title": "Developer Guide",
+    "section": "Code structure overview",
+    "text": "Code structure overview\nThe core application lives in the\nibridgesgui\npackage. Its architecture is modular, separating UI, logic, and iRODS operations into clear components.\n\nTop-level modules\nThese modules provide the core functionality used across the application:\n\n__main__.py — application entry point\n\nconfig.py — configuration handling\n\ngui_utils.py — shared GUI helpers\n\nthreads.py — background worker threads\n\ninfo.py — application metadata\n\nirods_tree_model.py — iRODS tree model\n\nlogin.py — authentication\n\nlogviewer.py — log viewer tab\n\nwelcome.py — startup screen\n\nmd_schemas/ — metadata schema definitions\n\n\n\nmainmenu/\nThe orchestration layer of the application:\n\nmain_window.py — main Qt window hosting all tabs\n\ntab_manager.py — loads and organizes built‑in tabs\n\nplugin_manager.py — discovers and loads plugin tabs\n\nsession_manager.py — manages user session state\n\nconfig_manager.py — handles configuration files and user-defined settings\n\nThis directory is the best starting point for understanding how the application is assembled.\n\n\nbrowsertab/\nImplements the iRODS browser tab using a model–controller–view structure:\n\nbrowser_model.py — data model\n\nbrowser_controller.py — navigation and logic\n\nbrowser.py — UI\n\nirods_browser_service.py — iRODS operations\n\n\n\nsearchtab/\nImplements the search interface:\n\nsearch_model.py — query state and results\n\nsearch_controller.py — executes searches and handles filters\n\nsearch.py — UI for building queries and viewing results\n\n\n\nsynctab/\nImplements synchronization:\n\nsync_model.py — sync state and configuration\n\nsync_controller.py — sync logic and background tasks\n\nsync.py — UI for managing sync jobs\n\n\n\npopup_widgets/\nReusable dialogs for:\n\ncreating collections\n\ncreating directories\n\nuploading/downloading\n\nrenaming\n\nmetadata editing\n\nconfiguration checks\n\nresource tree dialogs\n\nEach dialog has its own file, making them easy to reuse or extend.\n\n\nui_files/\nContains:\n\nQt Designer .ui files\n\nauto‑generated Python wrappers\n\nmatching controller/view logic\n\nThis keeps UI layout editable without touching logic.\n\n\nicons/\nContains all icons used in the GUI, including navigation arrows, sync indicators, loading animations, and the application logo."
   },
   {
     "objectID": "docs/info.html",
@@ -187,12 +201,5 @@
     "title": "What is iBridges‑GUI",
     "section": "License",
     "text": "License\nGPL v3"
-  },
-  {
-    "objectID": "docs/faq.html",
-    "href": "docs/faq.html",
-    "title": "Frequently asked Questions",
-    "section": "",
-    "text": "If your question isn’t listed here, you may also find answers in the API and CLI FAQ.\n\n\n\n\n\n\nTipI found a bug or have a feature request — where should I go?\n\n\n\n\n\nAll development happens on GitHub.\nCheck the Issues section to see whether your bug or idea has already been reported.\nIf not, feel free to open a new issue — we actively monitor the tracker and usually respond within a few days.\n\n\n\n\n\n\n\n\n\nTipI’m getting a “NetworkError” when transferring large files\n\n\n\n\n\nThis error usually appears when the checksum calculation exceeds the default iBridges timeout of 25,000 seconds (~7 hours).\nThe transfer itself typically succeeds, but if the server is busy or the file is extremely large, the checksum step may run longer than the timeout.\nYou can increase the timeout by adding this entry to your irods_environment.json:\n\"connection_timeout\": &lt;time in seconds&gt;\nThe maximum allowed value is:\n\"connection_timeout\": 9208512000\nwhich corresponds to roughly 292 years.\n\n\n\n\n\n\n\n\n\nTipMy metadata keys starting with org_ don’t appear in iBridges\n\n\n\n\n\niBridges hides metadata keys beginning with org_ by default.\nThis behaviour is intentional on Yoda systems for data‑security reasons.\nIf you need to access these keys, you can do so via the\niBridges API.\n\n\n\n\n\n\n\n\n\nTipHow can I download files that match a pattern but aren’t in the same collection?\n\n\n\n\n\nUse the Search tab.\nThe search interface lets you filter for files regardless of their location.\nOnce the results appear, select the items you want to download.\n\n\n\n\n\n\n\n\n\nTipHow do I find all the data I have access to?\n\n\n\n\n\nShared data in iRODS doesn’t always appear in your home or project collection.\nHowever, shared objects must always reside in a collection you can access — that’s an iRODS rule.\nTo list all accessible collections:\n\nOpen Search\n\nSet the search path to /yourZone/home\n\nUse Obj/Coll name: %\n\nSelect Collections and unselect Data Objects\n\nThe results will show every collection you have permission to access."
   }
 ]
