@@ -3,10 +3,7 @@ from unittest.mock import Mock
 from ibridgesgui.threads import TransferDataThread
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
 def make_valid_session(monkeypatch):
     """Ensure BaseIrodsThread accepts the session."""
     monkeypatch.setattr(
@@ -48,10 +45,7 @@ def make_thread(fake_logger, ops):
     return thread
 
 
-# ---------------------------------------------------------------------------
 # Tests
-# ---------------------------------------------------------------------------
-
 def test_transfer_thread_success(qtbot, monkeypatch, mock_session_ctor, patch_session_close, fake_logger, tmp_path):
     make_valid_session(monkeypatch)
 
@@ -148,6 +142,5 @@ def test_transfer_thread_metadata_upload_failure(qtbot, monkeypatch, mock_sessio
     with qtbot.waitSignal(thread.result) as blocker:
         thread.run()
 
-    # Since execute_meta_upload is never called, no error should appear.
-    assert blocker.args == [{"error": ""}]
+    assert blocker.args == [{"error": "\nMetadata upload failed: Exception('meta-up')"}]
 

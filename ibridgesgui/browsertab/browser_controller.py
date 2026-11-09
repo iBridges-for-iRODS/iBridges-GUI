@@ -248,7 +248,7 @@ class BrowserController:
         label_to_acl = {
             "Newly added items to collection will inherit permissions": "inherit",
             "Remove inheritance.": "noinherit",
-            "delete": "null",
+            #"delete": "null",
         }
         acl_value = label_to_acl.get(acc_label, acc_label)
 
@@ -265,7 +265,6 @@ class BrowserController:
         if not acc_label:
             self.ui.error_label.setText("Please provide an access level.")
             return
-
         try:
             self.service.set_acl(
                 irods_path,
@@ -275,7 +274,6 @@ class BrowserController:
                 recursive=recursive,
             )
 
-            # NEW: use model helper instead of manual cache manipulation
             self.model.invalidate_acls(row)
 
             self._fill_current_info_tab()
