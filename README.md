@@ -9,6 +9,7 @@
   </p>
 </p>
 
+[![PyPI version](https://badge.fury.io/py/ibridges.svg)](https://badge.fury.io/py/ibridgesgui)
 [![Python package](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/linter.yml/badge.svg)](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/linter.yml)
 [![Quarto Publish](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/publish.yml/badge.svg)](https://github.com/iBridges-for-iRods/iBridges-GUI/actions/workflows/publish.yml)
 ![Coverage](coverage.svg)
